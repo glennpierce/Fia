@@ -70,8 +70,9 @@ FreeImageAlgorithms_GetIcsHistoryString(FreeImageIcsPointer fip, FreeImageIcsHis
 	if(!fip->number_of_history_strings)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	IcsGetHistoryString (fip->ip, history_string, (iterator > 1) ? IcsWhich_Next : IcsWhich_First);	
-	
+	for(int i=1; i <= iterator; i++)
+		IcsGetHistoryString (fip->ip, history_string, (i > 1) ? IcsWhich_Next : IcsWhich_First);	
+
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 

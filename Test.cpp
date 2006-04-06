@@ -173,15 +173,28 @@ int main()
 	hwndMain = CreateMainWnd();
 	hdc = GetDC(hwndMain);
 
-	dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Glenn\\Desktop\\rjl.ics", 0);
+	//dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Pierce\\Desktop\\rjl.ics", 0);
 
+	char units[500];     
+
+	FreeImageIcsPointer fip;	
+	FreeImageAlgorithms_OpenIcsFile(&fip, "C:\\Documents and Settings\\Pierce\\Desktop\\rjl.ics", "r");     
+
+	FreeImageAlgorithms_GetFirstIcsHistoryValueWithKey(fip, "units", units); 
+
+
+
+	/*
 	hbitmap = FreeImageAlgorithms_GetDibSection(dib, hdc, 0, 0,
 						FreeImage_GetWidth(dib), FreeImage_GetHeight(dib));
 		
 
 	hbitmap_hdc = CreateCompatibleDC(hdc);
+	*/
 
 	/* Associate the new DC with the bitmap for drawing */
+
+	/*
 	SelectObject( hbitmap_hdc, hbitmap );
 
 
@@ -206,6 +219,7 @@ int main()
 		printf("%d %d %d \n", palette[i].rgbRed, palette[i].rgbGreen, palette[i].rgbBlue);	
 
 	ShowWindow(hwndMain, 1);
+	*/
 
 	// message-loop
 	while(GetMessage(&msg, NULL, 0, 0) > 0)
