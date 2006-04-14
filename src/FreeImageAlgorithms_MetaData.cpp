@@ -158,11 +158,14 @@ FreeImageAlgorithms_GetFirstIcsHistoryValueWithKey(FreeImageIcsPointer fip, char
 
 	FreeImageIcsHistoryIterator found_iterator = FreeImageAlgorithms_GetIcsHistoryIteratorForKey(fip, iterator, key);
 
+	if(found_iterator == FREEIMAGE_ALGORITHMS_ERROR)
+		return FREEIMAGE_ALGORITHMS_ERROR;		
+
 	FreeImageAlgorithms_GetIcsHistoryKeyValue(fip, found_iterator, found_key, found_value);
 
 	strcpy(value, found_value);
 
-	return FREEIMAGE_ALGORITHMS_ERROR;
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
 
