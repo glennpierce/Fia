@@ -112,11 +112,6 @@ FreeImageAlgorithms_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int
 	if(bpp < 16)
 		memcpy(info->bmiColors, FreeImage_GetPalette(src), FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD));
 
-
-	for(int i=0; i < 256; i++)
-		std::cout << (int) info->bmiColors[i].rgbRed << std::endl;
-
-
 	BYTE *dst_bits;
 
 	HBITMAP hbitmap = CreateDIBSection(hdc, info, DIB_RGB_COLORS, (void **) &dst_bits, NULL, 0);
