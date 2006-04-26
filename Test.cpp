@@ -175,27 +175,13 @@ int main()
 
 	//dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Pierce\\Desktop\\rjl.ics", 0);
 
-<<<<<<< .mine
 	//char units[500];     
-=======
-	char binning[500];     
->>>>>>> .r25
 
-<<<<<<< .mine
 	//FreeImageIcsPointer fip;	
 	//FreeImageAlgorithms_OpenIcsFile(&fip, "C:\\Documents and Settings\\Pierce\\Desktop\\rjl.ics", "r");     
-=======
-	memset(binning, 0, 500);
 
-	FreeImageIcsPointer fip;	
-	FreeImageAlgorithms_OpenIcsFile(&fip, "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\test_float.ics", "r");     
->>>>>>> .r25
-
-<<<<<<< .mine
 	//FreeImageAlgorithms_GetFirstIcsHistoryValueWithKey(fip, "units", units); 
-=======
-	FreeImageAlgorithms_GetFirstIcsHistoryValueWithKey(fip, "binning", binning); 
->>>>>>> .r25
+
 
 	char array[] = {0,1,2,3,4,5,6,7,8,9};
 
