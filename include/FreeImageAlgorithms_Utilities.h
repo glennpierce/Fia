@@ -50,6 +50,36 @@ DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FindMinMax(FIBITMAP *src, double *min, double *max);
 
 DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_CharArrayReverse(char *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_UCharArrayReverse(unsigned char *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_ShortArrayReverse(short *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_UShortArrayReverse(unsigned short *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_IntArrayReverse(int *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_UIntArrayReverse(unsigned int *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_LongArrayReverse(long *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_ULongArrayReverse(unsigned long *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_FloatArrayReverse(float *array, long size);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_DoubleArrayReverse(double *array, long size);
+
+DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Is16BitReally12BitImage(FIBITMAP *src);
 
 DLL_API int DLL_CALLCONV

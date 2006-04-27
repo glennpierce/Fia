@@ -5,13 +5,15 @@
 
 /// Max function
 template <class T> T
-MAX(T a, T b) {
+MAX(T a, T b)
+{
 	return (a > b) ? a: b;
 }
 
 /// Min function
 template <class T> T
-MIN(T a, T b) {
+MIN(T a, T b)
+{
 	return (a < b) ? a: b;
 }
 
@@ -23,7 +25,8 @@ MIN(T a, T b) {
  Addison-Wesley, Reading, 1974.
 */
 template <class T> void 
-MAXMIN(const T* L, long n, T& max, T& min) {
+MAXMIN(const T* L, long n, T& max, T& min)
+{
 	long i1, i2, i, j;
 	T x1, x2;
 	long k1, k2;
@@ -74,19 +77,46 @@ FINDMAX(const T* L, long n, T& max)
 
 /// INPLACESWAP adopted from codeguru.com 
 template <class T> void
-INPLACESWAP(T& a, T& b) {
+INPLACESWAP(T& a, T& b)
+{
 	a ^= b; b ^= a; a ^= b;
 }
 
-template <class T> double 
-MeanAverage(const T* L, long n) {
+// In place swap doesn't work for float point types
+template <class T> void
+SWAP(T& a, T& b)
+{
+	T tmp = b;
 	
+	b = a;
+	a = tmp;
+}
+
+template <class T> double 
+MeanAverage(const T* L, long n)
+{
 	double total = 0.0;
 
 	for( int i = 0; i < n; i++)
 		total += *L++; 	
 			
 	return total / n;
+}
+
+
+
+template <class T> int
+FreeImageAlgorithms_ArrayReverse(T *array, long size)
+{
+	if(array == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	long mid_element = (size / 2) - 1;
+
+	for (int i=0; i < mid_element ; i++)
+		SWAP(array[i], array[size - 1 - i]);
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
 #endif
