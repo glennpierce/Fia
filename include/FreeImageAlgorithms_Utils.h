@@ -113,7 +113,7 @@ FreeImageAlgorithms_ArrayReverse(T *array, long size)
 
 	long mid_element = (size / 2) - 1;
 
-	for (int i=0; i < mid_element ; i++)
+	for (int i=0; i <= mid_element ; i++)
 		SWAP(array[i], array[size - 1 - i]);
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;

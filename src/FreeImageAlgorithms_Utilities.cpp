@@ -288,21 +288,14 @@ template <class T> int
 GetPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, T *values) 
 {  
 	T value;
-   	int dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
+   	int swapped = 0, dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
   
 	// If necessary, switch the points so we're 
 	// always drawing from left to right. 
 	if (p2.x < p1.x) { 
-    	int t; 
-       
-    	t = p2.x; 
-    	p2.x = p1.x; 
-    	p1.x = t;
-       
-    	t = p2.y; 
-    	p2.y = p1.y; 
-    	p1.y = t; 
-   	} 
+		swapped = 1;
+    	SWAP(p1, p2);
+	}
    
    	dx = p2.x - p1.x; 				   
    	dy = p2.y - p1.y; 
@@ -384,12 +377,22 @@ GetPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, T *values)
        } 
    }
    
+	// Reverse if the line draws from right to left.
+	//if(swapped > 0) 
+	//	FreeImageAlgorithms_ArrayReverse(values, len);
+
    return len;
 } 
 
 
 int DLL_CALLCONV
 FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *values)
+{
+	return GetPixelValuesForLine (src, p1, p2, values);
+}
+
+int DLL_CALLCONV
+FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned char *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
