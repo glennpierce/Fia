@@ -34,7 +34,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				AdditionalDependencies="FreeImage.lib ics.lib gdiplus.lib"
+				AdditionalDependencies="FreeImage.lib gdiplus.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../../bin"
@@ -78,12 +78,13 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="3"
+				CallingConvention="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImage.lib ics.lib gdiplus.lib"
+				AdditionalDependencies="FreeImage.lib gdiplus.lib"
 				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../../bin"
@@ -128,16 +129,10 @@
 				RelativePath=".\src\FreeImageAlgorithms_HBitmap.cpp">
 			</File>
 			<File
-				RelativePath=".\src\FreeImageAlgorithms_Ics.cpp">
-			</File>
-			<File
 				RelativePath=".\src\FreeImageAlgorithms_IO.cpp">
 			</File>
 			<File
 				RelativePath=".\src\FreeImageAlgorithms_LinearScale.cpp">
-			</File>
-			<File
-				RelativePath=".\src\FreeImageAlgorithms_MetaData.cpp">
 			</File>
 			<File
 				RelativePath=".\src\FreeImageAlgorithms_Palettes.cpp">
@@ -175,9 +170,6 @@
 				RelativePath=".\include\FreeImageAlgorithms_HBitmap.h">
 			</File>
 			<File
-				RelativePath=".\include\FreeImageAlgorithms_Ics.h">
-			</File>
-			<File
 				RelativePath=".\include\FreeImageAlgorithms_IO.h">
 			</File>
 			<File
@@ -191,9 +183,6 @@
 			</File>
 			<File
 				RelativePath=".\include\FreeImageAlgorithms_Palettes.h">
-			</File>
-			<File
-				RelativePath=".\include\FreeImageAlgorithms_Private.h">
 			</File>
 			<File
 				RelativePath=".\include\FreeImageAlgorithms_Statistics.h">

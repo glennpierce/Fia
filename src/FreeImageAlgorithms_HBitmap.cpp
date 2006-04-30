@@ -2,7 +2,6 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
-#include "FreeImageAlgorithms_Ics.h"
 
 #include <iostream>
 

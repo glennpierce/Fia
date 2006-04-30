@@ -3,11 +3,8 @@
 #include "FreeImageAlgorithms_HBitmap.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_LinearScale.h"
-#include "FreeImageAlgorithms_MetaData.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
-
-#include "FreeImageAlgorithms_Private.h"
 
 #include <iostream>
 #include <assert.h>
@@ -175,30 +172,26 @@ int main()
 	// create the main window!
 	hwndMain = CreateMainWnd();
 	hdc = GetDC(hwndMain);
-	Ics_Error retval;
-	ICS* ip;
+	
+	char *file = "C:\\Documents and Settings\\Glenn\\My Documents\\Test Images\\dance.jpg";
+	
+	dib = FreeImageAlgorithms_LoadFIBFromFile(file, 0);
 
-	if((retval = IcsOpen (&ip, "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\colour_test.ics", "r")) != IcsErr_Ok)
-   		return -1;
+	double min = 0, max = 0;
 
-	//dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\colour_ics.ics", 0);
-	dib = GetIcsDimensionXYImage(ip, 0, -1);
+	FreeImageAlgorithms_FindMinMax(dib, &min, &max);  
 
 	dib = FreeImage_ConvertToStandardType(dib, 1);
 
 	hbitmap = FreeImageAlgorithms_GetDibSection(dib, hdc, 0, 0,
 						FreeImage_GetWidth(dib), FreeImage_GetHeight(dib));
 		
-
 	hbitmap_hdc = CreateCompatibleDC(hdc);
 
 	/* Associate the new DC with the bitmap for drawing */
 	SelectObject( hbitmap_hdc, hbitmap );
 
 	ShowWindow(hwndMain, 1);
-
-	
-
 
 	// message-loop
 	while(GetMessage(&msg, NULL, 0, 0) > 0)

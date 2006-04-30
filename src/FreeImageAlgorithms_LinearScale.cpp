@@ -78,6 +78,7 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, Tsrc min, Tsrc max, double *min_withi
 
 	// scale to 8-bit
 	for(y = 0; y < height; y++) {
+
 		src_bits = reinterpret_cast<Tsrc*>(FreeImage_GetScanLine(src, y));
 		dst_bits = FreeImage_GetScanLine(dst, y);
 
@@ -90,8 +91,6 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, Tsrc min, Tsrc max, double *min_withi
 			}
 
 			tmp = static_cast<long>(scale * (src_bits[x] - min));
-
-			
 
 			if(tmp >= 255) {
 					tmp = 255;
