@@ -14,6 +14,9 @@ extern "C" {
 typedef struct FreeImageIcsStr FreeImageIcs, *FreeImageIcsPointer;
 
 
+
+
+
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_IsIcsFile (const char *filepath);
 

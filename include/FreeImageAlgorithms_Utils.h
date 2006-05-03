@@ -106,7 +106,7 @@ MeanAverage(const T* L, long n)
 
 
 template <class T> int
-FreeImageAlgorithms_ArrayReverse(T *array, long size)
+ArrayReverse(T *array, long size)
 {
 	if(array == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;

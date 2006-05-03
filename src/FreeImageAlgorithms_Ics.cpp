@@ -4,6 +4,7 @@
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Private.h"
 #include "FreeImageAlgorithms_MetaData.h"
+#include "FreeImageAlgorithms_Utils.h"
 
 #include <iostream>
 
@@ -65,7 +66,7 @@ IcsTypeToFreeImageType (Ics_DataType icsType)
 	 case Ics_uint16:
 	 
 		 return FIT_UINT16;
-		 
+
 	 case Ics_sint32:
 	 
 		 return FIT_INT32;
@@ -157,10 +158,172 @@ GetIcsDataTypeBPP (Ics_DataType icsType)
 	return 0;
 }
 
+
+
+// This gets the size in bytes of all the dimensions below that of the 
+// specified dimension.
+// For example if will have 4 dimensional data x y z t
+// GetTotalDimensionalDataSize(ics, 2, &size)
+// size would return the size of the all the t dimensions below each z dimension.
+
+static Ics_Error GetTotalDimensionalDataSize(ICS *ics, int dimension, size_t *size)
+{
+	Ics_DataType dataType;
+	int ndims;
+	size_t dims[ICS_MAXDIM];
+
+	IcsGetLayout (ics, &dataType, &ndims, dims);
+
+	if(dimension < 0 || dimension > ndims)
+		return IcsErr_NotValidAction;
+
+	size_t total_size = 1; 
+
+	// Get the combined size of all the dimension after x,y.
+	for (int i=0; i < dimension; i++)
+		total_size *= dims[i];
+
+	*size = (total_size * GetIcsDataTypeBPP (dataType)) / 8;
+	
+	return IcsErr_Ok;
+}
+
+
+static void CopyBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
+{
+	register int y;
+
+	int data_line_length, height = FreeImage_GetHeight(src);
+	
+	if(padded)
+		data_line_length = FreeImage_GetPitch(src);
+	else
+		data_line_length = FreeImage_GetLine(src);
+	
+	BYTE *bits;
+	BYTE *data_row;
+			
+	for( y = 0; y < height; y++) {
+
+		bits = (BYTE *) FreeImage_GetScanLine(src, y);
+
+		data_row = data + (height - y - 1) * data_line_length;
+
+		memcpy( bits, data_row, data_line_length ); 
+	}
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_CreateFIB(BYTE *data, Ics_DataType icsType, int bpp, int width, int height, int colour, int padded)
+{
+	FIBITMAP 	*dib;
+	BYTE 		*data_ptr;
+	
+	// Check the data type and convert to bpp
+	if ( bpp < 0 )
+		return NULL;
+
+	data_ptr = data;
+
+	FREE_IMAGE_TYPE fit = IcsTypeToFreeImageType (icsType);
+
+	if(bpp == 8 && colour == 1)
+		bpp = 24;
+
+	dib = FreeImage_AllocateT(fit, width, height, bpp, 0, 0, 0);
+
+	if(bpp == 8)
+		FreeImageAlgorithms_SetGreyLevelPalette(dib);
+
+	CopyBytesToFIBitmap(dib, data, padded);
+
+	return dib;
+}
+
+
+FIBITMAP* GetIcsDimensionXYImage(ICS *ics, ...)
+{
+	va_list ap;
+	va_start(ap, ics);
+
+	if(ics == NULL)
+		return NULL;
+
+	Ics_DataType dataType;
+	int ndims;
+	size_t dims[ICS_MAXDIM];
+
+	IcsGetLayout (ics, &dataType, &ndims, dims);
+
+	int count = 0;
+	int dimension = 2;
+	int dimensions[10];
+	int dimension_index;
+
+	while((dimension_index = va_arg(ap, int)) >= 0)
+	{
+		// If the user has specified more params than the is dimensions above x,y return error.
+		if(dimension >= ndims)
+			return NULL;
+
+		// If the dimensions index is greater than the size for that dimension return error;
+		if(dimension_index >= dims[dimension])
+			return NULL;
+
+		dimensions[dimension - 2] = dimension_index;
+		dimension++;
+	}
+
+	va_end(ap);
+
+	size_t data_position = 0;
+	size_t size;
+
+	ArrayReverse(dimensions, ndims - 2);
+	
+	GetTotalDimensionalDataSize(ics, ndims - 1, &size);
+	size_t bufsize = size;
+
+	for(int i=2; i < ndims; i++) {
+		
+		GetTotalDimensionalDataSize(ics, i, &size);
+
+		data_position += (dimensions[i - 2] * size);
+
+		//printf("dimension %d size %d\n", dimensions[i], size);
+	}
+		
+
+	if(IcsSkipDataBlock  (ics, data_position) != IcsErr_Ok)
+		return NULL;
+
+	
+
+
+	BYTE *buf = (BYTE *) malloc (bufsize);
+
+	if (buf == NULL)
+   		return NULL;
+
+	if(IcsGetDataBlock  (ics, buf, bufsize) != IcsErr_Ok) {
+		free(buf);
+		return NULL;
+	}
+
+	FIBITMAP *dib = FreeImageAlgorithms_CreateFIB(buf, dataType, GetIcsDataTypeBPP (dataType), dims[0], dims[1], 0, 0);
+	
+	free(buf);
+
+	return dib;
+}
+
+
 // Checks to see that the ics image data is padded to be byte aligned.
 // GCI does not save data with padded bytes!
 // Assumes colour image data is 3 dimensions (Yes is a problem 
 // if we have genuine > 3 dimensional data.
+
 int DLL_CALLCONV
 IsIcsFilePaddded (char *filepath)
 {
@@ -232,7 +395,7 @@ LoadFIBFromGreyScaleIcsFile (ICS *ip, int padded)
 	
 	if ( (dib = FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData(buf, bpp, width, height, type, padded)) == NULL)
 			return NULL;
-		
+
 	free(buf);
 
 	return dib;
