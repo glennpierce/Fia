@@ -1,4 +1,5 @@
 #include "FreeImageAlgorithms_LinearScale.h"
+#include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
 #include <iostream>
@@ -12,11 +13,12 @@ template<class Tsrc>
 class LINEAR_SCALE
 {
 public:
-	FIBITMAP* convert(FIBITMAP *src, Tsrc min, Tsrc max, double *min_with_image, double *max_within_image);
+	FIBITMAP* convert(FIBITMAP *src, double min, double max, double *min_with_image, double *max_within_image);
 };
 
 template<class Tsrc> FIBITMAP* 
-LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, Tsrc min, Tsrc max, double *min_within_image, double *max_within_image) {
+LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)
+{
 	FIBITMAP *dst = NULL;
 	unsigned x, y;
 						
@@ -25,7 +27,9 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, Tsrc min, Tsrc max, double *min_withi
 
 	// allocate a 8-bit dib
 	dst = FreeImage_AllocateT(FIT_BITMAP, width, height, 8, 0, 0, 0);
-	if(!dst) return NULL;
+	
+	if(!dst)
+		return NULL;
 
 	// build a greyscale palette
 	RGBQUAD *pal = FreeImage_GetPalette(dst);
@@ -35,38 +39,17 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, Tsrc min, Tsrc max, double *min_withi
 		pal[i].rgbBlue = i;
 	}
 
-	// convert the src image to dst
-	// (FIBITMAP are stored upside down)
-	Tsrc image_max, image_min;
 	double scale;
 
-	// find the min and max value of the image
-	Tsrc *bits = reinterpret_cast<Tsrc*>(FreeImage_GetScanLine(src, 0));
+	FreeImageAlgorithms_FindMinMax(src, min_within_image, max_within_image);
 
-	// find the max & min of the first two bits in the image
-	image_max = MAX(bits[0], bits[1]);
-	image_min = MIN(bits[0], bits[1]);
-
-	Tsrc l_min, l_max;
-
-	for(y = 0; y < height; y++) {
-		Tsrc *bits = reinterpret_cast<Tsrc*>(FreeImage_GetScanLine(src, y));
-		MAXMIN(bits, width, l_max, l_min);
-		if(l_max > image_max) image_max = l_max;
-		if(l_min < image_min) image_min = l_min;
-	}
-
-	if(image_max == image_min) {
-		image_max = 255; image_min = 0;
-	}
-
-	*min_within_image = static_cast<double>(image_min);
-	*max_within_image = static_cast<double>(image_max);
+	if(*min_within_image == *max_within_image) 
+		return NULL;
 
 	// If the user has not specifed min & max use the min and max pixels in the image.
 	if(max == 0 && min == 0) {
-		max = image_max;
-		min = image_min;
+		max = *min_within_image;
+		min = *max_within_image;
 	}
 
 	// compute the scaling factor
@@ -139,22 +122,22 @@ FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double 
 	switch(src_type) {
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
-				dst = scaleUCharImage.convert(src, (unsigned char) min, (unsigned char) max, min_within_image, max_within_image);
+				dst = scaleUCharImage.convert(src, min, max, min_within_image, max_within_image);
 			break;
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
-			dst = scaleUShortImage.convert(src, (unsigned short) min, (unsigned short) max, min_within_image, max_within_image);
+			dst = scaleUShortImage.convert(src, min, max, min_within_image, max_within_image);
 			break;
 		case FIT_INT16:		// array of short: signed 16-bit
-			dst = scaleShortImage.convert(src, (short) min, (short) max, min_within_image, max_within_image);
+			dst = scaleShortImage.convert(src, min, max, min_within_image, max_within_image);
 			break;
 		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-			dst = scaleULongImage.convert(src, (unsigned long) min, (unsigned long) max, min_within_image, max_within_image);
+			dst = scaleULongImage.convert(src, min, max, min_within_image, max_within_image);
 			break;
 		case FIT_INT32:		// array of long: signed 32-bit
-			dst = scaleLongImage.convert(src, (long) min, (long) max, min_within_image, max_within_image);
+			dst = scaleLongImage.convert(src, min, max, min_within_image, max_within_image);
 			break;
 		case FIT_FLOAT:		// array of float: 32-bit
-			dst = scaleFloatImage.convert(src, (float) min, (float) max,  min_within_image,  max_within_image);
+			dst = scaleFloatImage.convert(src, min, max,  min_within_image,  max_within_image);
 			break;
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = scaleDoubleImage.convert(src, min, max, min_within_image, max_within_image);

@@ -4,18 +4,19 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
+#include <assert.h>
 #include <math.h>
 
 template<class Tsrc>
 class Histogram
 {
 public:
-	int CalculateHistogram(FIBITMAP *src, int min, int max, int number_of_bins, unsigned long *hist);
+	int CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist);
 };
 
 
 template<class Tsrc> int
-Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, int min, int max, int number_of_bins, unsigned long *hist)
+Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist)
 {
 	if (hist == NULL)      
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -35,14 +36,17 @@ Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, int min, int max, int number_
 	for(int x=0; x < total_pixels ; x++) {
 	
 		pixel = (Tsrc) *bits;
-			
-		if(min < 0.0)
-			pixel = (Tsrc) (pixel - min);
-			
-		bin = (int) floor( pixel / range_per_bin );
+				
+		if(pixel >= (Tsrc)min && pixel <= (Tsrc)max) {
 	
-		hist[bin]++;
-	
+			bin = (int) floor( (pixel - min) / range_per_bin );
+		
+			if(bin >= number_of_bins)
+				bin=bin;
+
+			hist[bin]++;
+		}
+
 		bits++;
 	}
 
@@ -64,7 +68,7 @@ Histogram<double>				histogramDoubleImage;
  * Does not work with colour images.
 */
 int DLL_CALLCONV
-FreeImageAlgorithms_Histogram(FIBITMAP *src, int min, int max, int number_of_bins, unsigned long *hist)
+FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist)
 {
 	if(!src)
 		return NULL;

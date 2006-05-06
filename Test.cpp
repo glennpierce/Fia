@@ -3,6 +3,7 @@
 #include "FreeImageAlgorithms_HBitmap.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_LinearScale.h"
+#include "FreeImageAlgorithms_Statistics.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
@@ -141,8 +142,8 @@ int main()
 	hwndMain = CreateMainWnd();
 	hdc = GetDC(hwndMain);
 	
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Csarseven_chisq.ics";
-	
+	char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\test8bit.ics";
+
 	FreeImageIcsPointer fip;
 
 	FreeImageIcs_OpenIcsFile(&fip, file, "r");
@@ -151,7 +152,13 @@ int main()
 
 	double min, max;
 
-	FreeImageAlgorithms_FindMinMax(dib, &min, &max);
+	unsigned long * hist = (unsigned long *) malloc ( sizeof(unsigned long) * 100 );     
+	FreeImageAlgorithms_Histogram(dib, 100, 200, 100, hist);
+
+	for(int i=0; i<100; i++)
+		std::cout << "i: " << i << "  count: " << hist[i] << std::endl;
+
+	free(hist);
 
 	/*
 	dib = FreeImageAlgorithms_LoadFIBFromFile(file, 0);
