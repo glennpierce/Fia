@@ -4,6 +4,133 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
+#include <math.h>
+
+template<class Tsrc>
+class Histogram
+{
+public:
+	unsigned long* CalculateHistogram(FIBITMAP *src, int number_of_bins);
+};
+
+
+template<class Tsrc> unsigned long*
+Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, int number_of_bins)
+{
+	unsigned long* hist = (unsigned long*) malloc ( sizeof(unsigned long) * number_of_bins ); 
+
+	if (hist == NULL)      
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double min, max;
+
+	FreeImageAlgorithms_FindMinMax(src, &min, &max);
+
+	// clear histogram array
+	memset(hist, 0, number_of_bins * sizeof(unsigned long) );
+
+	double range = max - min; 
+	double range_per_bin = range / number_of_bins;     
+
+	long total_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);   
+
+	Tsrc *bits = (Tsrc *) FreeImage_GetBits(src);
+	Tsrc pixel;
+	int bin;
+
+	for(int x=0; x < total_pixels ; x++) {
+	
+		pixel = (Tsrc) *bits;
+			
+		if(min < 0.0)
+			pixel = (Tsrc) (pixel - min);
+			
+		bin = (int) floor( pixel / range_per_bin );
+	
+		hist[bin]++;
+	
+		bits++;
+	}
+
+	return hist;
+}
+
+
+Histogram<unsigned char>		histogramUCharImage;
+Histogram<unsigned short>		histogramUShortImage;
+Histogram<short>				histogramShortImage;
+Histogram<unsigned long>		histogramULongImage;
+Histogram<long>					histogramLongImage;
+Histogram<float>				histogramFloatImage;
+Histogram<double>				histogramDoubleImage;
+
+
+/** 
+ * Calculate the histogram for the image.
+ * Does not work with colour images.
+*/
+unsigned long * DLL_CALLCONV
+FreeImageAlgorithms_Histogram(FIBITMAP *src, int number_of_bins)
+{
+	if(!src)
+		return NULL;
+
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				return histogramUCharImage.CalculateHistogram(src, number_of_bins);
+			break;
+
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			return histogramUShortImage.CalculateHistogram(src, number_of_bins);
+			break;
+
+		case FIT_INT16:		// array of short: signed 16-bit
+			return histogramShortImage.CalculateHistogram(src, number_of_bins);
+			break;
+
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			return histogramULongImage.CalculateHistogram(src, number_of_bins);
+			break;
+
+		case FIT_INT32:		// array of long: signed 32-bit
+			return histogramLongImage.CalculateHistogram(src, number_of_bins);
+			break;
+
+		case FIT_FLOAT:		// array of float: 32-bit
+			return histogramFloatImage.CalculateHistogram(src, number_of_bins);
+			break;
+
+		case FIT_DOUBLE:	// array of double: 64-bit
+			return histogramDoubleImage.CalculateHistogram(src, number_of_bins);
+			break;
+
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	return NULL;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_HistEq_Random_Additions(FIBITMAP *src)
 {
@@ -211,4 +338,6 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
 
 	return 0.0;
 }
+
+
 

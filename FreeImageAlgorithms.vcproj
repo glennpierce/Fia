@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="include"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageIcs\trunk\include&quot;;include"
 				PreprocessorDefinitions="WIN32; FREEIMAGE_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -34,7 +34,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="TRUE"
-				AdditionalDependencies="FreeImage.lib gdiplus.lib"
+				AdditionalDependencies="FreeImage.lib gdiplus.lib FreeImageIcs.lib"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../../bin"
@@ -126,6 +126,9 @@
 				RelativePath=".\src\FreeImageAlgorithms_Arithmetic.cpp">
 			</File>
 			<File
+				RelativePath=".\src\FreeImageAlgorithms_Colour.cpp">
+			</File>
+			<File
 				RelativePath=".\src\FreeImageAlgorithms_HBitmap.cpp">
 			</File>
 			<File
@@ -165,6 +168,9 @@
 			</File>
 			<File
 				RelativePath=".\include\FreeImageAlgorithms_Arithmetic.h">
+			</File>
+			<File
+				RelativePath=".\include\FreeImageAlgorithms_Colour.h">
 			</File>
 			<File
 				RelativePath=".\include\FreeImageAlgorithms_HBitmap.h">

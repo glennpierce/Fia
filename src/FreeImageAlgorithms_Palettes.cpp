@@ -1,4 +1,5 @@
 #include "FreeImageAlgorithms_Palettes.h"
+#include "FreeImageAlgorithms_Colour.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 

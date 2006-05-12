@@ -6,6 +6,8 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
+#include "FreeImageIcs_IO.h"
+
 #include <iostream>
 #include <assert.h>
 
@@ -128,40 +130,6 @@ HWND CreateMainWnd()
 }
 
 
-static void LinearScaleTest()
-{
-	double min_found, max_found;
-
-	FIBITMAP* dib2 = FreeImageAlgorithms_LinearScaleToStandardType(dib, 533, 1275, &min_found, &max_found);
-
-	FreeImageAlgorithms_SaveFIBToFile(dib2, "C:\\Documents and Settings\\Pierce\\Desktop\\scale_test.ics");
-}
-
-
-static void SaveIcsTest()
-{
-	dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Pierce\\Desktop\\wallpaper_river.jpg", 0);
-
-	if(FreeImageAlgorithms_SaveFIBToFile(dib, "C:\\Documents and Settings\\Pierce\\Desktop\\test.ics") == FREEIMAGE_ALGORITHMS_ERROR)
-		std::cout << "Error" << std::endl;
-}
-
-
-//
-//	Entry-point for text-editor application
-//
-//int WINAPI WinMain(HINSTANCE hInst, HINSTANCE hPrev, LPSTR lpCmdLine, int iShowCmd)
-//{
-
-
-
-
-void ImageViewer_SetPalette(HDC hdc, HBITMAP hbitmap, RGBQUAD *palette2) 
-{
-	SetDIBColorTable(hdc, 0, 256, palette2);
-}
-
-
 int main()
 {
 	MSG			msg;
@@ -173,8 +141,19 @@ int main()
 	hwndMain = CreateMainWnd();
 	hdc = GetDC(hwndMain);
 	
-	char *file = "C:\\Documents and Settings\\Glenn\\My Documents\\Test Images\\dance.jpg";
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Csarseven_chisq.ics";
 	
+	FreeImageIcsPointer fip;
+
+	FreeImageIcs_OpenIcsFile(&fip, file, "r");
+
+	dib = FreeImageIcs_LoadFIBFromIcsFile(fip, 0);
+
+	double min, max;
+
+	FreeImageAlgorithms_FindMinMax(dib, &min, &max);
+
+	/*
 	dib = FreeImageAlgorithms_LoadFIBFromFile(file, 0);
 
 	double min = 0, max = 0;
@@ -188,10 +167,11 @@ int main()
 		
 	hbitmap_hdc = CreateCompatibleDC(hdc);
 
-	/* Associate the new DC with the bitmap for drawing */
+	// Associate the new DC with the bitmap for drawing 
 	SelectObject( hbitmap_hdc, hbitmap );
 
 	ShowWindow(hwndMain, 1);
+	*/
 
 	// message-loop
 	while(GetMessage(&msg, NULL, 0, 0) > 0)

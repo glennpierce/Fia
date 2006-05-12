@@ -20,6 +20,12 @@ DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FindUShortMinMax(const unsigned short *data, long n, unsigned short *min, unsigned short *max);
 
 DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_FindLongMinMax(const long *data, long n, long *min, long *max);
+
+DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_FindULongMinMax(const unsigned long *data, long n, unsigned long *min, unsigned long *max);
+
+DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FindFloatMinMax(const float *data, long n, float *min, float *max);
 
 DLL_API void DLL_CALLCONV
@@ -82,6 +88,12 @@ FreeImageAlgorithms_DoubleArrayReverse(double *array, long size);
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Is16BitReally12BitImage(FIBITMAP *src);
 
+DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_GetMaxPosibleValueForFib(FIBITMAP *src, double *max);
+
+DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_GetMinPosibleValueForFib(FIBITMAP *src, double *min);
+
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_IsGreyScale(FIBITMAP *src);
 
@@ -102,22 +114,6 @@ FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
 
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_hist, char *green_hist, char *blue_hist);
-
-DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
-							double *hue, double *satuation, double *value);
-
-DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_HSVToRGB( double hue, double satuation, double value,
-							unsigned char *red, unsigned char *green, unsigned char *blue);
-
-DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
-							double *hue, double *satuation, double *luminosity);
-
-DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_HSLToRGB( double hue, double satuation, double luminosity,
-							unsigned char *red, unsigned char *green, unsigned char *blue);
 
 #ifdef __cplusplus
 }
