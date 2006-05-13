@@ -31,25 +31,18 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_w
 	if(!dst)
 		return NULL;
 
-	// build a greyscale palette
-	RGBQUAD *pal = FreeImage_GetPalette(dst);
-	for(int i = 0; i < 256; i++) {
-		pal[i].rgbRed = i;
-		pal[i].rgbGreen = i;
-		pal[i].rgbBlue = i;
-	}
-
 	double scale;
 
 	FreeImageAlgorithms_FindMinMax(src, min_within_image, max_within_image);
 
-	if(*min_within_image == *max_within_image) 
-		return NULL;
-
 	// If the user has not specifed min & max use the min and max pixels in the image.
-	if(max == 0 && min == 0) {
-		max = *min_within_image;
-		min = *max_within_image;
+	if(max < 0.1 && min < 0.1) {
+		min = *min_within_image;
+		max = *max_within_image;
+	}
+	else {
+		if(*min_within_image == *max_within_image) 
+			return NULL;
 	}
 
 	// compute the scaling factor
@@ -76,7 +69,7 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_w
 			tmp = static_cast<long>(scale * (src_bits[x] - min));
 
 			if(tmp >= 255) {
-					tmp = 255;
+				tmp = 255;
 			}
 
 			dst_bits[x] = (BYTE) tmp;	

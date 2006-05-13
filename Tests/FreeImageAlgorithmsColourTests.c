@@ -27,7 +27,7 @@ void TestFreeImageAlgorithms_ColourFunctions(CuTest* tc)
 }
 
 
-CuSuite* CuGetFreeImageAlgorithmsSuite(void)
+CuSuite* CuGetFreeImageAlgorithmsColourSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 

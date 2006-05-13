@@ -3,7 +3,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FreeImageAlgorithms", "Free
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcproj", "{3BEE38BA-2E88-47D7-A285-858FDC3E7FE3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Tests", "Tests\Tests.vcproj", "{AC669A39-2664-4880-B030-6F6146258DB9}"
 	ProjectSection(ProjectDependencies) = postProject
 		{96A04D4C-2D24-4A0B-B54E-BFE2E7252816} = {96A04D4C-2D24-4A0B-B54E-BFE2E7252816}
 	EndProjectSection
@@ -18,10 +18,10 @@ Global
 		{96A04D4C-2D24-4A0B-B54E-BFE2E7252816}.Debug.Build.0 = Debug|Win32
 		{96A04D4C-2D24-4A0B-B54E-BFE2E7252816}.Release.ActiveCfg = Release|Win32
 		{96A04D4C-2D24-4A0B-B54E-BFE2E7252816}.Release.Build.0 = Release|Win32
-		{3BEE38BA-2E88-47D7-A285-858FDC3E7FE3}.Debug.ActiveCfg = Debug|Win32
-		{3BEE38BA-2E88-47D7-A285-858FDC3E7FE3}.Debug.Build.0 = Debug|Win32
-		{3BEE38BA-2E88-47D7-A285-858FDC3E7FE3}.Release.ActiveCfg = Release|Win32
-		{3BEE38BA-2E88-47D7-A285-858FDC3E7FE3}.Release.Build.0 = Release|Win32
+		{AC669A39-2664-4880-B030-6F6146258DB9}.Debug.ActiveCfg = Debug|Win32
+		{AC669A39-2664-4880-B030-6F6146258DB9}.Debug.Build.0 = Debug|Win32
+		{AC669A39-2664-4880-B030-6F6146258DB9}.Release.ActiveCfg = Release|Win32
+		{AC669A39-2664-4880-B030-6F6146258DB9}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

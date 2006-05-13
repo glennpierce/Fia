@@ -2,14 +2,16 @@
 
 #include "CuTest.h"
 
-CuSuite* CuGetFreeImageAlgorithmsSuite();
+CuSuite* CuGetFreeImageAlgorithmsColourSuite();
+CuSuite* CuGetFreeImageAlgorithmsLinearScaleSuite();
 
 void RunAllTests(void)
 {
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
-	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

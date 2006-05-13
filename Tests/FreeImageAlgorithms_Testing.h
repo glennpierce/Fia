@@ -1,0 +1,1 @@
+#define TEST_IMAGE_DIRECTORY "C:\\Documents and Settings\\Pierce\\Desktop\\development\\Working Area\\Test Images"
