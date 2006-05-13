@@ -1,6 +1,7 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
+#include "FreeImageAlgorithms_Colour.h"
 
 #include <iostream>
 #include <math.h>

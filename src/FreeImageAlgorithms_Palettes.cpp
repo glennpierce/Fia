@@ -1,5 +1,5 @@
-#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Colour.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
@@ -380,7 +380,7 @@ FreeImageAlgorithms_GetOpticalDensityPalette(RGBQUAD *palette, unsigned char red
 		else if (c < 0.0)
 			c=0.0;
   	
-  		FreeImageAlgorithms_HSLToRGB( h, s, c, &r, &g, &b);
+  		FreeImageAlgorithms_HSLToRGB( h, s, c, &r, &g, &b); 
   	
   		palette[i].rgbRed = r; 
   		palette[i].rgbGreen = g; 
