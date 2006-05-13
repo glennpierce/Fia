@@ -19,6 +19,10 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src);
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist);
 
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
+			unsigned long *rhist, unsigned long *ghist, unsigned long *bhist);
+
 #ifdef __cplusplus
 }
 #endif

@@ -40,9 +40,6 @@ Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int n
 		if(pixel >= (Tsrc)min && pixel <= (Tsrc)max) {
 	
 			bin = (int) floor( (pixel - min) / range_per_bin );
-		
-			if(bin >= number_of_bins)
-				bin=bin;
 
 			hist[bin]++;
 		}
@@ -106,7 +103,59 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_
 }
 
 
+int DLL_CALLCONV
+FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
+			unsigned long *rhist, unsigned long *ghist, unsigned long *bhist)
+{
+	if (rhist == NULL || ghist == NULL || bhist == NULL)      
+		return FREEIMAGE_ALGORITHMS_ERROR;
 
+	// clear histogram arrays
+	memset(rhist, 0, number_of_bins * sizeof(unsigned long) );
+	memset(ghist, 0, number_of_bins * sizeof(unsigned long) );
+	memset(bhist, 0, number_of_bins * sizeof(unsigned long) );
+
+	double range = max - min; 
+	double range_per_bin = range / (number_of_bins - 1);     
+
+	long total_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);   
+
+	int *bits = (int *) FreeImage_GetBits(src);
+	char red_pixel, green_pixel, blue_pixel;
+	int bin;
+
+	for(int x=0; x < total_pixels ; x++) {
+
+		red_pixel = *bits | FI_RGBA_RED_MASK;
+		green_pixel = *bits | FI_RGBA_GREEN_MASK;
+		blue_pixel = *bits | FI_RGBA_BLUE_MASK;
+
+		if(red_pixel >= (int) min && red_pixel <= (int) max) {
+	
+			bin = (int) floor( (red_pixel - min) / range_per_bin );
+		
+			rhist[bin]++;
+		}
+
+		if(green_pixel >= (int) min && green_pixel <= (int) max) {
+	
+			bin = (int) floor( (green_pixel - min) / range_per_bin );
+		
+			ghist[bin]++;
+		}
+
+		if(blue_pixel >= (int) min && blue_pixel <= (int) max) {
+	
+			bin = (int) floor( (blue_pixel - min) / range_per_bin );
+		
+			bhist[bin]++;
+		}
+		
+		bits++;
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
 
 
 
