@@ -32,7 +32,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImageAlgorithms.lib"
+				AdditionalDependencies="FreeImage.lib FreeImageAlgorithms.lib"
 				OutputFile="$(OutDir)/Tests.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\bin&quot;"
@@ -80,7 +80,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImageAlgorithms.lib"
+				AdditionalDependencies="FreeImage.lib FreeImageAlgorithms.lib"
 				OutputFile="$(OutDir)/Tests.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="..\..\..\..\bin"
@@ -126,6 +126,9 @@
 			</File>
 			<File
 				RelativePath=".\FreeImageAlgorithmsColourTests.c">
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithmsLinearScale.c">
 			</File>
 		</Filter>
 		<Filter
