@@ -36,15 +36,17 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_w
 	FreeImageAlgorithms_FindMinMax(src, min_within_image, max_within_image);
 
 	// If the user has not specifed min & max use the min and max pixels in the image.
-	if(max < 0.1 && min < 0.1) {
+	if(max == 0.0 && min == 0.0) {
 		min = *min_within_image;
 		max = *max_within_image;
 	}
-	else {
-		if(*min_within_image == *max_within_image) 
-			return NULL;
-	}
+	
+	if(*min_within_image == *max_within_image) {
 
+		FreeImage_Unload(dst);
+		return FreeImage_ConvertToStandardType(src, 1);
+	}
+	
 	// compute the scaling factor
 	scale = 255 / (double)(max - min);
 
