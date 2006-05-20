@@ -4,6 +4,8 @@
 
 CuSuite* CuGetFreeImageAlgorithmsColourSuite();
 CuSuite* CuGetFreeImageAlgorithmsLinearScaleSuite();
+CuSuite* CuGetFreeImageAlgorithmsUtilitySuite();
+CuSuite* CuGetFreeImageAlgorithmsStatisticSuite();
 
 void RunAllTests(void)
 {
@@ -12,6 +14,8 @@ void RunAllTests(void)
 
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

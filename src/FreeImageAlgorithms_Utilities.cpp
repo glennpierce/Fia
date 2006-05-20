@@ -180,6 +180,100 @@ FreeImageAlgorithms_FindMinMax(FIBITMAP *src, double *min, double *max)
 	}
 }
 
+
+static int FindMaxChannelValue(unsigned int pixel_value)
+{
+	unsigned char red_value = pixel_value >> FI_RGBA_RED_SHIFT;
+	unsigned char green_value = pixel_value >> FI_RGBA_GREEN_SHIFT;
+	unsigned char blue_value = pixel_value >> FI_RGBA_BLUE_SHIFT;
+
+	return MAX(MAX(red_value, green_value), blue_value);
+}
+
+
+void DLL_CALLCONV
+FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double *max)
+{
+	if( !src || FreeImage_GetImageType(src) != FIT_BITMAP)
+		return;
+
+	if( FreeImage_GetBPP(src) != 24)
+		return;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	unsigned int tmp_value;
+	
+	unsigned int *bits = (unsigned int *) FreeImage_GetBits(src); 
+	
+	double temp_min = FindMaxChannelValue(bits[0]);
+	double temp_max = temp_min;
+
+	for(int y = 0; y < height; y++) {
+
+		bits = reinterpret_cast<unsigned int *>(FreeImage_GetScanLine(src, y));
+
+		for(int x = 0; x < width; x++) {
+
+			tmp_value = FindMaxChannelValue(bits[x]);
+
+			if(tmp_value < temp_min)
+				temp_min = tmp_value;
+
+			if(tmp_value > temp_max)
+				temp_max = tmp_value;
+		}
+	}
+
+	*min = static_cast<double>(temp_min);
+	*max = static_cast<double>(temp_max);
+}
+
+
+
+
+/*
+
+void DLL_CALLCONV
+FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double *max)
+{
+	if(!src)
+		return;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	double temp_min, temp_max;
+
+	// Get the first two pixel values for initialisation
+	int *bits = reinterpret_cast<int*>(FreeImage_GetScanLine(src, 0));
+	int tmp_value;
+
+	temp_min = temp_max = bits[0];
+
+	for(int y = 0; y < height; y++) {
+
+		bits = reinterpret_cast<int*>(FreeImage_GetScanLine(src, y));
+
+		for(int x = 0; x < width; x++) {
+
+			tmp_value = FindMaxChannelValue(bits[x]);
+
+			if(tmp_value < temp_min)
+				temp_min = tmp_value;
+
+			if(tmp_value > temp_max)
+				temp_max = tmp_value;
+		}
+	}
+
+	*min = static_cast<double>(temp_min);
+	*max = static_cast<double>(temp_max);
+}
+*/
+
+
 int DLL_CALLCONV
 FreeImageAlgorithms_CharArrayReverse(char *array, long size)
 {

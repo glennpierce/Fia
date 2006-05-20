@@ -55,6 +55,9 @@ FreeImageAlgorithms_FindDoubleMax(const double *data, long n, double *max);
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FindMinMax(FIBITMAP *src, double *min, double *max);
 
+DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double *max);
+
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_CharArrayReverse(char *array, long size);
 

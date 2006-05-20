@@ -118,57 +118,48 @@ FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int numb
 	double range = max - min; 
 	double range_per_bin = range / (number_of_bins - 1);     
 
-	long total_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);   
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
 
-	int *bits = (int *) FreeImage_GetBits(src);
-	char red_pixel, green_pixel, blue_pixel;
+	unsigned int *bits;
+	unsigned char red_pixel, green_pixel, blue_pixel;
 	int bin;
 
-	for(int x=0; x < total_pixels ; x++) {
+	for(int y = 0; y < height; y++) {
 
-		red_pixel = *bits | FI_RGBA_RED_MASK;
-		green_pixel = *bits | FI_RGBA_GREEN_MASK;
-		blue_pixel = *bits | FI_RGBA_BLUE_MASK;
+		bits = reinterpret_cast<unsigned int *>(FreeImage_GetScanLine(src, y));
 
-		if(red_pixel >= (int) min && red_pixel <= (int) max) {
+		for(int x = 0; x < width; x++) {
+
+			red_pixel = *bits >> FI_RGBA_RED_SHIFT;
+			green_pixel = *bits >> FI_RGBA_GREEN_SHIFT;
+			blue_pixel = *bits >> FI_RGBA_BLUE_SHIFT;
+
+			if(red_pixel >= (unsigned int) min && red_pixel <= (unsigned int) max) {
 	
-			bin = (int) floor( (red_pixel - min) / range_per_bin );
+				bin = (int) floor( (red_pixel - min) / range_per_bin );
 		
-			rhist[bin]++;
-		}
+				rhist[bin]++;
+			}
 
-		if(green_pixel >= (int) min && green_pixel <= (int) max) {
+			if(green_pixel >= (unsigned int) min && green_pixel <= (unsigned int) max) {
 	
-			bin = (int) floor( (green_pixel - min) / range_per_bin );
+				bin = (int) floor( (green_pixel - min) / range_per_bin );
 		
-			ghist[bin]++;
-		}
+				ghist[bin]++;
+			}
 
-		if(blue_pixel >= (int) min && blue_pixel <= (int) max) {
+			if(blue_pixel >= (unsigned int) min && blue_pixel <= (unsigned int) max) {
 	
-			bin = (int) floor( (blue_pixel - min) / range_per_bin );
+				bin = (int) floor( (blue_pixel - min) / range_per_bin );
 		
-			bhist[bin]++;
+				bhist[bin]++;
+			}
 		}
-		
-		bits++;
 	}
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 FIBITMAP* DLL_CALLCONV
