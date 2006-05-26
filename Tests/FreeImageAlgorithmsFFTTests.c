@@ -32,11 +32,10 @@ void TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 	CuAssertTrue(tc, fft_dib != NULL);
 	CuAssertTrue(tc, scaled_dib != NULL);
 
+	ShowImage(scaled_dib);
+
 	FreeImage_Unload(dib);
 	FreeImage_Unload(fft_dib);
-	
-	ShowImage(scaled_dib);	
-
 	FreeImage_Unload(scaled_dib);
 }
 
