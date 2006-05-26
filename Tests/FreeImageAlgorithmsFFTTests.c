@@ -17,7 +17,8 @@ void TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 	FIBITMAP *fft_dib, *scaled_dib;
 
 	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_lehar.png";
-	char *file = TEST_IMAGE_DIRECTORY "\\8bit_sin.png";
+	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_sin.png";
+	char *file = TEST_IMAGE_DIRECTORY "\\sinsum.png";
 
 	double min_found = 0.0, max_found = 0.0;
 
