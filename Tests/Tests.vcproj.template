@@ -35,10 +35,10 @@
 				AdditionalDependencies="FreeImage.lib FreeImageAlgorithms.lib"
 				OutputFile="$(OutDir)/Tests.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\bin&quot;"
+				AdditionalLibraryDirectories="..\..\..\..\bin"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/Tests.pdb"
-				SubSystem="1"
+				SubSystem="0"
 				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -125,10 +125,22 @@
 				RelativePath=".\CuTest.c">
 			</File>
 			<File
+				RelativePath=".\FreeImageAlgorithms_Testing.cpp">
+			</File>
+			<File
 				RelativePath=".\FreeImageAlgorithmsColourTests.c">
 			</File>
 			<File
+				RelativePath=".\FreeImageAlgorithmsFFTTests.c">
+			</File>
+			<File
 				RelativePath=".\FreeImageAlgorithmsLinearScale.c">
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithmsStatisticTests.c">
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithmsUtilityTests.c">
 			</File>
 		</Filter>
 		<Filter
@@ -137,6 +149,9 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
 				RelativePath=".\CuTest.h">
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithms_Testing.h">
 			</File>
 		</Filter>
 	</Files>

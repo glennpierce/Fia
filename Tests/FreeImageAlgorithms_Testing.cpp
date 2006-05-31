@@ -1,4 +1,4 @@
-#include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_HBitmap.h"
 #include "FreeImageAlgorithms_Palettes.h"
@@ -6,8 +6,6 @@
 #include "FreeImageAlgorithms_Statistics.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
-
-#include "FreeImageIcs_IO.h"
 
 #include <iostream>
 #include <assert.h>
@@ -49,7 +47,7 @@ static void PaintRect(HWND hwnd, HDC hdc, COLORREF colour)
 //
 //	Main window procedure
 //
-LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	static int width, height;
 
@@ -65,7 +63,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			hdc = BeginPaint(hwnd, &ps);
 
 			SetStretchBltMode(hdc, COLORONCOLOR);
-
 
 			BitBlt(hdc, 0, 0, 800, 600, hbitmap_hdc, 0, 0, SRCCOPY); 
 
@@ -89,7 +86,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 //
 //	Register main window class
 //
-void InitMainWnd()
+static void InitMainWnd()
 {
 	WNDCLASSEX wcx;
 	HANDLE hInst = GetModuleHandle(0);
@@ -114,7 +111,7 @@ void InitMainWnd()
 //
 //	Create a top-level window
 //
-HWND CreateMainWnd()
+static HWND CreateMainWnd()
 {
 	return CreateWindowEx(0,
 				szAppName,				// window class name
@@ -131,43 +128,18 @@ HWND CreateMainWnd()
 }
 
 
-int main()
+void DLL_CALLCONV
+ShowImage(FIBITMAP *src)
 {
-	MSG			msg;
-	
+	MSG msg;
+
 	// initialize window classes
 	InitMainWnd();
-	
-	// create the main window!
+
 	hwndMain = CreateMainWnd();
 	hdc = GetDC(hwndMain);
-	
-	char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\test8bit.ics";
 
-	FreeImageIcsPointer fip;
-
-	FreeImageIcs_OpenIcsFile(&fip, file, "r");
-
-	dib = FreeImageIcs_LoadFIBFromIcsFile(fip, 0);
-
-	double min, max;
-
-	unsigned long * hist = (unsigned long *) malloc ( sizeof(unsigned long) * 100 );     
-	FreeImageAlgorithms_Histogram(dib, 100, 200, 100, hist);
-
-	for(int i=0; i<100; i++)
-		std::cout << "i: " << i << "  count: " << hist[i] << std::endl;
-
-	free(hist);
-
-	/*
-	dib = FreeImageAlgorithms_LoadFIBFromFile(file, 0);
-
-	double min = 0, max = 0;
-
-	FreeImageAlgorithms_FindMinMax(dib, &min, &max);  
-
-	dib = FreeImage_ConvertToStandardType(dib, 1);
+	dib = FreeImage_ConvertToStandardType(src, 1);
 
 	hbitmap = FreeImageAlgorithms_GetDibSection(dib, hdc, 0, 0,
 						FreeImage_GetWidth(dib), FreeImage_GetHeight(dib));
@@ -178,14 +150,20 @@ int main()
 	SelectObject( hbitmap_hdc, hbitmap );
 
 	ShowWindow(hwndMain, 1);
-	*/
 
 	// message-loop
 	while(GetMessage(&msg, NULL, 0, 0) > 0)
 	{
 		DispatchMessage(&msg);
 	}
+}
 
+void DLL_CALLCONV
+ShowImageFromFile(char *filepath)
+{
+	dib = FreeImageAlgorithms_LoadFIBFromFile(filepath);
 
-	return 0;
+	assert(dib != NULL);
+
+	ShowImage(dib);
 }

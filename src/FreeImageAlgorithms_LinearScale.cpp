@@ -48,7 +48,7 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_w
 	}
 	
 	// compute the scaling factor
-	scale = 255 / (double)(max - min);
+	scale = 255.0 / (double)(max - min);
 
 	Tsrc *src_bits;
 	BYTE *dst_bits;
