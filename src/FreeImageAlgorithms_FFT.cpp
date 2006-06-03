@@ -6,9 +6,7 @@ template<class Tsrc>
 class FFT2D
 {
 public:
-	kiss_fftnd_cfg	TransformFromImage(FIBITMAP *src, int inverse);
 	FIBITMAP*		TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shift);
-	FIBITMAP*		TransformComplexToComplexImage(FIBITMAP *src, int inverse, int shift);
 };
 
 
@@ -20,7 +18,6 @@ FFT2D<unsigned long>		scaleULongImage;
 FFT2D<long>					scaleLongImage;
 FFT2D<float>				scaleFloatImage;
 FFT2D<double>				scaleDoubleImage;
-FFT2D<FICOMPLEX>			scaleComplexImage;
 
 static void GetAbsoluteXValues(kiss_fft_cpx* fftbuf, double *out_values, int size)
 {
@@ -161,14 +158,11 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 }
 
 
-template<class Tsrc> FIBITMAP* 
-FFT2D<Tsrc>::TransformComplexToComplexImage(FIBITMAP *src, int inverse, int shift)
+static FIBITMAP* 
+TransformComplexToComplexImage(FIBITMAP *src, int inverse, int shift)
 {
 	int height = FreeImage_GetHeight(src);
 	int width = FreeImage_GetWidth(src);
-
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
-
 	int i=0, x, y;
 	int dims[2];
 	int ndims = 2;
@@ -252,6 +246,95 @@ FFT2D<Tsrc>::TransformComplexToComplexImage(FIBITMAP *src, int inverse, int shif
 }
 
 
+/*
+static FIBITMAP* 
+TransformRGBToComplexImage(FIBITMAP *src, int inverse, int shift)
+{
+	int height = FreeImage_GetHeight(src);
+	int width = FreeImage_GetWidth(src);
+	int i=0, x, y;
+	int dims[2];
+	int ndims = 2;
+	unsigned char *bits; 
+	FICOMPLEX *outbits;
+	FIBITMAP *dst = NULL;
+	
+	kiss_fftnd_cfg st;
+	kiss_fft_cpx* fftbuf;
+	kiss_fft_cpx* fftoutbuf;
+
+	// dims needs to be rows, cols, if you have contiguous rows)
+	dims[0] = height;
+	dims[1] = width;
+	
+	fftbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) );
+	fftoutbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) ); 
+	
+	st = kiss_fftnd_alloc (dims, ndims, inverse, 0, 0);
+
+	for(y = 0; y < height; y++) { 
+		
+		bits = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
+		
+		for(x=0; x < width; x++) {
+		
+			fftbuf[i].r = (float) bits[x].r;
+   		    fftbuf[i].i = (float) bits[x].i;
+   		    
+   		    i++;
+		}
+	}
+
+	kiss_fftnd(st, fftbuf, fftoutbuf);
+
+	if ( (dst = FreeImage_AllocateT(FIT_COMPLEX, width, height, 32, 0, 0, 0)) == NULL )
+		return NULL;
+
+	if(shift >= 1) {
+
+		int yhalf = height / 2;
+
+		for(y = yhalf; y < height; y++) { 
+		
+			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
+
+			GetShiftedComplexXValues(fftoutbuf, outbits, width);
+	
+			fftoutbuf += width;
+		}
+
+		for(y = 0; y < yhalf; y++) { 
+		
+			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
+
+			GetShiftedComplexXValues(fftoutbuf, outbits, width);
+	
+			fftoutbuf += width;
+		}
+	}
+	else {
+
+		for(y = 0; y < height; y++) { 
+		
+			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
+
+			for(x=0; x < width; x++) {
+				
+				(outbits + x)->r = (double)((fftoutbuf + x)->r);
+				(outbits + x)->i = (double)((fftoutbuf + x)->i);	  
+			}
+
+			fftoutbuf += width;
+		}
+
+	}
+
+	free(st);
+
+	return dst;
+}
+*/
+
 
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift)
@@ -267,7 +350,7 @@ FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift)
 
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
-				return scaleUCharImage.TransformStandardToComplexImage(src, inverse, shift);
+				return scaleUCharImage.TransformStandardToComplexImage(src, inverse, shift);				
 
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
 			return scaleUShortImage.TransformStandardToComplexImage(src, inverse, shift);
@@ -288,7 +371,7 @@ FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift)
 			return scaleDoubleImage.TransformStandardToComplexImage(src, inverse, shift);
 			
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
-			return scaleComplexImage.TransformComplexToComplexImage(src, inverse, shift);
+			return TransformComplexToComplexImage(src, inverse, shift);
 	}
 
 	FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform FFT for type %d.", src_type);

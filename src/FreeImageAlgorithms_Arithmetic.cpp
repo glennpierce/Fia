@@ -99,75 +99,18 @@ FreeImageAlgorithms_Transpose(FIBITMAP *src)
 
 
 template<class Tsrc>
-class ARITHMATIC
+class GREYLEVEL_ARITHMATIC
 {
 public:
-	static double GetTypeMax(FIBITMAP* src);
-	static int CheckParameters(FIBITMAP* dst, FIBITMAP* src, Tsrc constant);
-	int Add(FIBITMAP* dst, FIBITMAP* src, Tsrc constant);
-	int Divide(FIBITMAP* dst, FIBITMAP* src, Tsrc constant);
+	int AddImages(FIBITMAP* dst, FIBITMAP* src);
+	int SubtractImages(FIBITMAP* dst, FIBITMAP* src);
+	int DivideImages(FIBITMAP* dst, FIBITMAP* src);
+	int MultiplyImages(FIBITMAP* dst, FIBITMAP* src);
 };
 
 
-template<class Tsrc> double 
-ARITHMATIC<Tsrc>::GetTypeMax(FIBITMAP* src)
+static int CheckDimensions(FIBITMAP* dst, FIBITMAP* src)
 {
-	int bpp = FreeImage_GetBPP(src);
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);	
-
-	switch(bpp)
-	{
-		case 8:
-			return UCHAR_MAX;
-
-		case 16:
-		{
-			if(src_type == FIT_UINT16)
-				return USHRT_MAX;
-			else
-				return SHRT_MAX;
-		}
-
-		case 32:
-		{
-			if(src_type == FIT_INT32)
-				return INT_MAX;
-			else if(src_type == FIT_UINT32)
-				return UINT_MAX;
-			else if(src_type == FIT_FLOAT)
-				return FLT_MAX;
-		}
-	}
-
-	return 0;
-}
-
-
-template<class Tsrc> int 
-ARITHMATIC<Tsrc>::CheckParameters(FIBITMAP* dst, FIBITMAP* src, Tsrc constant)
-{
-	if(dst == NULL)
-		return FREEIMAGE_ALGORITHMS_ERROR;
-	
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
-	FREE_IMAGE_TYPE dst_type = FreeImage_GetImageType(dst);
-
-	if( dst_type == FIT_COMPLEX || !FreeImageAlgorithms_IsGreyScale(dst))
-		return FREEIMAGE_ALGORITHMS_ERROR;
-
-	if(constant)
-		return FREEIMAGE_ALGORITHMS_SUCCESS;
-
-	int src_bpp = FreeImage_GetBPP(src);
-	int dst_bpp = FreeImage_GetBPP(dst);
-	
-	// destination bpp has to be greater than the src's
-	if(dst_bpp < src_bpp)
-		return FREEIMAGE_ALGORITHMS_ERROR;
-
-	if( src_type == FIT_COMPLEX || !FreeImageAlgorithms_IsGreyScale(src))
-		return FREEIMAGE_ALGORITHMS_ERROR;
-
 	// Check src is the same size as dst
 	int src_width = FreeImage_GetWidth(src);
 	int src_height = FreeImage_GetHeight(src);
@@ -175,116 +118,142 @@ ARITHMATIC<Tsrc>::CheckParameters(FIBITMAP* dst, FIBITMAP* src, Tsrc constant)
 	int dst_height = FreeImage_GetHeight(dst);
 
 	if(src_width != dst_width || src_height != dst_height)
-			return FREEIMAGE_ALGORITHMS_ERROR;
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+template<class Tsrc> int 
+GREYLEVEL_ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
+{
+	if(dst == NULL || src == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(CheckDimensions(dst, src) ==  FREEIMAGE_ALGORITHMS_ERROR)
+		return  FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+	Tsrc *src_ptr = (Tsrc *) FreeImage_GetBits(src);
+
+	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr * *src_ptr++;
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
 
 template<class Tsrc> int 
-ARITHMATIC<Tsrc>::Add(FIBITMAP* dst, FIBITMAP* src, Tsrc constant)
+GREYLEVEL_ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
 {
-	if(ARITHMATIC<Tsrc>::CheckParameters(dst, src, constant) == FREEIMAGE_ALGORITHMS_ERROR)
+	if(dst == NULL || src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	Tsrc *dst_ptr = (Tsrc *) FreeImage_GetBits(dst);
-	Tsrc *src_ptr;
+	if(CheckDimensions(dst, src) ==  FREEIMAGE_ALGORITHMS_ERROR)
+		return  FREEIMAGE_ALGORITHMS_ERROR;
 
-	if(src != NULL)
-		src_ptr = (Tsrc *) FreeImage_GetBits(src);
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+	Tsrc *src_ptr = (Tsrc *) FreeImage_GetBits(src);
 
 	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
 
-	double max = ARITHMATIC<Tsrc>::GetTypeMax(dst);
-
-	// large data type to hold all pssible values
-	double pix;
-
-	for(int i=0; i < number_of_pixels; i++) {
-			
-		if(src != NULL)
-			pix = *dst_ptr++ + *src_ptr++;
-		else {	
-			if(constant)
-				pix = *src_ptr++ + constant;
-		}
-						
-		if(pix > max)
-			pix = max;	
-				
-		*dst_ptr++ = (Tsrc) pix;
-	}
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr / *src_ptr++;
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
-
 
 template<class Tsrc> int 
-ARITHMATIC<Tsrc>::Divide(FIBITMAP* dst, FIBITMAP* src, Tsrc constant)
+GREYLEVEL_ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* src)
 {
-	if(ARITHMATIC<Tsrc>::CheckParameters(dst, src, constant) == FREEIMAGE_ALGORITHMS_ERROR)
+	if(dst == NULL || src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	Tsrc *dst_ptr = (Tsrc *) FreeImage_GetBits(dst);
-	Tsrc *src_ptr;
+	if(CheckDimensions(dst, src) ==  FREEIMAGE_ALGORITHMS_ERROR)
+		return  FREEIMAGE_ALGORITHMS_ERROR;
 
-	if(src != NULL)
-		src_ptr = (Tsrc *) FreeImage_GetBits(src);
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+	Tsrc *src_ptr = (Tsrc *) FreeImage_GetBits(src);
 
 	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
 
-	double max = ARITHMATIC<Tsrc>::GetTypeMax(dst);
-
-	// large data type to hold all pssible values
-	double pix;
-
-	for(int i=0; i < number_of_pixels; i++) {
-			
-		if(src != NULL)
-			pix = (double) *dst_ptr++ / *src_ptr++;
-		else {	
-			if(constant)
-				pix = (double) *src_ptr++ / constant;
-		}
-						
-		if(pix > max)
-			pix = max;	
-				
-		*dst_ptr++ = (Tsrc) pix;
-	}
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr + *src_ptr++;
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+template<class Tsrc> int 
+GREYLEVEL_ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMAP* src)
+{
+	if(dst == NULL || src == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
 
-ARITHMATIC<unsigned char>		arithmaticUCharImage;
-ARITHMATIC<unsigned short>		arithmaticUShortImage;
-ARITHMATIC<short>				arithmaticShortImage;
-ARITHMATIC<unsigned long>		arithmaticULongImage;
-ARITHMATIC<long>				arithmaticLongImage;
-ARITHMATIC<float>				arithmaticFloatImage;
-ARITHMATIC<double>				arithmaticDoubleImage;
+	if(CheckDimensions(dst, src) ==  FREEIMAGE_ALGORITHMS_ERROR)
+		return  FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+	Tsrc *src_ptr = (Tsrc *) FreeImage_GetBits(src);
+
+	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr - *src_ptr++;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+GREYLEVEL_ARITHMATIC<unsigned char>		arithmaticUCharImage;
+GREYLEVEL_ARITHMATIC<unsigned short>	arithmaticUShortImage;
+GREYLEVEL_ARITHMATIC<short>				arithmaticShortImage;
+GREYLEVEL_ARITHMATIC<unsigned long>		arithmaticULongImage;
+GREYLEVEL_ARITHMATIC<long>				arithmaticLongImage;
+GREYLEVEL_ARITHMATIC<float>				arithmaticFloatImage;
+GREYLEVEL_ARITHMATIC<double>			arithmaticDoubleImage;
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_Add(FIBITMAP* dst, FIBITMAP* src, double constant)
+FreeImageAlgorithms_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
 	switch(src_type) {
 		case FIT_BITMAP:	
 			if(FreeImage_GetBPP(src) == 8)
-				return arithmaticUCharImage.Add(dst, src, (unsigned char) constant);
+				return  arithmaticUCharImage.MultiplyImages(dst, src);
 		case FIT_UINT16:	
-			return arithmaticUShortImage.Add(dst, src, (unsigned short) constant);
+			return arithmaticUShortImage.MultiplyImages(dst, src);
 		case FIT_INT16:		
-			return arithmaticShortImage.Add(dst, src, (short) constant);
+			return arithmaticShortImage.MultiplyImages(dst, src);
 		case FIT_UINT32:	
-			return arithmaticULongImage.Add(dst, src, (unsigned long) constant);
+			return arithmaticULongImage.MultiplyImages(dst, src);
 		case FIT_INT32:		
-			return arithmaticLongImage.Add(dst, src, (long) constant);
+			return arithmaticLongImage.MultiplyImages(dst, src);
 		case FIT_FLOAT:	
-			return arithmaticFloatImage.Add(dst, src, (float) constant);	
+			return arithmaticFloatImage.MultiplyImages(dst, src);
+		case FIT_DOUBLE:	
+			return arithmaticDoubleImage.MultiplyImages(dst, src);
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -292,28 +261,231 @@ FreeImageAlgorithms_Add(FIBITMAP* dst, FIBITMAP* src, double constant)
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_Divide(FIBITMAP* dst, FIBITMAP* src, double constant)
+FreeImageAlgorithms_DivideGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
 	switch(src_type) {
 		case FIT_BITMAP:	
 			if(FreeImage_GetBPP(src) == 8)
-				return  arithmaticUCharImage.Divide(dst, src, (unsigned char) constant);
+				return  arithmaticUCharImage.DivideImages(dst, src);
 		case FIT_UINT16:	
-			return arithmaticUShortImage.Divide(dst, src, (unsigned short) constant);
+			return arithmaticUShortImage.DivideImages(dst, src);
 		case FIT_INT16:		
-			return arithmaticShortImage.Divide(dst, src, (short) constant);
+			return arithmaticShortImage.DivideImages(dst, src);
 		case FIT_UINT32:	
-			return arithmaticULongImage.Divide(dst, src, (unsigned long) constant);
+			return arithmaticULongImage.DivideImages(dst, src);
 		case FIT_INT32:		
-			return arithmaticLongImage.Divide(dst, src, (long) constant);
+			return arithmaticLongImage.DivideImages(dst, src);
 		case FIT_FLOAT:	
-			return arithmaticFloatImage.Divide(dst, src, (float) constant);
+			return arithmaticFloatImage.DivideImages(dst, src);
+		case FIT_DOUBLE:	
+			return arithmaticDoubleImage.DivideImages(dst, src);
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR; 
+}
+
+int DLL_CALLCONV 
+FreeImageAlgorithms_AddGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
+{
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	
+			if(FreeImage_GetBPP(src) == 8)
+				return  arithmaticUCharImage.AddImages(dst, src);
+		case FIT_UINT16:	
+			return arithmaticUShortImage.AddImages(dst, src);
+		case FIT_INT16:		
+			return arithmaticShortImage.AddImages(dst, src);
+		case FIT_UINT32:	
+			return arithmaticULongImage.AddImages(dst, src);
+		case FIT_INT32:		
+			return arithmaticLongImage.AddImages(dst, src);
+		case FIT_FLOAT:	
+			return arithmaticFloatImage.AddImages(dst, src);
+		case FIT_DOUBLE:	
+			return arithmaticDoubleImage.AddImages(dst, src);
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
 }
 
 
+int DLL_CALLCONV 
+FreeImageAlgorithms_SubtractGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
+{
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
+	switch(src_type) {
+		case FIT_BITMAP:	
+			if(FreeImage_GetBPP(src) == 8)
+				return  arithmaticUCharImage.SubtractImages(dst, src);
+		case FIT_UINT16:	
+			return arithmaticUShortImage.SubtractImages(dst, src);
+		case FIT_INT16:		
+			return arithmaticShortImage.SubtractImages(dst, src);
+		case FIT_UINT32:	
+			return arithmaticULongImage.SubtractImages(dst, src);
+		case FIT_INT32:		
+			return arithmaticLongImage.SubtractImages(dst, src);
+		case FIT_FLOAT:	
+			return arithmaticFloatImage.SubtractImages(dst, src);
+		case FIT_DOUBLE:	
+			return arithmaticDoubleImage.SubtractImages(dst, src);
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR; 
+}
+
+
+int DLL_CALLCONV 
+FreeImageAlgorithms_MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
+{
+	if(dst == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+
+	int number_of_pixels = FreeImage_GetWidth(dst) * FreeImage_GetHeight(dst);
+
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr * constant;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;	
+}
+
+int DLL_CALLCONV 
+FreeImageAlgorithms_DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
+{
+	if(dst == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+
+	int number_of_pixels = FreeImage_GetWidth(dst) * FreeImage_GetHeight(dst);
+
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr / constant;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;	
+}
+
+int DLL_CALLCONV 
+FreeImageAlgorithms_AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
+{
+	if(dst == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+
+	int number_of_pixels = FreeImage_GetWidth(dst) * FreeImage_GetHeight(dst);
+
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr + constant;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;	
+}
+
+
+int DLL_CALLCONV 
+FreeImageAlgorithms_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
+{
+	if(dst == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+
+	int number_of_pixels = FreeImage_GetWidth(dst) * FreeImage_GetHeight(dst);
+
+	for(int i=0; i < number_of_pixels; i++)
+		*dst_ptr++ = (double) *dst_ptr - constant;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;	
+}
+
+
+int DLL_CALLCONV 
+FreeImageAlgorithms_ComplexConjugate(FIBITMAP* src)
+{
+	if(src == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(FreeImage_GetImageType(src) != FIT_COMPLEX)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+
+	FICOMPLEX *src_ptr = (FICOMPLEX *) FreeImage_GetBits(src);
+
+	for(int i=0; i < number_of_pixels; i++) {
+		
+		src_ptr->i = -src_ptr->i;
+		src_ptr++;
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;	
+}
+
+
+// (a + ib) (c + id)
+// = ac + ibc + ida + i^2bd
+// = ac + ibc + ida - bd
+// = ac - bd + i(bc + da)
+int DLL_CALLCONV 
+FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
+{
+	if(dst == NULL || src == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(CheckDimensions(dst, src) ==  FREEIMAGE_ALGORITHMS_ERROR)
+		return  FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Make dst a double so it can hold all the results of
+	// the arithmatic.
+	if(FreeImage_GetImageType(dst) != FIT_COMPLEX)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(FreeImage_GetImageType(src) != FIT_COMPLEX)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	FICOMPLEX *dst_ptr = (FICOMPLEX *) FreeImage_GetBits(dst);
+	FICOMPLEX *src_ptr = (FICOMPLEX *) FreeImage_GetBits(src);
+
+	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+
+	for(int i=0; i < number_of_pixels; i++) {
+
+		// real part = ac - bd
+		dst_ptr->r = (dst_ptr->r * src_ptr->r) - (dst_ptr->i * src_ptr->i);
+
+		// imaginary part = bc + da
+		dst_ptr->i = (dst_ptr->i * src_ptr->r) + (src_ptr->i * dst_ptr->r);
+
+		dst_ptr++;
+		src_ptr++;
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}

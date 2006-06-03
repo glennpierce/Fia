@@ -8,74 +8,118 @@
 
 #include "FreeImage.h"
 #include "FreeImageAlgorithms_IO.h"
-#include "FreeImageAlgorithms_Testing.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_LinearScale.h"
 #include "FreeImageAlgorithms_FFT.h"
+
+#include "FreeImageAlgorithms_Testing.h"
+
+#include "math.h"
+
+static void CreateLogDisplay(FIBITMAP *src)
+{
+	int i;
+
+	double min = 0.0, max = 0.0;
+
+	double *src_ptr = (double *) FreeImage_GetBits(src);
+
+	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+
+	FreeImageAlgorithms_FindMinMax(src, &min, &max);
+
+	for(i=0; i < number_of_pixels; i++)
+		*src_ptr++ = (int) ((255.0 * log10(*src_ptr)/log10(max)) + 0.5);
+}
 
 static void
 TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 {
-	FIBITMAP *fft_dib, *inv_fft_dib, *real_dib, *scaled_dib;
-	//kiss_fft_cpx* fft_array, *inversed_array;
-	int width, height;
-
+	FIBITMAP *fft_dib, *real_dib, *scaled_dib;
+	
 	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_lehar.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_sin.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\sinsum.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\sin_non_periodic.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\sin_diagonal.png";
-	//char *file = TEST_IMAGE_DIRECTORY "\\sin2d_colour.png";
-	char *file = TEST_IMAGE_DIRECTORY "\\square.gif";
+	char *file = TEST_IMAGE_DIRECTORY "\\colour_lines.png";
+	//char *file = TEST_IMAGE_DIRECTORY "\\square.gif";
 	//char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\rjl.jpg";
 
 	double min_found = 0.0, max_found = 0.0;
 
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
-	CuAssertTrue(tc, dib != NULL);
+	FIBITMAP *greyscale_dib = FreeImage_ConvertToGreyscale(dib);
 
-	//fft_dib = FreeImageAlgorithms_FFTComplexImage(dib, 0, 1);
+	fft_dib = FreeImageAlgorithms_FFT(greyscale_dib, 0, 1);  
 
+	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(fft_dib);
 
-	fft_dib = FreeImageAlgorithms_FFT(dib, 0, 1);  
+	CreateLogDisplay(real_dib);
 
-	inv_fft_dib = FreeImageAlgorithms_FFT(fft_dib, 1, 0);  
+	scaled_dib = FreeImage_ConvertToStandardType(real_dib, 0);
 
-	//fft_array = FreeImageAlgorithms_GetFFTArrayFromImage(dib, 0);
-
-	//width = FreeImage_GetWidth(dib);
-	//height = FreeImage_GetHeight(dib);
-
-	//FreeImage_Unload(dib);
-
-	//inversed_array = FreeImageAlgorithms_GetFFTArrayFromArray(fft_array, width, height, 1);
-
-	//fft_dib = FreeImageAlgorithms_FFTArrayToImage(inversed_array, width, height, 0);
-
-	//scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(fft_dib, 0, 0, &min_found, &max_found);  
+	FreeImageAlgorithms_SetGreyLevelPalette(scaled_dib);
 	
-	
-	//scaled_dib = FreeImage_ConvertToStandardType(fft_dib, 1);
+	ShowImage(scaled_dib);
 
-	
-	//dib = FreeImageAlgorithms_GetFFTImage(fft_dib, 1, 0);  
+	FreeImage_Unload(dib);
+	FreeImage_Unload(greyscale_dib);
+	FreeImage_Unload(real_dib);
+	FreeImage_Unload(fft_dib);
+	FreeImage_Unload(scaled_dib);
+}
 
 
-	//CuAssertTrue(tc, fft_dib != NULL);
-	//CuAssertTrue(tc, scaled_dib != NULL);
 
-	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(inv_fft_dib);
+static void
+TestFreeImageAlgorithms_Correlation(CuTest* tc)
+{
+	FIBITMAP *first_dib, *second_dib;
+	FIBITMAP *gs_first_dib, *gs_second_dib;
+	FIBITMAP *first_fft, *second_fft;
+	FIBITMAP *real_dib, *scaled_dib, *result_fft;
 
-	scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(real_dib, 0, 0, &min_found, &max_found);  
+	double min_found, max_found;
+
+	char *first_file = TEST_IMAGE_DIRECTORY "\\text.png";
+	char *second_file = TEST_IMAGE_DIRECTORY "\\text_letter.png";
+
+	first_dib = FreeImageAlgorithms_LoadFIBFromFile(first_file);
+	second_dib = FreeImageAlgorithms_LoadFIBFromFile(second_file);
+
+	gs_first_dib = FreeImage_ConvertToGreyscale(first_dib);
+	gs_second_dib = FreeImage_ConvertToGreyscale(second_dib);
+
+	FreeImage_Unload(first_dib);
+	FreeImage_Unload(second_dib);
+
+	first_fft = FreeImageAlgorithms_FFT(gs_first_dib, 0, 1);  
+	second_fft = FreeImageAlgorithms_FFT(gs_second_dib, 0, 1);  
+
+	FreeImage_Unload(gs_first_dib);
+	FreeImage_Unload(gs_second_dib);
+
+	// Perform conjugate operation
+	FreeImageAlgorithms_ComplexConjugate(second_fft);
+
+	FreeImageAlgorithms_MultiplyComplexImages(first_fft, second_fft);
+
+	//result_fft = FreeImageAlgorithms_FFT(first_fft, 1, 0);  
+
+	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(first_fft);
+
+	CreateLogDisplay(real_dib);
+
+	scaled_dib = FreeImage_ConvertToStandardType(real_dib, 0);
+	//scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(real_dib, 0, 0, &min_found, &max_found);  
 
 	FreeImageAlgorithms_SetGreyLevelPalette(scaled_dib);
 
 	ShowImage(scaled_dib);
 
-	FreeImage_Unload(dib);
 	FreeImage_Unload(real_dib);
-	FreeImage_Unload(inv_fft_dib);
-	FreeImage_Unload(fft_dib);
 	FreeImage_Unload(scaled_dib);
 }
 
@@ -85,7 +129,8 @@ DLL_CALLCONV CuGetFreeImageAlgorithmsFFTSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FFTFunctions);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FFTFunctions);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Correlation);
 
 	return suite;
 }
