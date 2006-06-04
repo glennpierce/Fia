@@ -69,7 +69,7 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 		
 		float_bits = (double *) FreeImage_GetScanLine(dst, y);
 
-		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[1]);
+		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[0]);
 
 		fftoutbuf += dims[0];
 	}
@@ -78,7 +78,7 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 		
 		float_bits = (double *) FreeImage_GetScanLine(dst, y);
 
-		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[1]);
+		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[0]);
 		
 		fftoutbuf += dims[0];
 	}
