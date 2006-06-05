@@ -14,14 +14,20 @@
 
 void TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 {
-	//char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\lehar.png";
-	char *file = TEST_IMAGE_DIRECTORY "\\8bit_lehar.png";
+	FIBITMAP *fft_dib, *scaled_dib;
+
+	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_lehar.png";
+	char *file = TEST_IMAGE_DIRECTORY "\\8bit_sin.png";
 
 	double min_found = 0.0, max_found = 0.0;
 
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
-	FIBITMAP *fft_dib = FreeImageAlgorithms_GetFFT(dib, 0);  
-	FIBITMAP *scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(fft_dib, 0, 0, &min_found, &max_found);  
+	
+	CuAssertTrue(tc, dib != NULL);
+
+	fft_dib = FreeImageAlgorithms_GetFFT(dib, 0, 0);  
+	//scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(fft_dib, 0, 0, &min_found, &max_found);  
+	scaled_dib = FreeImage_ConvertToStandardType(fft_dib, 1);
 
 	CuAssertTrue(tc, fft_dib != NULL);
 	CuAssertTrue(tc, scaled_dib != NULL);

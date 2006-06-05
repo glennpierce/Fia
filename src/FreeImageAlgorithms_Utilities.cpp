@@ -177,6 +177,9 @@ FreeImageAlgorithms_FindMinMax(FIBITMAP *src, double *min, double *max)
 		case FIT_FLOAT:		
 			minmaxFloatImage.find(src, min, max);
 			break;	
+		case FIT_DOUBLE:		
+			minmaxDoubleImage.find(src, min, max);
+			break;	
 	}
 }
 

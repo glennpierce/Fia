@@ -8,7 +8,7 @@ extern "C" {
 #include "FreeImageAlgorithms.h"
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse);
+FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse, int shift);
 
 #ifdef __cplusplus
 }

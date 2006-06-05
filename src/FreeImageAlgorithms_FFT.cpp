@@ -3,7 +3,7 @@
 #include "kiss_fftnd.h"
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
+FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse, int shift)
 {
 	int i=0, x, y;
 	int dims[2];
@@ -39,11 +39,15 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 
 	kiss_fftnd(st,fftbuf, fftoutbuf);
 
-	if ( (dst = FreeImage_AllocateT(FIT_DOUBLE, dims[0], dims[1], 32, 0, 0, 0)) == NULL )
+	if ( (dst = FreeImage_AllocateT(FIT_FLOAT, dims[0], dims[1], 32, 0, 0, 0)) == NULL )
 		return NULL;
 
 	i=0;
 	
+	int first_half_size = dims[0] / 2;
+	int second_half_size = dims[0] - first_half_size;
+	float *shifted_scanline = (float*) malloc(sizeof(float) * first_half_size);
+
     for(y = 0; y < dims[1]; y++) { 
 		
 		float_bits = (float *) FreeImage_GetScanLine(dst, y);
@@ -54,7 +58,15 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 			
    		    i++;
 		}
+
+		if(shift > 0) {
+			memcpy(shifted_scanline, float_bits, first_half_size);
+			memmove(float_bits, float_bits + second_half_size, second_half_size);
+			memcpy(float_bits + second_half_size, shifted_scanline, first_half_size);
+		}
 	}
 		
+	free(shifted_scanline);
+
 	return dst;
 }
