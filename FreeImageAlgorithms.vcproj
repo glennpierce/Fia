@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
 				PreprocessorDefinitions="WIN32; FREEIMAGE_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -28,7 +28,8 @@
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
-				DebugInformationFormat="4"/>
+				DebugInformationFormat="4"
+				CallingConvention="2"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
@@ -72,7 +73,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
 				PreprocessorDefinitions="WIN32;FREEIMAGE_EXPORTS"
 				RuntimeLibrary="4"
 				UsePrecompiledHeader="0"
@@ -148,15 +149,6 @@
 			</File>
 			<File
 				RelativePath=".\src\FreeImageAlgorithms_Utilities.cpp">
-			</File>
-			<File
-				RelativePath=".\Test.cpp">
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter

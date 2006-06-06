@@ -12,13 +12,17 @@
 #include "FreeImageAlgorithms_LinearScale.h"
 #include "FreeImageAlgorithms_FFT.h"
 
-void TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
+static void
+TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 {
 	FIBITMAP *fft_dib, *scaled_dib;
 
 	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_lehar.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_sin.png";
-	char *file = TEST_IMAGE_DIRECTORY "\\sinsum.png";
+	//char *file = TEST_IMAGE_DIRECTORY "\\sinsum.png";
+	char *file = TEST_IMAGE_DIRECTORY "\\sin_non_periodic.png";
+	//char *file = TEST_IMAGE_DIRECTORY "\\sin_diagonal.png";
+	//char *file = TEST_IMAGE_DIRECTORY "\\sin2d.bmp";
 
 	double min_found = 0.0, max_found = 0.0;
 
@@ -26,7 +30,7 @@ void TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 	
 	CuAssertTrue(tc, dib != NULL);
 
-	fft_dib = FreeImageAlgorithms_GetFFT(dib, 0, 0);  
+	fft_dib = FreeImageAlgorithms_GetFFT(dib, 0);  
 	//scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(fft_dib, 0, 0, &min_found, &max_found);  
 	scaled_dib = FreeImage_ConvertToStandardType(fft_dib, 1);
 
@@ -41,7 +45,8 @@ void TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 }
 
 
-CuSuite* CuGetFreeImageAlgorithmsFFTSuite(void)
+CuSuite* 
+DLL_CALLCONV CuGetFreeImageAlgorithmsFFTSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 

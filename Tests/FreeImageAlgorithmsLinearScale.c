@@ -6,7 +6,8 @@
 
 #include "FreeImageAlgorithms_Testing.h"
 
-void TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
+static void
+TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 {
 	double min_found, max_found;
 
@@ -23,7 +24,8 @@ void TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 }
 
 
-CuSuite* CuGetFreeImageAlgorithmsLinearScaleSuite(void)
+CuSuite* DLL_CALLCONV
+CuGetFreeImageAlgorithmsLinearScaleSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 

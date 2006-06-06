@@ -8,7 +8,8 @@
 
 #include "FreeImageAlgorithms_Colour.h"
 
-void TestFreeImageAlgorithms_ColourFunctions(CuTest* tc)
+static void
+TestFreeImageAlgorithms_ColourFunctions(CuTest* tc)
 {
 	unsigned char red = 165, green = 202, blue = 68;
 	double hue, satuation, value;
@@ -27,7 +28,8 @@ void TestFreeImageAlgorithms_ColourFunctions(CuTest* tc)
 }
 
 
-CuSuite* CuGetFreeImageAlgorithmsColourSuite(void)
+CuSuite* DLL_CALLCONV
+CuGetFreeImageAlgorithmsColourSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 

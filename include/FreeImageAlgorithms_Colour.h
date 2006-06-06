@@ -7,7 +7,6 @@ extern "C" {
 
 #include "FreeImageAlgorithms.h"
 
-
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
 							double *hue, double *satuation, double *value);

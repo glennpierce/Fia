@@ -1,10 +1,28 @@
 #include "FreeImageAlgorithms_FFT.h"
-
+ 
 #include "kiss_fftnd.h"
+
+static void GetAbsoluteShiftedXValues(kiss_fft_cpx* fftbuf, double *out_values, int size)
+{
+	int x, xhalf = size / 2;
+
+	for(x=0; x < xhalf; x++) {
+				
+		*(out_values + x + xhalf) = (double) sqrt(pow( (double)((fftbuf + x)->r), (double) 2.0) + 
+										  pow( (double) ((fftbuf + x)->i), (double) 2.0));
+				  
+	}
+
+	for(x=xhalf; x < size; x++) {
+				
+		*(out_values + x - xhalf) = (double) sqrt(pow( (double)((fftbuf + x)->r), (double) 2.0) + 
+										  pow( (double) ((fftbuf + x)->i), (double) 2.0));
+	}
+}
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse, int shift)
+FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 {
 	int i=0, x, y;
 	int dims[2];
@@ -43,125 +61,27 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse, int shift)
 	if ( (dst = FreeImage_AllocateT(FIT_DOUBLE, dims[0], dims[1], 32, 0, 0, 0)) == NULL )
 		return NULL;
 
-	
-
-	
-
-	//int total_pixels = dims[0] * dims[1];
-	//int half = (total_pixels / 2) + (dims[0] / 2);
-	//i = half + 1;
-	
-
-
 	int xhalf = dims[0] / 2;
 	int yhalf = dims[1] / 2;
 	i = 0;
 
-	for(y = yhalf; y > 0; y--) { 
+	for(y = yhalf; y < dims[1]; y++) { 
 		
 		float_bits = (double *) FreeImage_GetScanLine(dst, y);
 
-		for(x=0; x < xhalf; x++) {
-				
-			float_bits[x + xhalf] = (double) sqrt(pow( (double)fftoutbuf[i + x].r, (double) 2.0) + 
-										  pow( (double) fftoutbuf[i + x].i, (double) 2.0));
-				  
-		}
+		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[1]);
 
-		for(x=xhalf; x < dims[0]; x++) {
-				
-			float_bits[x - xhalf] = (double) sqrt(pow( (double)fftoutbuf[i + x].r, (double) 2.0) + 
-										  pow( (double) fftoutbuf[i + x].i, (double) 2.0));
-		}
-
-			i += dims[0];
+		fftoutbuf += dims[0];
 	}
 
-
-	for(y = dims[1] - 1; y > yhalf; y--) { 
+	for(y = 0; y < yhalf; y++) { 
 		
 		float_bits = (double *) FreeImage_GetScanLine(dst, y);
 
-		for(x=0; x < xhalf; x++) {
-				
-			float_bits[x + xhalf] = (double) sqrt(pow( (double)fftoutbuf[i + x].r, (double) 2.0) + 
-										  pow( (double) fftoutbuf[i + x].i, (double) 2.0));
-				  
-		}
-
-		for(x=xhalf; x < dims[0]; x++) {
-				
-			float_bits[x - xhalf] = (double) sqrt(pow( (double)fftoutbuf[i + x].r, (double) 2.0) + 
-										  pow( (double) fftoutbuf[i + x].i, (double) 2.0));
-		}
-
-			i += dims[0];
+		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[1]);
+		
+		fftoutbuf += dims[0];
 	}
-	
-
-//float_bits = (double *) FreeImage_GetScanLine(dst, 0);
-//	float_bits[dims[0] - 1] = 2000000.0;
-
-
-
-
-
-//	for(i=half + 1; i < total_pixels; i++) {
-		
-		//x = i % dims[0];
-		//y = i / dimes[0];
-
-//		*float_bits++ = (double) sqrt(pow( (double)fftoutbuf[i].r, (double) 2.0) + pow( (double) fftoutbuf[i].i, (double) 2.0));
-
-//	}
-
-
-	/*
-	for(y = 0; y < dims[1]; y++) { 
-		
-		float_bits = (double *) FreeImage_GetScanLine(dst, y);
-	
-		for(x=0; x < dims[0]; x++) {
-		
-			float_bits[x] = (double) sqrt(pow( (double)fftoutbuf[i].r, (double) 2.0) + pow( (double) fftoutbuf[i].i, (double) 2.0));
-			
-   		    i++;
-		}
-	}
-
-*/
-	
-
-
-	//int first_half_size = dims[0] / 2;
-	//int second_half_size = dims[0] - first_half_size;
-	//float *shifted_scanline = (float*) malloc(sizeof(float) * first_half_size);
-
-	
-/*
-
-    for(y = 0; y < dims[1]; y++) { 
-		
-		float_bits = (double *) FreeImage_GetScanLine(dst, y);
-	
-		for(x=0; x < dims[0]; x++) {
-		
-			float_bits[x] = (double) sqrt(pow( (double)fftoutbuf[i].r, (double) 2.0) + pow( (double) fftoutbuf[i].i, (double) 2.0));
-			
-   		    i++;
-		}
-
-		//if(shift > 0) {
-		//	memcpy(shifted_scanline, float_bits, first_half_size);
-		//	memmove(float_bits, float_bits + second_half_size, second_half_size);
-		//	memcpy(float_bits + second_half_size, shifted_scanline, first_half_size);
-		//}
-	}
-		
-	//free(shifted_scanline);
-*/
-
-
 
 	return dst;
 }

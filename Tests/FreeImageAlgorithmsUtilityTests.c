@@ -6,7 +6,8 @@
 
 #include "FreeImageAlgorithms_Testing.h"
 
-void TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
+static void
+TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
 {
 	double min, max;
 
@@ -23,7 +24,8 @@ void TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
 }
 
 
-CuSuite* CuGetFreeImageAlgorithmsUtilitySuite(void)
+CuSuite* DLL_CALLCONV
+CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 

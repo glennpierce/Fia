@@ -6,8 +6,8 @@
 
 #include "FreeImageAlgorithms_Testing.h"
 
-
-void TestFreeImageAlgorithms_StatisticTest(CuTest* tc)
+static void
+TestFreeImageAlgorithms_StatisticTest(CuTest* tc)
 {
 	unsigned long histR[256], histG[256], histB[256];
 
@@ -24,7 +24,8 @@ void TestFreeImageAlgorithms_StatisticTest(CuTest* tc)
 }
 
 
-CuSuite* CuGetFreeImageAlgorithmsStatisticSuite(void)
+CuSuite* DLL_CALLCONV
+CuGetFreeImageAlgorithmsStatisticSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
