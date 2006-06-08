@@ -30,9 +30,6 @@ TCHAR szFileName[MAX_PATH];
 TCHAR szFileTitle[MAX_PATH];
 TCHAR		szAppName[] = APP_TITLE;
 
-FIBITMAP *dib;
-
-
 static void PaintRect(HWND hwnd, HDC hdc, COLORREF colour)
 {
 	RECT rect;
@@ -140,10 +137,8 @@ ShowImage(FIBITMAP *src)
 	hwndMain = CreateMainWnd();
 	hdc = GetDC(hwndMain);
 
-	dib = FreeImage_ConvertToStandardType(src, 1);
-
-	hbitmap = FreeImageAlgorithms_GetDibSection(dib, hdc, 0, 0,
-						FreeImage_GetWidth(dib), FreeImage_GetHeight(dib));
+	hbitmap = FreeImageAlgorithms_GetDibSection(src, hdc, 0, 0,
+						FreeImage_GetWidth(src), FreeImage_GetHeight(src));
 		
 	hbitmap_hdc = CreateCompatibleDC(hdc);
 
@@ -162,9 +157,11 @@ ShowImage(FIBITMAP *src)
 void
 ShowImageFromFile(char *filepath)
 {
-	dib = FreeImageAlgorithms_LoadFIBFromFile(filepath);
+	FIBITMAP* dib = FreeImageAlgorithms_LoadFIBFromFile(filepath);
 
 	assert(dib != NULL);
 
 	ShowImage(dib);
+
+	FreeImage_Unload(dib);
 }

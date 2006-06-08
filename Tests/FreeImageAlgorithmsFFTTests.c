@@ -15,8 +15,8 @@
 static void
 TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 {
-	FIBITMAP *fft_dib, *scaled_dib;
-	kiss_fft_cpx* fft_array, *inversed_array;
+	FIBITMAP *fft_dib, *inv_fft_dib, *real_dib, *scaled_dib;
+	//kiss_fft_cpx* fft_array, *inversed_array;
 	int width, height;
 
 	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_lehar.png";
@@ -37,7 +37,9 @@ TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 	//fft_dib = FreeImageAlgorithms_FFTComplexImage(dib, 0, 1);
 
 
-	fft_dib = FreeImageAlgorithms_GetFFTImage(dib, 0, 1);  
+	fft_dib = FreeImageAlgorithms_FFT(dib, 0, 1);  
+
+	inv_fft_dib = FreeImageAlgorithms_FFT(fft_dib, 1, 0);  
 
 	//fft_array = FreeImageAlgorithms_GetFFTArrayFromImage(dib, 0);
 
@@ -62,11 +64,19 @@ TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 	//CuAssertTrue(tc, fft_dib != NULL);
 	//CuAssertTrue(tc, scaled_dib != NULL);
 
-	ShowImage(fft_dib);
+	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(inv_fft_dib);
 
-	//FreeImage_Unload(dib);
+	scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(real_dib, 0, 0, &min_found, &max_found);  
+
+	FreeImageAlgorithms_SetGreyLevelPalette(scaled_dib);
+
+	ShowImage(scaled_dib);
+
+	FreeImage_Unload(dib);
+	FreeImage_Unload(real_dib);
+	FreeImage_Unload(inv_fft_dib);
 	FreeImage_Unload(fft_dib);
-	//FreeImage_Unload(scaled_dib);
+	FreeImage_Unload(scaled_dib);
 }
 
 
