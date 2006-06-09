@@ -25,7 +25,7 @@ void RunAllTests(void)
 	printf("%s\n", output->buffer);
 }
 
-int main(void)
+int __cdecl main(void)
 {
 	char string[10];
 

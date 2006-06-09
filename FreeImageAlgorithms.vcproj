@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
 				PreprocessorDefinitions="WIN32; FREEIMAGE_EXPORTS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -73,7 +73,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
 				PreprocessorDefinitions="WIN32;FREEIMAGE_EXPORTS"
 				RuntimeLibrary="4"
 				UsePrecompiledHeader="0"

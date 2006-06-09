@@ -27,6 +27,7 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 	int i=0, x, y;
 	int dims[2];
 	int ndims = 2;
+	int width, height;
 	unsigned char *bits;
 	double *float_bits; 
 	FIBITMAP *dst = NULL;
@@ -35,19 +36,20 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 	kiss_fft_cpx* fftbuf;
 	kiss_fft_cpx* fftoutbuf;
 	
-	dims[0] = FreeImage_GetWidth(src);
-	dims[1] = FreeImage_GetHeight(src);
+	// dims needs to be rows, cols, if you have contiguous rows)
+	height = dims[0] = FreeImage_GetHeight(src);
+	width = dims[1] = FreeImage_GetWidth(src);
 	
 	fftbuf = (kiss_fft_cpx*) malloc( dims[0] * dims[1] * sizeof(kiss_fft_cpx) );
 	fftoutbuf = (kiss_fft_cpx*) malloc( dims[0] * dims[1] * sizeof(kiss_fft_cpx) ); 
 	
 	st = kiss_fftnd_alloc (dims, ndims, inverse, 0, 0);
 
-	for(y = 0; y < dims[1]; y++) { 
+	for(y = 0; y < height; y++) { 
 		
 		bits = (unsigned char *) FreeImage_GetScanLine(src, y);
 		
-		for(x=0; x < dims[0]; x++) {
+		for(x=0; x < width; x++) {
 		
 			fftbuf[i].r = bits[x];
    		    fftbuf[i].i = 0;
@@ -61,26 +63,26 @@ FreeImageAlgorithms_GetFFT(FIBITMAP *src, int inverse)
 	if ( (dst = FreeImage_AllocateT(FIT_DOUBLE, dims[0], dims[1], 32, 0, 0, 0)) == NULL )
 		return NULL;
 
-	int xhalf = dims[0] / 2;
-	int yhalf = dims[1] / 2;
+	int xhalf = width / 2;
+	int yhalf = height / 2;
 	i = 0;
 
-	for(y = yhalf; y < dims[1]; y++) { 
+	for(y = yhalf; y < height; y++) { 
 		
 		float_bits = (double *) FreeImage_GetScanLine(dst, y);
 
-		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[0]);
+		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, width);
 
-		fftoutbuf += dims[0];
+		fftoutbuf += width;
 	}
 
 	for(y = 0; y < yhalf; y++) { 
 		
 		float_bits = (double *) FreeImage_GetScanLine(dst, y);
 
-		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, dims[0]);
+		GetAbsoluteShiftedXValues(fftoutbuf, float_bits, width);
 		
-		fftoutbuf += dims[0];
+		fftoutbuf += width;
 	}
 
 	return dst;

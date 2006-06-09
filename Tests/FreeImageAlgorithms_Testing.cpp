@@ -1,3 +1,4 @@
+#include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_HBitmap.h"
@@ -128,7 +129,7 @@ static HWND CreateMainWnd()
 }
 
 
-void DLL_CALLCONV
+void
 ShowImage(FIBITMAP *src)
 {
 	MSG msg;
@@ -158,7 +159,7 @@ ShowImage(FIBITMAP *src)
 	}
 }
 
-void DLL_CALLCONV
+void
 ShowImageFromFile(char *filepath)
 {
 	dib = FreeImageAlgorithms_LoadFIBFromFile(filepath);

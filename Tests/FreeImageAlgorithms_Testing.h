@@ -9,10 +9,10 @@ extern "C" {
 
 #define TEST_IMAGE_DIRECTORY "..\\..\\..\\..\\Test Images"
 
-DLL_API void DLL_CALLCONV
+void
 ShowImage(FIBITMAP *src);
 
-DLL_API void DLL_CALLCONV
+void
 ShowImageFromFile(char *filepath);
 
 
