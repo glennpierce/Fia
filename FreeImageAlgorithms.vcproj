@@ -156,6 +156,9 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
+				RelativePath=".\src\KissFFT\_kiss_fft_guts.h">
+			</File>
+			<File
 				RelativePath=".\include\FreeImage.h">
 			</File>
 			<File
@@ -198,24 +201,6 @@
 				RelativePath=".\include\FreeImageAlgorithms_Utils.h">
 			</File>
 			<File
-				RelativePath=".\include\libics.h">
-			</File>
-			<File
-				RelativePath=".\include\libics_conf.h">
-			</File>
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
-		</Filter>
-		<Filter
-			Name="KissFFT"
-			Filter="">
-			<File
-				RelativePath=".\src\KissFFT\_kiss_fft_guts.h">
-			</File>
-			<File
 				RelativePath=".\src\KissFFT\kiss_fft.c">
 			</File>
 			<File
@@ -227,6 +212,17 @@
 			<File
 				RelativePath=".\src\KissFFT\kiss_fftnd.h">
 			</File>
+			<File
+				RelativePath=".\include\libics.h">
+			</File>
+			<File
+				RelativePath=".\include\libics_conf.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Resource Files"
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
 		</Filter>
 	</Files>
 	<Globals>

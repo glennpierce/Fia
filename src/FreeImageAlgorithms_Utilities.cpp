@@ -148,7 +148,6 @@ FIND_MINMAX_FOR_DIB<long>				minmaxLongImage;
 FIND_MINMAX_FOR_DIB<float>				minmaxFloatImage;
 FIND_MINMAX_FOR_DIB<double>				minmaxDoubleImage;
 
-
 void DLL_CALLCONV
 FreeImageAlgorithms_FindMinMax(FIBITMAP *src, double *min, double *max)
 {
