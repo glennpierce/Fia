@@ -150,6 +150,12 @@
 			<File
 				RelativePath=".\src\FreeImageAlgorithms_Utilities.cpp">
 			</File>
+			<File
+				RelativePath=".\src\kiss_fft.c">
+			</File>
+			<File
+				RelativePath=".\src\kiss_fftnd.c">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -201,16 +207,10 @@
 				RelativePath=".\include\FreeImageAlgorithms_Utils.h">
 			</File>
 			<File
-				RelativePath=".\src\KissFFT\kiss_fft.c">
+				RelativePath=".\include\kiss_fft.h">
 			</File>
 			<File
-				RelativePath=".\src\KissFFT\kiss_fft.h">
-			</File>
-			<File
-				RelativePath=".\src\KissFFT\kiss_fftnd.c">
-			</File>
-			<File
-				RelativePath=".\src\KissFFT\kiss_fftnd.h">
+				RelativePath=".\include\kiss_fftnd.h">
 			</File>
 			<File
 				RelativePath=".\include\libics.h">
