@@ -587,26 +587,26 @@ FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
-DLL_API int DLL_CALLCONV
+int DLL_CALLCONV
 FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, short *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
-DLL_API int DLL_CALLCONV
+int DLL_CALLCONV
 FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned short *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
-DLL_API int DLL_CALLCONV
+int DLL_CALLCONV
 FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, float *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 /* Midpoint Line algorithm */
-DLL_API int DLL_CALLCONV
+int DLL_CALLCONV
 FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_hist, char *green_hist, char *blue_hist) 
 {  
 	RGBQUAD value;
@@ -710,3 +710,31 @@ FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2,
    
    return len;
 } 
+
+
+void DLL_CALLCONV
+FreeImageAlgorithms_GetDistanceMap (int width, int height, int *distance_map) 
+{  
+	int xcentre = (int) (width / 2 + 0.5);
+	int ycentre = (int) (height / 2 + 0.5);
+		
+	int tmp_min;
+
+	distance_map = (int *) malloc(width * height * sizeof(float));
+
+	for (int y = 0; y < height; y++)
+	{
+		for (int x = 0; x < width; x++)
+		{
+			if (x <= xcentre)
+				tmp_min = x;
+			else
+				tmp_min = width - x;
+
+			if (y <= ycentre)
+				distance_map[y * width + x] = MIN(tmp_min, y);
+			else
+				distance_map[y * width + x] = MIN(tmp_min, height - y);
+		}
+	}
+}
