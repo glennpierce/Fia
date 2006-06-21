@@ -1,9 +1,7 @@
 #ifndef __FREEIMAGE_ALGORITHMS__
 #define __FREEIMAGE_ALGORITHMS__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#define WIN32
 
 #ifdef WIN32
 #include <windows.h>
@@ -22,9 +20,5 @@ extern "C" {
 
 #define BIT14_MAX 8191
 #define BIT14_MIN (-BIT14_MAX - 1)
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

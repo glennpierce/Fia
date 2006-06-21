@@ -1,3 +1,7 @@
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 
 #include "CuTest.h"
@@ -7,7 +11,6 @@ CuSuite* CuGetFreeImageAlgorithmsLinearScaleSuite();
 CuSuite* CuGetFreeImageAlgorithmsUtilitySuite();
 CuSuite* CuGetFreeImageAlgorithmsStatisticSuite();
 CuSuite* CuGetFreeImageAlgorithmsFFTSuite();
-CuSuite* CuGetFreeImageAlgorithmsArithmaticSuite();
 
 void RunAllTests(void)
 {
@@ -18,7 +21,6 @@ void RunAllTests(void)
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
-	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
 
 	CuSuiteRun(suite);
@@ -37,3 +39,7 @@ int __cdecl main(void)
 
 	return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif

@@ -1,8 +1,10 @@
-#include "CuTest.h"
+
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Utilities.h"
+
+#include "CuTest.h"
 
 #include "FreeImageAlgorithms_Testing.h"
 

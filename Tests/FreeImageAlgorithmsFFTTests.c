@@ -1,18 +1,11 @@
-#include <assert.h>
-#include <setjmp.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "CuTest.h"
 
-#include "FreeImage.h"
-#include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Testing.h"
+
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_LinearScale.h"
 #include "FreeImageAlgorithms_FFT.h"
-
-#include "FreeImageAlgorithms_Testing.h"
+#include "FreeImageAlgorithms_Utilities.h"
 
 #include "math.h"
 
@@ -81,10 +74,8 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 	FIBITMAP *first_fft, *second_fft;
 	FIBITMAP *real_dib, *scaled_dib, *result_fft;
 
-	double min_found, max_found;
-
-	char *first_file = TEST_IMAGE_DIRECTORY "\\text.png";
-	char *second_file = TEST_IMAGE_DIRECTORY "\\text_letter.png";
+	char *first_file = TEST_IMAGE_DIRECTORY "\\correlate1.png";
+	char *second_file = TEST_IMAGE_DIRECTORY "\\correlate2.png";
 
 	first_dib = FreeImageAlgorithms_LoadFIBFromFile(first_file);
 	second_dib = FreeImageAlgorithms_LoadFIBFromFile(second_file);
@@ -103,16 +94,15 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 
 	// Perform conjugate operation
 	FreeImageAlgorithms_ComplexConjugate(second_fft);
-
 	FreeImageAlgorithms_MultiplyComplexImages(first_fft, second_fft);
 
-	//result_fft = FreeImageAlgorithms_FFT(first_fft, 1, 0);  
+	result_fft = FreeImageAlgorithms_FFT(first_fft, 1, 0);  
 
-	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(first_fft);
+	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(result_fft);
 
-	CreateLogDisplay(real_dib);
+	//CreateLogDisplay(real_dib);
 
-	scaled_dib = FreeImage_ConvertToStandardType(real_dib, 0);
+	scaled_dib = FreeImage_ConvertToStandardType(real_dib, 1);
 	//scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(real_dib, 0, 0, &min_found, &max_found);  
 
 	FreeImageAlgorithms_SetGreyLevelPalette(scaled_dib);

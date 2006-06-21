@@ -1,12 +1,8 @@
-#include <assert.h>
-#include <setjmp.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include "FreeImage.h"
+#include "FreeImageAlgorithms_Colour.h"
 
 #include "CuTest.h"
 
-#include "FreeImageAlgorithms_Colour.h"
 
 static void
 TestFreeImageAlgorithms_ColourFunctions(CuTest* tc)

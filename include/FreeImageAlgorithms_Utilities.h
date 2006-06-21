@@ -1,11 +1,11 @@
 #ifndef __FREEIMAGE_ALGORITHMS_UTILITIES__
 #define __FREEIMAGE_ALGORITHMS_UTILITIES__
 
+#include "FreeImageAlgorithms.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "FreeImageAlgorithms.h"
 
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FindCharMinMax(const char *data, long n, char *min, char *max);

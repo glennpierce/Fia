@@ -1,6 +1,10 @@
 #ifndef CU_TEST_H
 #define CU_TEST_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <setjmp.h>
 #include <stdarg.h>
 
@@ -107,5 +111,9 @@ void CuSuiteAddSuite(CuSuite* testSuite, CuSuite* testSuite2);
 void CuSuiteRun(CuSuite* testSuite);
 void CuSuiteSummary(CuSuite* testSuite, CuString* summary);
 void CuSuiteDetails(CuSuite* testSuite, CuString* details);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* CU_TEST_H */

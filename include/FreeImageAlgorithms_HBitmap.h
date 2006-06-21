@@ -1,11 +1,11 @@
 #ifndef __FREEIMAGE_ALGORITHMS_HBITMAP__
 #define __FREEIMAGE_ALGORITHMS_HBITMAP__
 
+#include "FreeImageAlgorithms.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "FreeImageAlgorithms.h"
 
 DLL_API HBITMAP DLL_CALLCONV
 FreeImageAlgorithms_FibToHBitmap(FIBITMAP *dib);
