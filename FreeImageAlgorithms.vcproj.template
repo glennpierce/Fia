@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;"
 				PreprocessorDefinitions="WIN32; FREEIMAGE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -124,7 +124,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\development\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;"
 				PreprocessorDefinitions="WIN32;FREEIMAGE_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -239,7 +239,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\src\KissFFT\_kiss_fft_guts.h"
+				RelativePath=".\include\_kiss_fft_guts.h"
 				>
 			</File>
 			<File
@@ -304,14 +304,6 @@
 			</File>
 			<File
 				RelativePath=".\include\kiss_fftnd.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\libics.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\libics_conf.h"
 				>
 			</File>
 		</Filter>

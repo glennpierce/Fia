@@ -1,8 +1,6 @@
 #ifndef __FREEIMAGE_ALGORITHMS__
 #define __FREEIMAGE_ALGORITHMS__
 
-//#define WIN32
-
 #ifdef WIN32
 #include <windows.h>
 #endif // WIN32
