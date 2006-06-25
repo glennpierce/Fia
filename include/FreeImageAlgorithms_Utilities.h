@@ -118,6 +118,9 @@ FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_hist, char *green_hist, char *blue_hist);
 
+DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_GetDistanceMap (int width, int height, float *distance_map);
+
 #ifdef __cplusplus
 }
 #endif
