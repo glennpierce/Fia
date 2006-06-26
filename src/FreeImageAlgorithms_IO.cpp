@@ -1,3 +1,4 @@
+#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Palettes.h"
@@ -259,6 +260,7 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath)
 	}
 	else {
 	
+		FreeImageAlgorithms_SendOutputMessage("Error Saving File! Unsupported Type");
 		return FREEIMAGE_ALGORITHMS_ERROR;
 	}
 	
