@@ -605,6 +605,13 @@ FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
+int DLL_CALLCONV
+FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, double *values)
+{
+	return GetPixelValuesForLine (src, p1, p2, values);
+}
+
+
 /* Midpoint Line algorithm */
 int DLL_CALLCONV
 FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_hist, char *green_hist, char *blue_hist) 
