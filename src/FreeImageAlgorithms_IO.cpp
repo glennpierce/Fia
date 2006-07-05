@@ -253,9 +253,11 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath)
 		else
 			standard_dib = FreeImage_Clone(dib);
 
-		if(!FreeImage_Save(fif, standard_dib, filepath, 0))
+		if(!FreeImage_Save(fif, standard_dib, filepath, 0)) {
+			FreeImageAlgorithms_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");
 			return FREEIMAGE_ALGORITHMS_ERROR;
-	
+		}
+
 		FreeImage_Unload(standard_dib); 
 	}
 	else {

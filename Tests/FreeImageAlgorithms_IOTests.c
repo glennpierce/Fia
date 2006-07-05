@@ -11,7 +11,7 @@ TestFreeImageAlgorithms_IO(CuTest* tc)
 	FIBITMAP *dib;
 	int err;
 
-	dib = FreeImage_AllocateT(FIT_BITMAP, 13000, 12000, 24, 0, 0, 0);
+	dib = FreeImage_AllocateT(FIT_BITMAP, 13628, 11975, 24, 0, 0, 0);
 
 	CuAssertTrue(tc, dib != NULL);
 
