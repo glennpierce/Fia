@@ -1,21 +1,11 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_IO.h"
-#include "FreeImageAlgorithms_HBitmap.h"
 #include "FreeImageAlgorithms_Palettes.h"
-#include "FreeImageAlgorithms_LinearScale.h"
-#include "FreeImageAlgorithms_Statistics.h"
-#include "FreeImageAlgorithms_Utilities.h"
-#include "FreeImageAlgorithms_Utils.h"
 
-#include <iostream>
 #include <assert.h>
 
-#include <windows.h>
-#include <tchar.h>
-#include <commctrl.h>
 
-#define APP_TITLE   _T("CanvasTest")
 
 HWND		hwndMain;
 HDC			hdc;
@@ -26,9 +16,7 @@ DIBSECTION	dib_section;
 
 FIBITMAP	*copy_dib;
 
-TCHAR szFileName[MAX_PATH];
-TCHAR szFileTitle[MAX_PATH];
-TCHAR		szAppName[] = APP_TITLE;
+TCHAR		szAppName[] = "CanvasTest";
 
 static void PaintRect(HWND hwnd, HDC hdc, COLORREF colour)
 {
