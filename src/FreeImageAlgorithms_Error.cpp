@@ -12,7 +12,16 @@ FreeImageAlgorithms_SetOutputMessage(FreeImageAlgorithms_OutputMessageFunction o
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_SendOutputMessage(const char *message)
+FreeImageAlgorithms_SendOutputMessage(const char *fmt, ...)
 {
+	va_list ap;
+	char message[500];
+	
+    va_start(ap, fmt);
+
+	vsprintf(message, fmt, ap);
+
+	va_end(ap);
+
 	errorFunction(message);
 }

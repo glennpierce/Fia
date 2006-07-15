@@ -13,7 +13,7 @@ DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_SetOutputMessage(FreeImageAlgorithms_OutputMessageFunction omf);
 
 DLL_API void DLL_CALLCONV
-FreeImageAlgorithms_SendOutputMessage(const char *message);
+FreeImageAlgorithms_SendOutputMessage(const char *message, ...);
 
 #ifdef __cplusplus
 }
