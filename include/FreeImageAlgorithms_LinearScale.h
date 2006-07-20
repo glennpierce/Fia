@@ -10,6 +10,8 @@ extern "C" {
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image);
 
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_BinaryScaleToNewType(FIBITMAP *src, FREE_IMAGE_TYPE type);
 
 #ifdef __cplusplus
 }

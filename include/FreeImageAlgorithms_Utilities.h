@@ -92,6 +92,12 @@ DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Is16BitReally12BitImage(FIBITMAP *src);
 
 DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *max);
+
+DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_GetMinPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *min);
+
+DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_GetMaxPosibleValueForFib(FIBITMAP *src, double *max);
 
 DLL_API void DLL_CALLCONV
@@ -123,6 +129,12 @@ FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2,
 
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_GetDistanceMap (int width, int height, float *distance_map);
+
+// Hopefully this is a temp solution until FreeImage paste supports greyscale that is
+// above 8bits.
+// This function is very limited.
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top);
 
 #ifdef __cplusplus
 }

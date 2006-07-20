@@ -232,50 +232,6 @@ FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double 
 	*max = static_cast<double>(temp_max);
 }
 
-
-
-
-/*
-
-void DLL_CALLCONV
-FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double *max)
-{
-	if(!src)
-		return;
-
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
-
-	double temp_min, temp_max;
-
-	// Get the first two pixel values for initialisation
-	int *bits = reinterpret_cast<int*>(FreeImage_GetScanLine(src, 0));
-	int tmp_value;
-
-	temp_min = temp_max = bits[0];
-
-	for(int y = 0; y < height; y++) {
-
-		bits = reinterpret_cast<int*>(FreeImage_GetScanLine(src, y));
-
-		for(int x = 0; x < width; x++) {
-
-			tmp_value = FindMaxChannelValue(bits[x]);
-
-			if(tmp_value < temp_min)
-				temp_min = tmp_value;
-
-			if(tmp_value > temp_max)
-				temp_max = tmp_value;
-		}
-	}
-
-	*min = static_cast<double>(temp_min);
-	*max = static_cast<double>(temp_max);
-}
-*/
-
-
 int DLL_CALLCONV
 FreeImageAlgorithms_CharArrayReverse(char *array, long size)
 {
@@ -349,6 +305,66 @@ FreeImageAlgorithms_IsGreyScale(FIBITMAP *src)
 	} 
 }
 
+
+void DLL_CALLCONV
+FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *max)
+{
+	switch(type) {
+		case FIT_BITMAP:
+			*max = UCHAR_MAX;
+			break;
+
+		case FIT_UINT16:	
+			*max = USHRT_MAX;
+			break;
+
+		case FIT_INT16:		
+			*max = SHRT_MAX;
+			break;
+
+		case FIT_UINT32:	
+			*max = UINT_MAX;
+			break;
+
+		case FIT_INT32:		
+			*max = INT_MAX;
+			break;
+
+		case FIT_FLOAT:		
+			*max = FLT_MAX;
+			break;	
+	}
+}
+
+void DLL_CALLCONV
+FreeImageAlgorithms_GetMinPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *min)
+{
+	switch(type) {
+		case FIT_BITMAP:
+			*min = 0;
+			break;
+
+		case FIT_UINT16:	
+			*min = 0;
+			break;
+
+		case FIT_INT16:		
+			*min = SHRT_MIN;
+			break;
+
+		case FIT_UINT32:	
+			*min = 0;
+			break;
+
+		case FIT_INT32:		
+			*min = INT_MIN;
+			break;
+
+		case FIT_FLOAT:		
+			*min = FLT_MIN;
+			break;	
+	}
+}
 
 void DLL_CALLCONV
 FreeImageAlgorithms_GetMaxPosibleValueForFib(FIBITMAP *src, double *max)
@@ -745,3 +761,33 @@ FreeImageAlgorithms_GetDistanceMap (int width, int height, int *distance_map)
 		}
 	}
 }
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top)
+{
+	int src_height = FreeImage_GetHeight(src);
+	int dst_height = FreeImage_GetHeight(dst);
+	int dst_pitch =  FreeImage_GetPitch(dst);
+
+	int src_line_bytes = FreeImage_GetLine(src);
+
+	// calculate the number of bytes per pixel
+	int bytespp = FreeImage_GetLine(dst) / FreeImage_GetWidth(dst);
+
+	int dst_scan_line = dst_height - src_height - top;
+	BYTE *dst_bits = FreeImage_GetScanLine(dst, dst_scan_line);
+	dst_bits += (left * bytespp);
+
+	BYTE *src_bits;
+
+	for(int i=0; i < src_height; i++)
+	{
+		src_bits = FreeImage_GetScanLine(src, i);
+		memcpy(dst_bits, src_bits, src_line_bytes);
+		dst_bits += dst_pitch;
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+

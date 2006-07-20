@@ -15,6 +15,8 @@ TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
 
 	char *file = TEST_IMAGE_DIRECTORY "\\24bit_colour.jpg";
 
+	FIBITMAP *src;
+
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
 	FreeImageAlgorithms_FindMinMaxForColourImage(dib, &min, &max);
@@ -23,6 +25,18 @@ TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
 
 	CuAssertTrue(tc, min == 0.0);
 	CuAssertTrue(tc, max == 255.0);
+
+	dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Glenn\\Desktop\\test.jpg");
+
+	src = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Glenn\\Desktop\\cool.jpg");
+
+	FreeImageAlgorithms_SimplePaste(dib, src, 40, 40);
+
+	FreeImageAlgorithms_SaveFIBToFile(dib, "C:\\Documents and Settings\\Glenn\\Desktop\\yes.jpg");
+
+	FreeImage_Unload(dib);
+	FreeImage_Unload(src);
+
 }
 
 

@@ -14,7 +14,62 @@ class LINEAR_SCALE
 {
 public:
 	FIBITMAP* convert(FIBITMAP *src, double min, double max, double *min_with_image, double *max_within_image);
+	
 };
+
+
+template<class Tdst>
+class BINARY_STRETCH
+{
+public:
+	FIBITMAP* ScaleBinaryImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type);
+};
+
+template<class Tdst> FIBITMAP* 
+BINARY_STRETCH<Tdst>::ScaleBinaryImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type)
+{
+	FIBITMAP *src_copy;
+
+	if(FreeImage_GetBPP(src) != 1)
+		src_copy = FreeImage_Threshold(src, 1);
+	else
+		src_copy = FreeImage_Clone(src);
+
+	FIBITMAP *dst = NULL;
+	unsigned x, y;
+		
+	double dst_min_intensity;
+	double dst_max_intensity;
+
+	unsigned width	= FreeImage_GetWidth(src_copy);
+	unsigned height = FreeImage_GetHeight(src_copy);
+
+	FreeImageAlgorithms_GetMinPosibleValueForGreyScaleType(type, &dst_min_intensity);
+	FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(type, &dst_max_intensity);
+
+	dst = FreeImage_AllocateT(type, width, height, 0, 0, 0, 0);
+
+	BYTE *src_bits;
+	Tdst *dst_bits;
+
+	// scale to 8-bit
+	for(y = 0; y < height; y++) {
+
+		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src_copy, y));
+		dst_bits = reinterpret_cast<Tdst *>(FreeImage_GetScanLine(dst, y));
+
+		for(x = 0; x < width; x++) {
+
+			if(src_bits[x] == 0)
+				dst_bits[x] = dst_min_intensity;
+			else
+				dst_bits[x] = dst_max_intensity;	
+		}
+	}
+
+	return dst;
+}
+
 
 template<class Tsrc> FIBITMAP* 
 LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)
@@ -143,6 +198,58 @@ FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double 
 
 	if(NULL == dst) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+	}
+
+	return dst;
+}
+
+
+
+// Convert from type X to type BYTE
+BINARY_STRETCH<unsigned char>		stretchUCharImage;
+BINARY_STRETCH<unsigned short>		stretchUShortImage;
+BINARY_STRETCH<short>				stretchShortImage;
+BINARY_STRETCH<unsigned long>		stretchULongImage;
+BINARY_STRETCH<long>				stretchLongImage;
+BINARY_STRETCH<float>				stretchFloatImage;
+BINARY_STRETCH<double>				stretchDoubleImage;
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_BinaryScaleToNewType(FIBITMAP *src, FREE_IMAGE_TYPE type)
+{
+	FIBITMAP *dst = NULL;
+
+	if(!src) return NULL;
+
+	switch(type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				dst = stretchUCharImage.ScaleBinaryImageToType(src, type);
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			dst = stretchUShortImage.ScaleBinaryImageToType(src, type);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			dst = stretchShortImage.ScaleBinaryImageToType(src, type);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			dst = stretchULongImage.ScaleBinaryImageToType(src, type);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			dst = stretchLongImage.ScaleBinaryImageToType(src, type);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = stretchFloatImage.ScaleBinaryImageToType(src, type);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			dst = stretchDoubleImage.ScaleBinaryImageToType(src, type);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", type, FIT_BITMAP);
 	}
 
 	return dst;

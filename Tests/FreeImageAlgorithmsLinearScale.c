@@ -21,6 +21,19 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 
 	CuAssertTrue(tc, min_found == 152.0);
 	CuAssertTrue(tc, max_found == 240.0);
+
+	dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Glenn\\Desktop\\cool.jpg");
+
+	scaled_dib = FreeImageAlgorithms_BinaryScaleToNewType(dib, FIT_UINT16);
+	
+	FreeImageAlgorithms_FindMinMax(scaled_dib, &min_found, &max_found);
+
+	dib = FreeImage_ConvertToStandardType(scaled_dib, 1);
+
+	FreeImageAlgorithms_SaveFIBToFile( dib, "C:\\Documents and Settings\\Glenn\\Desktop\\bisto.jpg");
+
+	//ShowImage(scaled_dib);
+
 }
 
 
