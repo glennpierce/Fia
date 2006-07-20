@@ -19,33 +19,30 @@ public:
 
 
 template<class Tdst>
-class BINARY_STRETCH
+class STRETCH
 {
 public:
-	FIBITMAP* ScaleBinaryImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type);
+	FIBITMAP* StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max);
 };
 
 template<class Tdst> FIBITMAP* 
-BINARY_STRETCH<Tdst>::ScaleBinaryImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type)
+STRETCH<Tdst>::StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max)
 {
-	FIBITMAP *src_copy;
-
-	if(FreeImage_GetBPP(src) != 1)
-		src_copy = FreeImage_Threshold(src, 1);
-	else
-		src_copy = FreeImage_Clone(src);
-
 	FIBITMAP *dst = NULL;
 	unsigned x, y;
-		
-	double dst_min_intensity;
-	double dst_max_intensity;
+	
+	double src_min_found;
+	double src_max_found;
+	
+	unsigned width	= FreeImage_GetWidth(src);
+	unsigned height = FreeImage_GetHeight(src);
 
-	unsigned width	= FreeImage_GetWidth(src_copy);
-	unsigned height = FreeImage_GetHeight(src_copy);
+	FreeImageAlgorithms_FindMinMax(src, &src_min_found, &src_max_found);
 
-	FreeImageAlgorithms_GetMinPosibleValueForGreyScaleType(type, &dst_min_intensity);
-	FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(type, &dst_max_intensity);
+	if(max == 0.0)
+		FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(type, &max);
+
+	double factor = max / src_max_found;
 
 	dst = FreeImage_AllocateT(type, width, height, 0, 0, 0, 0);
 
@@ -55,15 +52,11 @@ BINARY_STRETCH<Tdst>::ScaleBinaryImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type
 	// scale to 8-bit
 	for(y = 0; y < height; y++) {
 
-		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src_copy, y));
+		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src, y));
 		dst_bits = reinterpret_cast<Tdst *>(FreeImage_GetScanLine(dst, y));
 
 		for(x = 0; x < width; x++) {
-
-			if(src_bits[x] == 0)
-				dst_bits[x] = dst_min_intensity;
-			else
-				dst_bits[x] = dst_max_intensity;	
+			dst_bits[x] = src_bits[x] * factor;
 		}
 	}
 
@@ -206,16 +199,16 @@ FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double 
 
 
 // Convert from type X to type BYTE
-BINARY_STRETCH<unsigned char>		stretchUCharImage;
-BINARY_STRETCH<unsigned short>		stretchUShortImage;
-BINARY_STRETCH<short>				stretchShortImage;
-BINARY_STRETCH<unsigned long>		stretchULongImage;
-BINARY_STRETCH<long>				stretchLongImage;
-BINARY_STRETCH<float>				stretchFloatImage;
-BINARY_STRETCH<double>				stretchDoubleImage;
+STRETCH<unsigned char>		stretchUCharImage;
+STRETCH<unsigned short>		stretchUShortImage;
+STRETCH<short>				stretchShortImage;
+STRETCH<unsigned long>		stretchULongImage;
+STRETCH<long>				stretchLongImage;
+STRETCH<float>				stretchFloatImage;
+STRETCH<double>				stretchDoubleImage;
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryScaleToNewType(FIBITMAP *src, FREE_IMAGE_TYPE type)
+FreeImageAlgorithms_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max)
 {
 	FIBITMAP *dst = NULL;
 
@@ -224,25 +217,25 @@ FreeImageAlgorithms_BinaryScaleToNewType(FIBITMAP *src, FREE_IMAGE_TYPE type)
 	switch(type) {
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
-				dst = stretchUCharImage.ScaleBinaryImageToType(src, type);
+				dst = stretchUCharImage.StretchImageToType(src, type, max);
 			break;
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
-			dst = stretchUShortImage.ScaleBinaryImageToType(src, type);
+			dst = stretchUShortImage.StretchImageToType(src, type, max);
 			break;
 		case FIT_INT16:		// array of short: signed 16-bit
-			dst = stretchShortImage.ScaleBinaryImageToType(src, type);
+			dst = stretchShortImage.StretchImageToType(src, type, max);
 			break;
 		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-			dst = stretchULongImage.ScaleBinaryImageToType(src, type);
+			dst = stretchULongImage.StretchImageToType(src, type, max);
 			break;
 		case FIT_INT32:		// array of long: signed 32-bit
-			dst = stretchLongImage.ScaleBinaryImageToType(src, type);
+			dst = stretchLongImage.StretchImageToType(src, type, max);
 			break;
 		case FIT_FLOAT:		// array of float: 32-bit
-			dst = stretchFloatImage.ScaleBinaryImageToType(src, type);
+			dst = stretchFloatImage.StretchImageToType(src, type, max);
 			break;
 		case FIT_DOUBLE:	// array of double: 64-bit
-			dst = stretchDoubleImage.ScaleBinaryImageToType(src, type);
+			dst = stretchDoubleImage.StretchImageToType(src, type, max);
 			break;
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
 			break;
