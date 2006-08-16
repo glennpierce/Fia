@@ -27,16 +27,6 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 
 	dib = FreeImageAlgorithms_LoadFIBFromFile("C:\\Documents and Settings\\Pierce\\Desktop\\InfoTest.jpg");
 
-	//ShowImage(dib);
-
-	//FreeImageAlgorithms_FindMinMax(scaled_dib, &min_found, &max_found);
-
-	//scaled_dib = FreeImage_Threshold(dib, 180);
-	dib2 = FreeImage_ConvertTo8Bits(dib);
-
-	scaled_dib = FreeImageAlgorithms_BinaryScaleToNewType(dib2, FIT_UINT16);
-	
-	//dib2 = FreeImage_ConvertTo8Bits(scaled_dib);
 	ShowImage(scaled_dib);
 
 	//FreeImageAlgorithms_FindMinMax(scaled_dib, &min_found, &max_found);

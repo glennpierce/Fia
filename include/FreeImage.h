@@ -52,7 +52,9 @@
 
 // Compiler options ---------------------------------------------------------
 
-//#include <wchar.h>	// needed for UNICODE functions
+#ifndef _CVI_
+#include <wchar.h>	// needed for UNICODE functions
+#endif
 
 #if defined(FREEIMAGE_LIB) || !(defined(_WIN32) || defined(__WIN32__))
 #define DLL_API

@@ -253,7 +253,7 @@ FreeImageAlgorithms_GetRainBowPalette(RGBQUAD *palette)
 		palette[i].rgbGreen = 255;
 
 	for (i=p2; i<256; i++)
-		palette[i].rgbGreen = 255 + ( (i - p2 - p1) * -255 / p1);
+		palette[i].rgbGreen = 255 + ( (i - p2) * -255 / p1);
 
 
 	// Now add the red bit
@@ -261,7 +261,7 @@ FreeImageAlgorithms_GetRainBowPalette(RGBQUAD *palette)
 		palette[i].rgbRed = 0;
 			
 	for (i=p1; i<p2; i++)
-		palette[i].rgbRed = ((i - p1) * 255 / p1);
+		palette[i].rgbRed = ((i - p2) * 255 / p1);
 		
 	for (i=p2; i<256; i++)
 		palette[i].rgbRed = 255;
