@@ -327,9 +327,6 @@ FreeImageAlgorithms_HistEq(FIBITMAP *src)
 double DLL_CALLCONV
 FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
 {
-	if(!FreeImageAlgorithms_IsGreyScale(src))
-		return 0,0;
-
 	int bpp = FreeImage_GetBPP(src);
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);

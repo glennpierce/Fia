@@ -230,35 +230,31 @@ FreeImageAlgorithms_LoadColourFIBFromArrayData (char *data, int bpp, int width, 
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath)
+FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth)
 {
-	FIBITMAP *standard_dib;
+	FIBITMAP *standard_dib, *converted_dib;
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-	int is_greyscale;
 		
 	// try to guess the file format from the file extension
 	fif = FreeImage_GetFIFFromFilename(filepath);
 	
 	// check that the plugin has writing capabilities ... 
 	if((fif != FIF_UNKNOWN) && FreeImage_FIFSupportsWriting(fif)) { 
-		
-		is_greyscale = FreeImageAlgorithms_IsGreyScale(dib);
-		
-		// Some formats can only save 8, & 24 bit images like jpeg
-		// So convert colour 
-		if(is_greyscale && FreeImage_GetBPP(dib) != 8)
-			standard_dib = FreeImage_ConvertToStandardType(dib, 1);
-		else if(!is_greyscale && FreeImage_GetBPP(dib) != 24)
-			standard_dib = FreeImage_ConvertTo24Bits(dib);
-		else
-			standard_dib = FreeImage_Clone(dib);
+	
+		standard_dib = FreeImage_ConvertToStandardType(dib, 1);
 
-		if(!FreeImage_Save(fif, standard_dib, filepath, 0)) {
+		if(bit_depth = BIT24)
+			converted_dib = FreeImage_ConvertTo24Bits(dib);
+		else
+			converted_dib = FreeImage_ConvertTo8Bits(dib);
+
+		if(!FreeImage_Save(fif, converted_dib, filepath, 0)) {
 			FreeImageAlgorithms_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");
 			return FREEIMAGE_ALGORITHMS_ERROR;
 		}
 
 		FreeImage_Unload(standard_dib); 
+		FreeImage_Unload(converted_dib); 
 	}
 	else {
 	

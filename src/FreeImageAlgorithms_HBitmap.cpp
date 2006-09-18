@@ -47,15 +47,22 @@ FreeImageAlgorithms_HBitmapToFIB(HDC hdc, HBITMAP bitmap)
 {
 	FIBITMAP *dib = NULL;
 	BITMAP bm;
-	
+	int nColors;
+
 	if(bitmap) { 
 
   		GetObject(bitmap, sizeof(BITMAP), (LPSTR) &bm);
  
   		dib = FreeImage_Allocate(bm.bmWidth, bm.bmHeight, bm.bmBitsPixel, 0, 0, 0);
   
-  		GetDIBits(hdc, bitmap, 0, FreeImage_GetHeight(dib), 
-  			FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS);
+		nColors = FreeImage_GetColorsUsed(dib);
+
+		GetDIBits(hdc, bitmap, 0, FreeImage_GetHeight(dib), 
+			FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS);
+  
+		// restore BITMAPINFO members
+		FreeImage_GetInfoHeader(dib)->biClrUsed = nColors;
+		FreeImage_GetInfoHeader(dib)->biClrImportant = nColors;
 	}
 
 	return dib;

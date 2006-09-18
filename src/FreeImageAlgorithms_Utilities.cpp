@@ -292,17 +292,37 @@ FreeImageAlgorithms_DoubleArrayReverse(double *array, long size)
 	return ArrayReverse(array, size);
 }
 
+
+/*
+This function returns 0 for 16 bit and higher colour images;
+0 for greyscale images or palettised images (int if the palette is colour.
+*/
 int DLL_CALLCONV
 FreeImageAlgorithms_IsGreyScale(FIBITMAP *src)
 {
-	if(FreeImage_GetImageType(src) == FIT_BITMAP && FreeImage_GetBPP(src) >= 24) {
-	
-		return 0;
+	FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(src);
+
+	switch(image_type)
+	{
+		case
+			 FIT_RGB16:
+			 FIT_RGBA16:
+			 FIT_RGBF:
+			 FIT_RGBAF:
+		{
+			return 0;
+		}
+
+		case FIT_BITMAP:
+		{
+			int bpp = FreeImage_GetBPP(src);
+
+			if(bpp >= 16)
+				return 0;
+		}
 	}
-	else {
-	
-		return 1; 
-	} 
+
+	return 1;
 }
 
 

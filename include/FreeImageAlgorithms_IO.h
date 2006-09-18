@@ -11,9 +11,9 @@ DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_LoadFIBFromFile(const char *filepath);
 
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath);
+FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth);
 
-void DLL_CALLCONV
+DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, char *data, int padded);
 
 DLL_API FIBITMAP* DLL_CALLCONV

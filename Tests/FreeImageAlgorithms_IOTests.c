@@ -6,7 +6,7 @@
 
 #include "FreeImageAlgorithms_Testing.h"
 
-static void
+static void DLL_CALLCONV
 TestFreeImageAlgorithms_IO(CuTest* tc)
 {
 	FIBITMAP *dib1, *dib2;
@@ -23,7 +23,7 @@ TestFreeImageAlgorithms_IO(CuTest* tc)
 	CuAssertTrue(tc, bpp == 24);
 	CuAssertTrue(tc, type == FIT_BITMAP);
 	
-	err = FreeImageAlgorithms_SaveFIBToFile (dib1, "C:\\temp\\colour_lines_test.bmp");
+	err = FreeImageAlgorithms_SaveFIBToFile (dib1, "C:\\temp\\colour_lines_test.bmp", 1);
 
 	CuAssertTrue(tc, err == FREEIMAGE_ALGORITHMS_SUCCESS);
 

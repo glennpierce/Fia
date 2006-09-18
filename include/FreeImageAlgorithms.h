@@ -19,4 +19,6 @@
 #define BIT14_MAX 8191
 #define BIT14_MIN (-BIT14_MAX - 1)
 
+typedef enum {BIT8, BIT24} FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH;
+
 #endif
