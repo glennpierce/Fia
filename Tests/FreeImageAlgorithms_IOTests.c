@@ -3,23 +3,38 @@
 #include "FreeImage.h"
 #include "FreeImageAlgorithms_IO.h"
 
+
 #include "FreeImageAlgorithms_Testing.h"
 
 static void
 TestFreeImageAlgorithms_IO(CuTest* tc)
 {
-	FIBITMAP *dib;
-	int err;
+	FIBITMAP *dib1, *dib2;
+	FREE_IMAGE_TYPE type;
+	int bpp, err;
 
-	dib = FreeImage_AllocateT(FIT_BITMAP, 13628, 11975, 24, 0, 0, 0);
+	dib1 = FreeImageAlgorithms_LoadFIBFromFile(IMAGE_DIR "\\colour_lines.png");
 
-	CuAssertTrue(tc, dib != NULL);
+	CuAssertTrue(tc, dib1 != NULL);
 
-	err = FreeImageAlgorithms_SaveFIBToFile (dib, "C:\\Documents and Settings\\Glenn\\Desktop\\test.jpg");
+	bpp = FreeImage_GetBPP(dib1);
+	type = FreeImage_GetImageType(dib1);
+
+	CuAssertTrue(tc, bpp == 24);
+	CuAssertTrue(tc, type == FIT_BITMAP);
+	
+	err = FreeImageAlgorithms_SaveFIBToFile (dib1, "C:\\temp\\colour_lines_test.bmp");
 
 	CuAssertTrue(tc, err == FREEIMAGE_ALGORITHMS_SUCCESS);
 
-	FreeImage_Unload(dib);
+	dib2 = FreeImageAlgorithms_LoadFIBFromFile("C:\\temp\\colour_lines_test.bmp");
+
+	err = FreeImageAlgorithms_BitwiseCompare(dib1, dib2);
+
+	CuAssertTrue(tc, err == 1);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
 }
 
 

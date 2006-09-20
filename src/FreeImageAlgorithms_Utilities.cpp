@@ -791,3 +791,37 @@ FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+int DLL_CALLCONV
+FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2)
+{
+	if(!dib1 || !dib2)
+		return 0;
+
+	if(FreeImage_GetBPP(dib1) != FreeImage_GetBPP(dib2))
+		return 0;
+
+	if(FreeImage_GetImageType(dib1) != FreeImage_GetImageType(dib2))
+		return 0;
+
+	if(FreeImage_GetWidth(dib1) != FreeImage_GetWidth(dib2))
+		return 0;
+
+	if(FreeImage_GetHeight(dib1) != FreeImage_GetHeight(dib2))
+		return 0;
+
+	if(FreeImage_GetPitch(dib1) != FreeImage_GetPitch(dib2))
+		return 0;
+
+	int size = (FreeImage_GetPitch(dib1) * FreeImage_GetHeight(dib1)) / 4;
+
+	int *ptr1 = (int *) FreeImage_GetBits(dib1);
+	int *ptr2 = (int *) FreeImage_GetBits(dib2);
+
+	for(int i=0; i < size; i++)
+	{
+		if(*ptr1++ != *ptr2++)
+			return 0;
+	}
+
+	return 1;
+}

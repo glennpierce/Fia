@@ -5,8 +5,6 @@
 
 #include <assert.h>
 
-
-
 HWND		hwndMain;
 HDC			hdc;
 HDC			hbitmap_hdc;

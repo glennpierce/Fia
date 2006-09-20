@@ -3,7 +3,7 @@
 
 #include "FreeImageAlgorithms.h"
 
-#define TEST_IMAGE_DIRECTORY "..\\..\\..\\..\\Test Images"
+#define IMAGE_DIR "..\\..\\..\\..\\Test Images"
 
 #ifdef __cplusplus
 extern "C" {

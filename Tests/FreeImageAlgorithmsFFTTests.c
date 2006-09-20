@@ -30,12 +30,12 @@ TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 {
 	FIBITMAP *fft_dib, *real_dib, *scaled_dib;
 	
-	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_lehar.png";
-	//char *file = TEST_IMAGE_DIRECTORY "\\8bit_sin.png";
+	//char *file = TEST_IMAGE_DIR "\\8bit_lehar.png";
+	//char *file = TEST_IMAGE_DIR "\\8bit_sin.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\sinsum.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\sin_non_periodic.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\sin_diagonal.png";
-	char *file = TEST_IMAGE_DIRECTORY "\\colour_lines.png";
+	char *file = IMAGE_DIR "\\colour_lines.png";
 	//char *file = TEST_IMAGE_DIRECTORY "\\square.gif";
 	//char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\rjl.jpg";
 
@@ -74,8 +74,8 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 	FIBITMAP *first_fft, *second_fft;
 	FIBITMAP *real_dib, *scaled_dib, *result_fft;
 
-	char *first_file = TEST_IMAGE_DIRECTORY "\\correlate1.png";
-	char *second_file = TEST_IMAGE_DIRECTORY "\\correlate2.png";
+	char *first_file = IMAGE_DIR "\\correlate1.png";
+	char *second_file = IMAGE_DIR "\\correlate2.png";
 
 	first_dib = FreeImageAlgorithms_LoadFIBFromFile(first_file);
 	second_dib = FreeImageAlgorithms_LoadFIBFromFile(second_file);

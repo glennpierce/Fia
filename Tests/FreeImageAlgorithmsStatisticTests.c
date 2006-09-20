@@ -11,7 +11,7 @@ TestFreeImageAlgorithms_StatisticTest(CuTest* tc)
 {
 	unsigned long histR[256], histG[256], histB[256];
 
-	char *file = TEST_IMAGE_DIRECTORY "\\24bit_colour.jpg";
+	char *file = IMAGE_DIR "\\24bit_colour.jpg";
 
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
 	

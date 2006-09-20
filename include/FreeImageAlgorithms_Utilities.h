@@ -136,6 +136,9 @@ FreeImageAlgorithms_GetDistanceMap (int width, int height, float *distance_map);
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top);
 
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2);
+
 #ifdef __cplusplus
 }
 #endif
