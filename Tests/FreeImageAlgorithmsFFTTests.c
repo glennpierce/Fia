@@ -29,39 +29,34 @@ static void
 TestFreeImageAlgorithms_FFTFunctions(CuTest* tc)
 {
 	FIBITMAP *fft_dib, *real_dib, *scaled_dib;
-	
-	//char *file = TEST_IMAGE_DIR "\\8bit_lehar.png";
-	//char *file = TEST_IMAGE_DIR "\\8bit_sin.png";
-	//char *file = TEST_IMAGE_DIRECTORY "\\sinsum.png";
-	//char *file = TEST_IMAGE_DIRECTORY "\\sin_non_periodic.png";
-	//char *file = TEST_IMAGE_DIRECTORY "\\sin_diagonal.png";
 	char *file = IMAGE_DIR "\\colour_lines.png";
-	//char *file = TEST_IMAGE_DIRECTORY "\\square.gif";
-	//char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\rjl.jpg";
-
-	double min_found = 0.0, max_found = 0.0;
-
-	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
-	
+		
+	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);	
 	FIBITMAP *greyscale_dib = FreeImage_ConvertToGreyscale(dib);
+
+	ProfileStart("FFT");
 
 	fft_dib = FreeImageAlgorithms_FFT(greyscale_dib, 0, 1);  
 
-	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(fft_dib);
+	ProfileStop("FFT");
 
-	CreateLogDisplay(real_dib);
+	ProfilePrint();
 
-	scaled_dib = FreeImage_ConvertToStandardType(real_dib, 0);
+//	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(fft_dib);
 
-	FreeImageAlgorithms_SetGreyLevelPalette(scaled_dib);
+//	CreateLogDisplay(real_dib);
+
+//	scaled_dib = FreeImage_ConvertToStandardType(real_dib, 0);
+
+//	FreeImageAlgorithms_SetGreyLevelPalette(scaled_dib);
 	
-	ShowImage(scaled_dib);
+//	ShowImage(scaled_dib);
 
 	FreeImage_Unload(dib);
 	FreeImage_Unload(greyscale_dib);
-	FreeImage_Unload(real_dib);
+//	FreeImage_Unload(real_dib);
 	FreeImage_Unload(fft_dib);
-	FreeImage_Unload(scaled_dib);
+//	FreeImage_Unload(scaled_dib);
 }
 
 
@@ -119,8 +114,8 @@ DLL_CALLCONV CuGetFreeImageAlgorithmsFFTSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FFTFunctions);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Correlation);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FFTFunctions);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Correlation);
 
 	return suite;
 }
