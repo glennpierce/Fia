@@ -52,7 +52,6 @@ TestFreeImageAlgorithms_UtilityCompareTest(CuTest* tc)
 }
 
 
-
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
