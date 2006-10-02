@@ -7,6 +7,8 @@
 
 #include "FreeImage.h"
 
+FI_STRUCT (FIABITMAP) { FIBITMAP *fib; int border; };
+
 #define FREEIMAGE_ALGORITHMS_SUCCESS 1
 #define FREEIMAGE_ALGORITHMS_ERROR 0
 

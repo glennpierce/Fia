@@ -10,6 +10,30 @@
 
 #include <iostream>
 
+#include "profile.h"
+
+/*
+static void BorderTest(CuTest* tc)
+{
+	char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\wallpaper_river.jpg";
+
+	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+
+	ProfileStart("FreeImageAlgorithms_AddBorder");
+
+	FIABITMAP dst = FreeImageAlgorithms_AddBorder(src, 20);
+
+	ProfileStop("FreeImageAlgorithms_AddBorder");
+
+	ProfilePrint();
+
+	FreeImageAlgorithms_SaveFIBToFile(dst.fib, "C:\\Documents and Settings\\Pierce\\Desktop\\testy.jpg", BIT24);
+	
+	FreeImage_Unload(src);
+	FreeImage_Unload(dst.fib);
+}
+*/
+
 static void
 TestFreeImageAlgorithms_FindMinMaxTest(CuTest* tc)
 {
@@ -85,6 +109,7 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityCompareTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindMinMaxTest);
-
+	//SUITE_ADD_TEST(suite, BorderTest);
+	
 	return suite;
 }

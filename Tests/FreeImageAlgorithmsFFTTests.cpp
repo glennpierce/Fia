@@ -7,6 +7,7 @@
 #include "FreeImageAlgorithms_FFT.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
+#include "profile.h"
 #include "math.h"
 
 static void CreateLogDisplay(FIBITMAP *src)
