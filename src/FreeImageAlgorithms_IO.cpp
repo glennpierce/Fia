@@ -5,6 +5,7 @@
 #include "FreeImageAlgorithms_Utils.h"
 
 #include <iostream>
+#include <assert.h>
 
 static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, char *data, int padded)
 {
@@ -243,10 +244,12 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
 	
 		standard_dib = FreeImage_ConvertToStandardType(dib, 1);
 
-		if(bit_depth = BIT24)
-			converted_dib = FreeImage_ConvertTo24Bits(dib);
+		if(bit_depth == BIT24)
+			converted_dib = FreeImage_ConvertTo24Bits(standard_dib);
 		else
-			converted_dib = FreeImage_ConvertTo8Bits(dib);
+			converted_dib = FreeImage_ConvertTo8Bits(standard_dib);
+
+		assert(converted_dib != NULL);
 
 		if(!FreeImage_Save(fif, converted_dib, filepath, 0)) {
 			FreeImageAlgorithms_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");
