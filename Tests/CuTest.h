@@ -5,6 +5,8 @@
 extern "C" {
 #endif
 
+#include "FreeImageAlgorithms.h"
+
 #include <setjmp.h>
 #include <stdarg.h>
 
@@ -107,7 +109,7 @@ typedef struct
 void CuSuiteInit(CuSuite* testSuite);
 CuSuite* CuSuiteNew(void);
 void CuSuiteAdd(CuSuite* testSuite, CuTest *testCase);
-void CuSuiteAddSuite(CuSuite* testSuite, CuSuite* testSuite2);
+void DLL_CALLCONV CuSuiteAddSuite(CuSuite* testSuite, CuSuite* testSuite2);
 void CuSuiteRun(CuSuite* testSuite);
 void CuSuiteSummary(CuSuite* testSuite, CuString* summary);
 void CuSuiteDetails(CuSuite* testSuite, CuString* details);
