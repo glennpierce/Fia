@@ -928,3 +928,13 @@ FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2)
 
 	return 1;
 }
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_SetBorder(FIBITMAP *src, int border)
+{
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+	
+	FreeImage_AllocateT(
+
+}
