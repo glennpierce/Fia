@@ -18,62 +18,72 @@ static inline double SumRow(double *ptr, double *kernel, int kernel_index, Image
 {
 	register double sum = 0.0;
 
-	register int x_max_block_size = data->x_max_block_size;
+	int x_max_block_size = data->x_max_block_size;
+	register double *tmp;
+	register int kernel_tmp;
 
-	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE)
-		sum += *(ptr + col) * kernel[kernel_index + col] + *(ptr + col + 1) * kernel[kernel_index + col + 1] + 
-		*(ptr + col + 2) * kernel[kernel_index + col + 2] + *(ptr + col + 3) * kernel[kernel_index + col + 3] + 
-		*(ptr + col + 4) * kernel[kernel_index + col + 4] + *(ptr + col + 5) * kernel[kernel_index + col + 5] + 
-		*(ptr + col + 6) * kernel[kernel_index + col + 6] + *(ptr + col + 7) * kernel[kernel_index + col + 7];
+	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
+		
+		tmp = ptr + col;
+		kernel_tmp = kernel_index + col;
+
+		sum += *(tmp) * kernel[kernel_index + col] + *(tmp + 1) * kernel[kernel_tmp + 1] + 
+			   *(tmp + 2) * kernel[kernel_tmp + 2] + *(tmp + 3) * kernel[kernel_tmp + 3] + 
+			   *(tmp + 4) * kernel[kernel_tmp + 4] + *(tmp + 5) * kernel[kernel_tmp + 5] + 
+			   *(tmp + 6) * kernel[kernel_tmp + 6] + *(tmp + 7) * kernel[kernel_tmp + 7];
+	}
+
+	tmp = ptr + x_max_block_size;
+	kernel_tmp = kernel_index + x_max_block_size;
 
 	switch(data->x_reminder) {
 		case 7: 
-			sum += *(ptr + x_max_block_size + 6) * kernel[kernel_index + x_max_block_size + 6] + 
-				*(ptr + x_max_block_size + 5) * kernel[kernel_index + x_max_block_size + 5] + 
-				*(ptr + x_max_block_size + 4) * kernel[kernel_index + x_max_block_size + 4] +
-				*(ptr + x_max_block_size + 3) * kernel[kernel_index + x_max_block_size + 3] +
-				*(ptr + x_max_block_size + 2) * kernel[kernel_index + x_max_block_size + 2] +
-				*(ptr + x_max_block_size + 1) * kernel[kernel_index + x_max_block_size + 1] +
-				*(ptr + x_max_block_size) * kernel[kernel_index + x_max_block_size]; 
+			sum += *(tmp + 6) * kernel[kernel_tmp + 6] + 
+				   *(tmp + 5) * kernel[kernel_tmp + 5] + 
+				   *(tmp + 4) * kernel[kernel_tmp + 4] +
+				   *(tmp + 3) * kernel[kernel_tmp + 3] +
+				   *(tmp + 2) * kernel[kernel_tmp + 2] +
+				   *(tmp + 1) * kernel[kernel_tmp + 1] +
+				   *(tmp) * kernel[kernel_tmp]; 
 			break;
 		
 		case 6:
-			sum += *(ptr + x_max_block_size + 5) * kernel[kernel_index + x_max_block_size + 5] + 
-				*(ptr + x_max_block_size + 4) * kernel[kernel_index + x_max_block_size + 4] + 
-				*(ptr + x_max_block_size + 3) * kernel[kernel_index + x_max_block_size + 3] +
-				*(ptr + x_max_block_size + 2) * kernel[kernel_index + x_max_block_size + 2] +
-				*(ptr + x_max_block_size + 1) * kernel[kernel_index + x_max_block_size + 1] + 
-				*(ptr + x_max_block_size) * kernel[kernel_index + x_max_block_size];
+			sum += *(tmp + 5) * kernel[kernel_tmp + 5] + 
+				   *(tmp + 4) * kernel[kernel_tmp + 4] + 
+				   *(tmp + 3) * kernel[kernel_tmp + 3] +
+				   *(tmp + 2) * kernel[kernel_tmp + 2] +
+				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
+				   *(tmp) * kernel[kernel_tmp];
 			break;
 		
 		case 5:
-			sum += *(ptr + x_max_block_size + 4) * kernel[kernel_index + x_max_block_size + 4] + 
-				*(ptr + x_max_block_size + 3) * kernel[kernel_index + x_max_block_size + 3] + 
-				*(ptr + x_max_block_size + 2) * kernel[kernel_index + x_max_block_size + 2] + 
-				*(ptr + x_max_block_size + 1) * kernel[kernel_index + x_max_block_size + 1] + 
-				*(ptr + x_max_block_size) * kernel[kernel_index + x_max_block_size];
+			sum += *(tmp + 4) * kernel[kernel_tmp + 4] + 
+				   *(tmp + 3) * kernel[kernel_tmp + 3] + 
+				   *(tmp + 2) * kernel[kernel_tmp + 2] + 
+				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
+				   *(tmp) * kernel[kernel_tmp];
 			break;
 
 		case 4:
-			sum += *(ptr + x_max_block_size + 3) * kernel[kernel_index + x_max_block_size + 3] + 
-				*(ptr + x_max_block_size + 2) * kernel[kernel_index + x_max_block_size + 2] + 
-				*(ptr + x_max_block_size + 1) * kernel[kernel_index + x_max_block_size + 1] + 
-				*(ptr + x_max_block_size) * kernel[kernel_index + x_max_block_size];
+			sum += *(tmp + 3) * kernel[kernel_tmp + 3] + 
+				   *(tmp + 2) * kernel[kernel_tmp + 2] + 
+				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
+				   *(tmp) * kernel[kernel_tmp];
 			break;
 		
 		case 3:
-			sum += *(ptr + x_max_block_size + 2) * kernel[kernel_index + x_max_block_size + 2] +
-				*(ptr + x_max_block_size + 1) * kernel[kernel_index + x_max_block_size + 1] + 
-				*(ptr + x_max_block_size) * kernel[kernel_index + x_max_block_size];
+			sum += *(tmp + 2) * kernel[kernel_tmp + 2] +
+				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
+				   *(tmp) * kernel[kernel_tmp];
 			break;
 
 		case 2:
-			sum += *(ptr + x_max_block_size + 1) * kernel[kernel_index + x_max_block_size + 1] +
-				*(ptr + x_max_block_size) * kernel[kernel_index + x_max_block_size];
+			sum += *(tmp + 1) * kernel[kernel_tmp + 1] +
+				   *(tmp) * kernel[kernel_tmp];
 			break; 
 
 		case 1:
-			sum += *(ptr + x_max_block_size) * kernel[kernel_index + x_max_block_size]; 
+			sum += *(tmp) * kernel[kernel_tmp]; 
 	}
 
 	return sum;
