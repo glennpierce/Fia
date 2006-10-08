@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve(FIABITMAP src);
+FreeImageAlgorithms_Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel);
 
 #ifdef __cplusplus
 }

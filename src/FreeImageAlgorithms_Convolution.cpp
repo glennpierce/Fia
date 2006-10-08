@@ -1,80 +1,79 @@
 #include "FreeImageAlgorithms_Convolution.h"
-
+#include "FreeImageAlgorithms_Utilities.h"
+#include "FreeImageAlgorithms_Utils.h"
 
 template<class Tsrc>
 class CONVOLUTION
 {
 public:
-	FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, int **kernel);
+	FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel);
 private:
 	inline void SumRow(int row, int size_of_maxblocks, int reminder);
 	Tsrc *src_row_ptr;
 	Tsrc *tmp_ptr;
 	Tsrc *dst_ptr;
+	float *kernel;
 
 };
 
-CONVOLUTION<unsigned char>		convolveUCharImage;
-CONVOLUTION<unsigned short>		convolveUShortImage;
-CONVOLUTION<short>				convolveShortImage;
-CONVOLUTION<unsigned long>		convolveULongImage;
-CONVOLUTION<long>				convolveLongImage;
-CONVOLUTION<float>				convolveFloatImage;
-CONVOLUTION<double>				convolveDoubleImage;
-									
-
 template<class Tsrc> 
-inline void CONVOLUTION<Tsrc>::SumRow(int row, int size_of_maxblocks, int reminder)
+inline void CONVOLUTION<Tsrc>::SumRow(int kernel_index, int size_of_maxblocks, int reminder)
 {
 	for(int col=0; col < size_of_maxblocks; col+=8)
-		*dst_ptr += *(tmp_ptr + col) * array[row][col] + *(tmp_ptr+1+col) * array[row][1+col] + \
-		*(tmp_ptr+2+col) * array[row][2+col] + *(tmp_ptr+3+col) * array[row][3+col] + *(tmp_ptr+4+col) * array[row][4+col] + \
-		*(tmp_ptr+5+col) * array[row][5+col] + *(tmp_ptr+6+col) * array[row][6+col] + *(tmp_ptr+7+col) * array[row][7+col];
-	
+		*dst_ptr += *(tmp_ptr + col) * this->kernel[kernel_index + col] + *(tmp_ptr + col + 1) * this->kernel[kernel_index + col + 1] + 
+		*(tmp_ptr + col + 2) * this->kernel[kernel_index + col + 2] + *(tmp_ptr + col + 3) * this->kernel[kernel_index + col + 3] + 
+		*(tmp_ptr + col + 4) * this->kernel[kernel_index + col + 4] + *(tmp_ptr + col + 5) * this->kernel[kernel_index + col + 5] + 
+		*(tmp_ptr + col + 6) * this->kernel[kernel_index + col + 6] + *(tmp_ptr + col + 7) * this->kernel[kernel_index + col + 7];
+
 	switch(reminder) {
 		case 7: 
-			*dst_ptr += *(tmp_ptr + x_max_block_size + 6) + *(tmp_ptr + x_max_block_size + 5) + *(tmp_ptr + x_max_block_size + 4) + \
-				*(tmp_ptr + x_max_block_size + 3) + *(tmp_ptr + x_max_block_size + 2) + \
-				*(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size); 
+			*dst_ptr += *(tmp_ptr + size_of_maxblocks + 6) + *(tmp_ptr + size_of_maxblocks + 5) + *(tmp_ptr + size_of_maxblocks + 4) + \
+				*(tmp_ptr + size_of_maxblocks + 3) + *(tmp_ptr + size_of_maxblocks + 2) + \
+				*(tmp_ptr + size_of_maxblocks + 1) + *(tmp_ptr + size_of_maxblocks); 
 			break;
 		
 		case 6:
-			*dst_ptr += *(tmp_ptr + x_max_block_size + 5) + *(tmp_ptr + x_max_block_size + 4) + *(tmp_ptr + x_max_block_size + 3) + \
-				*(tmp_ptr + x_max_block_size + 2) + *(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			*dst_ptr += *(tmp_ptr + size_of_maxblocks + 5) + *(tmp_ptr + size_of_maxblocks + 4) + *(tmp_ptr + size_of_maxblocks + 3) + \
+				*(tmp_ptr + size_of_maxblocks + 2) + *(tmp_ptr + size_of_maxblocks + 1) + *(tmp_ptr + size_of_maxblocks);
 			break;
 		
 		case 5:
-			*dst_ptr += *(tmp_ptr + x_max_block_size + 4) + *(tmp_ptr + x_max_block_size + 3) + *(tmp_ptr + x_max_block_size + 2) + \
-				*(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			*dst_ptr += *(tmp_ptr + size_of_maxblocks + 4) + *(tmp_ptr + size_of_maxblocks + 3) + *(tmp_ptr + size_of_maxblocks + 2) + \
+				*(tmp_ptr + size_of_maxblocks + 1) + *(tmp_ptr + size_of_maxblocks);
 			break;
 
 		case 4:
-			*dst_ptr += *(tmp_ptr + x_max_block_size + 3) + *(tmp_ptr + x_max_block_size + 2) + *(tmp_ptr + x_max_block_size + 1) + \
-				*(tmp_ptr + x_max_block_size);
+			*dst_ptr += *(tmp_ptr + size_of_maxblocks + 3) + *(tmp_ptr + size_of_maxblocks + 2) + *(tmp_ptr + size_of_maxblocks + 1) + \
+				*(tmp_ptr + size_of_maxblocks);
 			break;
 		
 		case 3:
-			*dst_ptr += *(tmp_ptr + x_max_block_size + 2) + *(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			*dst_ptr += *(tmp_ptr + size_of_maxblocks + 2) + *(tmp_ptr + size_of_maxblocks + 1) + *(tmp_ptr + size_of_maxblocks);
 			break;
 
 		case 2:
-			*dst_ptr += *(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			*dst_ptr += *(tmp_ptr + size_of_maxblocks + 1) + *(tmp_ptr + size_of_maxblocks);
 			break; 
 
 		case 1:
-			*dst_ptr += *(tmp_ptr + x_max_block_size); 
+			*dst_ptr += *(tmp_ptr + size_of_maxblocks); 
 	}
+
+	
+
 }
 
 template<class Tsrc> 
-FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, int **kernel)
+FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel)
 {
 	// Border must be large enough to account for kernel radius
 	if(src.border < MAX(kernel_x_radius, kernel_y_radius))
 		return NULL;
 
-	const int image_width = FreeImage_GetWidth(src);
-	const int image_height = FreeImage_GetWidth(src);
+	const int src_image_width = FreeImage_GetWidth(src.fib);
+	const int src_image_height = FreeImage_GetHeight(src.fib);
+	const int pitch = FreeImage_GetPitch(src.fib);
+	const int pitch_in_pixels = pitch / sizeof(Tsrc);
 	const int blocksize = 8;
 	const int kernel_width = (kernel_x_radius * 2) + 1;
 	const int kernel_height = (kernel_y_radius * 2) + 1;
@@ -84,192 +83,150 @@ FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int ke
 	const int x_max_block_size = (kernel_width / blocksize) * blocksize; 
 	const int y_max_block_size = (kernel_height / blocksize) * blocksize;  
 	const int y_reminder = kernel_height - y_max_block_size; 	
-	const int x_range = image_width - kernel_width;
-	const int y_range = image_height - kernel_height;
+	const int x_range = src_image_width - kernel_width;
+	const int y_range = src_image_height - kernel_height;
+	this->kernel = kernel;
 
-	int tmp_row;
+	int dst_row = 0;
+	int kernel_index;
 
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src, width - (2 * src.border), 
-		height - (2 * src.border));
+	const int dst_width = src_image_width - (2 * src.border);
+	const int dst_height = src_image_height - (2 * src.border);
 
-	for (int y=0; y < y_range; y++)
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
+
+	for (register int y=kernel_height; y < src_image_height; y++)
 	{		
-		this->src_row_ptr = FreeImage_GetScanLine(src, y);
-		this->dst_ptr = FreeImage_GetScanLine(dst, y);
+		this->src_row_ptr = (Tsrc*) FreeImage_GetScanLine(src.fib, y);
+		this->dst_ptr = (Tsrc*) FreeImage_GetScanLine(dst, dst_row++);
 	
-		for (int x=0; x < x_range; x++) 
+		for (register int x=0; x < x_range; x++) 
 		{
-			pIn=pInS;
-			*pOut = 0.0; 
+			kernel_index = 0;
+			this->tmp_ptr = this->src_row_ptr;
+			*(this->dst_ptr) = 0.0; 
 		
-			for(int row=0; row < x_max_block_size; row+=8)
+			for(register int row=0; row < x_max_block_size; row+=8)
 			{  
-				tmp_row = row;
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr -= pitch_in_pixels;
+				kernel_index += kernel_width; 
 				
-				SumRow(tmp_row, x_max_block_size, x_reminder);
-				pIn   += inInfo.rawPixels; tmp_row++; 
-				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++; 
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr -= pitch_in_pixels;
+				kernel_index += kernel_width; 
 
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)    
-				pIn   += inInfo.rawPixels; tmp_row++; 
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr -= pitch_in_pixels;
+				kernel_index += kernel_width; 
 				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)   
-				pIn   += inInfo.rawPixels; tmp_row++;
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr += pitch_in_pixels;
+				kernel_index += kernel_width; 
 				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++; 
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr -= pitch_in_pixels;
+				kernel_index += kernel_width; 
 				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++; 
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr -= pitch_in_pixels;
+				kernel_index += kernel_width; 
 				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++;   
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr -= pitch_in_pixels;
+				kernel_index += kernel_width; 
 				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels;
+				SumRow(kernel_index, x_max_block_size, x_reminder);
+				this->tmp_ptr -= pitch_in_pixels;
+				kernel_index += kernel_width; 
 			} 
-			
+		
 			switch(y_reminder) { \
 				case 7:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 	
+					SumRow(kernel_index, x_max_block_size, x_reminder);
+					this->tmp_ptr -= pitch_in_pixels;
+					kernel_index += kernel_width; 
 				case 6:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
+					SumRow(kernel_index, x_max_block_size, x_reminder);
+					this->tmp_ptr -= pitch_in_pixels;
+					kernel_index += kernel_width; 
 				case 5:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
+					SumRow(kernel_index, x_max_block_size, x_reminder);
+					this->tmp_ptr -= pitch_in_pixels;
+					kernel_index += kernel_width; 
 				case 4:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
+					SumRow(kernel_index, x_max_block_size, x_reminder);
+					this->tmp_ptr -= pitch_in_pixels;
+					kernel_index += kernel_width; 
 				case 3:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
+					SumRow(kernel_index, x_max_block_size, x_reminder);
+					this->tmp_ptr -= pitch_in_pixels;
+					kernel_index += kernel_width; 
 				case 2:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
+					SumRow(kernel_index, x_max_block_size, x_reminder);
+					this->tmp_ptr -= pitch_in_pixels;
+					kernel_index += kernel_width; 
 				case 1:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+					SumRow(kernel_index, x_max_block_size, x_reminder);
 			}
 
-			pInS++;
-			pOut++;
+			(*this->dst_ptr) /= 440.0;
+
+			this->src_row_ptr++;
+			this->dst_ptr++;
 		}
 	}
 
-
-
-
+	return dst;
 }
 
+CONVOLUTION<unsigned char>		convolveUCharImage;
+CONVOLUTION<unsigned short>		convolveUShortImage;
+CONVOLUTION<short>				convolveShortImage;
+CONVOLUTION<unsigned long>		convolveULongImage;
+CONVOLUTION<long>				convolveLongImage;
+CONVOLUTION<float>				convolveFloatImage;
+CONVOLUTION<double>				convolveDoubleImage;
+		
 
-/*
-void smooth7x7 (IPIImageRef in, IPIImageRef out, int border_size, int x_radius, int y_radius)
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel)
 {
-	IPIImageInfo inInfo, outInfo;
-	float *pInS, *pIn=NULL, *pOut;
-	register int row, col, x, y;
-	int x_blocks, x_reminder, y_blocks, blocksize = 8, y_reminder;
-	int tmp_row=0;
-	int x_max_block_size, y_max_block_size;
-	int kernel_width = (x_radius * 2) + 1;
-	int kernel_height = (y_radius * 2) + 1;
-	int x_range, y_range;
-	float middle_kernel_value;
-	
-	IPI_Cast(in, IPI_PIXEL_SGL);
-	IPI_Cast(out, IPI_PIXEL_SGL);
-	
-	IPI_GetImageInfo (in, &inInfo);
-	IPI_GetImageInfo (out, &outInfo);
-	
+	FIBITMAP *dst = NULL;
 
+	if(!src.fib) return NULL;
 
-	x_blocks = kernel_width / blocksize;  
-	x_reminder = kernel_width % blocksize;
-	y_blocks = kernel_height / blocksize;  
-	
-	x_max_block_size = (kernel_width / blocksize) * blocksize; 
-	y_max_block_size = (kernel_height / blocksize) * blocksize;  
-	
-	y_reminder = kernel_height - y_max_block_size; 	
-	
-	x_range = inInfo.width - kernel_width;
-	y_range = inInfo.height - kernel_height;
-	
-	for (y=0; y < y_range; y++)
-	{		
-		pInS  =  (inInfo.firstPixelAddress.PixFloat_Ptr + (y - border_size) * inInfo.rawPixels) - border_size;
-		pOut = (outInfo.firstPixelAddress.PixFloat_Ptr + y * outInfo.rawPixels);
-	
-		for (x=0; x < x_range; x++) 
-		{
-			pIn=pInS;
-			*pOut = 0.0; 
-		
-			for(row=0; row < x_max_block_size; row+=8)
-			{  
-				tmp_row = row;
-					
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++; 
-				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++; 
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src.fib);
 
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)    
-				pIn   += inInfo.rawPixels; tmp_row++; 
-				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)   
-				pIn   += inInfo.rawPixels; tmp_row++;
-				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++; 
-				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++; 
-				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels; tmp_row++;   
-				
-				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-				pIn   += inInfo.rawPixels;
-			} 
-			
-			switch(y_reminder) { \
-				case 7:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 	
-				case 6:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
-				case 5:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
-				case 4:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
-				case 3:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
-				case 2:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-					pIn   += inInfo.rawPixels; tmp_row++; 
-				case 1:
-					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
-			}
-
-			pInS++;
-			pOut++;
-		}
+	switch(type) {
+	//	case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+	//		if(FreeImage_GetBPP(src.fib) == 8)
+	//			dst = convolveUCharImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+	//		break;
+	//	case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+	//		dst = convolveUShortImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+	//		break;
+	//	case FIT_INT16:		// array of short: signed 16-bit
+	//		dst = convolveShortImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+	//		break;
+	//	case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+	//		dst = convolveULongImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+	//		break;
+	//	case FIT_INT32:		// array of long: signed 32-bit
+	//		dst = convolveLongImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+	//		break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = convolveFloatImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+			break;
+	//	case FIT_DOUBLE:	// array of double: 64-bit
+	//		dst = convolveDoubleImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+	//		break;
+	//	case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+	//		break;
 	}
 
-	
-	
+	if(NULL == dst)
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convolve with type %d.", type);
 
-	
-	
+	return dst;
 }
-*/
