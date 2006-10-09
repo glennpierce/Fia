@@ -34,6 +34,7 @@ static void BorderTest(CuTest* tc)
 }
 */
 
+/*
 static void
 TestFreeImageAlgorithms_FindMinMaxTest(CuTest* tc)
 {
@@ -54,7 +55,7 @@ TestFreeImageAlgorithms_FindMinMaxTest(CuTest* tc)
 	CuAssertTrue(tc, min == min_fast);
 	CuAssertTrue(tc, max == max_fast);
 }
-
+*/
 
 
 static void
@@ -108,7 +109,7 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityCompareTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindMinMaxTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindMinMaxTest);
 	//SUITE_ADD_TEST(suite, BorderTest);
 	
 	return suite;

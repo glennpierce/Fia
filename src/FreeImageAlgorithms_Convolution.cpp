@@ -10,10 +10,9 @@ class CONVOLUTION
 public:
 	FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel);
 private:
-	inline void SumRow(int row);
+	inline void SumRow(Tsrc *ptr, int row);
 	inline void SumKernel(int src_pitch_in_pixels);
 	Tsrc *src_row_ptr;
-	Tsrc *tmp_ptr;
 	Tsrc *dst_ptr;
 	float *kernel;
 	int x_max_block_size;
@@ -26,48 +25,64 @@ private:
 
 
 template<class Tsrc> 
-inline void CONVOLUTION<Tsrc>::SumRow(int kernel_index)
+inline void CONVOLUTION<Tsrc>::SumRow(Tsrc *ptr, int kernel_index)
 {
 	int max_blocksize = this->x_max_block_size;
 
 	for(int col=0; col < max_blocksize; col+=BLOCKSIZE)
-		*dst_ptr += *(tmp_ptr + col) * this->kernel[kernel_index + col] + *(tmp_ptr + col + 1) * this->kernel[kernel_index + col + 1] + 
-		*(tmp_ptr + col + 2) * this->kernel[kernel_index + col + 2] + *(tmp_ptr + col + 3) * this->kernel[kernel_index + col + 3] + 
-		*(tmp_ptr + col + 4) * this->kernel[kernel_index + col + 4] + *(tmp_ptr + col + 5) * this->kernel[kernel_index + col + 5] + 
-		*(tmp_ptr + col + 6) * this->kernel[kernel_index + col + 6] + *(tmp_ptr + col + 7) * this->kernel[kernel_index + col + 7];
+		*dst_ptr += *(ptr + col) * this->kernel[kernel_index + col] + *(ptr + col + 1) * this->kernel[kernel_index + col + 1] + 
+		*(ptr + col + 2) * this->kernel[kernel_index + col + 2] + *(ptr + col + 3) * this->kernel[kernel_index + col + 3] + 
+		*(ptr + col + 4) * this->kernel[kernel_index + col + 4] + *(ptr + col + 5) * this->kernel[kernel_index + col + 5] + 
+		*(ptr + col + 6) * this->kernel[kernel_index + col + 6] + *(ptr + col + 7) * this->kernel[kernel_index + col + 7];
 
 	switch(this->x_reminder) {
 		case 7: 
-			*dst_ptr += *(tmp_ptr + max_blocksize + 6) + *(tmp_ptr + max_blocksize + 5) + *(tmp_ptr + max_blocksize + 4) + \
-				*(tmp_ptr + max_blocksize + 3) + *(tmp_ptr + max_blocksize + 2) + \
-				*(tmp_ptr + max_blocksize + 1) + *(tmp_ptr + max_blocksize); 
+			*dst_ptr += *(ptr + max_blocksize + 6) * this->kernel[kernel_index + max_blocksize + 6] + 
+				*(ptr + max_blocksize + 5) * this->kernel[kernel_index + max_blocksize + 5] + 
+				*(ptr + max_blocksize + 4) * this->kernel[kernel_index + max_blocksize + 4] +
+				*(ptr + max_blocksize + 3) * this->kernel[kernel_index + max_blocksize + 3] +
+				*(ptr + max_blocksize + 2) * this->kernel[kernel_index + max_blocksize + 2] +
+				*(ptr + max_blocksize + 1) * this->kernel[kernel_index + max_blocksize + 1] +
+				*(ptr + max_blocksize) * this->kernel[kernel_index + max_blocksize]; 
 			break;
 		
 		case 6:
-			*dst_ptr += *(tmp_ptr + max_blocksize + 5) + *(tmp_ptr + max_blocksize + 4) + *(tmp_ptr + max_blocksize + 3) + \
-				*(tmp_ptr + max_blocksize + 2) + *(tmp_ptr + max_blocksize + 1) + *(tmp_ptr + max_blocksize);
+			*dst_ptr += *(ptr + max_blocksize + 5) * this->kernel[kernel_index + max_blocksize + 5] + 
+				*(ptr + max_blocksize + 4) * this->kernel[kernel_index + max_blocksize + 4] + 
+				*(ptr + max_blocksize + 3) * this->kernel[kernel_index + max_blocksize + 3] +
+				*(ptr + max_blocksize + 2) * this->kernel[kernel_index + max_blocksize + 2] +
+				*(ptr + max_blocksize + 1) * this->kernel[kernel_index + max_blocksize + 1] + 
+				*(ptr + max_blocksize) * this->kernel[kernel_index + max_blocksize];
 			break;
 		
 		case 5:
-			*dst_ptr += *(tmp_ptr + max_blocksize + 4) + *(tmp_ptr + max_blocksize + 3) + *(tmp_ptr + max_blocksize + 2) + \
-				*(tmp_ptr + max_blocksize + 1) + *(tmp_ptr + max_blocksize);
+			*dst_ptr += *(ptr + max_blocksize + 4) * this->kernel[kernel_index + max_blocksize + 4] + 
+				*(ptr + max_blocksize + 3) * this->kernel[kernel_index + max_blocksize + 3] + 
+				*(ptr + max_blocksize + 2) * this->kernel[kernel_index + max_blocksize + 2] + 
+				*(ptr + max_blocksize + 1) * this->kernel[kernel_index + max_blocksize + 1] + 
+				*(ptr + max_blocksize) * this->kernel[kernel_index + max_blocksize];
 			break;
 
 		case 4:
-			*dst_ptr += *(tmp_ptr + max_blocksize + 3) + *(tmp_ptr + max_blocksize + 2) + *(tmp_ptr + max_blocksize + 1) + \
-				*(tmp_ptr + max_blocksize);
+			*dst_ptr += *(ptr + max_blocksize + 3) * this->kernel[kernel_index + max_blocksize + 3] + 
+				*(ptr + max_blocksize + 2) * this->kernel[kernel_index + max_blocksize + 2] + 
+				*(ptr + max_blocksize + 1) * this->kernel[kernel_index + max_blocksize + 1] + 
+				*(ptr + max_blocksize) * this->kernel[kernel_index + max_blocksize];
 			break;
 		
 		case 3:
-			*dst_ptr += *(tmp_ptr + max_blocksize + 2) + *(tmp_ptr + max_blocksize + 1) + *(tmp_ptr + max_blocksize);
+			*dst_ptr += *(ptr + max_blocksize + 2) * this->kernel[kernel_index + max_blocksize + 2] +
+				*(ptr + max_blocksize + 1) * this->kernel[kernel_index + max_blocksize + 1] + 
+				*(ptr + max_blocksize) * this->kernel[kernel_index + max_blocksize];
 			break;
 
 		case 2:
-			*dst_ptr += *(tmp_ptr + max_blocksize + 1) + *(tmp_ptr + max_blocksize);
+			*dst_ptr += *(ptr + max_blocksize + 1) * this->kernel[kernel_index + max_blocksize + 1] +
+				*(ptr + max_blocksize) * this->kernel[kernel_index + max_blocksize];
 			break; 
 
 		case 1:
-			*dst_ptr += *(tmp_ptr + max_blocksize); 
+			*dst_ptr += *(ptr + max_blocksize) * this->kernel[kernel_index + max_blocksize]; 
 	}
 }
 
@@ -75,71 +90,71 @@ template<class Tsrc>
 inline void CONVOLUTION<Tsrc>::SumKernel(int src_pitch_in_pixels)
 {
 	int kernel_index = 0;
-	this->tmp_ptr = this->src_row_ptr;
+	Tsrc *tmp_ptr = this->src_row_ptr;
 		
 	for(register int row=0; row < x_max_block_size; row+=BLOCKSIZE)
 	{  
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
-		SumRow(kernel_index);
-		this->tmp_ptr -= src_pitch_in_pixels;
+		SumRow(tmp_ptr, kernel_index);
+		tmp_ptr -= src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 	} 
 		
 	switch(y_reminder)
 	{
 		case 7:
-			SumRow(kernel_index);
-			this->tmp_ptr -= src_pitch_in_pixels;
+			SumRow(tmp_ptr, kernel_index);
+			tmp_ptr -= src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 6:
-			SumRow(kernel_index);
-			this->tmp_ptr -= src_pitch_in_pixels;
+			SumRow(tmp_ptr, kernel_index);
+			tmp_ptr -= src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 5:
-			SumRow(kernel_index);
-			this->tmp_ptr -= src_pitch_in_pixels;
+			SumRow(tmp_ptr, kernel_index);
+			tmp_ptr -= src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 4:
-			SumRow(kernel_index);
-			this->tmp_ptr -= src_pitch_in_pixels;
+			SumRow(tmp_ptr, kernel_index);
+			tmp_ptr -= src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 3:
-			SumRow(kernel_index);
-			this->tmp_ptr -= src_pitch_in_pixels;
+			SumRow(tmp_ptr, kernel_index);
+			tmp_ptr -= src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 2:
-			SumRow(kernel_index);
-			this->tmp_ptr -= src_pitch_in_pixels;
+			SumRow(tmp_ptr, kernel_index);
+			tmp_ptr -= src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 1:
-			SumRow(kernel_index);
+			SumRow(tmp_ptr, kernel_index);
 	}
 }
 
@@ -154,17 +169,15 @@ FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int ke
 	const int src_image_width = FreeImage_GetWidth(src.fib);
 	const int src_image_height = FreeImage_GetHeight(src.fib);
 	const int src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(Tsrc);
+	const int dst_width = src_image_width - (2 * src.border);
+	const int dst_height = src_image_height - (2 * src.border);
+
 	this->kernel_width = (kernel_x_radius * 2) + 1;
 	this->kernel_height = (kernel_y_radius * 2) + 1;
 	this->x_reminder = kernel_width % BLOCKSIZE;
 	this->y_reminder = kernel_height % BLOCKSIZE;
 	this->x_max_block_size = (kernel_width / BLOCKSIZE) * BLOCKSIZE;  	
 	this->kernel = kernel;
-
-	int dst_row = 0;
-
-	const int dst_width = src_image_width - (2 * src.border);
-	const int dst_height = src_image_height - (2 * src.border);
 
 	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
 	
