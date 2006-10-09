@@ -1,4 +1,5 @@
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
@@ -942,6 +943,10 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height)
 	FIBITMAP *dst = FreeImage_AllocateT(type, width, height, 
 		bpp, red_mask, green_mask, blue_mask);
 
+	// If 8bit image we must clone the palette
+	if(bpp <= 8)
+		FreeImageAlgorithms_CopyPalette(src, dst);
+
 	return dst;
 }
 
@@ -954,6 +959,7 @@ FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border)
 	FIABITMAP dst;
 	
 	dst.fib = FreeImageAlgorithms_CloneImageType(src, width + (2 *border), height + (2 * border));
+
 	dst.border = border;
 
 	FreeImageAlgorithms_SimplePaste(dst.fib, src, border, border);

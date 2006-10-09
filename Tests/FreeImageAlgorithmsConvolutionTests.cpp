@@ -8,7 +8,8 @@
 
 #include "profile.h"
 
-static float kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+/*
+static double float_kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -30,22 +31,38 @@ static float kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 
 						 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 						 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
+static long long_kernel[] =  {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 			 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 		     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+			 		     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+						 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-/*
-static float kernel[7][7] = {{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 				{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 				{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}};
 */
 
 
-//static float kernel[] = {1.0, 1.0, 1.0,
-//			 			     1.0, 1.0, 1.0,
-//			 			     1.0, 1.0, 1.0};
-							
+static double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
+			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
 static void
 TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
@@ -55,20 +72,28 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
 	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
-	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_FLOAT, 0);
+
+	FreeImageAlgorithms_SaveFIBToFile(dib2, "C:\\Documents and Settings\\Glenn\\Desktop\\testy1.jpg", BIT24);
+	assert(dib2 != NULL);
+
+	//FIBITMAP *dib3 = FreeImage_ConvertToStandardType(dib2, 1);
+	ProfileStart("FreeImageAlgorithms_Convert");
+
+	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_DOUBLE, 1);
+
+	ProfileStop("FreeImageAlgorithms_Convert");
+
+	FreeImageAlgorithms_SaveFIBToFile(dib3, "C:\\Documents and Settings\\Glenn\\Desktop\\testy2.jpg", BIT24);
+
+	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 3);
+	FreeImageAlgorithms_SaveFIBToFile(dib4.fib, "C:\\Documents and Settings\\Glenn\\Desktop\\testy3.jpg", BIT8);
+
 	
-	int width = FreeImage_GetWidth(dib3);
-
-	FreeImage_Unload(dib1);
-
-	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 10);
-	FreeImageAlgorithms_SaveFIBToFile(dib4.fib, "C:\\Documents and Settings\\Glenn\\Desktop\\testy1.jpg", BIT24);
-
-	FreeImage_Unload(dib3);
+	//FreeImage_Unload(dib3);
 
 	ProfileStart("FreeImageAlgorithms_Convolve");
 
-	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 10, 10, kernel, 440.0);
+	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 3, 3, kernel, 48.0);
 
 	//assert(dib5 != NULL);
 
@@ -78,13 +103,13 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
 	ProfilePrint();
 
-	FIBITMAP *dib6 = FreeImage_ConvertToStandardType(dib5, 1);
+//	FIBITMAP *dib6 = FreeImage_ConvertToStandardType(dib5, 1);
 
-	FreeImage_Unload(dib5);
+	//FreeImage_Unload(dib5);
 
-	FreeImageAlgorithms_SaveFIBToFile(dib6, "C:\\Documents and Settings\\Glenn\\Desktop\\testy2.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib5, "C:\\Documents and Settings\\Glenn\\Desktop\\testy4.jpg", BIT24);
 
-	FreeImage_Unload(dib6);
+	//FreeImage_Unload(dib4.fib);
 	
 }
 
