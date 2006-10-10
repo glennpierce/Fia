@@ -14,9 +14,9 @@ struct ImageData
 	int src_pitch_in_pixels;
 };
 
-inline double SumRow(double *ptr, double *kernel, int kernel_index, ImageData *data)
+static inline double SumRow(double *ptr, double *kernel, int kernel_index, ImageData *data)
 {
-	double sum = 0.0;
+	register double sum = 0.0;
 
 	register int x_max_block_size = data->x_max_block_size;
 
@@ -79,11 +79,11 @@ inline double SumRow(double *ptr, double *kernel, int kernel_index, ImageData *d
 	return sum;
 }
 
-inline double SumKernel(double *src_row_ptr, double* kernel, ImageData *data)
+static inline double SumKernel(double *src_row_ptr, double* kernel, ImageData *data)
 {
-	int kernel_index = 0;
-	double sum = 0.0;
-	double *tmp_ptr = src_row_ptr;
+	register int kernel_index = 0;
+	register double sum = 0.0;
+	register double *tmp_ptr = src_row_ptr;
 		
 	for(register int row=0; row < data->x_max_block_size; row+=BLOCKSIZE)
 	{  
