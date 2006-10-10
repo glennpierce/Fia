@@ -1,94 +1,171 @@
-static IPIError IPI_ImageBorderSize (IPIImageRef source_image, long Operation, long *border_size)
+#include "FreeImageAlgorithms_Convolution.h"
+
+
+template<class Tsrc>
+class CONVOLUTION
 {
-// By P Barber, 05.06.03
-// IPI_ImageBorderSize is in the IMAQ vision .fp library file but never existed as a function
-// but here is my version of it.
+public:
+	FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, int **kernel);
+private:
+	inline void SumRow(int row, int size_of_maxblocks, int reminder);
+	Tsrc *src_row_ptr;
+	Tsrc *tmp_ptr;
+	Tsrc *dst_ptr;
 
-	IPIError error;
-	IPIImageInfo info;
-	IPIImageRef temp=0;
+};
+
+CONVOLUTION<unsigned char>		convolveUCharImage;
+CONVOLUTION<unsigned short>		convolveUShortImage;
+CONVOLUTION<short>				convolveShortImage;
+CONVOLUTION<unsigned long>		convolveULongImage;
+CONVOLUTION<long>				convolveLongImage;
+CONVOLUTION<float>				convolveFloatImage;
+CONVOLUTION<double>				convolveDoubleImage;
+									
+
+template<class Tsrc> 
+inline void CONVOLUTION<Tsrc>::SumRow(int row, int size_of_maxblocks, int reminder)
+{
+	for(int col=0; col < size_of_maxblocks; col+=8)
+		*dst_ptr += *(tmp_ptr + col) * array[row][col] + *(tmp_ptr+1+col) * array[row][1+col] + \
+		*(tmp_ptr+2+col) * array[row][2+col] + *(tmp_ptr+3+col) * array[row][3+col] + *(tmp_ptr+4+col) * array[row][4+col] + \
+		*(tmp_ptr+5+col) * array[row][5+col] + *(tmp_ptr+6+col) * array[row][6+col] + *(tmp_ptr+7+col) * array[row][7+col];
 	
-	if (source_image<=0) return (IPI_ERR_BADIMAGEREF);
-	if (border_size==NULL) return (IPI_ERR_NULLPTR);
+	switch(reminder) {
+		case 7: 
+			*dst_ptr += *(tmp_ptr + x_max_block_size + 6) + *(tmp_ptr + x_max_block_size + 5) + *(tmp_ptr + x_max_block_size + 4) + \
+				*(tmp_ptr + x_max_block_size + 3) + *(tmp_ptr + x_max_block_size + 2) + \
+				*(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size); 
+			break;
+		
+		case 6:
+			*dst_ptr += *(tmp_ptr + x_max_block_size + 5) + *(tmp_ptr + x_max_block_size + 4) + *(tmp_ptr + x_max_block_size + 3) + \
+				*(tmp_ptr + x_max_block_size + 2) + *(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			break;
+		
+		case 5:
+			*dst_ptr += *(tmp_ptr + x_max_block_size + 4) + *(tmp_ptr + x_max_block_size + 3) + *(tmp_ptr + x_max_block_size + 2) + \
+				*(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			break;
 
-	error = IPI_GetImageInfo (source_image, &info);  if (error!=IPI_ERR_NOERROR) return (error);
+		case 4:
+			*dst_ptr += *(tmp_ptr + x_max_block_size + 3) + *(tmp_ptr + x_max_block_size + 2) + *(tmp_ptr + x_max_block_size + 1) + \
+				*(tmp_ptr + x_max_block_size);
+			break;
+		
+		case 3:
+			*dst_ptr += *(tmp_ptr + x_max_block_size + 2) + *(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			break;
 
-	if (Operation==0)  // get border size
-	{
-		*border_size = info.border;
+		case 2:
+			*dst_ptr += *(tmp_ptr + x_max_block_size + 1) + *(tmp_ptr + x_max_block_size);
+			break; 
+
+		case 1:
+			*dst_ptr += *(tmp_ptr + x_max_block_size); 
 	}
-	else			   // set border size
-	{
-		if (*border_size<0) return (IPI_ERR_BADBORDER);
-		if (*border_size == info.border) return (IPI_ERR_NOERROR);  // border is already the correct size
+}
 
-		error = IPI_Create (&temp, info.pixelType, *border_size);                     if (error!=IPI_ERR_NOERROR) return (error);
-		error = IPI_SetImageSize (temp, info.width, info.height);                     if (error!=IPI_ERR_NOERROR) return (error);
-		error = IPI_ImageToImage (source_image, temp, 0, 0);			      if (error!=IPI_ERR_NOERROR) return (error);
-		error = IPI_SetImageOffset (temp, info.xOffset, info.yOffset);	              if (error!=IPI_ERR_NOERROR) return (error);
-		error = IPI_SetImageCalibration (temp, info.unit, info.xCalib, info.yCalib);  if (error!=IPI_ERR_NOERROR) return (error);
-		error = IPI_Copy (temp, source_image);								          if (error!=IPI_ERR_NOERROR) return (error);
-		error = IPI_Dispose (temp);								                      if (error!=IPI_ERR_NOERROR) return (error);
+template<class Tsrc> 
+FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, int **kernel)
+{
+	// Border must be large enough to account for kernel radius
+	if(src.border < MAX(kernel_x_radius, kernel_y_radius))
+		return NULL;
+
+	const int image_width = FreeImage_GetWidth(src);
+	const int image_height = FreeImage_GetWidth(src);
+	const int blocksize = 8;
+	const int kernel_width = (kernel_x_radius * 2) + 1;
+	const int kernel_height = (kernel_y_radius * 2) + 1;
+	const int x_blocks = kernel_width / blocksize;  
+	const int x_reminder = kernel_width % blocksize;
+	const int y_blocks = kernel_height / blocksize;  
+	const int x_max_block_size = (kernel_width / blocksize) * blocksize; 
+	const int y_max_block_size = (kernel_height / blocksize) * blocksize;  
+	const int y_reminder = kernel_height - y_max_block_size; 	
+	const int x_range = image_width - kernel_width;
+	const int y_range = image_height - kernel_height;
+
+	int tmp_row;
+
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src, width - (2 * src.border), 
+		height - (2 * src.border));
+
+	for (int y=0; y < y_range; y++)
+	{		
+		this->src_row_ptr = FreeImage_GetScanLine(src, y);
+		this->dst_ptr = FreeImage_GetScanLine(dst, y);
+	
+		for (int x=0; x < x_range; x++) 
+		{
+			pIn=pInS;
+			*pOut = 0.0; 
+		
+			for(int row=0; row < x_max_block_size; row+=8)
+			{  
+				tmp_row = row;
+				
+				SumRow(tmp_row, x_max_block_size, x_reminder);
+				pIn   += inInfo.rawPixels; tmp_row++; 
+				
+				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+				pIn   += inInfo.rawPixels; tmp_row++; 
+
+				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)    
+				pIn   += inInfo.rawPixels; tmp_row++; 
+				
+				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)   
+				pIn   += inInfo.rawPixels; tmp_row++;
+				
+				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+				pIn   += inInfo.rawPixels; tmp_row++; 
+				
+				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+				pIn   += inInfo.rawPixels; tmp_row++; 
+				
+				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+				pIn   += inInfo.rawPixels; tmp_row++;   
+				
+				BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+				pIn   += inInfo.rawPixels;
+			} 
+			
+			switch(y_reminder) { \
+				case 7:
+					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+					pIn   += inInfo.rawPixels; tmp_row++; 	
+				case 6:
+					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+					pIn   += inInfo.rawPixels; tmp_row++; 
+				case 5:
+					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+					pIn   += inInfo.rawPixels; tmp_row++; 
+				case 4:
+					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+					pIn   += inInfo.rawPixels; tmp_row++; 
+				case 3:
+					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+					pIn   += inInfo.rawPixels; tmp_row++; 
+				case 2:
+					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+					pIn   += inInfo.rawPixels; tmp_row++; 
+				case 1:
+					BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder)
+			}
+
+			pInS++;
+			pOut++;
+		}
 	}
-	return(IPI_ERR_NOERROR);
+
+
+
+
 }
 
 
-static float array[21][21] = {{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			 	  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			  	  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			      {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 				  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 				  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-							  {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}
-};
-
-
 /*
-static float array[7][7] = {{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 				{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
-			 				{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0}};
-*/
-
-/*
-static float array[3][3] = {{1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0},
-			 			    {1.0, 1.0, 1.0}};
-							
-*/
-							
-#define BLOCK8_COLSUM(x_blocks, x_max_block_size, kernel_width, x_reminder) \
-	for(col=0; col < x_max_block_size; col+=8) { \
-		*pOut += *(pIn + col) * array[tmp_row][col] + *(pIn+1+col) * array[tmp_row][1+col] + *(pIn+2+col) * array[tmp_row][2+col] + *(pIn+3+col) * array[tmp_row][3+col] + *(pIn+4+col) * array[tmp_row][4+col] + *(pIn+5+col) * array[tmp_row][5+col] + *(pIn+6+col) * array[tmp_row][6+col] + *(pIn+7+col) * array[tmp_row][7+col]; } \
-	switch(x_reminder) { \
-		case 7: *pOut += *(pIn + x_max_block_size + 6) + *(pIn + x_max_block_size + 5) + *(pIn + x_max_block_size + 4) + *(pIn + x_max_block_size + 3) + *(pIn + x_max_block_size + 2) + *(pIn + x_max_block_size + 1) + *(pIn + x_max_block_size); break; \
-		case 6: *pOut += *(pIn + x_max_block_size + 5) + *(pIn + x_max_block_size + 4) + *(pIn + x_max_block_size + 3) + *(pIn + x_max_block_size + 2) + *(pIn + x_max_block_size + 1) + *(pIn + x_max_block_size); break; \
-		case 5: *pOut += *(pIn + x_max_block_size + 4) + *(pIn + x_max_block_size + 3) + *(pIn + x_max_block_size + 2) + *(pIn + x_max_block_size + 1) + *(pIn + x_max_block_size); break; \
-		case 4: *pOut += *(pIn + x_max_block_size + 3) + *(pIn + x_max_block_size + 2) + *(pIn + x_max_block_size + 1) + *(pIn + x_max_block_size); break; \
-		case 3: *pOut += *(pIn + x_max_block_size + 2) + *(pIn + x_max_block_size + 1) + *(pIn + x_max_block_size); break; \
-		case 2: *pOut += *(pIn + x_max_block_size + 1) + *(pIn + x_max_block_size); break; \
-		case 1: *pOut += *(pIn + x_max_block_size); \
-	}
-																																																									   
-																																																									   
 void smooth7x7 (IPIImageRef in, IPIImageRef out, int border_size, int x_radius, int y_radius)
 {
 	IPIImageInfo inInfo, outInfo;
@@ -108,12 +185,8 @@ void smooth7x7 (IPIImageRef in, IPIImageRef out, int border_size, int x_radius, 
 	IPI_GetImageInfo (in, &inInfo);
 	IPI_GetImageInfo (out, &outInfo);
 	
-	PROFILE_START("smooth7x7");  
 
-	// Set the middle kernel val to 0 so it does not have an effect.
-	middle_kernel_value = array[x_radius][y_radius];
-	array[x_radius][y_radius] = 0.0;
-	
+
 	x_blocks = kernel_width / blocksize;  
 	x_reminder = kernel_width % blocksize;
 	y_blocks = kernel_height / blocksize;  
@@ -194,22 +267,9 @@ void smooth7x7 (IPIImageRef in, IPIImageRef out, int border_size, int x_radius, 
 	}
 
 	
-	// Correct for middle value of kernel
-	for (y=0; y < y_range; y++)
-	{	
-		pInS  =  (inInfo.firstPixelAddress.PixFloat_Ptr + (y - border_size) * inInfo.rawPixels) - border_size;
-		pOut = (outInfo.firstPixelAddress.PixFloat_Ptr + y * outInfo.rawPixels);
 	
-		for (x=0; x < x_range; x++) 
-		{
-			pIn = pInS + (inInfo.rawPixels * y_radius) + x_radius;
-			
-			*pOut = (*pOut + (*pIn * middle_kernel_value)) / 440.0f;
-			pInS++; 
-			pOut++;  
-		}
-	}
 
 	
-	PROFILE_STOP("smooth7x7"); 
+	
 }
+*/

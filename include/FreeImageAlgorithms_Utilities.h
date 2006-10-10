@@ -145,6 +145,9 @@ FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top)
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2);
 
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
+
 DLL_API FIABITMAP DLL_CALLCONV
 FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border);
 

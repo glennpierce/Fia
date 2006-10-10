@@ -930,22 +930,30 @@ FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2)
 }
 
 
-FIABITMAP DLL_CALLCONV
-FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border)
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height)
 {
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
 	int bpp = FreeImage_GetBPP(src);
 	unsigned red_mask = FreeImage_GetRedMask(src);
 	unsigned green_mask = FreeImage_GetGreenMask(src);
 	unsigned blue_mask = FreeImage_GetBlueMask(src);
 
-	FIABITMAP dst;
-
-	dst.fib = FreeImage_AllocateT(type, width + (2 *border), height + (2 * border), 
+	FIBITMAP *dst = FreeImage_AllocateT(type, width, height, 
 		bpp, red_mask, green_mask, blue_mask);
+
+	return dst;
+}
+
+FIABITMAP DLL_CALLCONV
+FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border)
+{
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	FIABITMAP dst;
 	
+	dst.fib = FreeImageAlgorithms_CloneImageType(src, width + (2 *border), height + (2 * border));
 	dst.border = border;
 
 	FreeImageAlgorithms_SimplePaste(dst.fib, src, border, border);
