@@ -1,18 +1,15 @@
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <stdio.h>
 
 #include "CuTest.h"
+#include "FreeImageAlgorithms.h"
 
-CuSuite* CuGetFreeImageAlgorithmsColourSuite();
-CuSuite* CuGetFreeImageAlgorithmsLinearScaleSuite();
-CuSuite* CuGetFreeImageAlgorithmsUtilitySuite();
-CuSuite* CuGetFreeImageAlgorithmsStatisticSuite();
-CuSuite* CuGetFreeImageAlgorithmsFFTSuite();
-CuSuite* CuGetFreeImageAlgorithmsArithmaticSuite();
-CuSuite* CuGetFreeImageAlgorithmsIOSuite();
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsColourSuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLinearScaleSuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsUtilitySuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsStatisticSuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsFFTSuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsArithmaticSuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsIOSuite(void);
 
 
 void RunAllTests(void)
@@ -24,7 +21,7 @@ void RunAllTests(void)
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
-	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
+	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
 
@@ -44,7 +41,3 @@ int __cdecl main(void)
 
 	return 0;
 }
-
-#ifdef __cplusplus
-}
-#endif

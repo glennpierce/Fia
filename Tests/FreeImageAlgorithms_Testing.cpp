@@ -1,6 +1,7 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_HBitmap.h"
 #include "FreeImageAlgorithms_Palettes.h"
 
 #include <assert.h>

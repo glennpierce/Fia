@@ -7,6 +7,89 @@
 #include <limits.h>
 #include <float.h>
 
+#include <xmmintrin.h>
+
+/***
+* int _os_support(int feature)
+*   - Checks if OS Supports the capablity or not
+*
+* Entry:
+*   feature: the feature we want to check if OS supports it.
+*
+* Exit:
+*   Returns 1 if OS support exist and 0 when OS doesn't support it.
+*
+****************************************************************/
+
+int DLL_CALLCONV
+_os_support(int feature)
+{
+    __try {
+        switch (feature) {
+        case _CPU_FEATURE_SSE:
+            __asm {
+                xorps xmm0, xmm0        // executing SSE instruction
+            }
+            break;
+        case _CPU_FEATURE_SSE2:
+            __asm {
+                xorpd xmm0, xmm0        // executing SSE2 instruction
+            }
+            break;
+        case _CPU_FEATURE_3DNOW:
+            __asm {
+                pfrcp mm0, mm0          // executing 3DNow! instruction
+                emms
+            }
+            break;
+        case _CPU_FEATURE_MMX:
+            __asm {
+                pxor mm0, mm0           // executing MMX instruction
+                emms
+            }
+            break;
+        }
+    }
+    __except (EXCEPTION_EXECUTE_HANDLER) {
+        if (_exception_code() == STATUS_ILLEGAL_INSTRUCTION) {
+            return 0;
+        }
+        return 0;
+    }
+    return 1;
+}
+
+void DLL_CALLCONV
+FreeImageAlgorithms_SSEFindFloatMinMax(const float *data, long n, float *min, float *max)
+{
+	__m128 min128 = _mm_set_ps1(FLT_MAX);  // min128[0, 1, 2, 3] = FLT_MAX
+    __m128 max128 = _mm_set_ps1(FLT_MIN);  // max128[0, 1, 2, 3] = FLT_MIN
+
+    __m128* pSource = (__m128*) data;
+   
+	for ( int i = 0; i < n/4; i++ )
+    {
+        min128 =  _mm_min_ps(*pSource, min128);
+        max128 =  _mm_max_ps(*pSource, max128);
+
+        pSource++;
+    }
+
+	// extract minimum and maximum values from min128 and max128
+    union u
+    {
+        __m128 m;
+        float f[4];
+    } x;
+
+	x.m = min128;
+    *min = min(x.f[0], min(x.f[1], min(x.f[2], x.f[3])));
+
+    x.m = max128;
+    *max = max(x.f[0], max(x.f[1], max(x.f[2], x.f[3])));
+}
+
+
 void DLL_CALLCONV
 FreeImageAlgorithms_FindCharMinMax(const char *data, long n, char *min, char *max)
 {

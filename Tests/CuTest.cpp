@@ -240,7 +240,7 @@ void CuSuiteAdd(CuSuite* testSuite, CuTest *testCase)
 	testSuite->count++;
 }
 
-void CuSuiteAddSuite(CuSuite* testSuite, CuSuite* testSuite2)
+void DLL_CALLCONV CuSuiteAddSuite(CuSuite* testSuite, CuSuite* testSuite2)
 {
 	int i;
 	for (i = 0 ; i < testSuite2->count ; ++i)

@@ -1,12 +1,37 @@
-
-
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_Utilities.h"
+#include "profile.h"
 
 #include "CuTest.h"
 
 #include "FreeImageAlgorithms_Testing.h"
+
+#include <iostream>
+
+static void
+TestFreeImageAlgorithms_FindMinMaxTest(CuTest* tc)
+{
+	const int total = 1000000;
+
+	float *data = (float*) _aligned_malloc(total * sizeof(float), 16);
+
+	for(int i=0; i < total; i++)
+		data[i] = rand();
+
+	float min, max, min_fast, max_fast;
+
+	FreeImageAlgorithms_FindFloatMinMax(data, total, &min, &max);
+	FreeImageAlgorithms_SSEFindFloatMinMax(data, total, &min_fast, &max_fast);
+
+	_aligned_free(data);
+
+	CuAssertTrue(tc, min == min_fast);
+	CuAssertTrue(tc, max == max_fast);
+}
+
+
 
 static void
 TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
@@ -59,6 +84,7 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityCompareTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindMinMaxTest);
 
 	return suite;
 }

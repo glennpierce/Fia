@@ -1,8 +1,8 @@
 #include "CuTest.h"
 
-#include "FreeImage.h"
+#include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
-
+#include "FreeImageAlgorithms_Utilities.h"
 
 #include "FreeImageAlgorithms_Testing.h"
 
@@ -23,7 +23,7 @@ TestFreeImageAlgorithms_IO(CuTest* tc)
 	CuAssertTrue(tc, bpp == 24);
 	CuAssertTrue(tc, type == FIT_BITMAP);
 	
-	err = FreeImageAlgorithms_SaveFIBToFile (dib1, "C:\\temp\\colour_lines_test.bmp", 1);
+	err = FreeImageAlgorithms_SaveFIBToFile (dib1, "C:\\temp\\colour_lines_test.bmp", BIT24);
 
 	CuAssertTrue(tc, err == FREEIMAGE_ALGORITHMS_SUCCESS);
 

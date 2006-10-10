@@ -7,6 +7,12 @@
 extern "C" {
 #endif
 
+DLL_API int DLL_CALLCONV
+_os_support(int feature);
+
+DLL_API void DLL_CALLCONV
+FreeImageAlgorithms_SSEFindFloatMinMax(const float *data, long n, float *min, float *max);
+
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FindCharMinMax(const char *data, long n, char *min, char *max);
 
