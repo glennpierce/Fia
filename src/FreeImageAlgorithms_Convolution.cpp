@@ -23,7 +23,7 @@ static inline double SumRow(double *ptr, double *kernel, int kernel_index, Image
 	register int kernel_tmp;
 
 	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
-		
+		 
 		tmp = ptr + col;
 		kernel_tmp = kernel_index + col;
 
