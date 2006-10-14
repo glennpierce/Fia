@@ -8,7 +8,7 @@ template<class Tsrc>
 class CONVOLUTION
 {
 public:
-	FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel);
+	FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel, float divider);
 private:
 	inline void SumRow(Tsrc *ptr, int row);
 	inline void SumKernel(int src_pitch_in_pixels);
@@ -95,35 +95,35 @@ inline void CONVOLUTION<Tsrc>::SumKernel(int src_pitch_in_pixels)
 	for(register int row=0; row < x_max_block_size; row+=BLOCKSIZE)
 	{  
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 				
 		SumRow(tmp_ptr, kernel_index);
-		tmp_ptr -= src_pitch_in_pixels;
+		tmp_ptr += src_pitch_in_pixels;
 		kernel_index += kernel_width; 
 	} 
 		
@@ -131,27 +131,27 @@ inline void CONVOLUTION<Tsrc>::SumKernel(int src_pitch_in_pixels)
 	{
 		case 7:
 			SumRow(tmp_ptr, kernel_index);
-			tmp_ptr -= src_pitch_in_pixels;
+			tmp_ptr += src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 6:
 			SumRow(tmp_ptr, kernel_index);
-			tmp_ptr -= src_pitch_in_pixels;
+			tmp_ptr += src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 5:
 			SumRow(tmp_ptr, kernel_index);
-			tmp_ptr -= src_pitch_in_pixels;
+			tmp_ptr += src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 4:
 			SumRow(tmp_ptr, kernel_index);
-			tmp_ptr -= src_pitch_in_pixels;
+			tmp_ptr += src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 3:
 			SumRow(tmp_ptr, kernel_index);
-			tmp_ptr -= src_pitch_in_pixels;
+			tmp_ptr += src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 2:
 			SumRow(tmp_ptr, kernel_index);
-			tmp_ptr -= src_pitch_in_pixels;
+			tmp_ptr += src_pitch_in_pixels;
 			kernel_index += kernel_width; 
 		case 1:
 			SumRow(tmp_ptr, kernel_index);
@@ -160,7 +160,7 @@ inline void CONVOLUTION<Tsrc>::SumKernel(int src_pitch_in_pixels)
 
 
 template<class Tsrc> 
-FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel)
+FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel, float divider)
 {
 	// Border must be large enough to account for kernel radius
 	if(src.border < MAX(kernel_x_radius, kernel_y_radius))
@@ -183,22 +183,22 @@ FIBITMAP* CONVOLUTION<Tsrc>::Convolve(FIABITMAP src, int kernel_x_radius, int ke
 	
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
 
-	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetScanLine(src.fib, src_image_height);
-	Tsrc *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetScanLine(dst, dst_height);
+	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src.fib);
+	Tsrc *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(dst);
 
 	for (register int y=0; y < dst_height; y++)
 	{		
-		this->src_row_ptr = (src_first_pixel_address_ptr - y * src_pitch_in_pixels);
-		this->dst_ptr = (dst_first_pixel_address_ptr - y * dst_pitch_in_pixels);
+		this->src_row_ptr = (src_first_pixel_address_ptr + y * src_pitch_in_pixels);
+		this->dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
 
 		for (register int x=0; x < dst_width; x++) 
 		{
 			SumKernel(src_pitch_in_pixels);
 
-			*this->dst_ptr /= 440.0;
+			*this->dst_ptr /= divider;
 
-			this->src_row_ptr--;
-			this->dst_ptr--;
+			this->src_row_ptr++;
+			this->dst_ptr++;
 		}
 	}
 
@@ -216,39 +216,40 @@ CONVOLUTION<double>				convolveDoubleImage;
 		
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel)
+FreeImageAlgorithms_Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, float *kernel, float divider)
 {
 	FIBITMAP *dst = NULL;
 
-	if(!src.fib) return NULL;
+	if(!src.fib)
+		return NULL;
 
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src.fib);
 
 	switch(type) {
-	//	case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-	//		if(FreeImage_GetBPP(src.fib) == 8)
-	//			dst = convolveUCharImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
-	//		break;
-	//	case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
-	//		dst = convolveUShortImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
-	//		break;
-	//	case FIT_INT16:		// array of short: signed 16-bit
-	//		dst = convolveShortImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
-	//		break;
-	//	case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-	//		dst = convolveULongImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
-	//		break;
-	//	case FIT_INT32:		// array of long: signed 32-bit
-	//		dst = convolveLongImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
-	//		break;
-		case FIT_FLOAT:		// array of float: 32-bit
-			dst = convolveFloatImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src.fib) == 8)
+				dst = convolveUCharImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
 			break;
-	//	case FIT_DOUBLE:	// array of double: 64-bit
-	//		dst = convolveDoubleImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel);
-	//		break;
-	//	case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
-	//		break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			dst = convolveUShortImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			dst = convolveShortImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			dst = convolveULongImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			dst = convolveLongImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = convolveFloatImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			dst = convolveDoubleImage.Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
 	}
 
 	if(NULL == dst)

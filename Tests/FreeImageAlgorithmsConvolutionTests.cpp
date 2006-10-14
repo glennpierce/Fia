@@ -47,17 +47,10 @@ static float kernel[7][7] = {{1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0},
 //			 			     1.0, 1.0, 1.0};
 							
 
-
-
-
-
-
-
 static void
 TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 {
-	
-	char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\wallpaper_river.jpg";
+	char *file = "C:\\Documents and Settings\\Glenn\\My Documents\\Test Images\\wallpaper_river.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
@@ -69,17 +62,17 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 	FreeImage_Unload(dib1);
 
 	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 10);
-	FreeImageAlgorithms_SaveFIBToFile(dib4.fib, "C:\\Documents and Settings\\Pierce\\Desktop\\testy1.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib4.fib, "C:\\Documents and Settings\\Glenn\\Desktop\\testy1.jpg", BIT24);
 
 	FreeImage_Unload(dib3);
 
 	ProfileStart("FreeImageAlgorithms_Convolve");
 
-	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 10, 10, kernel);
+	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 10, 10, kernel, 440.0);
 
-	assert(dib5 != NULL);
+	//assert(dib5 != NULL);
 
-	FreeImage_Unload(dib4.fib);
+	//FreeImage_Unload(dib4.fib);
 
 	ProfileStop("FreeImageAlgorithms_Convolve");
 
@@ -89,7 +82,7 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
 	FreeImage_Unload(dib5);
 
-	FreeImageAlgorithms_SaveFIBToFile(dib6, "C:\\Documents and Settings\\Pierce\\Desktop\\testy2.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib6, "C:\\Documents and Settings\\Glenn\\Desktop\\testy2.jpg", BIT24);
 
 	FreeImage_Unload(dib6);
 	
