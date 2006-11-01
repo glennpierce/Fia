@@ -475,13 +475,16 @@ FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 
 	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
 
+	double tmp;
+
 	for(int i=0; i < number_of_pixels; i++) {
 
 		// real part = ac - bd
-		dst_ptr->r = (dst_ptr->r * src_ptr->r) - (dst_ptr->i * src_ptr->i);
+		tmp = (dst_ptr->r * src_ptr->r) - (dst_ptr->i * src_ptr->i);
 
 		// imaginary part = bc + da
 		dst_ptr->i = (dst_ptr->i * src_ptr->r) + (src_ptr->i * dst_ptr->r);
+		dst_ptr->r = tmp;
 
 		dst_ptr++;
 		src_ptr++;
