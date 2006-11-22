@@ -2,17 +2,24 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include <limits>
 #include <float.h>
+#include <math.h>
+
 
 template<class Tsrc>
-class TRANSPOSE
+class ARITHMATIC
 {
 public:
-	FIBITMAP* convert(FIBITMAP *src);
+	int AddImages(FIBITMAP* dst, FIBITMAP* src);
+	int SubtractImages(FIBITMAP* dst, FIBITMAP* src);
+	int DivideImages(FIBITMAP* dst, FIBITMAP* src);
+	int MultiplyImages(FIBITMAP* dst, FIBITMAP* src);
+	FIBITMAP* Transpose(FIBITMAP *src);
+	FIBITMAP* Log(FIBITMAP *src);
 };
 
 
 template<class Tsrc> FIBITMAP* 
-TRANSPOSE<Tsrc>::convert(FIBITMAP *src) {
+ARITHMATIC<Tsrc>::Transpose(FIBITMAP *src) {
 
 	FIBITMAP *dst;
 	int x, y;	
@@ -42,72 +49,32 @@ TRANSPOSE<Tsrc>::convert(FIBITMAP *src) {
 	return dst;
 }
 
-// Convert from type X to type BYTE
-TRANSPOSE<unsigned char>		transposeUCharImage;
-TRANSPOSE<unsigned short>		transposeUShortImage;
-TRANSPOSE<short>				transposeShortImage;
-TRANSPOSE<unsigned long>		transposeULongImage;
-TRANSPOSE<long>					transposeLongImage;
-TRANSPOSE<float>				transposeFloatImage;
-TRANSPOSE<double>				transposeDoubleImage;
+template<class Tsrc> FIBITMAP* 
+ARITHMATIC<Tsrc>::Log(FIBITMAP *src) {
 
+	FIBITMAP *dst;
+	int x, y;	
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+	int bpp = FreeImage_GetBPP(src);
 
-DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Transpose(FIBITMAP *src)
-{
-	FIBITMAP *dst = NULL;
-
-	if(!src)
+	if ( (dst = FreeImage_AllocateT(FIT_DOUBLE, height, width, bpp, 0, 0, 0)) == NULL )
 		return NULL;
 
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+	Tsrc *in_bits;
+	double *out_bits;  
+		
+	for(y = 0; y < height; y++) { 
+		
+		in_bits = (Tsrc *)FreeImage_GetScanLine(src, y);
+		out_bits = (double *)FreeImage_GetScanLine(dst, y);
 
-	switch(src_type) {
-		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			if(FreeImage_GetBPP(src) == 8)
-				dst = transposeUCharImage.convert(src);
-			break;
-		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
-			dst = transposeUShortImage.convert(src);
-			break;
-		case FIT_INT16:		// array of short: signed 16-bit
-			dst = transposeShortImage.convert(src);
-			break;
-		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-			dst = transposeULongImage.convert(src);
-			break;
-		case FIT_INT32:		// array of long: signed 32-bit
-			dst = transposeLongImage.convert(src);
-			break;
-		case FIT_FLOAT:		// array of float: 32-bit
-			dst = transposeFloatImage.convert(src);
-			break;
-		case FIT_DOUBLE:	// array of double: 64-bit
-			dst = transposeDoubleImage.convert(src);
-			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
-			break;
+		for(x=0; x < width; x++)
+			out_bits[x] = (double) log((double)in_bits[x]);
 	}
-
-	if(NULL == dst) {
-		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
-	}
-
+	
 	return dst;
 }
-
-
-
-template<class Tsrc>
-class GREYLEVEL_ARITHMATIC
-{
-public:
-	int AddImages(FIBITMAP* dst, FIBITMAP* src);
-	int SubtractImages(FIBITMAP* dst, FIBITMAP* src);
-	int DivideImages(FIBITMAP* dst, FIBITMAP* src);
-	int MultiplyImages(FIBITMAP* dst, FIBITMAP* src);
-};
-
 
 static int CheckDimensions(FIBITMAP* dst, FIBITMAP* src)
 {
@@ -124,7 +91,7 @@ static int CheckDimensions(FIBITMAP* dst, FIBITMAP* src)
 }
 
 template<class Tsrc> int 
-GREYLEVEL_ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
+ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	if(dst == NULL || src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -150,7 +117,7 @@ GREYLEVEL_ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
 
 
 template<class Tsrc> int 
-GREYLEVEL_ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
+ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	if(dst == NULL || src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -175,7 +142,7 @@ GREYLEVEL_ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
 }
 
 template<class Tsrc> int 
-GREYLEVEL_ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* src)
+ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	if(dst == NULL || src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -200,7 +167,7 @@ GREYLEVEL_ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* src)
 }
 
 template<class Tsrc> int 
-GREYLEVEL_ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMAP* src)
+ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	if(dst == NULL || src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -224,14 +191,103 @@ GREYLEVEL_ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMAP* src)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
-GREYLEVEL_ARITHMATIC<unsigned char>		arithmaticUCharImage;
-GREYLEVEL_ARITHMATIC<unsigned short>	arithmaticUShortImage;
-GREYLEVEL_ARITHMATIC<short>				arithmaticShortImage;
-GREYLEVEL_ARITHMATIC<unsigned long>		arithmaticULongImage;
-GREYLEVEL_ARITHMATIC<long>				arithmaticLongImage;
-GREYLEVEL_ARITHMATIC<float>				arithmaticFloatImage;
-GREYLEVEL_ARITHMATIC<double>			arithmaticDoubleImage;
+ARITHMATIC<unsigned char>		arithmaticUCharImage;
+ARITHMATIC<unsigned short>		arithmaticUShortImage;
+ARITHMATIC<short>				arithmaticShortImage;
+ARITHMATIC<unsigned long>		arithmaticULongImage;
+ARITHMATIC<long>				arithmaticLongImage;
+ARITHMATIC<float>				arithmaticFloatImage;
+ARITHMATIC<double>				arithmaticDoubleImage;
 
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Transpose(FIBITMAP *src)
+{
+	FIBITMAP *dst = NULL;
+
+	if(!src)
+		return NULL;
+
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				dst = arithmaticUCharImage.Transpose(src);
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			dst = arithmaticUShortImage.Transpose(src);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			dst = arithmaticShortImage.Transpose(src);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			dst = arithmaticULongImage.Transpose(src);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			dst = arithmaticLongImage.Transpose(src);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = arithmaticFloatImage.Transpose(src);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			dst = arithmaticDoubleImage.Transpose(src);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+	}
+
+	return dst;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Log(FIBITMAP *src)
+{
+	FIBITMAP *dst = NULL;
+
+	if(!src)
+		return NULL;
+
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				dst = arithmaticUCharImage.Log(src);
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			dst = arithmaticUShortImage.Log(src);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			dst = arithmaticShortImage.Log(src);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			dst = arithmaticULongImage.Log(src);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			dst = arithmaticLongImage.Log(src);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = arithmaticFloatImage.Log(src);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			dst = arithmaticDoubleImage.Log(src);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+	}
+
+	return dst;
+}
 
 int DLL_CALLCONV 
 FreeImageAlgorithms_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)

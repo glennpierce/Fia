@@ -4,6 +4,7 @@
 #include "FreeImageAlgorithms.h"
 
 #define IMAGE_DIR "..\\..\\..\\..\\Test Images"
+#define TEMP_DIR "C:\\Temp\\FreeImageAlgorithms_Tests"
 
 #ifdef __cplusplus
 extern "C" {

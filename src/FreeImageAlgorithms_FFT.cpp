@@ -70,8 +70,7 @@ static void GetShiftedComplexXValues(kiss_fft_cpx* fftbuf, FICOMPLEX *out_values
 template<class Tsrc> FIBITMAP* 
 FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shift)
 {
-	int height = FreeImage_GetHeight(src);
-	int width = FreeImage_GetWidth(src);
+	int height, width;
 
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -86,16 +85,17 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 	kiss_fft_cpx* fftbuf;
 	kiss_fft_cpx* fftoutbuf;
 
-	// dims needs to be rows, cols, if you have contiguous rows)
-	dims[0] = height;
-	dims[1] = width;
+	// dims needs to be {rows, cols}, if you have contiguous rows.
+	dims[0] = height = FreeImage_GetHeight(src);
+	dims[1] = width = FreeImage_GetWidth(src);
 	
 	fftbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) );
 	fftoutbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) ); 
 	
 	st = kiss_fftnd_alloc (dims, ndims, inverse, 0, 0);
 
-	for(y = 0; y < height; y++) { 
+	
+	for(y = height - 1; y >= 0; y--) { 
 		
 		bits = (Tsrc *) FreeImage_GetScanLine(src, y);
 		
@@ -103,7 +103,7 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 		
 			fftbuf[i].r = (float) bits[x];
    		    fftbuf[i].i = 0.0;
-   		    
+   		 
    		    i++;
 		}
 	}

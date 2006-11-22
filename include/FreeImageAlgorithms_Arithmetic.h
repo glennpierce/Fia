@@ -10,6 +10,9 @@ extern "C" {
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Transpose(FIBITMAP *src);
 
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Log(FIBITMAP *src);
+
 DLL_API int DLL_CALLCONV 
 FreeImageAlgorithms_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src);
 
