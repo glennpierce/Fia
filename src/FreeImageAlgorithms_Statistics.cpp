@@ -368,4 +368,102 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
 }
 
 
+int DLL_CALLCONV
+FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area)
+{
+	int bpp = FreeImage_GetBPP(src);
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+	long size = width * height;  	
+   	
+	int whites = 0;
 
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src); 
+
+	if(type != FIT_BITMAP || bpp > 8)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	unsigned char *src_bits = (unsigned char *) FreeImage_GetBits(src);   
+
+	for(int i=0; i < size; i++) {
+	
+		const unsigned char pixel = *src_bits++;
+	
+		if(pixel >= 1)
+			whites++;
+	}
+
+	*white_area = (double) whites / size;
+	*black_area = 1 - *white_area;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
+													int *tp, int *tn, int *fp, int *fn)
+{
+	*tp = 0; *tn = 0, *fp = 0, *fn = 0;
+
+	if(!src || !result)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(FreeImage_GetBPP(src) != FreeImage_GetBPP(result))
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(FreeImage_GetImageType(src) != FreeImage_GetImageType(result))
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+	int pitch = FreeImage_GetPitch(src);
+
+	if(width != FreeImage_GetWidth(result))
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(height != FreeImage_GetHeight(result))
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(pitch != FreeImage_GetPitch(result))
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	BYTE src_tmp, result_tmp;
+	BYTE *src_bits, *result_bits;
+
+	for(int y = 0; y < height; y++) {
+
+		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src, y));
+		result_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(result, y));
+			
+		for(int x = 0; x < width; x++) {
+
+			src_tmp = src_bits[x];
+			result_tmp = result_bits[x];
+
+			if(src_tmp > 1)
+				src_tmp = 1;
+
+			if(result_tmp > 1)
+				result_tmp = 1;
+
+			// Pixels are the same and 1 increase true positive count.
+			if(src_tmp == 1 && result_tmp == 1)
+				(*tp)++;		
+		
+			// Pixels are the same and 0 increase true negative count.
+			if(src_tmp == 0 && result_tmp == 0)
+				(*tn)++;		
+
+			// Pixel not in src but in result increase false positive.
+			if(src_tmp == 0 && result_tmp == 1) 
+				(*fp)++;
+
+			// Pixel in src image not in result increase false negative.
+			if(src_tmp == 1 && result_tmp == 0) 
+				(*fn)++;		
+		}
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}

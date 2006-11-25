@@ -144,7 +144,7 @@ DLL_CALLCONV CuGetFreeImageAlgorithmsFFTSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_KissTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_KissTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DisplayFFT);
 
 	return suite;

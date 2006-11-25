@@ -16,7 +16,7 @@ MIN(T a, T b)
 {
 	return (a < b) ? a: b;
 }
-
+  
 /** This procedure computes minimum min and maximum max
  of n numbers using only (3n/2) - 2 comparisons.
  min = L[i1] and max = L[i2].

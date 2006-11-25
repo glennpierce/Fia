@@ -5,10 +5,9 @@
 #include <iostream>
 #include "assert.h"
 
-/** Convert a greyscale image of type Tsrc to a 8-bit grayscale dib.
-	Conversion is done using either a linear scaling from [min, max] to [0, 255]
-	or a rounding from src_pixel to (BYTE) MIN(255, MAX(0, q)) where int q = int(src_pixel + 0.5); 
-*/
+/*  Convert a greyscale image to a 8-bit grayscale dib.
+ *	Convert a greyscale image to a 8-bit grayscale dib. Conversion is done using either a linear scaling from [min, max] to [0, 255]. 
+ */
 template<class Tsrc>
 class LINEAR_SCALE
 {
@@ -139,21 +138,9 @@ LINEAR_SCALE<long>				scaleLongImage;
 LINEAR_SCALE<float>				scaleFloatImage;
 LINEAR_SCALE<double>			scaleDoubleImage;
 
-
-// ----------------------------------------------------------
-//   smart convert X to standard FIBITMAP
-// ----------------------------------------------------------
-
-/** Convert image of any type to a standard 8-bit greyscale image.
-For standard images, a clone of the input image is returned.
-When the scale_linear parameter is TRUE, conversion is done by scaling linearly 
-each pixel to an integer value between [0..255]. When it is FALSE, conversion is done 
-by rounding each float pixel to an integer between [0..255]
-@param image Image to convert
-@param scale_linear Linear scaling / rounding switch
-*/
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image) {
+FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)
+{
 	FIBITMAP *dst = NULL;
 
 	if(!src) return NULL;

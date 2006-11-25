@@ -7,7 +7,16 @@
 
 #include "FreeImage.h"
 
-FI_STRUCT (FIABITMAP) { FIBITMAP *fib; int border; };
+/** Data structure for FIABITMAP type (FIBITMAP with a border)
+*/
+typedef struct
+{
+	/// FIBITMAP bitmap.
+	FIBITMAP *fib;
+	/// border size.
+	int border; 
+
+} FIABITMAP;
 
 #define FREEIMAGE_ALGORITHMS_SUCCESS 1
 #define FREEIMAGE_ALGORITHMS_ERROR 0

@@ -377,10 +377,6 @@ FreeImageAlgorithms_DoubleArrayReverse(double *array, long size)
 }
 
 
-/*
-This function returns 0 for 16 bit and higher colour images;
-0 for greyscale images or palettised images (int if the palette is colour.
-*/
 int DLL_CALLCONV
 FreeImageAlgorithms_IsGreyScale(FIBITMAP *src)
 {
@@ -408,7 +404,6 @@ FreeImageAlgorithms_IsGreyScale(FIBITMAP *src)
 
 	return 1;
 }
-
 
 void DLL_CALLCONV
 FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *max)
@@ -479,11 +474,8 @@ FreeImageAlgorithms_GetMaxPosibleValueForFib(FIBITMAP *src, double *max)
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
 	switch(src_type) {
-		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			
-			if(FreeImage_GetBPP(src) == 8)
-				*max = UCHAR_MAX;
-
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit		
+			*max = UCHAR_MAX;
 			break;
 
 		case FIT_UINT16:	
@@ -519,10 +511,7 @@ FreeImageAlgorithms_GetMinPosibleValueForFib(FIBITMAP *src, double *min)
 
 	switch(src_type) {
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			
-			if(FreeImage_GetBPP(src) == 8)
 				*min = 0;
-
 			break;
 
 		case FIT_UINT16:	
@@ -734,7 +723,7 @@ FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT 
 
 /* Midpoint Line algorithm */
 int DLL_CALLCONV
-FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_hist, char *green_hist, char *blue_hist) 
+FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_values, char *green_values, char *blue_values) 
 {  
 	RGBQUAD value;
    	int dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0; 
@@ -774,9 +763,9 @@ FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2,
    		incrNE = 2 * (dy - dx); // NE
   
   	   	FreeImage_GetPixelColor(src, x, y, &value);
-  		*red_hist++ = value.rgbRed;
-  		*green_hist++ = value.rgbGreen;
-  		*blue_hist++ = value.rgbBlue;
+  		*red_values++ = value.rgbRed;
+  		*green_values++ = value.rgbGreen;
+  		*blue_values++ = value.rgbBlue;
    
        	while (x < p2.x) { 
     
@@ -792,9 +781,9 @@ FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2,
            } 
            
            FreeImage_GetPixelColor(src, x, y, &value);
-  		   *red_hist++ = value.rgbRed;
-  		   *green_hist++ = value.rgbGreen;
-  		   *blue_hist++ = value.rgbBlue; 
+  		   *red_values++ = value.rgbRed;
+  		   *green_values++ = value.rgbGreen;
+  		   *blue_values++ = value.rgbBlue; 
   			
     	   len++;
        	} 
@@ -808,9 +797,9 @@ FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2,
    		tmp_y = 0;
    
   	   	FreeImage_GetPixelColor(src, x, y, &value);
-  		*red_hist++ = value.rgbRed;
-  		*green_hist++ = value.rgbGreen;
-  		*blue_hist++ = value.rgbBlue; 
+  		*red_values++ = value.rgbRed;
+  		*green_values++ = value.rgbGreen;
+  		*blue_values++ = value.rgbBlue; 
    
        	for ( tmp_y = 0; tmp_y < abs(p2.y - p1.y); tmp_y++ ) { 
     
@@ -827,9 +816,9 @@ FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2,
           	} 
            
            	FreeImage_GetPixelColor(src, x, y, &value);
-  			*red_hist++ = value.rgbRed;
-  			*green_hist++ = value.rgbGreen;
-  			*blue_hist++ = value.rgbBlue;
+  			*red_values++ = value.rgbRed;
+  			*green_values++ = value.rgbGreen;
+  			*blue_values++ = value.rgbBlue;
   		
     		len++;
        } 
