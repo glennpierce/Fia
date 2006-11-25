@@ -58,7 +58,7 @@ ARITHMATIC<Tsrc>::Log(FIBITMAP *src) {
 	int height = FreeImage_GetHeight(src);
 	int bpp = FreeImage_GetBPP(src);
 
-	if ( (dst = FreeImage_AllocateT(FIT_DOUBLE, height, width, bpp, 0, 0, 0)) == NULL )
+	if ( (dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, bpp, 0, 0, 0)) == NULL )
 		return NULL;
 
 	Tsrc *in_bits;

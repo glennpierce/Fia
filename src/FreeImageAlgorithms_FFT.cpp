@@ -117,7 +117,7 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 
 		int yhalf = height / 2;
 
-		for(y = yhalf; y < height; y++) { 
+		for(y = yhalf - 1; y >= 0; y--) { 
 		
 			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
 
@@ -126,7 +126,7 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 			fftoutbuf += width;
 		}
 
-		for(y = 0; y < yhalf; y++) { 
+		for(y = height -1; y >= yhalf; y--) { 
 		
 			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
 
@@ -137,7 +137,7 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 	}
 	else {
 
-		for(y = 0; y < height; y++) { 
+		for(y = height - 1; y >= 0; y--) { 
 		
 			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
 
