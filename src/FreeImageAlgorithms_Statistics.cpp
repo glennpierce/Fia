@@ -430,7 +430,9 @@ FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *res
 	if(!src || !result)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	if(FreeImage_GetBPP(src) > 8)
+	int bpp = FreeImage_GetBPP(src);
+
+	if(bpp > 8)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	if(FreeImage_GetImageType(src) != FreeImage_GetImageType(result))
@@ -445,12 +447,19 @@ FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *res
 	if(height != FreeImage_GetHeight(result))
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
+	FIBITMAP *src_converted;
+
+	if(bpp < 8)
+		src_converted = FreeImage_ConvertTo8Bits(src);
+	else
+		src_converted = FreeImage_Clone(src);
+
 	BYTE src_tmp, result_tmp;
 	BYTE *src_bits, *result_bits;
 
 	for(int y = 0; y < height; y++) {
 
-		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src, y));
+		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src_converted, y));
 		result_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(result, y));
 			
 		for(int x = 0; x < width; x++) {

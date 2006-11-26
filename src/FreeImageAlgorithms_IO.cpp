@@ -235,7 +235,10 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
 {
 	FIBITMAP *standard_dib, *converted_dib;
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-		
+	
+	if(dib == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
 	// try to guess the file format from the file extension
 	fif = FreeImage_GetFIFFromFilename(filepath);
 	
