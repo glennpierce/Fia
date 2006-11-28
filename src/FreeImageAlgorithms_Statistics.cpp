@@ -368,13 +368,12 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
 }
 
 
-int DLL_CALLCONV
-FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area)
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area)
 {
 	int bpp = FreeImage_GetBPP(src);
 	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
-	long size = width * height;  	
+	int height = FreeImage_GetHeight(src);	
    	
 	int whites = 0;
 
@@ -383,15 +382,37 @@ FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area
 	if(type != FIT_BITMAP || bpp > 8)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	unsigned char *src_bits = (unsigned char *) FreeImage_GetBits(src);   
+	BYTE *src_bits;   
 
-	for(int i=0; i < size; i++) {
+	for(int y = 0; y < height; y++) {
+
+		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src, y));
 	
-		const unsigned char pixel = *src_bits++;
-	
-		if(pixel >= 1)
-			whites++;
+		for(int x = 0; x < width; x++) {
+
+			if(src_bits[x] >= 1)
+				whites++;
+		}
 	}
+
+	*white_area = whites;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area)
+{
+	int bpp = FreeImage_GetBPP(src);
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+	long size = width * height;  	
+   	
+	unsigned int whites = 0;
+
+	if(FreeImageAlgorithms_MonoImageFindWhiteArea(src, &whites) == FREEIMAGE_ALGORITHMS_ERROR)
+		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	*white_area = (double) whites / size;
 	*black_area = 1 - *white_area;
@@ -409,7 +430,7 @@ FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *res
 	if(!src || !result)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	if(FreeImage_GetBPP(src) != FreeImage_GetBPP(result))
+	if(FreeImage_GetBPP(src) > 8)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	if(FreeImage_GetImageType(src) != FreeImage_GetImageType(result))
@@ -417,15 +438,11 @@ FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *res
 
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
-	int pitch = FreeImage_GetPitch(src);
 
 	if(width != FreeImage_GetWidth(result))
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	if(height != FreeImage_GetHeight(result))
-		return FREEIMAGE_ALGORITHMS_ERROR;
-
-	if(pitch != FreeImage_GetPitch(result))
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	BYTE src_tmp, result_tmp;

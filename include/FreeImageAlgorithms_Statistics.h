@@ -23,6 +23,14 @@ DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
 			unsigned long *rhist, unsigned long *ghist, unsigned long *bhist);
 
+
+/*
+ * This function finds the the amount of white ie area in a monochrome image.
+ * This works with 8 bit images by assuming everything above 1 is white.
+ */
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area);
+
 /*
  * This function finds the the amount of white ie area in a monochrome image.
  * This works with 8 bit images by assuming everything above 1 is white.
