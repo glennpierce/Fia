@@ -428,6 +428,21 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
 DLL_API FIABITMAP DLL_CALLCONV
 FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border);
 
+
+/** \brief Thresholds a float image.
+ *
+ *  Converts a bitmap to 8-bit monochrome bitmap ie values of 0 and 255 using a threshold
+ *  T between [0.0..].
+
+ *  \param src Image to threshold.
+ *  \param t Value to threshold on
+ *  \param min Value that pixels below t are set to.
+ *  \param max Value that pixels above and equal to t are set to.
+ *  \return FIBITMAP 8bit fi bitmap with pixel values between min and max.
+*/
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max);
+
 #ifdef __cplusplus
 }
 #endif

@@ -955,3 +955,42 @@ FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border)
 
 	return dst;
 }
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max)
+{
+	FIBITMAP *dst;
+	float *src_bits;
+	BYTE *dst_bits;
+	int height,width;
+	
+	if (!src)
+		return NULL;
+
+	if(FreeImage_GetImageType(src) != FIT_FLOAT &&
+		FreeImage_GetImageType(src) != FIT_DOUBLE)
+		return NULL;
+
+	width = FreeImage_GetWidth(src);
+	height = FreeImage_GetHeight(src);
+
+	dst = FreeImage_Allocate(width, height, 8, 0, 0, 0);
+	FreeImageAlgorithms_SetGreyLevelPalette(dst);
+
+	for (int y=0; y < height; y++)
+	{
+		src_bits = (float*) FreeImage_GetScanLine(src, y);
+		dst_bits = (BYTE*) FreeImage_GetScanLine(dst, y);
+			
+		for (int x=0; x < width; x++)
+		{
+			if(src_bits[x] < t)
+				dst_bits[x] = min;
+			else
+				dst_bits[x] = max;
+		}
+	}
+
+	return dst;	
+}
