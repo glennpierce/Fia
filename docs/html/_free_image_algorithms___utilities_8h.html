@@ -148,6 +148,9 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API <a class="el" href="struct_f_i_a_b_i_t_m_a_p.html">FIABITMAP</a> DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#e30f2ea2e575815554403b2811d911de">FreeImageAlgorithms_AddBorder</a> (FIBITMAP *src, int border)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds a border to an image.  <a href="#e30f2ea2e575815554403b2811d911de"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#d16ca23eeff4e3309768c0842953ad02">FreeImageAlgorithms_FloatThreshold</a> (FIBITMAP *src, float t, BYTE min, BYTE max)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Thresholds a float image.  <a href="#d16ca23eeff4e3309768c0842953ad02"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Provides various utility methods. <hr><h2>Function Documentation</h2>
@@ -1187,6 +1190,59 @@ Reverse a array of float.
 
 </div>
 </div><p>
+<a class="anchor" name="d16ca23eeff4e3309768c0842953ad02"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_FloatThreshold" ref="d16ca23eeff4e3309768c0842953ad02" args="(FIBITMAP *src, float t, BYTE min, BYTE max)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API FIBITMAP* DLL_CALLCONV FreeImageAlgorithms_FloatThreshold           </td>
+          <td>(</td>
+          <td class="paramtype">FIBITMAP *&nbsp;</td>
+          <td class="paramname"> <em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float&nbsp;</td>
+          <td class="paramname"> <em>t</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BYTE&nbsp;</td>
+          <td class="paramname"> <em>min</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BYTE&nbsp;</td>
+          <td class="paramname"> <em>max</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Thresholds a float image. 
+<p>
+Converts a bitmap to 8-bit monochrome bitmap ie values of 0 and 255 using a threshold T between [0.0..].<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to threshold. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>t</em>&nbsp;</td><td>Value to threshold on </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>min</em>&nbsp;</td><td>Value that pixels below t are set to. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>max</em>&nbsp;</td><td>Value that pixels above and equal to t are set to. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP 8bit fi bitmap with pixel values between min and max. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="a37abedd4ab6c5cfcdf3bd0532f08c6e"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_GetCharPixelValuesForLine" ref="a37abedd4ab6c5cfcdf3bd0532f08c6e" args="(FIBITMAP *src, POINT p1, POINT p2, char *values)" -->
 <div class="memitem">
 <div class="memproto">
@@ -2020,7 +2076,7 @@ Reverse a array of unsigned short int.
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Thu Nov 23 11:48:17 2006 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Nov 29 16:21:39 2006 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>

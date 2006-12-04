@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;"
-				PreprocessorDefinitions="WIN32; FREEIMAGE_EXPORTS"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
+				PreprocessorDefinitions="WIN32; ;_DEBUG;FREEIMAGE_EXPORTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -64,7 +64,8 @@
 			<Tool
 				Name="VCLinkerTool"
 				IgnoreImportLibrary="true"
-				AdditionalDependencies="FreeImage.lib gdiplus.lib FreeImageIcs.lib"
+				LinkLibraryDependencies="false"
+				AdditionalDependencies="FreeImage.lib  user32.lib gdi32.lib  $(NOINHERIT)"
 				OutputFile="$(OutDir)\$(ProjectName).exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../../../bin"
@@ -124,7 +125,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;;&quot;C:\Documents and Settings\Glenn\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Documents and Settings\Pierce\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\src\KissFFT&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\Tests&quot;;&quot;C:\Documents and Settings\Pierce\Desktop\Working Area\Libraries\FreeImageAlgorithms\trunk\include&quot;"
 				PreprocessorDefinitions="WIN32;FREEIMAGE_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"
@@ -144,7 +145,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="FreeImage.lib gdiplus.lib"
+				LinkLibraryDependencies="false"
+				AdditionalDependencies="FreeImage.lib  user32.lib gdi32.lib  $(NOINHERIT)"
 				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../../../bin"
@@ -197,6 +199,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\src\FreeImageAlgorithms_Convolution.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\src\FreeImageAlgorithms_Error.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\src\FreeImageAlgorithms_FFT.cpp"
 				>
 			</File>
@@ -239,7 +249,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\include\_kiss_fft_guts.h"
+				RelativePath=".\src\KissFFT\_kiss_fft_guts.h"
 				>
 			</File>
 			<File
@@ -259,6 +269,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\include\FreeImageAlgorithms_Convolution.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\FreeImageAlgorithms_Error.h"
+				>
+			</File>
+			<File
 				RelativePath=".\include\FreeImageAlgorithms_FFT.h"
 				>
 			</File>
@@ -271,15 +289,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\FreeImageAlgorithms_IO_Utils.h"
-				>
-			</File>
-			<File
 				RelativePath=".\include\FreeImageAlgorithms_LinearScale.h"
-				>
-			</File>
-			<File
-				RelativePath=".\include\FreeImageAlgorithms_MetaData.h"
 				>
 			</File>
 			<File
@@ -304,6 +314,14 @@
 			</File>
 			<File
 				RelativePath=".\include\kiss_fftnd.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\libics.h"
+				>
+			</File>
+			<File
+				RelativePath=".\include\libics_conf.h"
 				>
 			</File>
 		</Filter>

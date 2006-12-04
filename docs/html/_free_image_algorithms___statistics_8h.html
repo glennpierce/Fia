@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-<title>FreeImageAlgorithms: Desktop/Working Area/Libraries/FreeImageAlgorithms/trunk/include/FreeImageAlgorithms_Statistics.h File Reference</title>
+<title>FreeImageAlgorithms: include/FreeImageAlgorithms_Statistics.h File Reference</title>
 <link href="doxygen.css" rel="stylesheet" type="text/css">
 <link href="tabs.css" rel="stylesheet" type="text/css">
 </head><body>
@@ -16,26 +16,36 @@
     <li><a href="files.html"><span>File&nbsp;List</span></a></li>
     <li><a href="globals.html"><span>Globals</span></a></li>
   </ul></div>
-<h1>Desktop/Working Area/Libraries/FreeImageAlgorithms/trunk/include/FreeImageAlgorithms_Statistics.h File Reference</h1><code>#include &quot;<a class="el" href="_free_image_algorithms_8h.html">FreeImageAlgorithms.h</a>&quot;</code><br>
-<table border="0" cellpadding="0" cellspacing="0">
+<h1>include/FreeImageAlgorithms_Statistics.h File Reference</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#e5e6e27331cdc9db75bc5633887726ca">FreeImageAlgorithms_HistEq_Random_Additions</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Equalise and image using histogram equalisation with random additions.  <a href="#e5e6e27331cdc9db75bc5633887726ca"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#b4c5c09839a1528463f03b50a3ea6b1c">FreeImageAlgorithms_HistEq</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Equalise and image using histogram equalisation.  <a href="#b4c5c09839a1528463f03b50a3ea6b1c"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API double DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#93a6378e75173f1466b603b047e1b719">FreeImageAlgorithms_GetGreyLevelAverage</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculate the greylevel average of all the pixels.  <a href="#93a6378e75173f1466b603b047e1b719"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#9e3366aa15d39417ce348c74de30ad11">FreeImageAlgorithms_Histogram</a> (FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the histogram for a greylevel image.  <a href="#9e3366aa15d39417ce348c74de30ad11"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#75bb42e915852845f6d48eb1a78a3231">FreeImageAlgorithms_RGBHistogram</a> (FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *rhist, unsigned long *ghist, unsigned long *bhist)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Return the histogram for a rgb image.  <a href="#75bb42e915852845f6d48eb1a78a3231"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#a6d84b9347c9629eac63fe46a194a1f5">FreeImageAlgorithms_MonoImageFindWhiteArea</a> (FIBITMAP *src, unsigned int *white_area)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This function finds the the amount of white ie area in a monochrome image. This works with 8 bit images by assuming everything above 1 is white.  <a href="#a6d84b9347c9629eac63fe46a194a1f5"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#7a1c3e7b23e30cc901624d861b3e23f7">FreeImageAlgorithms_MonoImageFindWhiteFraction</a> (FIBITMAP *src, double *white_area, double *black_area)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This function finds the the amount of white ie area in a monochrome image. This works with 8 bit images by assuming everything above 1 is white.  <a href="#7a1c3e7b23e30cc901624d861b3e23f7"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___statistics_8h.html#62767361ff483bd55dbe5a53f7b43a18">FreeImageAlgorithms_MonoTrueFalsePositiveComparison</a> (FIBITMAP *src, FIBITMAP *result, int *tp, int *tn, int *fp, int *fn)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This function determines how a detail is present though two images.  <a href="#62767361ff483bd55dbe5a53f7b43a18"></a><br></td></tr>
 </table>
-<hr><h2>Function Documentation</h2>
+<hr><a name="_details"></a><h2>Detailed Description</h2>
+Provides various statistical methods for FIBITMAP's. <hr><h2>Function Documentation</h2>
 <a class="anchor" name="93a6378e75173f1466b603b047e1b719"></a><!-- doxytag: member="FreeImageAlgorithms_Statistics.h::FreeImageAlgorithms_GetGreyLevelAverage" ref="93a6378e75173f1466b603b047e1b719" args="(FIBITMAP *src)" -->
 <div class="memitem">
 <div class="memproto">
@@ -53,6 +63,14 @@
 <div class="memdoc">
 
 <p>
+Calculate the greylevel average of all the pixels. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to perform the average calculation operation on. Must be a greylevel image. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>double Average value on success or 0.0 on error. </dd></dl>
 
 </div>
 </div><p>
@@ -73,6 +91,14 @@
 <div class="memdoc">
 
 <p>
+Equalise and image using histogram equalisation. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to perform the equalisation operation on. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP on success or NULL on error. </dd></dl>
 
 </div>
 </div><p>
@@ -93,6 +119,14 @@
 <div class="memdoc">
 
 <p>
+Equalise and image using histogram equalisation with random additions. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to perform the equalisation operation on. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP on success or NULL on error. </dd></dl>
 
 </div>
 </div><p>
@@ -140,7 +174,46 @@
 <div class="memdoc">
 
 <p>
+Return the histogram for a greylevel image. 
+<p>
 Calculate the histogram for the image. Does not work with colour images. 
+</div>
+</div><p>
+<a class="anchor" name="a6d84b9347c9629eac63fe46a194a1f5"></a><!-- doxytag: member="FreeImageAlgorithms_Statistics.h::FreeImageAlgorithms_MonoImageFindWhiteArea" ref="a6d84b9347c9629eac63fe46a194a1f5" args="(FIBITMAP *src, unsigned int *white_area)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_MonoImageFindWhiteArea           </td>
+          <td>(</td>
+          <td class="paramtype">FIBITMAP *&nbsp;</td>
+          <td class="paramname"> <em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned int *&nbsp;</td>
+          <td class="paramname"> <em>white_area</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+This function finds the the amount of white ie area in a monochrome image. This works with 8 bit images by assuming everything above 1 is white. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to perform the histogram operation on. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>white_area</em>&nbsp;</td><td>unsigned int * Counts of pixels above or equal to 1. </td></tr>
+  </table>
+</dl>
+
 </div>
 </div><p>
 <a class="anchor" name="7a1c3e7b23e30cc901624d861b3e23f7"></a><!-- doxytag: member="FreeImageAlgorithms_Statistics.h::FreeImageAlgorithms_MonoImageFindWhiteFraction" ref="7a1c3e7b23e30cc901624d861b3e23f7" args="(FIBITMAP *src, double *white_area, double *black_area)" -->
@@ -175,6 +248,16 @@ Calculate the histogram for the image. Does not work with colour images.
 <div class="memdoc">
 
 <p>
+This function finds the the amount of white ie area in a monochrome image. This works with 8 bit images by assuming everything above 1 is white. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to perform the histogram operation on. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>white_area</em>&nbsp;</td><td>double * Fraction of pixels above or equal to 1. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>black_area</em>&nbsp;</td><td>double * Fraction of pixels below 1. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -228,6 +311,19 @@ Calculate the histogram for the image. Does not work with colour images.
 <div class="memdoc">
 
 <p>
+This function determines how a detail is present though two images. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to perform the comparison on. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>result</em>&nbsp;</td><td>FIBITMAP bitmap to perform the comparison on. This is the expected result image ie gold standard. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>tp</em>&nbsp;</td><td>int * (True Positive) A detail present in src is also in result. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>tn</em>&nbsp;</td><td>int * (True Negative) A detail not in src is not in result ie two pixels that are 0. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>fp</em>&nbsp;</td><td>int * (False Positive) A detail not in src is in result. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>fn</em>&nbsp;</td><td>int * (False Negative) A detail in src is not in result. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -287,10 +383,25 @@ Calculate the histogram for the image. Does not work with colour images.
 <div class="memdoc">
 
 <p>
+Return the histogram for a rgb image. 
+<p>
+This function is different from the FreeImage_GetHist as you can specify how to bin values.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to perform the histogram operation on. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>min</em>&nbsp;</td><td>The minimum value where binning or histogram counting begins. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>max</em>&nbsp;</td><td>The maximum value where binning or histogram counting ends. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>number_of_bins</em>&nbsp;</td><td>How many bins you want between min and max. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>rhist</em>&nbsp;</td><td>Long pointer to the red histogram data. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>ghist</em>&nbsp;</td><td>Long pointer to the green histogram data. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>bhist</em>&nbsp;</td><td>Long pointer to the blue histogram data. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Nov 22 14:16:20 2006 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Nov 29 16:21:39 2006 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>
