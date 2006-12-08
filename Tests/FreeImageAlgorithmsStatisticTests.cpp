@@ -37,8 +37,6 @@ TestFreeImageAlgorithms_MonoAreaTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_MonoComparisonTest(CuTest* tc)
 {
-	double white_area, black_area;
-
 	char *file1 = IMAGE_DIR "\\texture.bmp";
 	char *file2 = IMAGE_DIR "\\mask.bmp";
 
@@ -56,13 +54,15 @@ TestFreeImageAlgorithms_MonoComparisonTest(CuTest* tc)
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
 
-	std::cout << "True Positive: " << tp
-		<< "\nTrue Negative: " << tn
-		<< "\nFalse Positive: " << fp
-		<< "\nFalse Negative: " << fn << std::endl;
+	//std::cout << "True Positive: " << tp
+	//	<< "\nTrue Negative: " << tn
+	//	<< "\nFalse Positive: " << fp
+	//	<< "\nFalse Negative: " << fn << std::endl;
 	
-	//CuAssertTrue(tc, x == 0.54);
-	//CuAssertTrue(tc, white_area + black_area == 1.0);
+	CuAssertTrue(tc, tp == 35400);
+	CuAssertTrue(tc, tn == 889);
+	CuAssertTrue(tc, fp == 18);
+	CuAssertTrue(tc, fn == 29229);
 }
 
 
