@@ -102,8 +102,9 @@ FreeImageAlgorithms_FindDoubleMinMax(const double *data, long n, double *min, do
  *  \param data Array of char data.
  *  \param n Number of entries in the array.
  *  \param max Maximum value to found in the data.
+ *  \return char the max value found.
 */
-DLL_API long DLL_CALLCONV
+DLL_API char DLL_CALLCONV
 FreeImageAlgorithms_FindCharMax(const char *data, long n, char *max);
 
 /** \brief Find the maximum values in a unsigned char array.
@@ -111,8 +112,9 @@ FreeImageAlgorithms_FindCharMax(const char *data, long n, char *max);
  *  \param data Array of unsigned char data.
  *  \param n Number of entries in the array.
  *  \param max Maximum value to found in the data.
+ *  \return unsigned char the max value found.
 */
-DLL_API long DLL_CALLCONV
+DLL_API unsigned char DLL_CALLCONV
 FreeImageAlgorithms_FindUCharMax(const unsigned char *data, long n, unsigned char *max);
 
 /** \brief Find the maximum values in a int array.
@@ -120,8 +122,9 @@ FreeImageAlgorithms_FindUCharMax(const unsigned char *data, long n, unsigned cha
  *  \param data Array of int data.
  *  \param n Number of entries in the array.
  *  \param max Maximum value to found in the data.
+ *  \return int the max value found.
 */
-DLL_API long DLL_CALLCONV
+DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_FindIntMax(const int *data, long n, int *max);
 
 /** \brief Find the maximum values in a short int array.
@@ -129,8 +132,9 @@ FreeImageAlgorithms_FindIntMax(const int *data, long n, int *max);
  *  \param data Array of short int data.
  *  \param n Number of entries in the array.
  *  \param max Maximum value to found in the data.
+ *  \return short the max value found.
 */
-DLL_API long DLL_CALLCONV
+DLL_API short DLL_CALLCONV
 FreeImageAlgorithms_FindShortMax(const short *data, long n, short *max);
 
 /** \brief Find the maximum values in a unsigned short array.
@@ -138,8 +142,9 @@ FreeImageAlgorithms_FindShortMax(const short *data, long n, short *max);
  *  \param data Array of unsigned short data.
  *  \param n Number of entries in the array.
  *  \param max Maximum value to found in the data.
+ *  \return unsigned short the max value found.
 */
-DLL_API long DLL_CALLCONV
+DLL_API unsigned short DLL_CALLCONV
 FreeImageAlgorithms_FindUShortMax(const unsigned short *data, long n, unsigned short *max);
 
 /** \brief Find the maximum values in a float array.
@@ -147,8 +152,9 @@ FreeImageAlgorithms_FindUShortMax(const unsigned short *data, long n, unsigned s
  *  \param data Array of float data.
  *  \param n Number of entries in the array.
  *  \param max Maximum value to found in the data.
+ *  \return float the max value found.
 */
-DLL_API long DLL_CALLCONV
+DLL_API float DLL_CALLCONV
 FreeImageAlgorithms_FindFloatMax(const float *data, long n, float *max);
 
 /** \brief Find the maximum values in a double array.
@@ -156,8 +162,9 @@ FreeImageAlgorithms_FindFloatMax(const float *data, long n, float *max);
  *  \param data Array of double data.
  *  \param n Number of entries in the array.
  *  \param max Maximum value to found in the data.
+ *  \return double the max value found.
 */
-DLL_API long DLL_CALLCONV
+DLL_API double DLL_CALLCONV
 FreeImageAlgorithms_FindDoubleMax(const double *data, long n, double *max);
 
 /** \brief Find the mininum and maximum values in a greyscale FIBITMAP.
@@ -182,6 +189,7 @@ FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double 
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_CharArrayReverse(char *array, long size);
@@ -190,6 +198,7 @@ FreeImageAlgorithms_CharArrayReverse(char *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_UCharArrayReverse(unsigned char *array, long size);
@@ -198,6 +207,7 @@ FreeImageAlgorithms_UCharArrayReverse(unsigned char *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_ShortArrayReverse(short *array, long size);
@@ -206,6 +216,7 @@ FreeImageAlgorithms_ShortArrayReverse(short *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_UShortArrayReverse(unsigned short *array, long size);
@@ -214,6 +225,7 @@ FreeImageAlgorithms_UShortArrayReverse(unsigned short *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_IntArrayReverse(int *array, long size);
@@ -222,6 +234,7 @@ FreeImageAlgorithms_IntArrayReverse(int *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_UIntArrayReverse(unsigned int *array, long size);
@@ -230,6 +243,7 @@ FreeImageAlgorithms_UIntArrayReverse(unsigned int *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_LongArrayReverse(long *array, long size);
@@ -238,6 +252,7 @@ FreeImageAlgorithms_LongArrayReverse(long *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_ULongArrayReverse(unsigned long *array, long size);
@@ -246,6 +261,7 @@ FreeImageAlgorithms_ULongArrayReverse(unsigned long *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_FloatArrayReverse(float *array, long size);
@@ -254,6 +270,7 @@ FreeImageAlgorithms_FloatArrayReverse(float *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_DoubleArrayReverse(double *array, long size);
@@ -261,6 +278,7 @@ FreeImageAlgorithms_DoubleArrayReverse(double *array, long size);
 /** \brief Return 1 if a 16bit image is really 12bit.
  *
  *  \param src FIBITMAP bitmap.
+ *  \return 1 if the image is 12bit 0 if not.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Is16BitReally12BitImage(FIBITMAP *src);
@@ -299,12 +317,12 @@ FreeImageAlgorithms_GetMinPosibleValueForFib(FIBITMAP *src, double *min);
 
 /** \brief Returns 1 if the FIBITMAP is a greyscale image.
  *
- *
  *	This function returns 0 for 16 bit and higher colour images.
  *	It returns 1 for greyscale images or palettised images. Note the palatte could
  *  be colour so be careful.
  *
  *  \param src FIBITMAP bitmap.
+ *  \return 1 if the image is greyscale.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_IsGreyScale(FIBITMAP *src);
@@ -316,6 +334,7 @@ FreeImageAlgorithms_IsGreyScale(FIBITMAP *src);
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *values); 
@@ -327,6 +346,7 @@ FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned char *values);
@@ -338,6 +358,7 @@ FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, short *values); 
@@ -349,6 +370,7 @@ FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned short *values); 
@@ -360,6 +382,7 @@ FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT 
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, float *values); 
@@ -371,6 +394,7 @@ FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, double *values); 
@@ -384,6 +408,7 @@ FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT 
  *  \param red_values Returned red values along line.
  *  \param green_values Returned green values along line.
  *  \param blue_values Returned blue values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_values, char *green_values, char *blue_values);
@@ -402,6 +427,7 @@ FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top)
  *
  *  \param dib1 first FIBITMAP bitmap.
  *  \param dib2 second FIBITMAP bitmap.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2);
@@ -413,6 +439,7 @@ FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2);
  *  \param src FIBITMAP bitmap to clone.
  *  \param width Width of the bitmap.
  *  \param height Height of the bitmap.
+ *  \return FIBITMAP* on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
@@ -423,7 +450,7 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
  *
  *  \param src FIBITMAP bitmap to add a border to.
  *  \param border Size of the border.
-  * \return A FIABITMAP structure containing a FIBITMAP and a border size.
+ *  \return A FIABITMAP structure containing a FIBITMAP and a border size.
 */
 DLL_API FIABITMAP DLL_CALLCONV
 FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border);

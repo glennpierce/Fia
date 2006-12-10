@@ -143,46 +143,46 @@ FreeImageAlgorithms_FindDoubleMinMax(const double *data, long n, double *min, do
 }
 
 
-long DLL_CALLCONV
+char DLL_CALLCONV
 FreeImageAlgorithms_FindCharMax(const char *data, long n, char *max)
 {
-	return FINDMAX(data, n, *max);
+	return (char) FINDMAX(data, n, *max);
 }
 
-long DLL_CALLCONV
+unsigned char DLL_CALLCONV
 FreeImageAlgorithms_FindUCharMax(const unsigned char *data, long n, unsigned char *max)
 {
-	return FINDMAX(data, n, *max);
+	return (unsigned char) FINDMAX(data, n, *max);
 }
 
-long DLL_CALLCONV
+int DLL_CALLCONV
 FreeImageAlgorithms_FindIntMax(const int *data, long n, int *max)
 {
-	return FINDMAX(data, n, *max);
+	return (int) FINDMAX(data, n, *max);
 }
 
-long DLL_CALLCONV
+short DLL_CALLCONV
 FreeImageAlgorithms_FindShortMax(const short *data, long n, short *max)
 {
-	return FINDMAX(data, n, *max);
+	return (short) FINDMAX(data, n, *max);
 }
 
-long DLL_CALLCONV
+unsigned short DLL_CALLCONV
 FreeImageAlgorithms_FindUShortMax(const unsigned short *data, long n, unsigned short *max)
 {
-	return FINDMAX(data, n, *max);
+	return (unsigned short) FINDMAX(data, n, *max);
 }
 
-long DLL_CALLCONV
+float DLL_CALLCONV
 FreeImageAlgorithms_FindFloatMax(const float *data, long n, float *max)
 {
-	return FINDMAX(data, n, *max);
+	return (float) FINDMAX(data, n, *max);
 }
 
-long DLL_CALLCONV
+double DLL_CALLCONV
 FreeImageAlgorithms_FindDoubleMax(const double *data, long n, double *max)
 {
-	return FINDMAX(data, n, *max);
+	return (double) FINDMAX(data, n, *max);
 }
 
 
@@ -384,11 +384,10 @@ FreeImageAlgorithms_IsGreyScale(FIBITMAP *src)
 
 	switch(image_type)
 	{
-		case
-			 FIT_RGB16:
-			 FIT_RGBA16:
-			 FIT_RGBF:
-			 FIT_RGBAF:
+		case FIT_RGB16:
+		case FIT_RGBA16:
+		case FIT_RGBF:
+		case FIT_RGBAF:
 		{
 			return 0;
 		}

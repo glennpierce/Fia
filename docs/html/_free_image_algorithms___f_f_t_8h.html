@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-<title>FreeImageAlgorithms: Desktop/Working Area/Libraries/FreeImageAlgorithms/trunk/include/FreeImageAlgorithms_FFT.h File Reference</title>
+<title>FreeImageAlgorithms: include/FreeImageAlgorithms_FFT.h File Reference</title>
 <link href="doxygen.css" rel="stylesheet" type="text/css">
 <link href="tabs.css" rel="stylesheet" type="text/css">
 </head><body>
@@ -16,16 +16,18 @@
     <li><a href="files.html"><span>File&nbsp;List</span></a></li>
     <li><a href="globals.html"><span>Globals</span></a></li>
   </ul></div>
-<h1>Desktop/Working Area/Libraries/FreeImageAlgorithms/trunk/include/FreeImageAlgorithms_FFT.h File Reference</h1><code>#include &quot;<a class="el" href="_free_image_algorithms_8h.html">FreeImageAlgorithms.h</a>&quot;</code><br>
-<table border="0" cellpadding="0" cellspacing="0">
+<h1>include/FreeImageAlgorithms_FFT.h File Reference</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___f_f_t_8h.html#f7acd048c7285b9597c16cfe9ce434a6">FreeImageAlgorithms_FFT</a> (FIBITMAP *src, int inverse, int shift)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates a HBITMAP.  <a href="#f7acd048c7285b9597c16cfe9ce434a6"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___f_f_t_8h.html#c03400aba493cde683fbe23f5583358c">FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Creates a FIT_DOUBLE absolute image from a complex image.  <a href="#c03400aba493cde683fbe23f5583358c"></a><br></td></tr>
 </table>
-<hr><h2>Function Documentation</h2>
+<hr><a name="_details"></a><h2>Detailed Description</h2>
+Provides FFT methods. <hr><h2>Function Documentation</h2>
 <a class="anchor" name="c03400aba493cde683fbe23f5583358c"></a><!-- doxytag: member="FreeImageAlgorithms_FFT.h::FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued" ref="c03400aba493cde683fbe23f5583358c" args="(FIBITMAP *src)" -->
 <div class="memitem">
 <div class="memproto">
@@ -43,6 +45,14 @@
 <div class="memdoc">
 
 <p>
+Creates a FIT_DOUBLE absolute image from a complex image. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP complex image. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP* on success and NULL on error. </dd></dl>
 
 </div>
 </div><p>
@@ -78,10 +88,20 @@
 <div class="memdoc">
 
 <p>
+Creates a HBITMAP. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>inverse</em>&nbsp;</td><td>Whether to perform a inverse fourier transform. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>shift</em>&nbsp;</td><td>Shift the Zero frequency to the center of the image. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP* on success and NULL on error. </dd></dl>
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Nov 22 14:16:20 2006 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Thu Nov 30 16:05:35 2006 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>

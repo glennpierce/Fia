@@ -55,7 +55,7 @@ STRETCH<Tdst>::StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double ma
 		dst_bits = reinterpret_cast<Tdst *>(FreeImage_GetScanLine(dst, y));
 
 		for(x = 0; x < width; x++) {
-			dst_bits[x] = src_bits[x] * factor;
+			dst_bits[x] = static_cast<Tdst>(src_bits[x] * factor);
 		}
 	}
 

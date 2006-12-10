@@ -95,10 +95,6 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 static void
 TestFreeImageAlgorithms_KissTest(CuTest* tc)
 {
-	kiss_fftnd_cfg st;
-	kiss_fft_cpx* fftbuf;
-	kiss_fft_cpx* fftoutbuf;
-
 	BYTE* bits;
 	FICOMPLEX *complex_bits;
 	int x, y;

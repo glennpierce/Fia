@@ -65,8 +65,6 @@ TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
 
 	char *file = IMAGE_DIR "\\24bit_colour.jpg";
 
-	FIBITMAP *src;
-
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
 	FreeImageAlgorithms_FindMinMaxForColourImage(dib, &min, &max);
@@ -80,8 +78,6 @@ TestFreeImageAlgorithms_UtilityTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_UtilityCompareTest(CuTest* tc)
 {
-	double min, max;
-
 	char *file = IMAGE_DIR "\\24bit_colour.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);

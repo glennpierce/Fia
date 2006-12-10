@@ -50,7 +50,7 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
 
 	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\testy1.jpg", BIT24);
-	assert(dib2 != NULL);
+	CuAssertTrue(tc, dib2 != NULL);
 
 	//FIBITMAP *dib3 = FreeImage_ConvertToStandardType(dib2, 1);
 	ProfileStart("FreeImageAlgorithms_Convert");
@@ -64,29 +64,15 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 3);
 	FreeImageAlgorithms_SaveFIBToFile(dib4.fib, TEMP_DIR "\\testy3.jpg", BIT8);
 
-	
-	//FreeImage_Unload(dib3);
-
 	ProfileStart("FreeImageAlgorithms_Convolve");
 
 	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 3, 3, kernel, 48.0);
-
-	//assert(dib5 != NULL);
-
-	//FreeImage_Unload(dib4.fib);
 
 	ProfileStop("FreeImageAlgorithms_Convolve");
 
 	ProfilePrint();
 
-//	FIBITMAP *dib6 = FreeImage_ConvertToStandardType(dib5, 1);
-
-	//FreeImage_Unload(dib5);
-
 	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\testy4.jpg", BIT24);
-
-	//FreeImage_Unload(dib4.fib);
-	
 }
 
 
