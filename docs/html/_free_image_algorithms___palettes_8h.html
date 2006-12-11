@@ -1,6 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1">
-<title>FreeImageAlgorithms: Desktop/Working Area/Libraries/FreeImageAlgorithms/trunk/include/FreeImageAlgorithms_Palettes.h File Reference</title>
+<title>FreeImageAlgorithms: include/FreeImageAlgorithms_Palettes.h File Reference</title>
 <link href="doxygen.css" rel="stylesheet" type="text/css">
 <link href="tabs.css" rel="stylesheet" type="text/css">
 </head><body>
@@ -16,50 +16,66 @@
     <li><a href="files.html"><span>File&nbsp;List</span></a></li>
     <li><a href="globals.html"><span>Globals</span></a></li>
   </ul></div>
-<h1>Desktop/Working Area/Libraries/FreeImageAlgorithms/trunk/include/FreeImageAlgorithms_Palettes.h File Reference</h1><code>#include &quot;<a class="el" href="_free_image_algorithms_8h.html">FreeImageAlgorithms.h</a>&quot;</code><br>
-<table border="0" cellpadding="0" cellspacing="0">
+<h1>include/FreeImageAlgorithms_Palettes.h File Reference</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#a1f9c58de19679a57bf9d26124d4fbff">FreeImageAlgorithms_CopyPaletteToRGBQUAD</a> (FIBITMAP *src, <a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#a1f9c58de19679a57bf9d26124d4fbff">FreeImageAlgorithms_CopyPaletteToRGBQUAD</a> (FIBITMAP *src, RGBQUAD *palette)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#f1d4ccca8d35d761f0154ec6bf408ee5">FreeImageAlgorithms_CopyPaletteFromRGBQUAD</a> (FIBITMAP *dst, <a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copies the palette for an image to an array of RGBQUAD.  <a href="#a1f9c58de19679a57bf9d26124d4fbff"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#f1d4ccca8d35d761f0154ec6bf408ee5">FreeImageAlgorithms_CopyPaletteFromRGBQUAD</a> (FIBITMAP *dst, RGBQUAD *palette)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copies the palette from an array of RGBQUAD to a FIBITMAP.  <a href="#f1d4ccca8d35d761f0154ec6bf408ee5"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#a3ca81029ccac12e8efa96bdda6d6763">FreeImageAlgorithms_CopyPalette</a> (FIBITMAP *src, FIBITMAP *dst)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#237572d0f8207146c0f48db337b40288">FreeImageAlgorithms_ReversePaletteEntries</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette, unsigned char start, unsigned char <a class="el" href="_free_image_8h.html#156878bfbcff0c64d75da712abe72bd6">size</a>)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copies the palette from one FIBITMAP to another.  <a href="#a3ca81029ccac12e8efa96bdda6d6763"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#237572d0f8207146c0f48db337b40288">FreeImageAlgorithms_ReversePaletteEntries</a> (RGBQUAD *palette, unsigned char start, unsigned char size)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reverses a section or all of an array of RGBQUAD elements.  <a href="#237572d0f8207146c0f48db337b40288"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#c0285134905c9c1c652e463be703ceb7">FreeImageAlgorithms_SetGreyLevelPalette</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a greylevel palette.  <a href="#c0285134905c9c1c652e463be703ceb7"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#fa6bccacf49124406484825463865b74">FreeImageAlgorithms_SetLogColourPalette</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a log palette.  <a href="#fa6bccacf49124406484825463865b74"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#0c239378e7a654c0ea94196c9f116e8c">FreeImageAlgorithms_SetRainBowPalette</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a rainbow palette.  <a href="#0c239378e7a654c0ea94196c9f116e8c"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#e5c8802b8d20413ff7dfc86a06d915f8">FreeImageAlgorithms_SetTemperaturePalette</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a temperature palette.  <a href="#e5c8802b8d20413ff7dfc86a06d915f8"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#b8e3b1f47d51e6c2fc9dae0f2065fd93">FreeImageAlgorithms_SetFalseColourPalette</a> (FIBITMAP *src, double wavelength)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a false colour palette.  <a href="#b8e3b1f47d51e6c2fc9dae0f2065fd93"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#b9eff43e7a6fc15a4e20f436cc7061f8">FreeImageAlgorithms_SetGreyLevelOverLoadPalette</a> (FIBITMAP *src)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a greyscale overload palette.  <a href="#b9eff43e7a6fc15a4e20f436cc7061f8"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#f91e7219d2aea1eaad12a8ce77d9d464">FreeImageAlgorithms_SetSeismicColourPalette</a> (FIBITMAP *src)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#bb809509d09400bc2d6e2085144d8818">FreeImageAlgorithms_GetGreyLevelPalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a seismic palette.  <a href="#f91e7219d2aea1eaad12a8ce77d9d464"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#bb809509d09400bc2d6e2085144d8818">FreeImageAlgorithms_GetGreyLevelPalette</a> (RGBQUAD *palette)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#d2b42bc9902864e3a75f374cd53a340e">FreeImageAlgorithms_GetGreyLevelOverLoadPalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a greyscale pallete into a RGBQUAD array.  <a href="#bb809509d09400bc2d6e2085144d8818"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#d2b42bc9902864e3a75f374cd53a340e">FreeImageAlgorithms_GetGreyLevelOverLoadPalette</a> (RGBQUAD *palette)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#222b0c14374fffc718874f1e7aae528d">FreeImageAlgorithms_GetRainBowPalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a greyscale overload pallete into a RGBQUAD array.  <a href="#d2b42bc9902864e3a75f374cd53a340e"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#222b0c14374fffc718874f1e7aae528d">FreeImageAlgorithms_GetRainBowPalette</a> (RGBQUAD *palette)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#70d35b8238335b409277647393405a9b">FreeImageAlgorithms_GetLogColourPalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a rainbow pallete into a RGBQUAD array.  <a href="#222b0c14374fffc718874f1e7aae528d"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#70d35b8238335b409277647393405a9b">FreeImageAlgorithms_GetLogColourPalette</a> (RGBQUAD *palette)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#2952255f76c7e79b70dabd32274da82b">FreeImageAlgorithms_GetFalseColourPalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette, double wavelength)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a log pallete into a RGBQUAD array.  <a href="#70d35b8238335b409277647393405a9b"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#2952255f76c7e79b70dabd32274da82b">FreeImageAlgorithms_GetFalseColourPalette</a> (RGBQUAD *palette, double wavelength)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#372d2690937935a7bce1ad49905d20b7">FreeImageAlgorithms_GetTemperaturePalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a false colour pallete into a RGBQUAD array.  <a href="#2952255f76c7e79b70dabd32274da82b"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#372d2690937935a7bce1ad49905d20b7">FreeImageAlgorithms_GetTemperaturePalette</a> (RGBQUAD *palette)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#9a52899e6a4041117a9d1a47aa3b60f3">FreeImageAlgorithms_GetSeismicColourPalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a temperature pallete into a RGBQUAD array.  <a href="#372d2690937935a7bce1ad49905d20b7"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#9a52899e6a4041117a9d1a47aa3b60f3">FreeImageAlgorithms_GetSeismicColourPalette</a> (RGBQUAD *palette)</td></tr>
 
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#a4a2f947f9de38d22340f8d44a370d48">FreeImageAlgorithms_GetOpticalDensityPalette</a> (<a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *palette, unsigned char red, unsigned char green, unsigned char blue, int contrast, int entries)</td></tr>
-
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a seismic pallete into a RGBQUAD array.  <a href="#9a52899e6a4041117a9d1a47aa3b60f3"></a><br></td></tr>
 </table>
-<hr><h2>Function Documentation</h2>
+<hr><a name="_details"></a><h2>Detailed Description</h2>
+Provides various palette modification methods. <hr><h2>Function Documentation</h2>
 <a class="anchor" name="a3ca81029ccac12e8efa96bdda6d6763"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_CopyPalette" ref="a3ca81029ccac12e8efa96bdda6d6763" args="(FIBITMAP *src, FIBITMAP *dst)" -->
 <div class="memitem">
 <div class="memproto">
@@ -86,6 +102,15 @@
 <div class="memdoc">
 
 <p>
+Copies the palette from one FIBITMAP to another. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image containing palette. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>dst</em>&nbsp;</td><td>Image to copy palette to. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -102,7 +127,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -115,6 +140,15 @@
 <div class="memdoc">
 
 <p>
+Copies the palette from an array of RGBQUAD to a FIBITMAP. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>dst</em>&nbsp;</td><td>Image to copy palette to. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -131,7 +165,7 @@
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em></td><td>&nbsp;</td>
         </tr>
         <tr>
@@ -144,6 +178,15 @@
 <div class="memdoc">
 
 <p>
+Copies the palette for an image to an array of RGBQUAD. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image containing palette. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD Array to copy palette to. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -154,7 +197,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetFalseColourPalette           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>, </td>
         </tr>
         <tr>
@@ -173,6 +216,15 @@
 <div class="memdoc">
 
 <p>
+Get a false colour pallete into a RGBQUAD array. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>wavelength</em>&nbsp;</td><td>of the false colour palette. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -183,7 +235,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetGreyLevelOverLoadPalette           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -193,6 +245,14 @@
 <div class="memdoc">
 
 <p>
+Get a greyscale overload pallete into a RGBQUAD array. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -203,7 +263,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetGreyLevelPalette           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -213,6 +273,14 @@
 <div class="memdoc">
 
 <p>
+Get a greyscale pallete into a RGBQUAD array. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -223,7 +291,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetLogColourPalette           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -233,59 +301,14 @@
 <div class="memdoc">
 
 <p>
-
-</div>
-</div><p>
-<a class="anchor" name="a4a2f947f9de38d22340f8d44a370d48"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_GetOpticalDensityPalette" ref="a4a2f947f9de38d22340f8d44a370d48" args="(RGBQUAD *palette, unsigned char red, unsigned char green, unsigned char blue, int contrast, int entries)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetOpticalDensityPalette           </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
-          <td class="paramname"> <em>palette</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char&nbsp;</td>
-          <td class="paramname"> <em>red</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char&nbsp;</td>
-          <td class="paramname"> <em>green</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char&nbsp;</td>
-          <td class="paramname"> <em>blue</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>contrast</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>entries</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td width="100%"></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
+Get a log pallete into a RGBQUAD array. 
 <p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -296,7 +319,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetRainBowPalette           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -306,6 +329,14 @@
 <div class="memdoc">
 
 <p>
+Get a rainbow pallete into a RGBQUAD array. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -316,7 +347,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetSeismicColourPalette           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -326,6 +357,14 @@
 <div class="memdoc">
 
 <p>
+Get a seismic pallete into a RGBQUAD array. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -336,7 +375,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetTemperaturePalette           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>          </td>
           <td>&nbsp;)&nbsp;</td>
           <td width="100%"></td>
@@ -346,6 +385,14 @@
 <div class="memdoc">
 
 <p>
+Get a temperature pallete into a RGBQUAD array. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -356,7 +403,7 @@
         <tr>
           <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_ReversePaletteEntries           </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="structtag_r_g_b_q_u_a_d.html">RGBQUAD</a> *&nbsp;</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
           <td class="paramname"> <em>palette</em>, </td>
         </tr>
         <tr>
@@ -381,6 +428,16 @@
 <div class="memdoc">
 
 <p>
+Reverses a section or all of an array of RGBQUAD elements. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>start</em>&nbsp;</td><td>Point to start from in array. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>size</em>&nbsp;</td><td>Number of elements you wish to reverse. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -410,6 +467,15 @@
 <div class="memdoc">
 
 <p>
+Set the pallete of a FIBITMAP image to a false colour palette. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to false colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>wavelength</em>&nbsp;</td><td>Wavelength of the false colour. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -430,6 +496,14 @@
 <div class="memdoc">
 
 <p>
+Set the pallete of a FIBITMAP image to a greyscale overload palette. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to greyscale overload. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -450,6 +524,14 @@
 <div class="memdoc">
 
 <p>
+Set the pallete of a FIBITMAP image to a greylevel palette. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to greyscale. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -470,6 +552,14 @@
 <div class="memdoc">
 
 <p>
+Set the pallete of a FIBITMAP image to a log palette. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to log. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -490,6 +580,14 @@
 <div class="memdoc">
 
 <p>
+Set the pallete of a FIBITMAP image to a rainbow palette. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to rainbow. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -510,6 +608,14 @@
 <div class="memdoc">
 
 <p>
+Set the pallete of a FIBITMAP image to a seismic palette. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to seismic. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -530,10 +636,18 @@
 <div class="memdoc">
 
 <p>
+Set the pallete of a FIBITMAP image to a temperature palette. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to temperature. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Nov 22 14:16:20 2006 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Nov 29 16:46:09 2006 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>
