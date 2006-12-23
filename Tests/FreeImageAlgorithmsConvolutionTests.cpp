@@ -1,12 +1,12 @@
 #include "CuTest.h"
 
 #include "FreeImage.h"
+#include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
 
-#include "profile.h"
 
 static double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -30,9 +30,40 @@ static double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 						  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 					  	  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
+  
+static void
+TestFreeImageAlgorithms_ConvolutionFixedTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
+
+	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_INT32, 1);
+
+	CuAssertTrue(tc, dib3 != NULL);
+
+	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 10);
+
+	ProfileStart("FreeImageAlgorithms_FixedConvolve");
+
+	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 10, 10, kernel, 48.0);
+
+	CuAssertTrue(tc, dib5 != NULL);
+
+	ProfileStop("FreeImageAlgorithms_FixedConvolve");
+
+	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\wallpaper_river_fixed_blured.jpg", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+	FreeImage_Unload(dib3);
+	FreeImage_Unload(dib4.fib);
+	FreeImage_Unload(dib5);
+}
 
 static void
-TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
+TestFreeImageAlgorithms_ConvolutionRealTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
@@ -45,17 +76,15 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
 	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 10);
 
-	ProfileStart("FreeImageAlgorithms_Convolve");
+	ProfileStart("FreeImageAlgorithms_RealConvolve");
 
 	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 10, 10, kernel, 48.0);
 
 	CuAssertTrue(tc, dib5 != NULL);
 
-	ProfileStop("FreeImageAlgorithms_Convolve");
+	ProfileStop("FreeImageAlgorithms_RealConvolve");
 
-	ProfilePrint();
-
-	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\wallpaper_river_blured.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\wallpaper_river_real_blured.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -70,7 +99,8 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionFixedTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionRealTest);
 
 	return suite;
 }

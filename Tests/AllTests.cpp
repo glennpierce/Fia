@@ -30,6 +30,8 @@ void RunAllTests(void)
 	CuSuiteSummary(suite, output);
 	CuSuiteDetails(suite, output);
 	printf("%s\n", output->buffer);
+
+	ProfilePrint();
 }
 
 int __cdecl main(void)

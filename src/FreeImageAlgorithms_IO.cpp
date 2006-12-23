@@ -252,7 +252,8 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
 		else
 			converted_dib = FreeImage_ConvertTo8Bits(standard_dib);
 
-		assert(converted_dib != NULL);
+		if(converted_dib == NULL)
+			return FREEIMAGE_ALGORITHMS_ERROR;
 
 		if(!FreeImage_Save(fif, converted_dib, filepath, 0)) {
 			FreeImageAlgorithms_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");

@@ -7,6 +7,8 @@
 
 #include "FreeImage.h"
 
+#include "profile.h"
+
 /** Data structure for FIABITMAP type (FIBITMAP with a border)
 */
 typedef struct
