@@ -2,12 +2,20 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
-#include <iostream>
-
 #define BLOCKSIZE 8
 
-struct ImageData
+template<class Tsrc>
+class FILTER
 {
+public:
+	FIBITMAP* MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius);
+
+private:
+	
+	inline Tsrc KernelMedian(Tsrc *src_row_ptr);
+	inline void GetRow(Tsrc *ptr, Tsrc *kernel_data);
+	inline Tsrc quick_select(Tsrc arr[], int n);
+
 	int kernel_width;
 	int kernel_height;
 	int x_reminder;
@@ -15,8 +23,9 @@ struct ImageData
 	int x_max_block_size;
 	int y_max_block_size;
 	int src_pitch_in_pixels;
-	double *kernel_tmp_array;
+	Tsrc *kernel_tmp_array;
 };
+
 
 /*
 * This Quickselect routine is based on the algorithm described in
@@ -24,14 +33,8 @@ struct ImageData
 * Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
 * This code by Nicolas Devillard - 1998. Public domain.
 */
-//#define ELEM_SWAP(a,b)
-//{
-//	register float t=(a);(a)=(b);(b)=t;
-//}
-
-//typedef float float;
-
-static inline float quick_select(double arr[], int n)
+template<typename Tsrc>
+inline Tsrc FILTER<Tsrc>::quick_select(Tsrc arr[], int n)
 {
 	int low, high;
 	int median;
@@ -95,19 +98,16 @@ static inline float quick_select(double arr[], int n)
 			high = hh - 1;
 	}
 }
-//#undef ELEM_SWAP
 
-
-
-
-static inline void GetRow(double *ptr, double* kernel_data, ImageData *data)
+template<typename Tsrc>
+inline void FILTER<Tsrc>::GetRow(Tsrc *ptr, Tsrc *kernel_data)
 {
-	int x_max_block_size = data->x_max_block_size;
-	register double *tmp; 
-	register double *result = kernel_data;
+	int x_max_block_size = this->x_max_block_size;
+	register Tsrc *tmp; 
+	register Tsrc *result = kernel_data;
 
-	size_t double_size = sizeof(double);
-	size_t blocksize_in_bytes = double_size * BLOCKSIZE;
+	size_t tsrc_size = sizeof(Tsrc);
+	size_t blocksize_in_bytes = tsrc_size * BLOCKSIZE;
 
 	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
 		 
@@ -119,130 +119,117 @@ static inline void GetRow(double *ptr, double* kernel_data, ImageData *data)
 	tmp = ptr + x_max_block_size;
 	result += x_max_block_size;
 
-	switch(data->x_reminder) {
+	switch(this->x_reminder) {
 		case 7: 
-			memcpy(result, tmp, double_size * 7);
+			memcpy(result, tmp, tsrc_size * 7);
 			break;
 		
 		case 6:
-			memcpy(result, tmp, double_size * 6);
+			memcpy(result, tmp, tsrc_size * 6);
 			break;
 		
 		case 5:
-			memcpy(result, tmp, double_size * 5);
+			memcpy(result, tmp, tsrc_size * 5);
 			break;
 
 		case 4:
-			memcpy(result, tmp, double_size * 4);
+			memcpy(result, tmp, tsrc_size * 4);
 			break;
 		
 		case 3:
-			memcpy(result, tmp, double_size * 3);
+			memcpy(result, tmp, tsrc_size * 3);
 			break;
 
 		case 2:
-			memcpy(result, tmp, double_size * 2);
+			memcpy(result, tmp, tsrc_size * 2);
 			break; 
 
 		case 1:
-			memcpy(result, tmp, double_size * 1);
+			memcpy(result, tmp, tsrc_size * 1);
 	}
 }
 
-//static inline void GetRowDataAndIncrement(double **tmp_ptr, double **array_ptr, ImageData *data)
-//{
-//	GetRow(tmp_ptr, array_ptr, data);
-//	tmp_ptr += data->src_pitch_in_pixels;
-//	array_ptr += data->kernel_width;
-//}
-
-static inline double KernelMedian(double *src_row_ptr, ImageData *data)
+template<typename Tsrc>
+inline Tsrc FILTER<Tsrc>::KernelMedian(Tsrc *src_row_ptr)
 {
-	register int kernel_index = 0;
-	register double *array_ptr = data->kernel_tmp_array;
-	register double *tmp_ptr = src_row_ptr;
+	register Tsrc *array_ptr = this->kernel_tmp_array;
+	register Tsrc *tmp_ptr = src_row_ptr;
 	
-	// Helps to Debug
-	memset(array_ptr, 0, sizeof(double) * data->kernel_width * data->kernel_height);
-
-
-	for(register int row=0; row < data->y_max_block_size; row+=BLOCKSIZE)
+	for(register int row=0; row < this->y_max_block_size; row+=BLOCKSIZE)
 	{  
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 
-		GetRow(tmp_ptr, array_ptr, data);
-		tmp_ptr += data->src_pitch_in_pixels;
-		array_ptr += data->kernel_width;
+		GetRow(tmp_ptr, array_ptr);
+		tmp_ptr += this->src_pitch_in_pixels;
+		array_ptr += this->kernel_width;
 	} 
 		
-	switch(data->y_reminder)
+	switch(this->y_reminder)
 	{
 		case 7:
-			GetRow(tmp_ptr, array_ptr, data);
-			tmp_ptr += data->src_pitch_in_pixels;
-			array_ptr += data->kernel_width;
+			GetRow(tmp_ptr, array_ptr);
+			tmp_ptr += this->src_pitch_in_pixels;
+			array_ptr += this->kernel_width;
 		case 6:
-			GetRow(tmp_ptr, array_ptr, data);
-			tmp_ptr += data->src_pitch_in_pixels;
-			array_ptr += data->kernel_width;  
+			GetRow(tmp_ptr, array_ptr);
+			tmp_ptr += this->src_pitch_in_pixels;
+			array_ptr += this->kernel_width;  
 		case 5:
-			GetRow(tmp_ptr, array_ptr, data);
-			tmp_ptr += data->src_pitch_in_pixels;
-			array_ptr += data->kernel_width;
+			GetRow(tmp_ptr, array_ptr);
+			tmp_ptr += this->src_pitch_in_pixels;
+			array_ptr += this->kernel_width;
 		case 4:
-			GetRow(tmp_ptr, array_ptr, data);
-			tmp_ptr += data->src_pitch_in_pixels;
-			array_ptr += data->kernel_width; 
+			GetRow(tmp_ptr, array_ptr);
+			tmp_ptr += this->src_pitch_in_pixels;
+			array_ptr += this->kernel_width; 
 		case 3:
-			GetRow(tmp_ptr, array_ptr, data);
-			tmp_ptr += data->src_pitch_in_pixels;
-			array_ptr += data->kernel_width;
+			GetRow(tmp_ptr, array_ptr);
+			tmp_ptr += this->src_pitch_in_pixels;
+			array_ptr += this->kernel_width;
 		case 2:
-			GetRow(tmp_ptr, array_ptr, data);
-			tmp_ptr += data->src_pitch_in_pixels;
-			array_ptr += data->kernel_width;
+			GetRow(tmp_ptr, array_ptr);
+			tmp_ptr += this->src_pitch_in_pixels;
+			array_ptr += this->kernel_width;
 		case 1:
-			GetRow(tmp_ptr, array_ptr, data); 
+			GetRow(tmp_ptr, array_ptr); 
 	}
 
 
-	int kernel_length = data->kernel_width * data->kernel_height;
+	int kernel_length = this->kernel_width * this->kernel_height;
 
 	// We must now find and return the median value.
-	return quick_select(data->kernel_tmp_array, kernel_length);
+	return quick_select(this->kernel_tmp_array, kernel_length);
 }
 
-FIBITMAP* FreeImageAlgorithms_MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius)
+template<typename Tsrc>
+FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius)
 {
-	if(!src.fib)
-		return NULL;
-
 	// Border must be large enough to account for kernel radius
 	if(src.border < MAX(kernel_x_radius, kernel_y_radius))
 		return NULL;
@@ -254,42 +241,93 @@ FIBITMAP* FreeImageAlgorithms_MedianFilter(FIABITMAP src, int kernel_x_radius, i
 	const int dst_height = src_image_height - (2 * src.border);
 
 	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
-	
-	if(dst == NULL)
-		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convolve with type.");
 
-	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(double);
+	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
 
-	ImageData data;
+	this->kernel_width = (kernel_x_radius * 2) + 1;
+	this->kernel_height = (kernel_y_radius * 2) + 1;
+	this->x_reminder = this->kernel_width % BLOCKSIZE;
+	this->y_reminder = this->kernel_height % BLOCKSIZE;
+	this->x_max_block_size = (this->kernel_width / BLOCKSIZE) * BLOCKSIZE;
+	this->y_max_block_size = (this->kernel_height / BLOCKSIZE) * BLOCKSIZE;
+	this->src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(Tsrc);
 
-	data.kernel_width = (kernel_x_radius * 2) + 1;
-	data.kernel_height = (kernel_y_radius * 2) + 1;
-	data.x_reminder = data.kernel_width % BLOCKSIZE;
-	data.y_reminder = data.kernel_height % BLOCKSIZE;
-	data.x_max_block_size = (data.kernel_width / BLOCKSIZE) * BLOCKSIZE;
-	data.y_max_block_size = (data.kernel_height / BLOCKSIZE) * BLOCKSIZE;
-	data.src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(double);
-	data.kernel_tmp_array = (double*) malloc(sizeof(double) * data.kernel_width * data.kernel_height);
+	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src.fib);
+	Tsrc *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(dst);
 	
-	double *src_first_pixel_address_ptr = (double*) FreeImage_GetBits(src.fib);
-	double *dst_first_pixel_address_ptr = (double*) FreeImage_GetBits(dst);
+	this->kernel_tmp_array = (Tsrc*) malloc(sizeof(Tsrc) * this->kernel_width * this->kernel_height);
 	
-	register double *dst_ptr;
-	register double *src_row_ptr;
+	register Tsrc *dst_ptr;
+	register Tsrc *src_row_ptr;
 
 	for (register int y=0; y < dst_height; y++)
 	{		
-		src_row_ptr = (src_first_pixel_address_ptr + y * data.src_pitch_in_pixels);
+		src_row_ptr = (src_first_pixel_address_ptr + y * this->src_pitch_in_pixels);
 		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
 
 		for (register int x=0; x < dst_width; x++) 
 		{
-			*dst_ptr++ = KernelMedian(src_row_ptr, &data);
+			*dst_ptr++ = KernelMedian(src_row_ptr);
 			src_row_ptr++;
 		}
 	}
 
-	free(data.kernel_tmp_array);
+	free(this->kernel_tmp_array);
+
+	return dst;
+}
+
+
+FILTER<unsigned char>		filterUCharImage;
+FILTER<unsigned short>		filterUShortImage;
+FILTER<short>				filterShortImage;
+FILTER<unsigned long>		filterULongImage;
+FILTER<long>				filterLongImage;
+FILTER<float>				filterFloatImage;
+FILTER<double>				filterDoubleImage;
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius)
+{
+	FIBITMAP *dst = NULL;
+
+	if(!src.fib)
+		return NULL;
+
+	// convert from src_type to FIT_BITMAP
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src.fib);
+
+	switch(src_type) {
+		
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src.fib) == 8)
+				dst = filterUCharImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			dst = filterUShortImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			dst = filterShortImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			dst = filterULongImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			dst = filterLongImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = filterFloatImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			dst = filterDoubleImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform filter on type.", src_type);
+	}
 
 	return dst;
 }
