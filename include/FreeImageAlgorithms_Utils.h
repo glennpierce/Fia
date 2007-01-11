@@ -76,17 +76,17 @@ FINDMAX(const T* L, long n, T& max)
 }
 
 /// INPLACESWAP adopted from codeguru.com 
-template <class T> void
+template <class T> void inline
 INPLACESWAP(T& a, T& b)
 {
 	a ^= b; b ^= a; a ^= b;
 }
 
 // In place swap doesn't work for float point types
-template <class T> void
+template <class T> void inline
 SWAP(T& a, T& b)
 {
-	T tmp = b;
+	register T tmp = b;
 	
 	b = a;
 	a = tmp;

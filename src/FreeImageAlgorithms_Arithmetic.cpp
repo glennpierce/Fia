@@ -100,7 +100,7 @@ ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
 		return  FREEIMAGE_ALGORITHMS_ERROR;
 
 	// Make dst a double so it can hold all the results of
-	// the arithmatic.
+	// the arithmetic.
 	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
@@ -126,7 +126,7 @@ ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
 		return  FREEIMAGE_ALGORITHMS_ERROR;
 
 	// Make dst a double so it can hold all the results of
-	// the arithmatic.
+	// the arithmetic.
 	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
@@ -151,7 +151,7 @@ ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* src)
 		return  FREEIMAGE_ALGORITHMS_ERROR;
 
 	// Make dst a double so it can hold all the results of
-	// the arithmatic.
+	// the arithmetic.
 	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
@@ -176,7 +176,7 @@ ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMAP* src)
 		return  FREEIMAGE_ALGORITHMS_ERROR;
 
 	// Make dst a double so it can hold all the results of
-	// the arithmatic.
+	// the arithmetic.
 	if(FreeImage_GetImageType(dst) != FIT_DOUBLE)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 

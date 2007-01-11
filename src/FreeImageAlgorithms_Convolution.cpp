@@ -11,6 +11,7 @@ struct ImageData
 	int x_reminder;
 	int y_reminder;
 	int x_max_block_size;
+	int y_max_block_size;
 	int src_pitch_in_pixels;
 };
 
@@ -27,7 +28,7 @@ static inline double SumRow(double *ptr, double *kernel, int kernel_index, Image
 		tmp = ptr + col;
 		kernel_tmp = kernel_index + col;
 
-		sum += *(tmp) * kernel[kernel_index + col] + *(tmp + 1) * kernel[kernel_tmp + 1] + 
+		sum += *(tmp) * kernel[kernel_tmp] + *(tmp + 1) * kernel[kernel_tmp + 1] + 
 			   *(tmp + 2) * kernel[kernel_tmp + 2] + *(tmp + 3) * kernel[kernel_tmp + 3] + 
 			   *(tmp + 4) * kernel[kernel_tmp + 4] + *(tmp + 5) * kernel[kernel_tmp + 5] + 
 			   *(tmp + 6) * kernel[kernel_tmp + 6] + *(tmp + 7) * kernel[kernel_tmp + 7];
@@ -95,7 +96,7 @@ static inline double SumKernel(double *src_row_ptr, double* kernel, ImageData *d
 	register double sum = 0.0;
 	register double *tmp_ptr = src_row_ptr;
 		
-	for(register int row=0; row < data->x_max_block_size; row+=BLOCKSIZE)
+	for(register int row=0; row < data->y_max_block_size; row+=BLOCKSIZE)
 	{  
 		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
@@ -186,6 +187,7 @@ FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, doub
 	data.x_reminder = data.kernel_width % BLOCKSIZE;
 	data.y_reminder = data.kernel_height % BLOCKSIZE;
 	data.x_max_block_size = (data.kernel_width / BLOCKSIZE) * BLOCKSIZE;
+	data.y_max_block_size = (data.kernel_height / BLOCKSIZE) * BLOCKSIZE;
 	data.src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(double);
 
 	double *src_first_pixel_address_ptr = (double*) FreeImage_GetBits(src.fib);

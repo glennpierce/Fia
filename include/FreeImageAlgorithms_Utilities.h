@@ -470,6 +470,17 @@ FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border);
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max);
 
+
+/** \brief Converts to a float image even if the image is in colour.
+ *
+ *  \param src Image to convert.
+ *  \param type FREE_IMAGE_TYPE type to convert to. Can be FIT_FLOAT or FIT_DOUBLE.
+ *  \return FIT_FLOAT image.
+*/
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
+
+
 #ifdef __cplusplus
 }
 #endif

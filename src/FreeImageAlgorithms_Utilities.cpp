@@ -993,3 +993,24 @@ FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max)
 
 	return dst;	
 }
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type)
+{
+	if(src == NULL || (type != FIT_FLOAT && type != FIT_DOUBLE))
+		return NULL;
+
+	FIBITMAP *gs_dib = NULL, *dst = NULL;
+
+	if(FreeImage_GetBPP(src) >= 24 && FreeImage_GetImageType(src) == FIT_BITMAP) // Colour
+		gs_dib = FreeImage_ConvertToGreyscale(src);
+
+	if(gs_dib != NULL) {
+		dst = FreeImage_ConvertToType(gs_dib, type, 1); 
+		FreeImage_Unload(gs_dib);
+	}
+	else
+		dst = FreeImage_ConvertToType(src, type, 1); 
+
+	return dst;
+}
