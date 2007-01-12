@@ -2,6 +2,8 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
+#include <math.h>
+
 #define BLOCKSIZE 8
 
 struct ImageData
@@ -243,6 +245,7 @@ FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
 }
 
 
+// The following code does a lot of loop unrolling for performance.
 template<typename Tsrc>
 Kernel<Tsrc>::Kernel(FIABITMAP src, int x_radius, int y_radius, Tsrc *values, double divider)
 :
@@ -572,15 +575,71 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 								  -2.0, 0.0, 2.0,
 								  -1.0, 0.0, 1.0};
 
-	FilterKernel convolve_kernel = FreeImageAlgorithms_NewKernel(1, 0,
+	double sobel_top_kernel[] = { 1.0, 2.0, 1.0,
+								  0.0, 0.0, 0.0,
+								 -1.0, -2.0, -1.0};
+
+	 
+
+	PROFILE_START("Making Kernels"); 
+
+	FilterKernel convolve_kernel_left = FreeImageAlgorithms_NewKernel(1, 1,
 		sobel_left_kernel, 1.0);
 
-	FIBITMAP* dst = FreeImageAlgorithms_Convolve(src, convolve_kernel);
+	FilterKernel convolve_kernel_top = FreeImageAlgorithms_NewKernel(1, 1,
+		sobel_top_kernel, 1.0);
+
+	PROFILE_STOP("Making Kernels"); 
+
+
+	PROFILE_START("Sobel Left Edge"); 
+
+	FIBITMAP* dib1 = FreeImageAlgorithms_Convolve(src, convolve_kernel_left);
+
+	PROFILE_STOP("Sobel Left Edge"); 
+
+	PROFILE_START("Sobel Top Edge"); 
+
+	FIBITMAP* dib2 = FreeImageAlgorithms_Convolve(src, convolve_kernel_top);
+
+	PROFILE_STOP("Sobel Top Edge"); 
+
+	int dst_width = FreeImage_GetWidth(src);
+	int dst_height = FreeImage_GetHeight(src);
+
+	FIBITMAP *dst = FreeImage_AllocateT(FIT_DOUBLE, dst_width, dst_height,
+										8, 0, 0, 0);
+
+	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(double);
+
+	register double *dst_ptr, *dib1_ptr, *dib2_ptr;
+
+	double *dst_first_pixel_address_ptr = (double*) FreeImage_GetBits(dst);
+	double *dib1_first_pixel_address_ptr = (double*) FreeImage_GetBits(dib1);
+	double *dib2_first_pixel_address_ptr = (double*) FreeImage_GetBits(dib2);
+
+	for (register int y=0; y < dst_height; y++)
+	{		
+		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
+		dib1_ptr = (dib1_first_pixel_address_ptr + y * dst_pitch_in_pixels);
+		dib2_ptr = (dib2_first_pixel_address_ptr + y * dst_pitch_in_pixels);
+
+		for (register int x=0; x < dst_width; x++) 
+		{
+			*dst_ptr++ = sqrt((*dib1_ptr * *dib1_ptr) + (*dib2_ptr * *dib2_ptr));
+			++dib1_ptr;
+			++dib2_ptr;
+		}
+	}
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
 
 	return dst;
 }
 
-
+// Test
+// Seems slow but maybe not for large kernels.
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_SeparableSobel(FIBITMAP *src)
 {
