@@ -9,7 +9,7 @@
 #include "FreeImageAlgorithms_Morphology.h"
 
 static void
-TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
+TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\fillhole_test.jpg";
 
@@ -47,12 +47,52 @@ TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 	FreeImage_Unload(result_dib);
 }
 
+static void
+TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\erosion_test.jpg";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib1 != NULL);
+	
+	FIBITMAP *threshold_dib = FreeImage_Threshold(dib1, 20);
+
+	CuAssertTrue(tc, threshold_dib != NULL);
+
+	FIBITMAP *threshold_8bit_dib = FreeImage_ConvertTo8Bits(threshold_dib);
+
+	CuAssertTrue(tc, threshold_8bit_dib != NULL);
+
+	FreeImageAlgorithms_SetGreyLevelOverLoadPalette(threshold_8bit_dib);
+
+	FIABITMAP border_dib = FreeImageAlgorithms_AddBorder(threshold_8bit_dib, 1);
+
+	ProfileStart("ErosionFilter");
+
+	FIBITMAP* result_dib = FreeImageAlgorithms_Erosion(border_dib);
+
+	CuAssertTrue(tc, result_dib != NULL);
+
+	ProfileStop("ErosionFilter");
+
+	FreeImageAlgorithms_SaveFIBToFile(threshold_dib, TEMP_DIR "\\erosion_threshold.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\erosion_result.jpg", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(threshold_dib);
+	FreeImage_Unload(threshold_8bit_dib);
+	FreeImage_Unload(border_dib.fib);
+	FreeImage_Unload(result_dib);
+}
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsMorphologySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DilationTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ErosionTest);
 
 	return suite;
 }
