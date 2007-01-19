@@ -231,14 +231,14 @@ template<typename Tsrc>
 FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius)
 {
 	// Border must be large enough to account for kernel radius
-	if(src.border < MAX(kernel_x_radius, kernel_y_radius))
+	if(src.xborder < kernel_x_radius || src.yborder < kernel_y_radius)
 		return NULL;
 
 	const int src_image_width = FreeImage_GetWidth(src.fib);
 	const int src_image_height = FreeImage_GetHeight(src.fib);
  
-	const int dst_width = src_image_width - (2 * src.border);
-	const int dst_height = src_image_height - (2 * src.border);
+	const int dst_width = src_image_width - (2 * src.xborder);
+	const int dst_height = src_image_height - (2 * src.yborder);
 
 	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
 

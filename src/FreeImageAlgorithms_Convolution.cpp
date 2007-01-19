@@ -13,9 +13,10 @@ struct ImageData
 	int x_max_block_size;
 	int y_max_block_size;
 	int src_pitch_in_pixels;
+	double sum;
 };
 
-static inline double SumRow(double *ptr, double *kernel, int kernel_index, ImageData *data)
+static inline void SumRow(double *ptr, double *kernel, int kernel_index, ImageData *data)
 {
 	register double sum = 0.0;
 
@@ -28,10 +29,10 @@ static inline double SumRow(double *ptr, double *kernel, int kernel_index, Image
 		tmp = ptr + col;
 		kernel_tmp = kernel_index + col;
 
-		sum += *(tmp) * kernel[kernel_tmp] + *(tmp + 1) * kernel[kernel_tmp + 1] + 
-			   *(tmp + 2) * kernel[kernel_tmp + 2] + *(tmp + 3) * kernel[kernel_tmp + 3] + 
-			   *(tmp + 4) * kernel[kernel_tmp + 4] + *(tmp + 5) * kernel[kernel_tmp + 5] + 
-			   *(tmp + 6) * kernel[kernel_tmp + 6] + *(tmp + 7) * kernel[kernel_tmp + 7];
+		data->sum += tmp[0] * kernel[kernel_tmp] + tmp[1] * kernel[kernel_tmp + 1] + 
+			   tmp[2] * kernel[kernel_tmp + 2] + tmp[3] * kernel[kernel_tmp + 3] + 
+			   tmp[4] * kernel[kernel_tmp + 4] + tmp[5] * kernel[kernel_tmp + 5] + 
+			   tmp[6] * kernel[kernel_tmp + 6] + tmp[7] * kernel[kernel_tmp + 7];
 	}
 
 	tmp = ptr + x_max_block_size;
@@ -39,94 +40,93 @@ static inline double SumRow(double *ptr, double *kernel, int kernel_index, Image
 
 	switch(data->x_reminder) {
 		case 7: 
-			sum += *(tmp + 6) * kernel[kernel_tmp + 6] + 
-				   *(tmp + 5) * kernel[kernel_tmp + 5] + 
-				   *(tmp + 4) * kernel[kernel_tmp + 4] +
-				   *(tmp + 3) * kernel[kernel_tmp + 3] +
-				   *(tmp + 2) * kernel[kernel_tmp + 2] +
-				   *(tmp + 1) * kernel[kernel_tmp + 1] +
-				   *(tmp) * kernel[kernel_tmp]; 
+			data->sum += tmp[6] * kernel[kernel_tmp + 6] + 
+				   tmp[5] * kernel[kernel_tmp + 5] + 
+				   tmp[4] * kernel[kernel_tmp + 4] +
+				   tmp[3] * kernel[kernel_tmp + 3] +
+				   tmp[2] * kernel[kernel_tmp + 2] +
+				   tmp[1] * kernel[kernel_tmp + 1] +
+				   tmp[0] * kernel[kernel_tmp]; 
 			break;
 		
 		case 6:
-			sum += *(tmp + 5) * kernel[kernel_tmp + 5] + 
-				   *(tmp + 4) * kernel[kernel_tmp + 4] + 
-				   *(tmp + 3) * kernel[kernel_tmp + 3] +
-				   *(tmp + 2) * kernel[kernel_tmp + 2] +
-				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
-				   *(tmp) * kernel[kernel_tmp];
+			data->sum += tmp[5] * kernel[kernel_tmp + 5] + 
+				   tmp[4] * kernel[kernel_tmp + 4] + 
+				   tmp[3] * kernel[kernel_tmp + 3] +
+				   tmp[2] * kernel[kernel_tmp + 2] +
+				   tmp[1] * kernel[kernel_tmp + 1] + 
+				   tmp[0] * kernel[kernel_tmp];
 			break;
 		
 		case 5:
-			sum += *(tmp + 4) * kernel[kernel_tmp + 4] + 
-				   *(tmp + 3) * kernel[kernel_tmp + 3] + 
-				   *(tmp + 2) * kernel[kernel_tmp + 2] + 
-				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
-				   *(tmp) * kernel[kernel_tmp];
+			data->sum += tmp[4] * kernel[kernel_tmp + 4] + 
+				   tmp[3] * kernel[kernel_tmp + 3] + 
+				   tmp[2] * kernel[kernel_tmp + 2] + 
+				   tmp[1] * kernel[kernel_tmp + 1] + 
+				   tmp[0] * kernel[kernel_tmp];
 			break;
 
 		case 4:
-			sum += *(tmp + 3) * kernel[kernel_tmp + 3] + 
-				   *(tmp + 2) * kernel[kernel_tmp + 2] + 
-				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
-				   *(tmp) * kernel[kernel_tmp];
+			data->sum += tmp[3] * kernel[kernel_tmp + 3] + 
+				   tmp[2] * kernel[kernel_tmp + 2] + 
+				   tmp[1] * kernel[kernel_tmp + 1] + 
+				   tmp[0] * kernel[kernel_tmp];
 			break;
 		
 		case 3:
-			sum += *(tmp + 2) * kernel[kernel_tmp + 2] +
-				   *(tmp + 1) * kernel[kernel_tmp + 1] + 
-				   *(tmp) * kernel[kernel_tmp];
+			data->sum += tmp[2] * kernel[kernel_tmp + 2] +
+				   tmp[1] * kernel[kernel_tmp + 1] + 
+				   tmp[0] * kernel[kernel_tmp];
 			break;
 
 		case 2:
-			sum += *(tmp + 1) * kernel[kernel_tmp + 1] +
-				   *(tmp) * kernel[kernel_tmp];
+			data->sum += tmp[1] * kernel[kernel_tmp + 1] +
+				   tmp[0] * kernel[kernel_tmp];
 			break; 
 
 		case 1:
-			sum += *(tmp) * kernel[kernel_tmp]; 
+			data->sum += tmp[0] * kernel[kernel_tmp]; 
 	}
-
-	return sum;
 }
 
-static inline double SumKernel(double *src_row_ptr, double* kernel, ImageData *data)
+static inline void SumKernel(double *src_row_ptr, double* kernel, ImageData *data)
 {
 	register int kernel_index = 0;
-	register double sum = 0.0;
 	register double *tmp_ptr = src_row_ptr;
 		
+	data->sum = 0.0;
+
 	for(register int row=0; row < data->y_max_block_size; row+=BLOCKSIZE)
 	{  
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 				
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 				
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 				
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 				
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 				
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 				
-		sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+		SumRow(tmp_ptr, kernel, kernel_index, data);
 		tmp_ptr += data->src_pitch_in_pixels;
 		kernel_index += data->kernel_width; 
 	} 
@@ -134,47 +134,45 @@ static inline double SumKernel(double *src_row_ptr, double* kernel, ImageData *d
 	switch(data->y_reminder)
 	{
 		case 7:
-			sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+			SumRow(tmp_ptr, kernel, kernel_index, data);
 			tmp_ptr += data->src_pitch_in_pixels;
 			kernel_index += data->kernel_width; 
 		case 6:
-			sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+			SumRow(tmp_ptr, kernel, kernel_index, data);
 			tmp_ptr += data->src_pitch_in_pixels;
 			kernel_index += data->kernel_width; 
 		case 5:
-			sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+			SumRow(tmp_ptr, kernel, kernel_index, data);
 			tmp_ptr += data->src_pitch_in_pixels;
 			kernel_index += data->kernel_width; 
 		case 4:
-			sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+			SumRow(tmp_ptr, kernel, kernel_index, data);
 			tmp_ptr += data->src_pitch_in_pixels;
 			kernel_index += data->kernel_width; 
 		case 3:
-			sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+			SumRow(tmp_ptr, kernel, kernel_index, data);
 			tmp_ptr += data->src_pitch_in_pixels;
 			kernel_index += data->kernel_width; 
 		case 2:
-			sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+			SumRow(tmp_ptr, kernel, kernel_index, data);
 			tmp_ptr += data->src_pitch_in_pixels;
 			kernel_index += data->kernel_width; 
 		case 1:
-			sum += SumRow(tmp_ptr, kernel, kernel_index, data);
+			SumRow(tmp_ptr, kernel, kernel_index, data);
 	}
-
-	return sum;
 }
 
-FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
+FIBITMAP* ConvolveOld(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
 {
 	// Border must be large enough to account for kernel radius
-	if(src.border < MAX(kernel_x_radius, kernel_y_radius))
+	if(src.xborder < kernel_x_radius || src.yborder < kernel_y_radius)
 		return NULL;
 
 	const int src_image_width = FreeImage_GetWidth(src.fib);
 	const int src_image_height = FreeImage_GetHeight(src.fib);
  
-	const int dst_width = src_image_width - (2 * src.border);
-	const int dst_height = src_image_height - (2 * src.border);
+	const int dst_width = src_image_width - (2 * src.xborder);
+	const int dst_height = src_image_height - (2 * src.yborder);
 
 	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
 	
@@ -203,7 +201,8 @@ FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, doub
 
 		for (register int x=0; x < dst_width; x++) 
 		{
-			*dst_ptr++ = SumKernel(src_row_ptr, kernel, &data) / divider;
+			SumKernel(src_row_ptr, kernel, &data);
+			*dst_ptr++ =  data.sum / divider;
 			src_row_ptr++;
 		}
 	}
@@ -213,17 +212,389 @@ FIBITMAP* Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, doub
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
+FreeImageAlgorithms_Convolve_Old(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
 {
 	FIBITMAP *dst = NULL;
 
 	if(!src.fib)
 		return NULL;
 
-	dst = Convolve(src, kernel_x_radius, kernel_y_radius, kernel, divider);
+	dst = ConvolveOld(src, kernel_x_radius, kernel_y_radius, kernel, divider);
 
 	if(dst == NULL)
 		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convolve with type.");
+
+	return dst;
+}
+
+
+FilterKernel DLL_CALLCONV
+FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
+							  double *values, double divider)
+{
+	FilterKernel kernel;
+
+	kernel.x_radius = x_radius;
+	kernel.y_radius = y_radius;
+	kernel.values = values;
+	kernel.divider = divider;
+
+	return kernel;
+}
+
+
+template<typename Tsrc>
+Kernel<Tsrc>::Kernel(FIABITMAP src, int x_radius, int y_radius, Tsrc *values, double divider)
+:
+	xborder(src.xborder),
+	yborder(src.yborder),
+	x_radius(x_radius),
+	y_radius(y_radius),
+	divider(divider),
+	src_image_width(FreeImage_GetWidth(src.fib)),
+	src_image_height(FreeImage_GetHeight(src.fib)),
+	kernel_width(x_radius * 2 + 1),
+	kernel_height(y_radius * 2 + 1),
+	x_reminder(kernel_width % BLOCKSIZE),
+	y_reminder(kernel_height % BLOCKSIZE),
+	x_max_block_size((kernel_width / BLOCKSIZE) * BLOCKSIZE),
+	y_max_block_size((kernel_height / BLOCKSIZE) * BLOCKSIZE),
+	src_pitch_in_pixels(FreeImage_GetPitch(src.fib) / sizeof(Tsrc)),
+	src_image_type(FreeImage_GetImageType(src.fib))
+{
+	// Border must be large enough to account for kernel radius
+	if(xborder < x_radius || yborder < y_radius)
+		return;
+
+	this->dib = src.fib;
+	this->values = values;	
+
+	this->src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(this->dib);
+	this->current_src_ptr = this->src_first_pixel_address_ptr;
+};
+
+template<typename Tsrc>
+inline void Kernel<Tsrc>::ConvolveKernelRow(KernelIterator<Tsrc> &iterator)
+{
+	register Tsrc *tmp, *kernel_ptr;
+
+	int x_max_block_size = this->x_max_block_size;
+	int x_reminder = this->x_reminder;
+
+	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
+		 
+		tmp = iterator.GetImagePtrValue() + col;
+		kernel_ptr = iterator.GetKernelPtrValue() + col;
+
+		sum += tmp[0] * kernel_ptr[0] + tmp[1] * kernel_ptr[1] + 
+			   tmp[2] * kernel_ptr[2] + tmp[3] * kernel_ptr[3] + 
+			   tmp[4] * kernel_ptr[4] + tmp[5] * kernel_ptr[5] + 
+			   tmp[6] * kernel_ptr[6] + tmp[7] * kernel_ptr[7];
+	}
+
+	if(x_reminder) {
+		tmp = iterator.GetImagePtrValue() + x_max_block_size;
+		kernel_ptr = iterator.GetKernelPtrValue() + x_max_block_size;
+	}
+
+	switch(x_reminder) {
+
+		case 7: 
+			sum += tmp[6] * kernel_ptr[6] + 
+				   tmp[5] * kernel_ptr[5] + 
+				   tmp[4] * kernel_ptr[4] +
+				   tmp[3] * kernel_ptr[3] +
+				   tmp[2] * kernel_ptr[2] +
+				   tmp[1] * kernel_ptr[1] +
+				   tmp[0] * kernel_ptr[0]; 
+			break;
+		
+		case 6:
+			sum += tmp[5] * kernel_ptr[5] + 
+				   tmp[4] * kernel_ptr[4] + 
+				   tmp[3] * kernel_ptr[3] +
+				   tmp[2] * kernel_ptr[2] +
+				   tmp[1] * kernel_ptr[1] + 
+				   tmp[0] *	kernel_ptr[0];
+			break;
+		
+		case 5:
+			sum += tmp[4] * kernel_ptr[4] + 
+				   tmp[3] * kernel_ptr[3] + 
+				   tmp[2] * kernel_ptr[2] + 
+				   tmp[1] * kernel_ptr[1] + 
+				   tmp[0] * kernel_ptr[0];
+			break;
+
+		case 4:
+			sum += tmp[3] * kernel_ptr[3] + 
+				   tmp[2] * kernel_ptr[2] + 
+				   tmp[1] * kernel_ptr[1] + 
+				   tmp[0] * kernel_ptr[0];
+			break;
+		
+		case 3:
+			sum += tmp[2] * kernel_ptr[2] +
+				   tmp[1] * kernel_ptr[1] + 
+				   tmp[0] * kernel_ptr[0];
+			break;
+
+		case 2:
+			sum += tmp[1] * kernel_ptr[1] +
+				   tmp[0] * kernel_ptr[0];
+			break; 
+
+		case 1:
+			sum += tmp[0] * kernel_ptr[0]; 
+	}
+}
+
+
+template<typename Tsrc>
+inline void Kernel<Tsrc>::ConvolveKernel()
+{
+	this->sum = 0.0f;
+
+	KernelIterator<Tsrc> iterator = this->Begin();
+
+	for(register int row=0; row < this->y_max_block_size; row+=BLOCKSIZE)
+	{  
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow();
+
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow();
+
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow();
+			
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		ConvolveKernelRow(iterator);
+		iterator.IncrementByRow(); 
+	} 
+		
+	switch(this->y_reminder)
+	{
+		case 7:
+			ConvolveKernelRow(iterator);
+			iterator.IncrementByRow();
+
+		case 6:
+			ConvolveKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 5:
+			ConvolveKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 4:
+			ConvolveKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 3:
+			ConvolveKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 2:
+			ConvolveKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 1:
+			ConvolveKernelRow(iterator);
+	}
+}
+
+template<typename Tsrc>
+FIBITMAP* Kernel<Tsrc>::Convolve()
+{
+	const int dst_width = src_image_width - (2 * this->xborder);
+	const int dst_height = src_image_height - (2 * this->yborder);
+
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(this->dib, dst_width, dst_height);
+
+	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
+
+	register Tsrc *dst_ptr;
+
+	Tsrc *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(dst);
+	
+	for (register int y=0; y < dst_height; y++)
+	{		
+		this->Move(0,y);
+		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
+
+		for (register int x=0; x < dst_width; x++) 
+		{
+			this->ConvolveKernel();
+			*dst_ptr++ =  this->sum / this->divider;
+			this->Increment();
+		}
+	}
+
+	return dst;
+};
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Convolve(FIBITMAP *src, FilterKernel kernel)
+{
+	FIBITMAP *tmp = NULL, *dst = NULL;
+	FIABITMAP tmp_border;
+
+	if(!src)
+		return NULL;
+
+	tmp =  FreeImage_Clone(src);
+
+	// convert from src_type to FIT_BITMAP
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		
+		case FIT_INT16:		// array of short: signed 16-bit
+		case FIT_UINT16:    // array of unsigned short: unsigned 16-bit
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+		case FIT_INT32:		// array of long: signed 32-bit
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit	
+		{
+			// Converting to float. Seems to be much faster.	
+			FreeImage_Unload(tmp);
+			tmp = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
+
+			// Fall through
+		}
+
+		case FIT_FLOAT:		// array of float: 32-bit
+		case FIT_DOUBLE:	// array of double: 64-bit
+			{
+				tmp_border = FreeImageAlgorithms_SetBorder(tmp, kernel.x_radius, kernel.y_radius);
+
+				Kernel<double> *kern = new Kernel<double>(tmp_border, kernel.x_radius,
+					kernel.y_radius, kernel.values, kernel.divider);
+
+				dst = kern->Convolve();
+			
+				FreeImage_Unload(tmp_border.fib);
+			
+				break;
+			}
+		
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+	}
+
+	return dst;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_SeparableConvolve(FIBITMAP *src, FilterKernel kernel1, FilterKernel kernel2)
+{
+	FIBITMAP *tmp = NULL, *dst = NULL;
+	FIABITMAP tmp_border;
+
+	if(!src)
+		return NULL;
+
+	tmp =  FreeImage_Clone(src);
+
+	// convert from src_type to FIT_BITMAP
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		
+		case FIT_INT16:		// array of short: signed 16-bit
+		case FIT_UINT16:    // array of unsigned short: unsigned 16-bit
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+		case FIT_INT32:		// array of long: signed 32-bit
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit	
+		{
+			// Converting to float. Seems to be much faster.	
+			FreeImage_Unload(tmp);
+			tmp = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
+
+			// Fall through
+		}
+
+		case FIT_FLOAT:		// array of float: 32-bit
+		case FIT_DOUBLE:	// array of double: 64-bit
+			{
+				tmp_border = FreeImageAlgorithms_SetBorder(tmp, kernel1.x_radius, kernel1.y_radius);
+
+				Kernel<double> *kern1 = new Kernel<double>(tmp_border, kernel1.x_radius,
+					kernel1.y_radius, kernel1.values, kernel1.divider);
+
+				FreeImage_Unload(tmp);
+
+				tmp = kern1->Convolve();
+			
+				FreeImage_Unload(tmp_border.fib);
+
+				tmp_border = FreeImageAlgorithms_SetBorder(tmp, kernel2.x_radius, kernel2.y_radius);
+
+				Kernel<double> *kern2 = new Kernel<double>(tmp_border, kernel2.x_radius,
+					kernel2.y_radius, kernel2.values, kernel2.divider);
+
+				dst = kern2->Convolve();
+
+				FreeImage_Unload(tmp);
+				FreeImage_Unload(tmp_border.fib);
+
+				break;
+			}
+		
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+	}
+
+	return dst;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Sobel(FIBITMAP *src)
+{
+	double sobel_left_kernel[] = {-1.0, 0.0, 1.0,
+								  -2.0, 0.0, 2.0,
+								  -1.0, 0.0, 1.0};
+
+	FilterKernel convolve_kernel = FreeImageAlgorithms_NewKernel(1, 0,
+		sobel_left_kernel, 1.0);
+
+	FIBITMAP* dst = FreeImageAlgorithms_Convolve(src, convolve_kernel);
+
+	return dst;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_SeparableSobel(FIBITMAP *src)
+{
+	double sobel_horz_values[] = {-1.0, 0.0, 1.0};
+
+	double sobel_vert_values[] = {1.0, 2.0, 1.0};
+
+	FilterKernel sobel_horz_kernel = FreeImageAlgorithms_NewKernel(1, 0,
+		sobel_horz_values, 1.0);
+
+	FilterKernel sobel_vert_kernel = FreeImageAlgorithms_NewKernel(0, 1,
+		sobel_vert_values, 1.0);
+
+	FIBITMAP* dst = FreeImageAlgorithms_SeparableConvolve(src, sobel_horz_kernel, sobel_vert_kernel);
 
 	return dst;
 }

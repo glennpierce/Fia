@@ -17,6 +17,7 @@ private:
 	inline bool AreAnyNearestNeighboursZero(Tsrc *ptr, bool include_diagonals);
 	inline bool AreAnyNearestNeighboursNonZero(Tsrc *ptr, bool include_diagonals);
 
+	unsigned char *structuring_element;
 	int src_pitch_in_pixels;
 };
 
@@ -95,14 +96,14 @@ template<typename Tsrc>
 FIBITMAP* MORPHOLOGY<Tsrc>::BinaryDilation(FIABITMAP src)
 {
 	// Border must be large enough to account for kernel radius 1
-	if(src.border < 1)
+	if(src.xborder < 1 || src.yborder < 1)
 		return NULL;
 
 	const int src_image_width = FreeImage_GetWidth(src.fib);
 	const int src_image_height = FreeImage_GetHeight(src.fib);
 
-	const int dst_width = src_image_width - (2 * src.border);
-	const int dst_height = src_image_height - (2 * src.border);
+	const int dst_width = src_image_width - (2 * src.xborder);
+	const int dst_height = src_image_height - (2 * src.yborder);
 
 	// Clone and add border to image
 	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
@@ -145,14 +146,14 @@ template<typename Tsrc>
 FIBITMAP* MORPHOLOGY<Tsrc>::BinaryErosion(FIABITMAP src)
 {
 	// Border must be large enough to account for kernel radius 1
-	if(src.border < 1)
+	if(src.xborder < 1 || src.yborder < 1)
 		return NULL;
 
 	const int src_image_width = FreeImage_GetWidth(src.fib);
 	const int src_image_height = FreeImage_GetHeight(src.fib);
 
-	const int dst_width = src_image_width - (2 * src.border);
-	const int dst_height = src_image_height - (2 * src.border);
+	const int dst_width = src_image_width - (2 * src.xborder);
+	const int dst_height = src_image_height - (2 * src.yborder);
 
 	// Clone and add border to image
 	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);

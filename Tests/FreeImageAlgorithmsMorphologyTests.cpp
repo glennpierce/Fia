@@ -11,7 +11,7 @@
 static void
 TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\fillhole_test.jpg";
+	char *file = IMAGE_DIR "\\morpholology_test.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -25,9 +25,9 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 
 	CuAssertTrue(tc, threshold_8bit_dib != NULL);
 
-	FreeImageAlgorithms_SetGreyLevelOverLoadPalette(threshold_8bit_dib);
+	//FreeImageAlgorithms_SetGreyLevelOverLoadPalette(threshold_8bit_dib);
 
-	FIABITMAP border_dib = FreeImageAlgorithms_AddBorder(threshold_8bit_dib, 1);
+	FIABITMAP border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 1, 1);
 
 	ProfileStart("DilationFilter");
 
@@ -50,7 +50,7 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\erosion_test.jpg";
+	char *file = IMAGE_DIR "\\morpholology_test.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -64,9 +64,9 @@ TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 
 	CuAssertTrue(tc, threshold_8bit_dib != NULL);
 
-	FreeImageAlgorithms_SetGreyLevelOverLoadPalette(threshold_8bit_dib);
-
-	FIABITMAP border_dib = FreeImageAlgorithms_AddBorder(threshold_8bit_dib, 1);
+	//FreeImageAlgorithms_SetGreyLevelOverLoadPalette(threshold_8bit_dib);
+	
+	FIABITMAP border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 1, 1);
 
 	ProfileStart("ErosionFilter");
 

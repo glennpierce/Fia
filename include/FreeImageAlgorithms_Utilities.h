@@ -453,7 +453,7 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
  *  \return A FIABITMAP structure containing a FIBITMAP and a border size.
 */
 DLL_API FIABITMAP DLL_CALLCONV
-FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border);
+FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder);
 
 
 /** \brief Thresholds a float image.

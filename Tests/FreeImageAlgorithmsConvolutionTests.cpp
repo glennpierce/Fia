@@ -8,7 +8,6 @@
 #include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_MedianFilter.h"
 
-
 static double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -31,49 +30,12 @@ static double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 						  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 					  	  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
-static double kernel3x3[] = {1.0, 1.0, 1.0,
-							 1.0, 1.0, 1.0, 
-							 1.0, 1.0, 1.0};
-
-
-
-/*
 static void
-TestFreeImageAlgorithms_ConvolutionFixedTest(CuTest* tc)
+TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
-	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
-	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
-
-	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_INT32, 1);
-
-	CuAssertTrue(tc, dib3 != NULL);
-
-	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 10);
-
-	ProfileStart("FreeImageAlgorithms_FixedConvolve");
-
-	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 10, 10, kernel, 48.0);
-
-	CuAssertTrue(tc, dib5 != NULL);
-
-	ProfileStop("FreeImageAlgorithms_FixedConvolve");
-
-	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\wallpaper_river_fixed_blured.jpg", BIT24);
-
-	FreeImage_Unload(dib1);
-	FreeImage_Unload(dib2);
-	FreeImage_Unload(dib3);
-	FreeImage_Unload(dib4.fib);
-	FreeImage_Unload(dib5);
-}
-*/
-
-static void
-TestFreeImageAlgorithms_Convolution3x3RealTest(CuTest* tc)
-{
-	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+	ProfileStart("FreeImageAlgorithms_ConvolveOld");
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
@@ -82,17 +44,15 @@ TestFreeImageAlgorithms_Convolution3x3RealTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 1);
+	FIABITMAP dib4 = FreeImageAlgorithms_SetBorder(dib3, 10, 10);
 
-	ProfileStart("FreeImageAlgorithms_RealConvolve");
-
-	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 1, 1, kernel3x3, 48.0);
+	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve_Old(dib4, 10, 10, kernel, 48.0);
 
 	CuAssertTrue(tc, dib5 != NULL);
 
-	ProfileStop("FreeImageAlgorithms_RealConvolve");
+	ProfileStop("FreeImageAlgorithms_ConvolveOld");
 
-	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\wallpaper_river_real_blured.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\wallpaper_river_blured_old.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -101,37 +61,75 @@ TestFreeImageAlgorithms_Convolution3x3RealTest(CuTest* tc)
 	FreeImage_Unload(dib5);
 }
 
-
 static void
-TestFreeImageAlgorithms_ConvolutionRealTest(CuTest* tc)
+TestFreeImageAlgorithms_ConvolutionTestNew(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
-	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
 
-	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_DOUBLE, 1);
+	CuAssertTrue(tc, dib1 != NULL);
 
-	CuAssertTrue(tc, dib3 != NULL);
+	ProfileStart("FreeImageAlgorithms_Convolve");
 
-	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 10);
+	FilterKernel convolve_kernel = FreeImageAlgorithms_NewKernel(10, 10, kernel, 48.0);
 
-	ProfileStart("FreeImageAlgorithms_RealConvolve");
+	FIBITMAP* dib2 = FreeImageAlgorithms_Convolve(dib1, convolve_kernel);
 
-	FIBITMAP* dib5 = FreeImageAlgorithms_Convolve(dib4, 10, 10, kernel, 48.0);
+	CuAssertTrue(tc, dib2 != NULL);
 
-	CuAssertTrue(tc, dib5 != NULL);
+	ProfileStop("FreeImageAlgorithms_Convolve");
 
-	ProfileStop("FreeImageAlgorithms_RealConvolve");
-
-	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\wallpaper_river_real_blured.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\wallpaper_river_blured_new.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
-	FreeImage_Unload(dib3);
-	FreeImage_Unload(dib4.fib);
-	FreeImage_Unload(dib5);
 }
+
+
+static void
+TestFreeImageAlgorithms_SobelTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib1 != NULL);
+
+	ProfileStart("FreeImageAlgorithms_Sobel");
+
+	FIBITMAP *dib2 = FreeImageAlgorithms_Sobel(dib1);
+
+	ProfileStop("FreeImageAlgorithms_Sobel");
+
+	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\wallpaper_river_sobel.jpg", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+}
+
+
+static void
+TestFreeImageAlgorithms_SeparableSobelTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib1 != NULL);
+
+	ProfileStart("FreeImageAlgorithms_SeparableSobel");
+
+	FIBITMAP *dib2 = FreeImageAlgorithms_SeparableSobel(dib1);
+
+	ProfileStop("FreeImageAlgorithms_SeparableSobel");
+
+	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\wallpaper_river_sobel_separable.jpg", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+}
+
 
 static void
 TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
@@ -139,13 +137,18 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 	char *file = IMAGE_DIR "\\salt_and_pepper.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib1 != NULL);
+
 	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
+
+	CuAssertTrue(tc, dib2 != NULL);
 
 	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_DOUBLE, 1);
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FIABITMAP dib4 = FreeImageAlgorithms_AddBorder(dib3, 1);
+	FIABITMAP dib4 = FreeImageAlgorithms_SetBorder(dib3, 1, 1);
 
 	ProfileStart("MedianFilter");
 
@@ -169,9 +172,13 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionFixedTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionTestNew);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SobelTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SeparableSobelTest);
+
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Convolution3x3RealTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MedianFilterTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MedianFilterTest);
 
 	return suite;
 }

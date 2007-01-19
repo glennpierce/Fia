@@ -939,18 +939,19 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height)
 }
 
 FIABITMAP DLL_CALLCONV
-FreeImageAlgorithms_AddBorder(FIBITMAP *src, int border)
+FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder)
 {
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	FIABITMAP dst;
 	
-	dst.fib = FreeImageAlgorithms_CloneImageType(src, width + (2 *border), height + (2 * border));
+	dst.fib = FreeImageAlgorithms_CloneImageType(src, width + (2 *xborder), height + (2 * yborder));
 
-	dst.border = border;
+	dst.xborder = xborder;
+	dst.yborder = yborder;
 
-	FreeImageAlgorithms_SimplePaste(dst.fib, src, border, border);
+	FreeImageAlgorithms_SimplePaste(dst.fib, src, xborder, yborder);
 
 	return dst;
 }

@@ -16,7 +16,8 @@ typedef struct
 	/// FIBITMAP bitmap.
 	FIBITMAP *fib;
 	/// border size.
-	int border; 
+	int xborder; 
+	int yborder; 
 
 } FIABITMAP;
 
