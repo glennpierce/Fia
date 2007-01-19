@@ -275,12 +275,20 @@ Kernel<Tsrc>::Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values, d
 
 	this->src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(this->dib);
 	this->current_src_ptr = this->src_first_pixel_address_ptr;
-};
+
+	this->current_src_center_ptr = this->src_first_pixel_address_ptr
+		+ (y_radius * this->src_pitch_in_pixels) - x_radius;
+}
+
+template<typename Tsrc>
+Kernel<Tsrc>::Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values)
+: this(src, x_radius, y_radius, values, 1.0)
+{}
 
 template<typename Tsrc>
 inline void Kernel<Tsrc>::ConvolveKernelRow(KernelIterator<Tsrc> &iterator)
 {
-	register Tsrc *tmp, *kernel_ptr;
+	register double *tmp, *kernel_ptr;
 
 	int x_max_block_size = this->x_max_block_size;
 	int x_reminder = this->x_reminder;
@@ -353,7 +361,6 @@ inline void Kernel<Tsrc>::ConvolveKernelRow(KernelIterator<Tsrc> &iterator)
 	}
 }
 
-
 template<typename Tsrc>
 inline void Kernel<Tsrc>::ConvolveKernel()
 {
@@ -424,9 +431,9 @@ FIBITMAP* Kernel<Tsrc>::Convolve()
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
 
-	register Tsrc *dst_ptr;
+	register double *dst_ptr;
 
-	Tsrc *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(dst);
+	double *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(dst);
 	
 	for (register int y=0; y < dst_height; y++)
 	{		
@@ -496,6 +503,8 @@ FreeImageAlgorithms_Convolve(FIABITMAP *src, FilterKernel kernel)
 	if(NULL == dst) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
 	}
+
+	delete kern;
 
 	return dst;
 }

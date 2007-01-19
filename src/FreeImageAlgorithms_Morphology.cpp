@@ -1,3 +1,5 @@
+#include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_Morphology.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Palettes.h"
@@ -6,7 +8,7 @@
 #define BLOCKSIZE 3
 
 template<class Tsrc>
-class MORPHOLOGY
+class BINARY_MORPHOLOGY
 {
 public:
 	FIBITMAP* BinaryDilation(FIABITMAP* src);
@@ -20,6 +22,381 @@ private:
 	unsigned char *structuring_element;
 	int src_pitch_in_pixels;
 };
+
+
+
+
+/*
+
+*dst_ptr = *src_row_ptr;
+
+			// If Black pixel check neigbours
+			if(*src_row_ptr == 0) {
+
+				if(AreAnyNearestNeighboursNonZero(src_row_ptr, true))
+					*dst_ptr = 255;
+
+			}
+	
+			dst_ptr++;
+			src_row_ptr++;
+*/
+
+inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
+{
+	register unsigned char *row_ptr;
+	register unsigned char *kernel_ptr;
+
+	Kernel<unsigned char> *kernel = iterator.GetKernel();
+
+	int x_max_block_size = kernel->GetNumberOfBlocksOfEightInKernelRows();
+	int x_reminder = kernel->GetRemainderAfterBlocksInRows();
+
+	unsigned char *center_value = kernel->KernelCenterValuePtr();
+
+	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
+		 
+		row_ptr = iterator.GetImagePtrValue() + col;
+		kernel_ptr = iterator.GetKernelPtrValue() + col;
+
+		if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+
+		if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+
+		if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+
+		if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+
+		if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+
+		if(kernel_ptr[5] >  0 && row_ptr[5] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+
+		if(kernel_ptr[6] >  0 && row_ptr[6] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+
+		if(kernel_ptr[7] >  0 && row_ptr[7] > 0) {
+			*center_value = 1; 	
+			return;
+		}
+	}
+
+	if(x_reminder) {
+		row_ptr = iterator.GetImagePtrValue() + x_max_block_size;
+		kernel_ptr = iterator.GetKernelPtrValue() + x_max_block_size;
+	}
+
+	switch(x_reminder) {
+
+		case 7: 
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[5] >  0 && row_ptr[5] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[6] >  0 && row_ptr[6] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			break;
+		
+		case 6:
+
+			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[5] >  0 && row_ptr[5] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			break;
+		
+		case 5:
+
+			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			break;
+
+		case 4:
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			break;
+		
+		case 3:
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			break;
+
+		case 2:
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+
+			break; 
+
+		case 1:
+
+			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
+				*center_value = 1; 	
+				return;
+			}
+	}
+}
+
+inline void BinaryDilateKernel(Kernel<unsigned char> *kernel)
+{
+	KernelIterator<unsigned char> iterator = kernel->Begin();
+
+	for(register int row=0; row < kernel->GetNumberOfBlocksOfEightInKernelColoumns();
+		row+=BLOCKSIZE)
+	{  
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow();
+
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow();
+
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow();
+			
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		DilateKernelRow(iterator);
+		iterator.IncrementByRow(); 
+	} 
+		
+	switch(kernel->GetRemainderAfterBlocksInColoumns())
+	{
+		case 7:
+			DilateKernelRow(iterator);
+			iterator.IncrementByRow();
+
+		case 6:
+			DilateKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 5:
+			DilateKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 4:
+			DilateKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 3:
+			DilateKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 2:
+			DilateKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 1:
+			DilateKernelRow(iterator);
+	}
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel)
+{
+	const int dst_width = FreeImage_GetWidth(src->fib) - (2 * kernel.x_radius);
+	const int dst_height = FreeImage_GetHeight(src->fib) - (2 * kernel.y_radius);
+
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
+
+	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(unsigned char);
+
+	register unsigned char *dst_ptr;
+
+	unsigned char *dst_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(dst);
+	
+	int kernel_size = kernel.x_radius * 2 + kernel.y_radius * 2;
+	unsigned char *vals = new unsigned char[kernel_size];
+
+	for(int i=0; i < kernel_size; i++)
+		vals[i] = kernel.values[i];
+
+	Kernel<unsigned char> *kern = new Kernel<unsigned char>(src, kernel.x_radius,
+										kernel.y_radius, vals);
+ 
+	/*
+	for (register int y=0; y < dst_height; y++)
+	{		
+		kern->Move(0,y);
+		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
+
+		for (register int x=0; x < dst_width; x++) 
+		{
+			*dst_ptr = kern->KernelCenterValue();
+
+			// If Black pixel check neigbours
+			if(kern->KernelCenterValue() == 0)
+				BinaryDilateKernel(kern);
+
+			kern->Increment();
+		}
+	}
+
+	delete kern;
+*/
+	return dst;
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+
 
 template<typename Tsrc>
 inline bool MORPHOLOGY<Tsrc>::AreAnyNearestNeighboursNonZero(Tsrc *ptr, bool include_diagonals)
@@ -252,3 +629,5 @@ FreeImageAlgorithms_Erosion(FIABITMAP* src)
 
 	return dst;
 }
+
+*/

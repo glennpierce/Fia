@@ -1,7 +1,8 @@
-#ifndef __FREEIMAGE_ALGORITHMS_MEDIAN_FILTER__
-#define __FREEIMAGE_ALGORITHMS_MEDIAN_FILTER__
+#ifndef __FREEIMAGE_ALGORITHMS_MORPHOLOGY_FILTER__
+#define __FREEIMAGE_ALGORITHMS_MORPHOLOGY_FILTER__
 
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Convolution.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,6 +16,9 @@ extern "C" {
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Dilation(FIABITMAP* src);
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel);
 
 /*! \file 
  *	Erodes the particles in an image.

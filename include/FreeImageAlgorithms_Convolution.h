@@ -15,7 +15,7 @@ class KernelIterator
 		{
 			this->kernel = kernel;
 			this->current_kernel_ptr = kernel->KernelValues();
-			this->current_image_ptr = kernel->CenterValuePtr();
+			this->current_image_ptr = kernel->KernelFirstValuePtr();
 		}
 		
 		inline void Increment()
@@ -50,6 +50,8 @@ class KernelIterator
 			return this->current_image_ptr;
 		}
 
+		inline Kernel<Tsrc>* GetKernel() { return this->kernel; }
+
 	private:
 
 		Tsrc *current_kernel_ptr;
@@ -64,14 +66,40 @@ class Kernel
 	public:
 		Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values, double divider);
 		
-		inline void Move(int x, int y) { this->current_src_ptr = (this->src_first_pixel_address_ptr + (y * this->src_pitch_in_pixels) + x); }
-		inline void MoveUpRow() { this->current_src_ptr += this->src_pitch_in_pixels; }
-		inline void Increment() { this->current_src_ptr++; }
+		Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values);
+
+		inline void Move(int x, int y)
+		{ 
+			this->current_src_ptr = (this->src_first_pixel_address_ptr + (y * this->src_pitch_in_pixels) + x);
+			this->current_src_center_ptr = this->src_first_pixel_address_ptr
+				+ (y_radius * this->src_pitch_in_pixels) - x_radius;
+		}
+		
+		inline void MoveUpRow()
+		{	this->current_src_ptr += this->src_pitch_in_pixels;
+			this->current_src_center_ptr += this->src_pitch_in_pixels;
+		}
+
+		inline void Increment()
+		{ 
+			++this->current_src_ptr;
+			++this->current_src_center_ptr;
+		}
+		
+		inline int ImageWidth() { return this->src_image_width; }
+		inline int ImageHeight() { return this->src_image_height; }
 		inline int KernelWidth() { return this->kernel_width; }
 		inline int ImagePitchInPixels() { return this->src_pitch_in_pixels; }
 		inline Tsrc* KernelValues() { return this->values; }
+		inline Tsrc GetNumberOfBlocksOfEightInKernelRows() { return this->x_max_block_size; }
+		inline Tsrc GetNumberOfBlocksOfEightInKernelColoumns() { return this->y_max_block_size; }
+		inline Tsrc GetRemainderAfterBlocksInRows() { return this->x_reminder; }
+		inline Tsrc GetRemainderAfterBlocksInColoumns() { return this->y_reminder; }
 		inline Tsrc* ImageStartPtr() { return this->src_first_pixel_address_ptr; }
-		inline Tsrc* CenterValuePtr() { return this->current_src_ptr; }
+		inline Tsrc* KernelFirstValuePtr() { return this->current_src_ptr; }
+		inline Tsrc KernelFirstValue() { return *(this->current_src_ptr); }
+		inline Tsrc* KernelCenterValuePtr() { return this->current_src_center_ptr; }
+		inline Tsrc KernelCenterValue() { return *(this->current_src_center_ptr); }
 		inline KernelIterator<Tsrc> Begin() { return KernelIterator<Tsrc>(this); }
 
 		FIBITMAP* Convolve();	
@@ -103,6 +131,7 @@ class Kernel
 		
 		Tsrc *values;	
 		Tsrc *src_first_pixel_address_ptr;
+		Tsrc *current_src_center_ptr;
 		Tsrc *current_src_ptr;	
 };
 
