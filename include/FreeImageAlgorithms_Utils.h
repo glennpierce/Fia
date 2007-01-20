@@ -4,14 +4,14 @@
 #include "FreeImageAlgorithms.h"
 
 /// Max function
-template <class T> T
+template <class T> inline T
 MAX(T a, T b)
 {
 	return (a > b) ? a: b;
 }
 
 /// Min function
-template <class T> T
+template <class T> inline T
 MIN(T a, T b)
 {
 	return (a < b) ? a: b;
@@ -24,7 +24,7 @@ MIN(T a, T b)
  The design and analysis of computer algorithms, 
  Addison-Wesley, Reading, 1974.
 */
-template <class T> void 
+template <class T> inline void 
 MAXMIN(const T* L, long n, T& max, T& min)
 {
 	long i1, i2, i, j;
@@ -51,7 +51,7 @@ MAXMIN(const T* L, long n, T& max, T& min)
 
 
 // Finds the max element in an array returns the index and the value in the parameter
-template <class T> long 
+template <class T> inline long 
 FINDMAX(const T* L, long n, T& max)
 {
 	long i, max_index = 0;
@@ -76,14 +76,14 @@ FINDMAX(const T* L, long n, T& max)
 }
 
 /// INPLACESWAP adopted from codeguru.com 
-template <class T> void inline
+template <class T> inline void
 INPLACESWAP(T& a, T& b)
 {
 	a ^= b; b ^= a; a ^= b;
 }
 
 // In place swap doesn't work for float point types
-template <class T> void inline
+template <class T> inline void
 SWAP(T& a, T& b)
 {
 	register T tmp = b;
@@ -92,7 +92,7 @@ SWAP(T& a, T& b)
 	a = tmp;
 }
 
-template <class T> double 
+template <class T> inline double 
 MeanAverage(const T* L, long n)
 {
 	double total = 0.0;
