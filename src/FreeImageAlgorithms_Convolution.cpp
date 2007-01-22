@@ -1,3 +1,4 @@
+#include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
@@ -164,19 +165,19 @@ static inline void SumKernel(double *src_row_ptr, double* kernel, ImageData *dat
 	}
 }
 
-FIBITMAP* ConvolveOld(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
+FIBITMAP* ConvolveOld(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
 {
 	// Border must be large enough to account for kernel radius
-	if(src.xborder < kernel_x_radius || src.yborder < kernel_y_radius)
+	if(src->xborder < kernel_x_radius || src->yborder < kernel_y_radius)
 		return NULL;
 
-	const int src_image_width = FreeImage_GetWidth(src.fib);
-	const int src_image_height = FreeImage_GetHeight(src.fib);
+	const int src_image_width = FreeImage_GetWidth(src->fib);
+	const int src_image_height = FreeImage_GetHeight(src->fib);
  
-	const int dst_width = src_image_width - (2 * src.xborder);
-	const int dst_height = src_image_height - (2 * src.yborder);
+	const int dst_width = src_image_width - (2 * src->xborder);
+	const int dst_height = src_image_height - (2 * src->yborder);
 
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
 	
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(double);
 
@@ -188,9 +189,9 @@ FIBITMAP* ConvolveOld(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, d
 	data.y_reminder = data.kernel_height % BLOCKSIZE;
 	data.x_max_block_size = (data.kernel_width / BLOCKSIZE) * BLOCKSIZE;
 	data.y_max_block_size = (data.kernel_height / BLOCKSIZE) * BLOCKSIZE;
-	data.src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(double);
+	data.src_pitch_in_pixels = FreeImage_GetPitch(src->fib) / sizeof(double);
 
-	double *src_first_pixel_address_ptr = (double*) FreeImage_GetBits(src.fib);
+	double *src_first_pixel_address_ptr = (double*) FreeImage_GetBits(src->fib);
 	double *dst_first_pixel_address_ptr = (double*) FreeImage_GetBits(dst);
 	
 	register double *dst_ptr;
@@ -214,11 +215,11 @@ FIBITMAP* ConvolveOld(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, d
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve_Old(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
+FreeImageAlgorithms_Convolve_Old(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider)
 {
 	FIBITMAP *dst = NULL;
 
-	if(!src.fib)
+	if(!src->fib)
 		return NULL;
 
 	dst = ConvolveOld(src, kernel_x_radius, kernel_y_radius, kernel, divider);
@@ -247,29 +248,29 @@ FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
 
 // The following code does a lot of loop unrolling for performance.
 template<typename Tsrc>
-Kernel<Tsrc>::Kernel(FIABITMAP src, int x_radius, int y_radius, Tsrc *values, double divider)
+Kernel<Tsrc>::Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values, double divider)
 :
-	xborder(src.xborder),
-	yborder(src.yborder),
+	xborder(src->xborder),
+	yborder(src->yborder),
 	x_radius(x_radius),
 	y_radius(y_radius),
 	divider(divider),
-	src_image_width(FreeImage_GetWidth(src.fib)),
-	src_image_height(FreeImage_GetHeight(src.fib)),
+	src_image_width(FreeImage_GetWidth(src->fib)),
+	src_image_height(FreeImage_GetHeight(src->fib)),
 	kernel_width(x_radius * 2 + 1),
 	kernel_height(y_radius * 2 + 1),
 	x_reminder(kernel_width % BLOCKSIZE),
 	y_reminder(kernel_height % BLOCKSIZE),
 	x_max_block_size((kernel_width / BLOCKSIZE) * BLOCKSIZE),
 	y_max_block_size((kernel_height / BLOCKSIZE) * BLOCKSIZE),
-	src_pitch_in_pixels(FreeImage_GetPitch(src.fib) / sizeof(Tsrc)),
-	src_image_type(FreeImage_GetImageType(src.fib))
+	src_pitch_in_pixels(FreeImage_GetPitch(src->fib) / sizeof(Tsrc)),
+	src_image_type(FreeImage_GetImageType(src->fib))
 {
 	// Border must be large enough to account for kernel radius
 	if(xborder < x_radius || yborder < y_radius)
 		return;
 
-	this->dib = src.fib;
+	this->dib = src->fib;
 	this->values = values;	
 
 	this->src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(this->dib);
@@ -445,52 +446,52 @@ FIBITMAP* Kernel<Tsrc>::Convolve()
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve(FIBITMAP *src, FilterKernel kernel)
+FreeImageAlgorithms_Convolve(FIABITMAP *src, FilterKernel kernel)
 {
-	FIBITMAP *tmp = NULL, *dst = NULL;
-	FIABITMAP tmp_border;
+	FIBITMAP *dst = NULL;
+	FIABITMAP *tmp = NULL;
+	FIABITMAP border_tmp;
 
 	if(!src)
 		return NULL;
 
-	tmp =  FreeImage_Clone(src);
+	tmp = src;
 
 	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
 	switch(src_type) {
 		
+		case FIT_FLOAT:		// array of float: 32-bit
+		case FIT_DOUBLE:	// array of double: 64-bit
+			break;
+
 		case FIT_INT16:		// array of short: signed 16-bit
 		case FIT_UINT16:    // array of unsigned short: unsigned 16-bit
 		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
 		case FIT_INT32:		// array of long: signed 32-bit
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit	
 		{
-			// Converting to float. Seems to be much faster.	
-			FreeImage_Unload(tmp);
-			tmp = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
+			// Converting to float. Seems to be much faster.		
+			border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+			border_tmp.xborder = src->xborder;
+			border_tmp.yborder = src->yborder;
+			
+			tmp = &border_tmp;
 
-			// Fall through
+			break;
 		}
 
-		case FIT_FLOAT:		// array of float: 32-bit
-		case FIT_DOUBLE:	// array of double: 64-bit
-			{
-				tmp_border = FreeImageAlgorithms_SetBorder(tmp, kernel.x_radius, kernel.y_radius);
-
-				Kernel<double> *kern = new Kernel<double>(tmp_border, kernel.x_radius,
-					kernel.y_radius, kernel.values, kernel.divider);
-
-				dst = kern->Convolve();
-			
-				FreeImage_Unload(tmp_border.fib);
-			
-				break;
-			}
-		
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
 			break;
 	}
+
+	Kernel<double> *kern = new Kernel<double>(tmp, kernel.x_radius,
+					kernel.y_radius, kernel.values, kernel.divider);
+
+	dst = kern->Convolve();
+
+	FreeImage_Unload(border_tmp.fib);
 
 	if(NULL == dst) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
@@ -501,64 +502,60 @@ FreeImageAlgorithms_Convolve(FIBITMAP *src, FilterKernel kernel)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SeparableConvolve(FIBITMAP *src, FilterKernel kernel1, FilterKernel kernel2)
+FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel kernel1, FilterKernel kernel2)
 {
-	FIBITMAP *tmp = NULL, *dst = NULL;
-	FIABITMAP tmp_border;
+	FIBITMAP *tmp_dst = NULL, *dst = NULL;
+	FIABITMAP *tmp = NULL, *tmp_border = NULL;
+	FIABITMAP border_tmp;
 
 	if(!src)
 		return NULL;
 
-	tmp =  FreeImage_Clone(src);
+	tmp = src;
 
 	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
 	switch(src_type) {
 		
+		case FIT_FLOAT:		// array of float: 32-bit
+		case FIT_DOUBLE:	// array of double: 64-bit
+			break;
+
 		case FIT_INT16:		// array of short: signed 16-bit
 		case FIT_UINT16:    // array of unsigned short: unsigned 16-bit
 		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
 		case FIT_INT32:		// array of long: signed 32-bit
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit	
 		{
-			// Converting to float. Seems to be much faster.	
-			FreeImage_Unload(tmp);
-			tmp = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
+			// Converting to float. Seems to be much faster.		
+			border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+			border_tmp.xborder = kernel1.x_radius;
+			border_tmp.yborder = kernel1.y_radius;
+			
+			tmp = &border_tmp;
 
-			// Fall through
+			break;
 		}
 
-		case FIT_FLOAT:		// array of float: 32-bit
-		case FIT_DOUBLE:	// array of double: 64-bit
-			{
-				tmp_border = FreeImageAlgorithms_SetBorder(tmp, kernel1.x_radius, kernel1.y_radius);
-
-				Kernel<double> *kern1 = new Kernel<double>(tmp_border, kernel1.x_radius,
-					kernel1.y_radius, kernel1.values, kernel1.divider);
-
-				FreeImage_Unload(tmp);
-
-				tmp = kern1->Convolve();
-			
-				FreeImage_Unload(tmp_border.fib);
-
-				tmp_border = FreeImageAlgorithms_SetBorder(tmp, kernel2.x_radius, kernel2.y_radius);
-
-				Kernel<double> *kern2 = new Kernel<double>(tmp_border, kernel2.x_radius,
-					kernel2.y_radius, kernel2.values, kernel2.divider);
-
-				dst = kern2->Convolve();
-
-				FreeImage_Unload(tmp);
-				FreeImage_Unload(tmp_border.fib);
-
-				break;
-			}
-		
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
 			break;
 	}
+
+	Kernel<double> *kern1 = new Kernel<double>(tmp, kernel1.x_radius,
+								kernel1.y_radius, kernel1.values, kernel1.divider);
+
+	tmp_dst = kern1->Convolve();
+		
+	tmp_border = FreeImageAlgorithms_SetBorder(tmp_dst, kernel2.x_radius, kernel2.y_radius);
+
+	Kernel<double> *kern2 = new Kernel<double>(tmp_border, kernel2.x_radius,
+				kernel2.y_radius, kernel2.values, kernel2.divider);
+
+	dst = kern2->Convolve();
+
+	FreeImageAlgorithms_Unload(tmp_border);
+	FreeImage_Unload(tmp_dst);
 
 	if(NULL == dst) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
@@ -579,7 +576,11 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 								  0.0, 0.0, 0.0,
 								 -1.0, -2.0, -1.0};
 
-	 
+	PROFILE_START("Adding Border"); 
+
+	FIABITMAP *src_bordered = FreeImageAlgorithms_SetBorder(src, 10, 10);
+
+	PROFILE_STOP("Adding Border");
 
 	PROFILE_START("Making Kernels"); 
 
@@ -594,18 +595,18 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 
 	PROFILE_START("Sobel Left Edge"); 
 
-	FIBITMAP* dib1 = FreeImageAlgorithms_Convolve(src, convolve_kernel_left);
+	FIBITMAP* dib1 = FreeImageAlgorithms_Convolve(src_bordered, convolve_kernel_left);
 
 	PROFILE_STOP("Sobel Left Edge"); 
 
 	PROFILE_START("Sobel Top Edge"); 
 
-	FIBITMAP* dib2 = FreeImageAlgorithms_Convolve(src, convolve_kernel_top);
+	FIBITMAP* dib2 = FreeImageAlgorithms_Convolve(src_bordered, convolve_kernel_top);
 
 	PROFILE_STOP("Sobel Top Edge"); 
 
-	int dst_width = FreeImage_GetWidth(src);
-	int dst_height = FreeImage_GetHeight(src);
+	int dst_width = FreeImage_GetWidth(dib1);
+	int dst_height = FreeImage_GetHeight(dib1);
 
 	FIBITMAP *dst = FreeImage_AllocateT(FIT_DOUBLE, dst_width, dst_height,
 										8, 0, 0, 0);
@@ -632,6 +633,7 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 		}
 	}
 
+	FreeImageAlgorithms_Unload(src_bordered);
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
 
@@ -640,6 +642,7 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 
 // Test
 // Seems slow but maybe not for large kernels.
+/*
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_SeparableSobel(FIBITMAP *src)
 {
@@ -657,3 +660,4 @@ FreeImageAlgorithms_SeparableSobel(FIBITMAP *src)
 
 	return dst;
 }
+*/

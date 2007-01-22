@@ -62,7 +62,7 @@ template <typename Tsrc>
 class Kernel
 {
 	public:
-		Kernel(FIABITMAP src, int x_radius, int y_radius, Tsrc *values, double divider);
+		Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values, double divider);
 		
 		inline void Move(int x, int y) { this->current_src_ptr = (this->src_first_pixel_address_ptr + (y * this->src_pitch_in_pixels) + x); }
 		inline void MoveUpRow() { this->current_src_ptr += this->src_pitch_in_pixels; }
@@ -125,7 +125,7 @@ extern "C" {
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve_Old(FIABITMAP src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider);
+FreeImageAlgorithms_Convolve_Old(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius, double *kernel, double divider);
 
 
 typedef struct
@@ -142,16 +142,13 @@ FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
 							  double *values, double divider);
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve(FIBITMAP *src, const FilterKernel kernel);
+FreeImageAlgorithms_Convolve(FIABITMAP *src, const FilterKernel kernel);
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SeparableConvolve(FIBITMAP *src, FilterKernel kernel1, FilterKernel kernel2);
+FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel kernel1, FilterKernel kernel2);
 
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Sobel(FIBITMAP *src);
-
-DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SeparableSobel(FIBITMAP *src);
 
 #ifdef __cplusplus
 }

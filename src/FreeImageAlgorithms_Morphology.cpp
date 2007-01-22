@@ -9,8 +9,8 @@ template<class Tsrc>
 class MORPHOLOGY
 {
 public:
-	FIBITMAP* BinaryDilation(FIABITMAP src);
-	FIBITMAP* BinaryErosion(FIABITMAP src);
+	FIBITMAP* BinaryDilation(FIABITMAP* src);
+	FIBITMAP* BinaryErosion(FIABITMAP* src);
 
 private:
 
@@ -93,25 +93,25 @@ inline bool MORPHOLOGY<Tsrc>::AreAnyNearestNeighboursZero(Tsrc *ptr, bool includ
 
 
 template<typename Tsrc>
-FIBITMAP* MORPHOLOGY<Tsrc>::BinaryDilation(FIABITMAP src)
+FIBITMAP* MORPHOLOGY<Tsrc>::BinaryDilation(FIABITMAP* src)
 {
 	// Border must be large enough to account for kernel radius 1
-	if(src.xborder < 1 || src.yborder < 1)
+	if(src->xborder < 1 || src->yborder < 1)
 		return NULL;
 
-	const int src_image_width = FreeImage_GetWidth(src.fib);
-	const int src_image_height = FreeImage_GetHeight(src.fib);
+	const int src_image_width = FreeImage_GetWidth(src->fib);
+	const int src_image_height = FreeImage_GetHeight(src->fib);
 
-	const int dst_width = src_image_width - (2 * src.xborder);
-	const int dst_height = src_image_height - (2 * src.yborder);
+	const int dst_width = src_image_width - (2 * src->xborder);
+	const int dst_height = src_image_height - (2 * src->yborder);
 
 	// Clone and add border to image
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
-	this->src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(Tsrc);
+	this->src_pitch_in_pixels = FreeImage_GetPitch(src->fib) / sizeof(Tsrc);
 
-	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src.fib);
+	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src->fib);
 	unsigned char *dst_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(dst);
 	
 	register unsigned char *dst_ptr;
@@ -143,25 +143,25 @@ FIBITMAP* MORPHOLOGY<Tsrc>::BinaryDilation(FIABITMAP src)
 }
 
 template<typename Tsrc>
-FIBITMAP* MORPHOLOGY<Tsrc>::BinaryErosion(FIABITMAP src)
+FIBITMAP* MORPHOLOGY<Tsrc>::BinaryErosion(FIABITMAP* src)
 {
 	// Border must be large enough to account for kernel radius 1
-	if(src.xborder < 1 || src.yborder < 1)
+	if(src->xborder < 1 || src->yborder < 1)
 		return NULL;
 
-	const int src_image_width = FreeImage_GetWidth(src.fib);
-	const int src_image_height = FreeImage_GetHeight(src.fib);
+	const int src_image_width = FreeImage_GetWidth(src->fib);
+	const int src_image_height = FreeImage_GetHeight(src->fib);
 
-	const int dst_width = src_image_width - (2 * src.xborder);
-	const int dst_height = src_image_height - (2 * src.yborder);
+	const int dst_width = src_image_width - (2 * src->xborder);
+	const int dst_height = src_image_height - (2 * src->yborder);
 
 	// Clone and add border to image
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
-	this->src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(Tsrc);
+	this->src_pitch_in_pixels = FreeImage_GetPitch(src->fib) / sizeof(Tsrc);
 
-	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src.fib);
+	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src->fib);
 	unsigned char *dst_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(dst);
 	
 	register unsigned char *dst_ptr;
@@ -201,20 +201,20 @@ MORPHOLOGY<float>				filterFloatImage;
 MORPHOLOGY<double>				filterDoubleImage;
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Dilation(FIABITMAP src)
+FreeImageAlgorithms_Dilation(FIABITMAP* src)
 {
 	FIBITMAP *dst = NULL;
 
-	if(!src.fib)
+	if(!src->fib)
 		return NULL;
 
 	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src.fib);
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
 	switch(src_type) {
 		
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			if(FreeImage_GetBPP(src.fib) == 8)
+			if(FreeImage_GetBPP(src->fib) == 8)
 				dst = filterUCharImage.BinaryDilation(src);
 			break;
 	}
@@ -228,20 +228,20 @@ FreeImageAlgorithms_Dilation(FIABITMAP src)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Erosion(FIABITMAP src)
+FreeImageAlgorithms_Erosion(FIABITMAP* src)
 {
 	FIBITMAP *dst = NULL;
 
-	if(!src.fib)
+	if(!src->fib)
 		return NULL;
 
 	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src.fib);
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
 	switch(src_type) {
 		
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			if(FreeImage_GetBPP(src.fib) == 8)
+			if(FreeImage_GetBPP(src->fib) == 8)
 				dst = filterUCharImage.BinaryErosion(src);
 			break;
 	}

@@ -444,17 +444,6 @@ FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2);
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
 
-/** \brief Adds a border to an image.
- *
- *  This function returns an image with a black (zero) border added to an image.
- *
- *  \param src FIBITMAP bitmap to add a border to.
- *  \param border Size of the border.
- *  \return A FIABITMAP structure containing a FIBITMAP and a border size.
-*/
-DLL_API FIABITMAP DLL_CALLCONV
-FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder);
-
 
 /** \brief Thresholds a float image.
  *

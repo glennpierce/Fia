@@ -938,20 +938,27 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height)
 	return dst;
 }
 
-FIABITMAP DLL_CALLCONV
+void DLL_CALLCONV
+FreeImageAlgorithms_Unload(FIABITMAP* src)
+{
+	FreeImage_Unload(src->fib);
+	free(src);
+}
+
+FIABITMAP* DLL_CALLCONV
 FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder)
 {
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
-	FIABITMAP dst;
+	FIABITMAP* dst = (FIABITMAP*) malloc(sizeof(FIABITMAP));
 	
-	dst.fib = FreeImageAlgorithms_CloneImageType(src, width + (2 *xborder), height + (2 * yborder));
+	dst->fib = FreeImageAlgorithms_CloneImageType(src, width + (2 *xborder), height + (2 * yborder));
 
-	dst.xborder = xborder;
-	dst.yborder = yborder;
+	dst->xborder = xborder;
+	dst->yborder = yborder;
 
-	FreeImageAlgorithms_SimplePaste(dst.fib, src, xborder, yborder);
+	FreeImageAlgorithms_SimplePaste(dst->fib, src, xborder, yborder);
 
 	return dst;
 }

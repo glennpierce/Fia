@@ -8,7 +8,7 @@ template<class Tsrc>
 class FILTER
 {
 public:
-	FIBITMAP* MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius);
+	FIBITMAP* MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius);
 
 private:
 	
@@ -228,19 +228,19 @@ inline Tsrc FILTER<Tsrc>::KernelMedian(Tsrc *src_row_ptr)
 }
 
 template<typename Tsrc>
-FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius)
+FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius)
 {
 	// Border must be large enough to account for kernel radius
-	if(src.xborder < kernel_x_radius || src.yborder < kernel_y_radius)
+	if(src->xborder < kernel_x_radius || src->yborder < kernel_y_radius)
 		return NULL;
 
-	const int src_image_width = FreeImage_GetWidth(src.fib);
-	const int src_image_height = FreeImage_GetHeight(src.fib);
+	const int src_image_width = FreeImage_GetWidth(src->fib);
+	const int src_image_height = FreeImage_GetHeight(src->fib);
  
-	const int dst_width = src_image_width - (2 * src.xborder);
-	const int dst_height = src_image_height - (2 * src.yborder);
+	const int dst_width = src_image_width - (2 * src->xborder);
+	const int dst_height = src_image_height - (2 * src->yborder);
 
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src.fib, dst_width, dst_height);
+	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
 
@@ -250,9 +250,9 @@ FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP src, int kernel_x_radius, int ker
 	this->y_reminder = this->kernel_height % BLOCKSIZE;
 	this->x_max_block_size = (this->kernel_width / BLOCKSIZE) * BLOCKSIZE;
 	this->y_max_block_size = (this->kernel_height / BLOCKSIZE) * BLOCKSIZE;
-	this->src_pitch_in_pixels = FreeImage_GetPitch(src.fib) / sizeof(Tsrc);
+	this->src_pitch_in_pixels = FreeImage_GetPitch(src->fib) / sizeof(Tsrc);
 
-	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src.fib);
+	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src->fib);
 	Tsrc *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(dst);
 	
 	this->kernel_tmp_array = (Tsrc*) malloc(sizeof(Tsrc) * this->kernel_width * this->kernel_height);
@@ -287,20 +287,20 @@ FILTER<float>				filterFloatImage;
 FILTER<double>				filterDoubleImage;
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius)
+FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius)
 {
 	FIBITMAP *dst = NULL;
 
-	if(!src.fib)
+	if(!src->fib)
 		return NULL;
 
 	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src.fib);
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
 	switch(src_type) {
 		
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			if(FreeImage_GetBPP(src.fib) == 8)
+			if(FreeImage_GetBPP(src->fib) == 8)
 				dst = filterUCharImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
 			break;
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit

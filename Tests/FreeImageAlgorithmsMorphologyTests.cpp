@@ -27,7 +27,7 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 
 	//FreeImageAlgorithms_SetGreyLevelOverLoadPalette(threshold_8bit_dib);
 
-	FIABITMAP border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 1, 1);
+	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 1, 1);
 
 	ProfileStart("DilationFilter");
 
@@ -43,7 +43,7 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
 	FreeImage_Unload(threshold_8bit_dib);
-	FreeImage_Unload(border_dib.fib);
+	FreeImageAlgorithms_Unload(border_dib);
 	FreeImage_Unload(result_dib);
 }
 
@@ -66,7 +66,7 @@ TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 
 	//FreeImageAlgorithms_SetGreyLevelOverLoadPalette(threshold_8bit_dib);
 	
-	FIABITMAP border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 1, 1);
+	FIABITMAP* border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 1, 1);
 
 	ProfileStart("ErosionFilter");
 
@@ -82,7 +82,7 @@ TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
 	FreeImage_Unload(threshold_8bit_dib);
-	FreeImage_Unload(border_dib.fib);
+	FreeImageAlgorithms_Unload(border_dib);
 	FreeImage_Unload(result_dib);
 }
 

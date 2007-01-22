@@ -16,7 +16,7 @@ extern "C" {
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_MedianFilter(FIABITMAP src, int kernel_x_radius, int kernel_y_radius);
+FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius);
 
 #ifdef __cplusplus
 }

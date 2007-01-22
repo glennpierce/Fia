@@ -14,7 +14,7 @@ extern "C" {
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Dilation(FIABITMAP src);
+FreeImageAlgorithms_Dilation(FIABITMAP* src);
 
 /*! \file 
  *	Erodes the particles in an image.
@@ -23,7 +23,7 @@ FreeImageAlgorithms_Dilation(FIABITMAP src);
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Erosion(FIABITMAP src);
+FreeImageAlgorithms_Erosion(FIABITMAP* src);
 
 #ifdef __cplusplus
 }
