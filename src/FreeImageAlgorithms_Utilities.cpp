@@ -1022,3 +1022,31 @@ FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE t
 
 	return dst;
 }
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold)
+{
+	if(src == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(!FreeImageAlgorithms_IsGreyScale(src))
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	for(register int y = 0; y < height; y++) { 
+		
+		unsigned char *src_ptr = (unsigned char *)FreeImage_GetScanLine(src, y);
+
+		for(register int x=0; x < width; x++) {
+			if(src_ptr[x] < threshold)
+				src_ptr[x] = 0;
+			else
+				src_ptr[x] = 255;
+		}
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}

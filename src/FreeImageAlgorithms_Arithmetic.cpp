@@ -13,6 +13,7 @@ public:
 	int SubtractImages(FIBITMAP* dst, FIBITMAP* src);
 	int DivideImages(FIBITMAP* dst, FIBITMAP* src);
 	int MultiplyImages(FIBITMAP* dst, FIBITMAP* src);
+
 	FIBITMAP* Transpose(FIBITMAP *src);
 	FIBITMAP* Log(FIBITMAP *src);
 };
@@ -99,18 +100,22 @@ ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
 	if(CheckDimensions(dst, src) ==  FREEIMAGE_ALGORITHMS_ERROR)
 		return  FREEIMAGE_ALGORITHMS_ERROR;
 
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
 	// Make dst a double so it can hold all the results of
 	// the arithmetic.
 	if(FreeImage_GetImageType(dst) != FIT_DOUBLE && FreeImage_GetImageType(dst) != FIT_FLOAT)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	double *dst_ptr = (double *) FreeImage_GetBits(dst);
-	Tsrc *src_ptr = (Tsrc *) FreeImage_GetBits(src);
+	for(register int y = 0; y < height; y++) { 
+		
+		Tsrc *src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
+		double *dst_ptr = (double *)FreeImage_GetScanLine(dst, y);
 
-	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
-
-	for(int i=0; i < number_of_pixels; i++)
-		*dst_ptr++ = (double) *dst_ptr * *src_ptr++;
+		for(register int x=0; x < width; x++)
+			dst_ptr[x] *= src_ptr[x];
+	}
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
@@ -548,3 +553,5 @@ FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
+
+

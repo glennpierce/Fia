@@ -12,6 +12,7 @@ CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsArithmaticSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsIOSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsConvolutionSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsMorphologySuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLogicSuite(void);
 
 void RunAllTests(void)
 {
@@ -27,6 +28,7 @@ void RunAllTests(void)
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsMorphologySuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

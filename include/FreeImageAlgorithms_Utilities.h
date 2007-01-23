@@ -470,6 +470,17 @@ DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
 
 
+/** \brief Performa a threshold on greyscale images.
+ *
+ *	This function performs a in place threshold on the src image.
+ *	An 8bit image is return not a 1bit image.
+ *
+ *  \param src Image to threshold.
+ *  \return unsigned char threshold to use.
+*/
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold);
+
 #ifdef __cplusplus
 }
 #endif
