@@ -40,7 +40,7 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
  *  \param padded Is the data padded to 32 bit boundaries.
 */
 DLL_API void DLL_CALLCONV
-FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, char *data, int padded);
+FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded);
 
 /** \brief Load a greyscale FIBITMAP from an array of bytes
  *	
@@ -53,7 +53,7 @@ FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, char *data, int padded);
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (char *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded);
+FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded);
 
 /** \brief Load a rgb FIBITMAP from an array of bytes
  *	
@@ -65,7 +65,7 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (char *data, int bpp, int widt
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadColourFIBFromArrayData (char *data, int bpp, int width, int height, int padded);
+FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded);
 
 #ifdef __cplusplus
 }

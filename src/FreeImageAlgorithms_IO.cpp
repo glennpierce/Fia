@@ -7,10 +7,8 @@
 #include <iostream>
 #include <assert.h>
 
-static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, char *data, int padded)
+static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
 {
-	register int y;
-
 	int data_line_length, height = FreeImage_GetHeight(src);
 	
 	if(padded)
@@ -18,12 +16,12 @@ static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, char *data, int padded)
 	else
 		data_line_length = FreeImage_GetLine(src);
 	
-	char *bits;
-	char *data_row;
+	BYTE *bits;
+	BYTE *data_row;
 			
-	for( y = 0; y < height; y++) {
+	for(register int y = 0; y < height; y++) {
 
-		bits = (char *) FreeImage_GetScanLine(src, y);
+		bits = (BYTE *) FreeImage_GetScanLine(src, y);
 
 		data_row = data + (height - y - 1) * data_line_length;
 
@@ -31,10 +29,8 @@ static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, char *data, int padded)
 	}
 }
 
-static void CopyColourBytesToFIBitmap(FIBITMAP *src, char *data, int padded)
+static void CopyColourBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
 {
-	register int x, y;
-
 	int data_line_length;
 	int height = FreeImage_GetHeight(src);
 	int width = FreeImage_GetWidth(src);
@@ -47,16 +43,16 @@ static void CopyColourBytesToFIBitmap(FIBITMAP *src, char *data, int padded)
 	// Calculate the number of bytes per pixel (3 for 24-bit or 4 for 32-bit) 
 	int bytespp = FreeImage_GetLine(src) / width; 
 
-	char *bits;
-	char *data_row;
+	BYTE *bits;
+	BYTE *data_row;
 			
-	for( y = 0; y < height; y++) {
+	for(register int y = 0; y < height; y++) {
 
-		bits = (char *) FreeImage_GetScanLine(src, y);
+		bits = (BYTE *) FreeImage_GetScanLine(src, y);
 
-		data_row = (char *) data + (height - y - 1) * data_line_length;
+		data_row = (BYTE *) data + (height - y - 1) * data_line_length;
 
-		for( x = 0; x < width; x++) {
+		for(register int x = 0; x < width; x++) {
 				
 			bits[FI_RGBA_RED] = data_row[0];
 			bits[FI_RGBA_GREEN] = data_row[1];
@@ -73,7 +69,7 @@ static void CopyColourBytesToFIBitmap(FIBITMAP *src, char *data, int padded)
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, char *data, int padded)
+FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded)
 {
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 	int bpp = FreeImage_GetBPP(src);
@@ -129,10 +125,10 @@ FreeImageAlgorithms_LoadFIBFromFile(const char *pathname)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (char *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded)
+FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded)
 {
 	FIBITMAP 	*dib;
-	char 		*data_ptr;
+	BYTE 		*data_ptr;
 	
 	// Check the data type and convert to bpp
 	if ( bpp < 0 )
@@ -190,10 +186,10 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (char *data, int bpp, int widt
 }
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadColourFIBFromArrayData (char *data, int bpp, int width, int height, int padded)
+FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded)
 {
 	FIBITMAP 	*dib;
-	char 		*data_ptr;
+	BYTE 		*data_ptr;
 	
 	// Check the data type and convert to bpp
 	if ( bpp < 0 )
