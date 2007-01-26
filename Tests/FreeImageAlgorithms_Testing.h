@@ -3,7 +3,7 @@
 
 #include "FreeImageAlgorithms.h"
 
-#define IMAGE_DIR "..\\..\\..\\..\\Test Images"
+#define IMAGE_DIR "C:\\Documents and Settings\\Glenn\\Desktop\\Working Area\\Test Images"
 #define TEMP_DIR "C:\\Temp\\FreeImageAlgorithms_Tests"
 
 #ifdef __cplusplus

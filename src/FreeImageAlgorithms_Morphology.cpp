@@ -24,25 +24,7 @@ private:
 };
 
 
-
-
-/*
-
-*dst_ptr = *src_row_ptr;
-
-			// If Black pixel check neigbours
-			if(*src_row_ptr == 0) {
-
-				if(AreAnyNearestNeighboursNonZero(src_row_ptr, true))
-					*dst_ptr = 255;
-
-			}
-	
-			dst_ptr++;
-			src_row_ptr++;
-*/
-
-inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
+inline void DilateKernelRow(KernelIterator<unsigned char> &iterator, unsigned char *dst_ptr)
 {
 	register unsigned char *row_ptr;
 	register unsigned char *kernel_ptr;
@@ -52,7 +34,7 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 	int x_max_block_size = kernel->GetNumberOfBlocksOfEightInKernelRows();
 	int x_reminder = kernel->GetRemainderAfterBlocksInRows();
 
-	unsigned char *center_value = kernel->KernelCenterValuePtr();
+	unsigned char *center_value = dst_ptr;
 
 	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
 		 
@@ -60,42 +42,42 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		kernel_ptr = iterator.GetKernelPtrValue() + col;
 
 		if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 
 		if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 
 		if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 
 		if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 
 		if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 
 		if(kernel_ptr[5] >  0 && row_ptr[5] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 
 		if(kernel_ptr[6] >  0 && row_ptr[6] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 
 		if(kernel_ptr[7] >  0 && row_ptr[7] > 0) {
-			*center_value = 1; 	
+			*center_value = 255;	
 			return;
 		}
 	}
@@ -110,37 +92,37 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		case 7: 
 			
 			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[5] >  0 && row_ptr[5] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[6] >  0 && row_ptr[6] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
@@ -149,32 +131,32 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		case 6:
 
 			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[5] >  0 && row_ptr[5] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
@@ -183,27 +165,27 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		case 5:
 
 			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[4] >  0 && row_ptr[4] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
@@ -212,22 +194,22 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		case 4:
 			
 			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[3] >  0 && row_ptr[3] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
@@ -236,17 +218,17 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		case 3:
 			
 			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[2] >  0 && row_ptr[2] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
@@ -255,12 +237,12 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		case 2:
 			
 			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
 			if(kernel_ptr[1] >  0 && row_ptr[1] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 
@@ -269,67 +251,66 @@ inline void DilateKernelRow(KernelIterator<unsigned char> &iterator)
 		case 1:
 
 			if(kernel_ptr[0] >  0 && row_ptr[0] > 0) {
-				*center_value = 1; 	
+				*center_value = 255;	
 				return;
 			}
 	}
 }
 
-inline void BinaryDilateKernel(Kernel<unsigned char> *kernel)
+inline void BinaryDilateKernel(Kernel<unsigned char> *kernel, unsigned char *dst_ptr)
 {
 	KernelIterator<unsigned char> iterator = kernel->Begin();
 
 	for(register int row=0; row < kernel->GetNumberOfBlocksOfEightInKernelColoumns();
 		row+=BLOCKSIZE)
 	{  
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow();
 		
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow();
 
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow();
 
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow();
 			
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow();
 		
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow();
 		
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow();
 		
-		DilateKernelRow(iterator);
+		DilateKernelRow(iterator, dst_ptr);
 		iterator.IncrementByRow(); 
 	} 
 		
 	switch(kernel->GetRemainderAfterBlocksInColoumns())
 	{
 		case 7:
-			DilateKernelRow(iterator);
+			DilateKernelRow(iterator, dst_ptr);
 			iterator.IncrementByRow();
-
 		case 6:
-			DilateKernelRow(iterator);
+			DilateKernelRow(iterator, dst_ptr);
 			iterator.IncrementByRow();
 		case 5:
-			DilateKernelRow(iterator);
+			DilateKernelRow(iterator, dst_ptr);
 			iterator.IncrementByRow();
 		case 4:
-			DilateKernelRow(iterator);
+			DilateKernelRow(iterator, dst_ptr);
 			iterator.IncrementByRow();
 		case 3:
-			DilateKernelRow(iterator);
+			DilateKernelRow(iterator, dst_ptr);
 			iterator.IncrementByRow();
 		case 2:
-			DilateKernelRow(iterator);
+			DilateKernelRow(iterator, dst_ptr);
 			iterator.IncrementByRow();
 		case 1:
-			DilateKernelRow(iterator);
+			DilateKernelRow(iterator, dst_ptr);
 	}
 }
 
@@ -348,16 +329,15 @@ FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel)
 
 	unsigned char *dst_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(dst);
 	
-	int kernel_size = kernel.x_radius * 2 + kernel.y_radius * 2;
+	int kernel_size = (kernel.x_radius * 2 + kernel.y_radius * 2) + 1;
 	unsigned char *vals = new unsigned char[kernel_size];
 
 	for(int i=0; i < kernel_size; i++)
 		vals[i] = kernel.values[i];
 
 	Kernel<unsigned char> *kern = new Kernel<unsigned char>(src, kernel.x_radius,
-										kernel.y_radius, vals);
+										kernel.y_radius, vals, 1.0);
  
-	/*
 	for (register int y=0; y < dst_height; y++)
 	{		
 		kern->Move(0,y);
@@ -368,266 +348,392 @@ FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel)
 			*dst_ptr = kern->KernelCenterValue();
 
 			// If Black pixel check neigbours
-			if(kern->KernelCenterValue() == 0)
-				BinaryDilateKernel(kern);
+			if(*dst_ptr == 0)
+				BinaryDilateKernel(kern, dst_ptr);
 
+			dst_ptr++;
 			kern->Increment();
 		}
 	}
 
 	delete kern;
-*/
+
 	return dst;
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
-
-
-template<typename Tsrc>
-inline bool MORPHOLOGY<Tsrc>::AreAnyNearestNeighboursNonZero(Tsrc *ptr, bool include_diagonals)
+static inline void ErodeKernelRow(KernelIterator<unsigned char> &iterator, unsigned char *dst_ptr)
 {
-	const int points_to_top_left = this->src_pitch_in_pixels + this->src_pitch_in_pixels;
+	register unsigned char *row_ptr;
+	register unsigned char *kernel_ptr;
 
-	if(*(ptr + points_to_top_left - 1))  // top
-		return true; 
+	Kernel<unsigned char> *kernel = iterator.GetKernel();
 
-	if(*(ptr + this->src_pitch_in_pixels))  // centre left
-		return true; 
+	int x_max_block_size = kernel->GetNumberOfBlocksOfEightInKernelRows();
+	int x_reminder = kernel->GetRemainderAfterBlocksInRows();
 
-	if(*(ptr + this->src_pitch_in_pixels - 2))  // centre right
-		return true; 
+	unsigned char *center_value = dst_ptr;
 
-	if(*(ptr + 1))  // bottom
-		return true; 
+	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
+		 
+		row_ptr = iterator.GetImagePtrValue() + col;
+		kernel_ptr = iterator.GetKernelPtrValue() + col;
 
-	if(include_diagonals)
-	{	
-		if(*(ptr + points_to_top_left))  // top left
-			return true; 
+		if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+			*center_value = 0;	
+			return;
+		}
 
-		if(*(ptr + points_to_top_left - 2))  // top right
-			return true; 
+		if(kernel_ptr[1] >  0 && row_ptr[1] == 0) {
+			*center_value = 0;	
+			return;
+		}
 
-		if(*ptr)  // bottom left
-			return true; 
-			
-		if(*(ptr + 2))  // bottom right
-			return true; 
-	}
+		if(kernel_ptr[2] >  0 && row_ptr[2] == 0) {
+			*center_value = 0;	
+			return;
+		}
 
-	return false;
-}
+		if(kernel_ptr[3] >  0 && row_ptr[3] == 0) {
+			*center_value = 0;	
+			return;
+		}
 
-template<typename Tsrc>
-inline bool MORPHOLOGY<Tsrc>::AreAnyNearestNeighboursZero(Tsrc *ptr, bool include_diagonals)
-{
-	const int points_to_top_left = this->src_pitch_in_pixels + this->src_pitch_in_pixels;
+		if(kernel_ptr[4] >  0 && row_ptr[4] == 0) {
+			*center_value = 0;	
+			return;
+		}
 
-	if(*(ptr + points_to_top_left - 1) == 0)  // top
-		return true; 
+		if(kernel_ptr[5] >  0 && row_ptr[5] == 0) {
+			*center_value = 0;	
+			return;
+		}
 
-	if(*(ptr + this->src_pitch_in_pixels) == 0)  // centre left
-		return true; 
+		if(kernel_ptr[6] >  0 && row_ptr[6] > 0) {
+			*center_value = 0;	
+			return;
+		}
 
-	if(*(ptr + this->src_pitch_in_pixels - 2) == 0)  // centre right
-		return true; 
-
-	if(*(ptr + 1) == 0)  // bottom
-		return true; 
-
-	if(include_diagonals)
-	{	
-		if(*(ptr + points_to_top_left) == 0)  // top left
-			return true; 
-
-		if(*(ptr + points_to_top_left - 2) == 0)  // top right
-			return true; 
-
-		if(*ptr == 0)  // bottom left
-			return true; 
-			
-		if(*(ptr + 2) == 0)  // bottom right
-			return true; 
-	}
-
-	return false;
-}
-
-
-template<typename Tsrc>
-FIBITMAP* MORPHOLOGY<Tsrc>::BinaryDilation(FIABITMAP* src)
-{
-	// Border must be large enough to account for kernel radius 1
-	if(src->xborder < 1 || src->yborder < 1)
-		return NULL;
-
-	const int src_image_width = FreeImage_GetWidth(src->fib);
-	const int src_image_height = FreeImage_GetHeight(src->fib);
-
-	const int dst_width = src_image_width - (2 * src->xborder);
-	const int dst_height = src_image_height - (2 * src->yborder);
-
-	// Clone and add border to image
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
-
-	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
-	this->src_pitch_in_pixels = FreeImage_GetPitch(src->fib) / sizeof(Tsrc);
-
-	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src->fib);
-	unsigned char *dst_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(dst);
-	
-	register unsigned char *dst_ptr;
-	register Tsrc *src_row_ptr;
-
-	for (register int y=0; y < dst_height; y++)
-	{		
-		src_row_ptr = (src_first_pixel_address_ptr + y * this->src_pitch_in_pixels);
-		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
-
-		for (register int x=0; x < dst_width; x++) 
-		{
-			*dst_ptr = *src_row_ptr;
-
-			// If Black pixel check neigbours
-			if(*src_row_ptr == 0) {
-
-				if(AreAnyNearestNeighboursNonZero(src_row_ptr, true))
-					*dst_ptr = 255;
-
-			}
-	
-			dst_ptr++;
-			src_row_ptr++;
+		if(kernel_ptr[7] >  0 && row_ptr[7] > 0) {
+			*center_value = 0;	
+			return;
 		}
 	}
 
-	return dst;
+	if(x_reminder) {
+		row_ptr = iterator.GetImagePtrValue() + x_max_block_size;
+		kernel_ptr = iterator.GetKernelPtrValue() + x_max_block_size;
+	}
+
+	switch(x_reminder) {
+
+		case 7: 
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[4] >  0 && row_ptr[4] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[5] >  0 && row_ptr[5] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[6] >  0 && row_ptr[6] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			break;
+		
+		case 6:
+
+			if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[4] >  0 && row_ptr[4] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[5] >  0 && row_ptr[5] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			break;
+		
+		case 5:
+
+			if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[4] >  0 && row_ptr[4] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			break;
+
+		case 4:
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[3] >  0 && row_ptr[3] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			break;
+		
+		case 3:
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[2] >  0 && row_ptr[2] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			break;
+
+		case 2:
+			
+			if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			if(kernel_ptr[1] >  0 && row_ptr[1] == 0) {
+				*center_value = 0;	
+				return;
+			}
+
+			break; 
+
+		case 1:
+
+			if(kernel_ptr[0] >  0 && row_ptr[0] == 0) {
+				*center_value = 0;	
+				return;
+			}
+	}
 }
 
-template<typename Tsrc>
-FIBITMAP* MORPHOLOGY<Tsrc>::BinaryErosion(FIABITMAP* src)
+static inline void BinaryErodeKernel(Kernel<unsigned char> *kernel, unsigned char *dst_ptr)
 {
-	// Border must be large enough to account for kernel radius 1
-	if(src->xborder < 1 || src->yborder < 1)
-		return NULL;
+	KernelIterator<unsigned char> iterator = kernel->Begin();
 
-	const int src_image_width = FreeImage_GetWidth(src->fib);
-	const int src_image_height = FreeImage_GetHeight(src->fib);
+	for(register int row=0; row < kernel->GetNumberOfBlocksOfEightInKernelColoumns();
+		row+=BLOCKSIZE)
+	{  
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow();
+		
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow();
 
-	const int dst_width = src_image_width - (2 * src->xborder);
-	const int dst_height = src_image_height - (2 * src->yborder);
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow();
 
-	// Clone and add border to image
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow();
+			
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow();
+		
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow();
+		
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow();
+		
+		ErodeKernelRow(iterator, dst_ptr);
+		iterator.IncrementByRow(); 
+	} 
+		
+	switch(kernel->GetRemainderAfterBlocksInColoumns())
+	{
+		case 7:
+			ErodeKernelRow(iterator, dst_ptr);
+			iterator.IncrementByRow();
+		case 6:
+			ErodeKernelRow(iterator, dst_ptr);
+			iterator.IncrementByRow();
+		case 5:
+			ErodeKernelRow(iterator, dst_ptr);
+			iterator.IncrementByRow();
+		case 4:
+			ErodeKernelRow(iterator, dst_ptr);
+			iterator.IncrementByRow();
+		case 3:
+			ErodeKernelRow(iterator, dst_ptr);
+			iterator.IncrementByRow();
+		case 2:
+			ErodeKernelRow(iterator, dst_ptr);
+			iterator.IncrementByRow();
+		case 1:
+			ErodeKernelRow(iterator, dst_ptr);
+	}
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_BinaryErosion(FIABITMAP* src, FilterKernel kernel)
+{
+	const int dst_width = FreeImage_GetWidth(src->fib) - (2 * kernel.x_radius);
+	const int dst_height = FreeImage_GetHeight(src->fib) - (2 * kernel.y_radius);
+
 	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
 
-	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
-	this->src_pitch_in_pixels = FreeImage_GetPitch(src->fib) / sizeof(Tsrc);
+	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(unsigned char);
 
-	Tsrc *src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(src->fib);
+	register unsigned char *dst_ptr;
+
 	unsigned char *dst_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(dst);
 	
-	register unsigned char *dst_ptr;
-	register Tsrc *src_row_ptr;
+	int kernel_size = (kernel.x_radius * 2 + kernel.y_radius * 2) + 1;
+	unsigned char *vals = new unsigned char[kernel_size];
 
+	for(int i=0; i < kernel_size; i++)
+		vals[i] = kernel.values[i];
+
+	Kernel<unsigned char> *kern = new Kernel<unsigned char>(src, kernel.x_radius,
+										kernel.y_radius, vals, 1.0);
+ 
 	for (register int y=0; y < dst_height; y++)
 	{		
-		src_row_ptr = (src_first_pixel_address_ptr + y * this->src_pitch_in_pixels);
+		kern->Move(0,y);
 		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
 
 		for (register int x=0; x < dst_width; x++) 
 		{
-			*dst_ptr = *src_row_ptr;
+			*dst_ptr = kern->KernelCenterValue();
 
 			// If White pixel check neigbours
-			if(*src_row_ptr > 0) {
+			if(*dst_ptr > 0)
+				BinaryErodeKernel(kern, dst_ptr);
 
-				if(AreAnyNearestNeighboursZero(src_row_ptr, true))
-					*dst_ptr = 0;
-
-			}
-	
 			dst_ptr++;
-			src_row_ptr++;
+			kern->Increment();
 		}
 	}
 
-	return dst;
-}
-
-MORPHOLOGY<unsigned char>		filterUCharImage;
-MORPHOLOGY<unsigned short>		filterUShortImage;
-MORPHOLOGY<short>				filterShortImage;
-MORPHOLOGY<unsigned long>		filterULongImage;
-MORPHOLOGY<long>				filterLongImage;
-MORPHOLOGY<float>				filterFloatImage;
-MORPHOLOGY<double>				filterDoubleImage;
-
-FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Dilation(FIABITMAP* src)
-{
-	FIBITMAP *dst = NULL;
-
-	if(!src->fib)
-		return NULL;
-
-	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
-
-	switch(src_type) {
-		
-		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			if(FreeImage_GetBPP(src->fib) == 8)
-				dst = filterUCharImage.BinaryDilation(src);
-			break;
-	}
-
-	if(NULL == dst) {
-		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform filter on type.", src_type);
-	}
+	delete kern;
 
 	return dst;
-}
+};
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Erosion(FIABITMAP* src)
+FreeImageAlgorithms_BinaryOpening(FIABITMAP* src, FilterKernel kernel)
 {
-	FIBITMAP *dst = NULL;
+	// Erosion followed by a dilation.
 
-	if(!src->fib)
-		return NULL;
+	FIBITMAP* tmp = FreeImageAlgorithms_BinaryErosion(src, kernel);
 
-	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
+	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(tmp,
+								kernel.x_radius, kernel.y_radius);
 
-	switch(src_type) {
-		
-		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			if(FreeImage_GetBPP(src->fib) == 8)
-				dst = filterUCharImage.BinaryErosion(src);
-			break;
-	}
+	FreeImage_Unload(tmp);
+	
+	tmp = FreeImageAlgorithms_BinaryDilation(border_dib, kernel);
 
-	if(NULL == dst) {
-		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform filter on type.", src_type);
-	}
+	FreeImageAlgorithms_Unload(border_dib);
 
-	return dst;
-}
+	return tmp;
+};
 
-*/
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_BinaryClosing(FIABITMAP* src, FilterKernel kernel)
+{
+	// Dialation followed by a erosion.
+
+	FIBITMAP* tmp = FreeImageAlgorithms_BinaryDilation(src, kernel);
+
+	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(tmp,
+								kernel.x_radius, kernel.y_radius);
+
+	FreeImage_Unload(tmp);
+	
+	tmp = FreeImageAlgorithms_BinaryErosion(border_dib, kernel);
+
+	FreeImageAlgorithms_Unload(border_dib);
+
+	return tmp;
+};
