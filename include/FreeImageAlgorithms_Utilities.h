@@ -481,6 +481,10 @@ FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE t
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold);
 
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_Is8Bit(FIBITMAP *src);
+
+
 #ifdef __cplusplus
 }
 #endif

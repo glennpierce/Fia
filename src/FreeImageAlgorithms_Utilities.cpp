@@ -674,11 +674,7 @@ GetPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, T *values)
     		len++;
        } 
    }
-   
-	// Reverse if the line draws from right to left.
-	//if(swapped > 0) 
-	//	FreeImageAlgorithms_ArrayReverse(values, len);
-
+  
    return len;
 } 
 
@@ -1049,4 +1045,13 @@ FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold)
 	}
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+int DLL_CALLCONV
+FreeImageAlgorithms_Is8Bit(FIBITMAP *src)
+{
+	if(FreeImage_GetBPP(src) == 8 && FreeImage_GetImageType(src) == FIT_BITMAP)
+		return 1;
+
+	return 0;
 }
