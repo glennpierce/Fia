@@ -53,7 +53,8 @@ FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded);
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded);
+FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
+												   FREE_IMAGE_TYPE data_type, int padded, int vertical_flip);
 
 /** \brief Load a rgb FIBITMAP from an array of bytes
  *	
@@ -65,7 +66,8 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int widt
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded);
+FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height,
+												int padded, int vertical_flip);
 
 #ifdef __cplusplus
 }

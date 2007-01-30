@@ -7,7 +7,7 @@
 #include <iostream>
 #include <assert.h>
 
-static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
+static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded, int vertical_flip)
 {
 	int data_line_length, height = FreeImage_GetHeight(src);
 	
@@ -19,9 +19,16 @@ static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
 	BYTE *bits;
 	BYTE *data_row;
 			
+	int line;
+		
 	for(register int y = 0; y < height; y++) {
 
-		bits = (BYTE *) FreeImage_GetScanLine(src, y);
+		if(vertical_flip)
+			line = height - y - 1;
+		else
+			line = y;
+
+		bits = (BYTE *) FreeImage_GetScanLine(src, line);
 
 		data_row = data + (height - y - 1) * data_line_length;
 
@@ -29,7 +36,7 @@ static void CopyGreyScaleBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
 	}
 }
 
-static void CopyColourBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
+static void CopyColourBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded, int vertical_flip)
 {
 	int data_line_length;
 	int height = FreeImage_GetHeight(src);
@@ -46,9 +53,16 @@ static void CopyColourBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
 	BYTE *bits;
 	BYTE *data_row;
 			
+	int line;
+
 	for(register int y = 0; y < height; y++) {
 
-		bits = (BYTE *) FreeImage_GetScanLine(src, y);
+		if(vertical_flip)
+			line = height - y - 1;
+		else
+			line = y;
+
+		bits = (BYTE *) FreeImage_GetScanLine(src, line);
 
 		data_row = (BYTE *) data + (height - y - 1) * data_line_length;
 
@@ -69,7 +83,7 @@ static void CopyColourBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded)
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded)
+FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded, int vertical_flip)
 {
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 	int bpp = FreeImage_GetBPP(src);
@@ -78,20 +92,20 @@ FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded)
 	{
 		case 8:
 		case 16:
-			CopyGreyScaleBytesToFIBitmap(src, data, padded);
+			CopyGreyScaleBytesToFIBitmap(src, data, padded, vertical_flip);
 			break;
 
 		case 24:
-			CopyColourBytesToFIBitmap(src, data, padded);	
+			CopyColourBytesToFIBitmap(src, data, padded, vertical_flip);	
 			break;
 
 		case 32:
 		{
 			if(type == FIT_BITMAP)
-				CopyColourBytesToFIBitmap(src, data, padded);
+				CopyColourBytesToFIBitmap(src, data, padded, vertical_flip);
 
 			if(type == FIT_FLOAT)
-				CopyGreyScaleBytesToFIBitmap(src, data, padded);
+				CopyGreyScaleBytesToFIBitmap(src, data, padded, vertical_flip);
 			
 			break;
 		}
@@ -125,7 +139,7 @@ FreeImageAlgorithms_LoadFIBFromFile(const char *pathname)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded)
+FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded, int vertical_flip)
 {
 	FIBITMAP 	*dib;
 	BYTE 		*data_ptr;
@@ -180,13 +194,13 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int widt
 			break;
 	}
 
-	FreeImageAlgorithms_CopyBytesToFBitmap(dib, data, padded);
+	FreeImageAlgorithms_CopyBytesToFBitmap(dib, data, padded, vertical_flip);
 
 	return dib;
 }
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded)
+FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded, int vertical_flip)
 {
 	FIBITMAP 	*dib;
 	BYTE 		*data_ptr;
@@ -220,7 +234,7 @@ FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, 
 			break;
 	}
 
-	FreeImageAlgorithms_CopyBytesToFBitmap(dib, data, padded);
+	FreeImageAlgorithms_CopyBytesToFBitmap(dib, data, padded, vertical_flip);
 
 	return dib;
 }
