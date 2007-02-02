@@ -186,11 +186,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\AllTests.c"
+				RelativePath=".\AllTests.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\CuTest.c"
+				RelativePath=".\CuTest.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithms_ArithmeticTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithms_DrawingTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithms_IOTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithms_LogicTests.cpp"
 				>
 			</File>
 			<File
@@ -198,23 +214,31 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FreeImageAlgorithmsColourTests.c"
+				RelativePath=".\FreeImageAlgorithmsColourTests.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\FreeImageAlgorithmsFFTTests.c"
+				RelativePath=".\FreeImageAlgorithmsConvolutionTests.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\FreeImageAlgorithmsLinearScale.c"
+				RelativePath=".\FreeImageAlgorithmsFFTTests.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\FreeImageAlgorithmsStatisticTests.c"
+				RelativePath=".\FreeImageAlgorithmsLinearScale.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\FreeImageAlgorithmsUtilityTests.c"
+				RelativePath=".\FreeImageAlgorithmsMorphologyTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithmsStatisticTests.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FreeImageAlgorithmsUtilityTests.cpp"
 				>
 			</File>
 		</Filter>

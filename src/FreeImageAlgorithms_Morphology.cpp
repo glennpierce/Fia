@@ -1,5 +1,6 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Convolution.h"
+#include "FreeImageAlgorithms_Convolution_Private.h"
 #include "FreeImageAlgorithms_Morphology.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Palettes.h"
