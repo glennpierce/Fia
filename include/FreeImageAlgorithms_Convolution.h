@@ -16,7 +16,7 @@ class KernelIterator
 		KernelIterator(Kernel<Tsrc> *kernel)
 		{
 			this->kernel = kernel;
-			this->current_kernel_ptr = kernel->KernelValues();
+			this->current_kernel_ptr = const_cast<Tsrc*>(kernel->KernelValues());
 			this->current_image_ptr = kernel->KernelFirstValuePtr();
 		}
 		
@@ -66,11 +66,13 @@ template <typename Tsrc>
 class Kernel
 {
 	public:
-		Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values, double divider);
+		Kernel(FIABITMAP* src, int x_radius, int y_radius, const Tsrc *values, double divider);
 		
 		inline void Move(int x, int y)
 		{ 
-			this->current_src_ptr = (this->src_first_pixel_address_ptr + (y * this->src_pitch_in_pixels) + x);
+			this->current_src_ptr = (const_cast<Tsrc*>(this->src_first_pixel_address_ptr) 
+				+ (y * this->src_pitch_in_pixels) + x);
+			
 			this->current_src_center_ptr = this->current_src_ptr
 				+ (y_radius * this->src_pitch_in_pixels) - x_radius;
 		}
@@ -90,7 +92,7 @@ class Kernel
 		inline int ImageHeight() { return this->src_image_height; }
 		inline int KernelWidth() { return this->kernel_width; }
 		inline int ImagePitchInPixels() { return this->src_pitch_in_pixels; }
-		inline Tsrc* KernelValues() { return this->values; }
+		inline const Tsrc* KernelValues() { return this->values; }
 		inline Tsrc GetNumberOfBlocksOfEightInKernelRows() { return this->x_max_block_size; }
 		inline Tsrc GetNumberOfBlocksOfEightInKernelColoumns() { return this->y_max_block_size; }
 		inline Tsrc GetRemainderAfterBlocksInRows() { return this->x_reminder; }
@@ -126,18 +128,18 @@ class Kernel
 		const int y_max_block_size;
 		const int src_pitch_in_pixels;
 		const FREE_IMAGE_TYPE src_image_type;
+		const Tsrc *values;	
+		Tsrc *src_first_pixel_address_ptr;
 
 		double sum;
 		
-		Tsrc *values;	
-		Tsrc *src_first_pixel_address_ptr;
 		Tsrc *current_src_center_ptr;
 		Tsrc *current_src_ptr;	
 };
 
 // The following code does a lot of loop unrolling for performance.
 template<typename Tsrc>
-Kernel<Tsrc>::Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values, double divider)
+Kernel<Tsrc>::Kernel(FIABITMAP* src, int x_radius, int y_radius, const Tsrc *values, double divider)
 :
 	xborder(src->xborder),
 	yborder(src->yborder),
@@ -153,20 +155,17 @@ Kernel<Tsrc>::Kernel(FIABITMAP* src, int x_radius, int y_radius, Tsrc *values, d
 	x_max_block_size((kernel_width / BLOCKSIZE) * BLOCKSIZE),
 	y_max_block_size((kernel_height / BLOCKSIZE) * BLOCKSIZE),
 	src_pitch_in_pixels(FreeImage_GetPitch(src->fib) / sizeof(Tsrc)),
-	src_image_type(FreeImage_GetImageType(src->fib))
+	src_image_type(FreeImage_GetImageType(src->fib)),
+	values(values)
 {
 	// Border must be large enough to account for kernel radius
 	if(xborder < x_radius || yborder < y_radius)
 		return;
 
 	this->dib = src->fib;
-	this->values = values;	
 
 	this->src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(this->dib);
-	this->current_src_ptr = this->src_first_pixel_address_ptr;
-
-	//this->current_src_center_ptr = this->src_first_pixel_address_ptr
-	//	+ (y_radius * this->src_pitch_in_pixels) - x_radius;
+	this->current_src_ptr = const_cast<Tsrc*>(this->src_first_pixel_address_ptr);
 
 	this->Move(0, 0);
 }
@@ -349,14 +348,14 @@ typedef struct
 {
 	int x_radius;
 	int y_radius;
-	double *values;
+	const double *values;
 	double divider;
 
 } FilterKernel;
 
 DLL_API FilterKernel DLL_CALLCONV
 FreeImageAlgorithms_NewKernel(int x_radius, int y_radius, 
-							  double *values, double divider);
+							  const double *values, double divider);
 
 /** \brief Convolve and image with a kernel.
  *

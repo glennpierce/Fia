@@ -7,7 +7,7 @@
 
 FilterKernel DLL_CALLCONV
 FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
-							  double *values, double divider)
+							  const double *values, double divider)
 {
 	FilterKernel kernel;
 

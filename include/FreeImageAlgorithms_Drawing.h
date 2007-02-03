@@ -25,9 +25,11 @@ extern "C" {
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int line_width);
 
-
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width);
 
 #ifdef __cplusplus
 }

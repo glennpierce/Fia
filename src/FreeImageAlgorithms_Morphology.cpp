@@ -5,8 +5,6 @@
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
 
-#define BLOCKSIZE 3
-
 template<class Tsrc>
 class BINARY_MORPHOLOGY
 {

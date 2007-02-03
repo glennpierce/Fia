@@ -38,21 +38,104 @@ Draw24BitColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width)
     agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
     // Create the rendering buffer 
-    agg::renderer<agg::span_rgb24> ren(rbuf);
+    agg::renderer<agg::span_bgr24> ren(rbuf);
     agg::rasterizer ras;
 
-    // Setup the rasterizer
-    ras.filling_rule(agg::fill_even_odd);
-
-	draw_line(ras, rect.left, rect.top, rect.left, rect.bottom, line_width);
+	// Adding line_width seems to account for anti aliasing or sub pixel positioning
+	draw_line(ras, rect.left+line_width, rect.top, rect.left+line_width, rect.bottom, line_width);
 	draw_line(ras, rect.left, rect.top, rect.right, rect.top, line_width);
 	draw_line(ras, rect.left, rect.bottom, rect.right, rect.bottom, line_width);
-	draw_line(ras, rect.right, rect.bottom, rect.right, rect.top, line_width);
+	draw_line(ras, rect.right-line_width, rect.bottom, rect.right-line_width, rect.top, line_width);
 
     ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
  
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
+
+
+static int 
+Draw32BitColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = FreeImage_GetBits(src);
+
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+
+    // Create the rendering buffer 
+    agg::renderer<agg::span_bgra32> ren(rbuf);
+    agg::rasterizer ras;
+
+	// Adding line_width seems to account for anti aliasing or sub pixel positioning
+	draw_line(ras, rect.left+line_width, rect.top, rect.left+line_width, rect.bottom, line_width);
+	draw_line(ras, rect.left, rect.top, rect.right, rect.top, line_width);
+	draw_line(ras, rect.left, rect.bottom, rect.right, rect.bottom, line_width);
+	draw_line(ras, rect.right-line_width, rect.bottom, rect.right-line_width, rect.top, line_width);
+
+    ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
+ 
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+} 
+
+
+static int 
+Draw24BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = FreeImage_GetBits(src);
+
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+
+    // Create the rendering buffer 
+    agg::renderer<agg::span_bgr24> ren(rbuf);
+    agg::rasterizer ras;
+
+    ras.move_to_d(rect.left, rect.top);
+	ras.line_to_d(rect.right, rect.top);
+	ras.line_to_d(rect.right, rect.bottom);
+	ras.line_to_d(rect.left, rect.bottom);
+	ras.line_to_d(rect.left, rect.top);
+
+    ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
+ 
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+} 
+
+static int 
+Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = FreeImage_GetBits(src);
+
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+
+    // Create the rendering buffer 
+    agg::renderer<agg::span_bgra32> ren(rbuf);
+    agg::rasterizer ras;
+
+    ras.move_to_d(rect.left, rect.top);
+	ras.line_to_d(rect.right, rect.top);
+	ras.line_to_d(rect.right, rect.bottom);
+	ras.line_to_d(rect.left, rect.bottom);
+	ras.line_to_d(rect.left, rect.top);
+
+    ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
+ 
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+} 
+
+
 
 static int 
 Draw24BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int line_width) 
@@ -67,7 +150,7 @@ Draw24BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int lin
     agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
     // Create the rendering buffer 
-    agg::renderer<agg::span_rgb24> ren(rbuf);
+    agg::renderer<agg::span_bgr24> ren(rbuf);
     agg::rasterizer ras;
 
     // Setup the rasterizer
@@ -76,7 +159,7 @@ Draw24BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int lin
 	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
 
     ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
- 
+
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
@@ -93,11 +176,11 @@ Draw32BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int lin
     agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
     // Create the rendering buffer 
-    agg::renderer<agg::span_abgr32> ren(rbuf);
+    agg::renderer<agg::span_bgra32> ren(rbuf);
     agg::rasterizer ras;
 
     // Setup the rasterizer
-    ras.filling_rule(agg::fill_non_zero);
+    ras.filling_rule(agg::fill_even_odd);
 
 	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
 
@@ -146,11 +229,35 @@ FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, i
 	int bpp = FreeImage_GetBPP(src);
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
-	//if(type == FIT_BITMAP && bpp == 32)
-	//	return Draw32BitColourLine (src, p1_tmp, p2_tmp, colour, line_width); 
+	if(type == FIT_BITMAP && bpp == 32)
+		return Draw32BitColourRect (src, tmp_rect, colour, line_width); 
 
 	if(type == FIT_BITMAP && bpp == 24)
 		return Draw24BitColourRect (src, tmp_rect, colour, line_width); 
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+} 
+
+int DLL_CALLCONV
+FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	RECT tmp_rect = rect;
+
+	// FreeImages are flipped
+	tmp_rect.top = height - rect.top;
+	tmp_rect.bottom = height - rect.bottom;
+
+	int bpp = FreeImage_GetBPP(src);
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+	if(type == FIT_BITMAP && bpp == 32)
+		return Draw32BitSolidColourRect (src, tmp_rect, colour, line_width); 
+
+	if(type == FIT_BITMAP && bpp == 24)
+		return Draw24BitSolidColourRect (src, tmp_rect, colour, line_width); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
