@@ -82,7 +82,7 @@ Draw32BitColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width)
 
 
 static int 
-Draw24BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+Draw24BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -109,7 +109,7 @@ Draw24BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_wi
 } 
 
 static int 
-Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -239,7 +239,7 @@ FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, i
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -254,10 +254,10 @@ FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colo
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
 	if(type == FIT_BITMAP && bpp == 32)
-		return Draw32BitSolidColourRect (src, tmp_rect, colour, line_width); 
+		return Draw32BitSolidColourRect (src, tmp_rect, colour); 
 
 	if(type == FIT_BITMAP && bpp == 24)
-		return Draw24BitSolidColourRect (src, tmp_rect, colour, line_width); 
+		return Draw24BitSolidColourRect (src, tmp_rect, colour); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 

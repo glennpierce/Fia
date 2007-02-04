@@ -29,7 +29,7 @@ DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width);
 
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width);
+FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour);
 
 #ifdef __cplusplus
 }

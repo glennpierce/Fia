@@ -13,14 +13,6 @@
 extern "C" {
 #endif
 
-// Finds how many bytes a member is within a structure.
-#define offsetof(t, mem) ((size_t) ((char *)&(((t *)8)->mem) - (char *)8)) 
-
-// This first checks that fi_ptr is a pointer to a FIABITMAP
-// If not the first comma expression fails, and is compiled away in release mode.
-#define GetFIBitmap(fi_ptr) \
-    (&((FIABITMAP *)8)->fib == fi_ptr, ((FIABITMAP *) (((long) fi_ptr) - offsetof(FIABITMAP, fib))))
-
 /** Data structure for FIABITMAP type (FIBITMAP with a border)
 */
 typedef struct

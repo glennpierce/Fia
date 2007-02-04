@@ -88,7 +88,7 @@ TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawColourSolidRect (src, rect, RGB(255,0,0), 7);
+	FreeImageAlgorithms_DrawColourSolidRect (src, rect, RGB(255,0,0));
 
 	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_solidrect24bit.jpg", BIT24);
 
