@@ -1,6 +1,4 @@
 #include "FreeImageAlgorithms.h"
-#include "FreeImageAlgorithms_Convolution.h"
-#include "FreeImageAlgorithms_Convolution_Private.h"
 #include "FreeImageAlgorithms_Morphology.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Palettes.h"
@@ -8,7 +6,7 @@
 
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Fillholes(FIBITMAP* src,
-							 unsigned char white_on_black, unsigned char exclude_border_particles)
+							 unsigned char white_on_black)
 {
 	const int width = FreeImage_GetWidth(src);
 	const int height = FreeImage_GetHeight(src);

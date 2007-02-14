@@ -315,7 +315,7 @@ FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel)
 	unsigned char *vals = new unsigned char[kernel_size];
 
 	for(int i=0; i < kernel_size; i++)
-		vals[i] = kernel.values[i];
+		vals[i] = (unsigned char) kernel.values[i];
 
 	Kernel<unsigned char> *kern = new Kernel<unsigned char>(src, kernel.x_radius,
 										kernel.y_radius, vals, 1.0);
@@ -653,7 +653,7 @@ FreeImageAlgorithms_BinaryErosion(FIABITMAP* src, FilterKernel kernel)
 	unsigned char *vals = new unsigned char[kernel_size];
 
 	for(int i=0; i < kernel_size; i++)
-		vals[i] = kernel.values[i];
+		vals[i] = (unsigned char) kernel.values[i];
 
 	Kernel<unsigned char> *kern = new Kernel<unsigned char>(src, kernel.x_radius,
 										kernel.y_radius, vals, 1.0);
