@@ -18,7 +18,7 @@ static double kernel_values[] = {1.0, 1.0, 1.0, 1.0, 1.0,
 static void
 TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test2.jpg";
+	char *file = IMAGE_DIR "\\morpholology_test.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -56,7 +56,7 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test2.jpg";
+	char *file = IMAGE_DIR "\\morpholology_test.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -94,7 +94,7 @@ TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_OpeningTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test2.jpg";
+	char *file = IMAGE_DIR "\\morpholology_test.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -132,7 +132,7 @@ TestFreeImageAlgorithms_OpeningTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_ClosingTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test2.jpg";
+	char *file = IMAGE_DIR "\\morpholology_test.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	

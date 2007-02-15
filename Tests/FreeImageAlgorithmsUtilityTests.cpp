@@ -98,6 +98,31 @@ TestFreeImageAlgorithms_UtilityCompareTest(CuTest* tc)
 }
 
 
+static void
+TestFreeImageAlgorithms_DistanceTransformTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\distance-transform-test.gif";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+
+	CuAssertTrue(tc, dib1 != NULL);
+
+	FIBITMAP *dib2 = FreeImage_ConvertTo8Bits(dib1);
+
+	CuAssertTrue(tc, dib2 != NULL);
+
+	FIBITMAP *dib3 = FreeImageAlgorithms_DistanceTransform(dib2, 1);
+
+	CuAssertTrue(tc, dib3 != NULL);
+
+	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\distance-transform.jpg", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+	FreeImage_Unload(dib3);
+}
+
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
@@ -105,6 +130,9 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityCompareTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DistanceTransformTest);
+	
+
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindMinMaxTest);
 	//SUITE_ADD_TEST(suite, BorderTest);
 	

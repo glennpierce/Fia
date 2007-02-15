@@ -1006,17 +1006,22 @@ FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE t
 
 	FIBITMAP *gs_dib = NULL, *dst = NULL;
 
-	if(FreeImage_GetBPP(src) >= 24 && FreeImage_GetImageType(src) == FIT_BITMAP) // Colour
-		gs_dib = FreeImage_ConvertToGreyscale(src);
+	int bpp = FreeImage_GetBPP(src);
 
+	if(bpp >= 24 && FreeImage_GetImageType(src) == FIT_BITMAP) // Colour
+		gs_dib = FreeImage_ConvertToGreyscale(src);
+	else if(bpp < 8)
+		gs_dib = FreeImage_ConvertTo8Bits(src);
+	else
+		gs_dib = FreeImage_Clone(src);
+	
 	if(gs_dib != NULL) {
 		dst = FreeImage_ConvertToType(gs_dib, type, 1); 
 		FreeImage_Unload(gs_dib);
+		return dst;
 	}
-	else
-		dst = FreeImage_ConvertToType(src, type, 1); 
 
-	return dst;
+	return NULL;
 }
 
 
