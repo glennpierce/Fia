@@ -44,7 +44,6 @@ typedef struct
 
 typedef enum {BIT8, BIT24} FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH;
 
-
 /** \brief Disposes of FIABITMAP's.
  *
  *  Disposes of FIABITMAP's (which have a border added to an image).

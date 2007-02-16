@@ -22,7 +22,7 @@ void RunAllTests(void)
 
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
-	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());

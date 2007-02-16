@@ -484,7 +484,6 @@ FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold)
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Is8Bit(FIBITMAP *src);
 
-
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_DistanceTransform(FIBITMAP *src, unsigned char on);
 

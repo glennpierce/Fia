@@ -187,19 +187,49 @@ TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 
 	ProfileStart("FillholeTest");
 
-	FIBITMAP* result_dib = FreeImageAlgorithms_Fillhole(threshold_8bit_dib,
+	FIBITMAP* result_dib = FreeImageAlgorithms_Fillholes(threshold_8bit_dib,
 							 1, 1);
 
 	CuAssertTrue(tc, result_dib != NULL);
 
 	ProfileStop("FillholeTest");
-
+	
 	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
 	FreeImage_Unload(threshold_8bit_dib);
 	FreeImage_Unload(result_dib);
+}
+
+static void
+TestFreeImageAlgorithms_FloodFillTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\fillhole_test.bmp";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+
+	CuAssertTrue(tc, dib1 != NULL);
+
+	FIBITMAP *dib2 = FreeImage_ConvertTo8Bits(dib1);
+
+	CuAssertTrue(tc, dib2 != NULL);
+
+	FIBITMAP *dib3 = FreeImageAlgorithms_FloodFill(dib2, 0, 20, 255);
+
+	FreeImageAlgorithms_SetTernaryPalettePalette(dib3, 
+									FreeImageAlgorithms_GetRGBQUAD(255, 0, 0),
+									2, FreeImageAlgorithms_GetRGBQUAD(0, 0, 255),
+									255, FreeImageAlgorithms_GetRGBQUAD(0, 255, 0));
+
+
+	CuAssertTrue(tc, dib3 != NULL);
+
+	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\floodfill.jpg", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+	FreeImage_Unload(dib3);
 }
 
 
@@ -213,6 +243,7 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_OpeningTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
 
 	return suite;
 }

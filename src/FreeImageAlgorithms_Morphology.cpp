@@ -6,20 +6,6 @@
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
 
-template<class Tsrc>
-class BINARY_MORPHOLOGY
-{
-public:
-	FIBITMAP* BinaryDilation(FIABITMAP* src);
-	FIBITMAP* BinaryErosion(FIABITMAP* src);
-
-private:
-
-	unsigned char *structuring_element;
-	int src_pitch_in_pixels;
-};
-
-
 inline void DilateKernelRow(KernelIterator<unsigned char> &iterator, unsigned char *dst_ptr)
 {
 	register unsigned char *row_ptr;

@@ -1,6 +1,7 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Utils.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "profile.h"
 
@@ -101,7 +102,7 @@ TestFreeImageAlgorithms_UtilityCompareTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_DistanceTransformTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\distance-transform-test3.gif";
+	char *file = IMAGE_DIR "\\distance-transform-test.gif";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
@@ -115,13 +116,12 @@ TestFreeImageAlgorithms_DistanceTransformTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\distance-transform3.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\distance-transform.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
 	FreeImage_Unload(dib3);
 }
-
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsUtilitySuite(void)
@@ -131,8 +131,6 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityCompareTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DistanceTransformTest);
-	
-
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindMinMaxTest);
 	//SUITE_ADD_TEST(suite, BorderTest);
 	
