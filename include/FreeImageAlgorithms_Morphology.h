@@ -44,6 +44,11 @@ FreeImageAlgorithms_BinaryOpening(FIABITMAP* src, FilterKernel kernel);
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_BinaryClosing(FIABITMAP* src, FilterKernel kernel);
 
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Fillhole(FIBITMAP* src,
+							 unsigned char white_on_black, unsigned char exclude_border_particles);
+
 #ifdef __cplusplus
 }
 #endif

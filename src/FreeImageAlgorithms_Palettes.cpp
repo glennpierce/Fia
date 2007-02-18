@@ -5,6 +5,18 @@
 
 #include <math.h>
 
+RGBQUAD DLL_CALLCONV FreeImageAlgorithms_GetRGBQUAD(unsigned char red, unsigned char green,
+													unsigned char blue)
+{
+	RGBQUAD quad;
+
+	quad.rgbRed = red;
+	quad.rgbGreen = green;
+	quad.rgbBlue = blue;
+
+	return quad;
+}
+
 int DLL_CALLCONV
 FreeImageAlgorithms_CopyPaletteToRGBQUAD(FIBITMAP *src, RGBQUAD *palette)
 {
@@ -105,6 +117,22 @@ FreeImageAlgorithms_SetGreyLevelOverLoadPalette(FIBITMAP *src)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	FreeImageAlgorithms_GetGreyLevelOverLoadPalette(palette);
+
+  	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_SetTernaryPalettePalette(FIBITMAP *src, RGBQUAD background_colour,
+									  int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)
+{
+	RGBQUAD *palette;
+
+	if((palette = FreeImage_GetPalette(src)) == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	FreeImageAlgorithms_GetTernaryPalette(palette, background_colour, pos1, colour1,
+										  pos2, colour2);
 
   	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
@@ -222,7 +250,36 @@ FreeImageAlgorithms_GetGreyLevelOverLoadPalette(RGBQUAD *palette)
   	
   	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
-		  
+	
+
+int DLL_CALLCONV
+FreeImageAlgorithms_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colour,
+									  int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)
+{
+	if(palette == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int i;
+
+	// Mark as background colour
+  	for (i = 0; i < 256; i++) { 
+  		palette[i].rgbRed = background_colour.rgbRed; 
+  		palette[i].rgbGreen = background_colour.rgbGreen; 
+  		palette[i].rgbBlue = background_colour.rgbBlue; 
+  	}
+  			
+	palette[pos1].rgbRed = colour1.rgbRed; 
+  	palette[pos1].rgbGreen = colour1.rgbGreen; 
+  	palette[pos1].rgbBlue = colour1.rgbBlue; 
+  	
+	palette[pos2].rgbRed = colour2.rgbRed; 
+  	palette[pos2].rgbGreen = colour2.rgbGreen; 
+  	palette[pos2].rgbBlue = colour2.rgbBlue; 
+
+  	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
 int DLL_CALLCONV
 FreeImageAlgorithms_GetRainBowPalette(RGBQUAD *palette)
 {

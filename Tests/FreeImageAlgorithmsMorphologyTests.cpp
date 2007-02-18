@@ -167,6 +167,42 @@ TestFreeImageAlgorithms_ClosingTest(CuTest* tc)
 	FreeImage_Unload(result_dib);
 }
 
+
+static void
+TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\fillhole_test.bmp";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib1 != NULL);
+	
+	FIBITMAP *threshold_dib = FreeImage_Threshold(dib1, 20);
+
+	CuAssertTrue(tc, threshold_dib != NULL);
+
+	FIBITMAP *threshold_8bit_dib = FreeImage_ConvertTo8Bits(threshold_dib);
+
+	CuAssertTrue(tc, threshold_8bit_dib != NULL);
+
+	ProfileStart("FillholeTest");
+
+	FIBITMAP* result_dib = FreeImageAlgorithms_Fillhole(threshold_8bit_dib,
+							 1, 1);
+
+	CuAssertTrue(tc, result_dib != NULL);
+
+	ProfileStop("FillholeTest");
+
+	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(threshold_dib);
+	FreeImage_Unload(threshold_8bit_dib);
+	FreeImage_Unload(result_dib);
+}
+
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsMorphologySuite(void)
 {
@@ -176,6 +212,7 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ErosionTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_OpeningTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 
 	return suite;
 }

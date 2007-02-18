@@ -11,6 +11,16 @@ extern "C" {
 	Provides various palette modification methods.
 */ 
 
+/** \brief Get a RGBQUAD from the three colours.
+ *
+ *  \param red Red colour.
+ *  \param green Green colour.
+ *  \param blue Blue colour.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API RGBQUAD DLL_CALLCONV FreeImageAlgorithms_GetRGBQUAD(unsigned char red, unsigned char green,
+													unsigned char blue);
+
 /** \brief Copies the palette for an image to an array of RGBQUAD.
  *
  *  \param src Image containing palette.
@@ -97,6 +107,19 @@ FreeImageAlgorithms_SetFalseColourPalette(FIBITMAP *src, double wavelength);
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_SetGreyLevelOverLoadPalette(FIBITMAP *src);
 
+
+/** \brief Set a pallete specify three unique colours and a background.
+ *
+ *	Useful for displaying binary images.
+ *
+ *  \param src Image to set palette to greyscale overload.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_SetTernaryPalettePalette(FIBITMAP *src, RGBQUAD background_colour,
+									  int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2);
+
+
 /** \brief Set the pallete of a FIBITMAP image to a seismic palette.
  *
  *  \param src Image to set palette to seismic.
@@ -120,6 +143,18 @@ FreeImageAlgorithms_GetGreyLevelPalette(RGBQUAD *palette);
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetGreyLevelOverLoadPalette(RGBQUAD *palette);
+
+
+/** \brief Get a pallete specify three unique colours and a background.
+ *
+ *	Useful for displaying binary images.
+ *
+ *  \param  palette RGBQUAD* array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colour,
+									  int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2);
 
 /** \brief Get a rainbow pallete into a RGBQUAD array.
  *

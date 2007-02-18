@@ -101,7 +101,7 @@ TestFreeImageAlgorithms_UtilityCompareTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_DistanceTransformTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\distance-transform-test.gif";
+	char *file = IMAGE_DIR "\\distance-transform-test3.gif";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
@@ -115,7 +115,7 @@ TestFreeImageAlgorithms_DistanceTransformTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\distance-transform.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\distance-transform3.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);

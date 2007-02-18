@@ -15,9 +15,6 @@ public:
 
 private:
 
-	inline bool AreAnyNearestNeighboursZero(Tsrc *ptr, bool include_diagonals);
-	inline bool AreAnyNearestNeighboursNonZero(Tsrc *ptr, bool include_diagonals);
-
 	unsigned char *structuring_element;
 	int src_pitch_in_pixels;
 };
