@@ -252,7 +252,7 @@ TestFreeImageAlgorithms_LabelTest(CuTest* tc)
 	FIBITMAP *dib3;
 
 	for(int i=0; i < 30; i++)
-		dib3 = FreeImageAlgorithms_Label(dib2, 0);
+		dib3 = FreeImageAlgorithms_ParticleInfo(dib2, 0);
 
 
 	ProfileStop("LabelTest");

@@ -56,7 +56,7 @@ DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour);
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Label(FIBITMAP* src, unsigned char bg_colour);
+FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour);
 
 #ifdef __cplusplus
 }
