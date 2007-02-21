@@ -230,7 +230,7 @@ TestFreeImageAlgorithms_FloodFillTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_LabelTest(CuTest* tc)
+TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 {
 	//char *file = IMAGE_DIR "\\fillhole_test.bmp";
 	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
@@ -290,7 +290,7 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LabelTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
 
 	return suite;
 }

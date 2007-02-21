@@ -110,7 +110,7 @@ static inline void MergeBlobs(blob *blob1, blob *blob2)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour)
+FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char white_on_black)
 {
 	const int width = FreeImage_GetWidth(src);
 	const int height = FreeImage_GetHeight(src);
@@ -119,6 +119,11 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour)
 
 	register int i = 0;
 	register int x = 0;
+
+	unsigned char bg_val = 0;
+
+	if(!white_on_black)
+		bg_val = 1;
 
 	run* current_runs = (run *) malloc(sizeof(run) * width / 2);		// Array of all runs
 	run* last_runs = (run *) malloc(sizeof(run) * width / 2);
@@ -135,8 +140,8 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour)
 	// All runs are new so no merging takes place.
 	for(x=0; x < width; x++) {
 
-		// If fg pixel
-		if(!src_ptr[x])
+		// If bg pixel
+		if(src_ptr[x] == bg_val)
 			continue;
 
 		// new blob
@@ -144,7 +149,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour)
 		last_runs_ptr[last_row_run_count].y = 0;
 		
 		// While fg pixel increment.
-		while(src_ptr[x++]) ;
+		while(src_ptr[x++] != bg_val && x < width) ;
 
 		last_runs_ptr[last_row_run_count].end_x = x;			
 
@@ -167,7 +172,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour)
 		for(x=0; x < width; x++) {
 
 			// Skip bg pixels
-			if(!src_ptr[x])
+			if(src_ptr[x] == bg_val)
 				continue;
 
 			tmp_run.x = x;
@@ -175,7 +180,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour)
 			tmp_run.blob = NULL;
 
 			// While fg pixel increment.
-			while(src_ptr[x++]) ;
+			while(src_ptr[x++] != bg_val && x < width) ;
 
 			tmp_run.end_x = x;
 					
@@ -250,9 +255,9 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char bg_colour)
 	
 	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.jpg", BIT24);
 
-//	std::cout << "number of blobs: " << total_id - 1<< std::endl;	
-
 	UnionFindFree();
+	free(current_runs);
+	free(last_runs);
 
 	return NULL;
 
