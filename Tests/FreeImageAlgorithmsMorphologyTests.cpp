@@ -110,15 +110,11 @@ TestFreeImageAlgorithms_OpeningTest(CuTest* tc)
 
 	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
 
-	ProfileStart("OpeningFilter");
-
 	FilterKernel kernel = FreeImageAlgorithms_NewKernel(2, 2, kernel_values, 1.0);
 
 	FIBITMAP* result_dib = FreeImageAlgorithms_BinaryOpening(border_dib, kernel);
 
 	CuAssertTrue(tc, result_dib != NULL);
-
-	ProfileStop("OpeningFilter");
 
 	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\opening_result.jpg", BIT24);
 
@@ -148,15 +144,11 @@ TestFreeImageAlgorithms_ClosingTest(CuTest* tc)
 
 	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
 
-	ProfileStart("ClosingFilter");
-
 	FilterKernel kernel = FreeImageAlgorithms_NewKernel(2, 2, kernel_values, 1.0);
 
 	FIBITMAP* result_dib = FreeImageAlgorithms_BinaryClosing(border_dib, kernel);
 
 	CuAssertTrue(tc, result_dib != NULL);
-
-	ProfileStop("ClosingFilter");
 
 	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\closing_result.jpg", BIT24);
 
@@ -241,7 +233,7 @@ static void
 TestFreeImageAlgorithms_LabelTest(CuTest* tc)
 {
 	//char *file = IMAGE_DIR "\\fillhole_test.bmp";
-	char *file = "C:\\Documents and Settings\\Glenn\\Desktop\\particle-test.bmp";
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
@@ -257,7 +249,11 @@ TestFreeImageAlgorithms_LabelTest(CuTest* tc)
 
 	ProfileStart("LabelTest");
 
-	FIBITMAP *dib3 = FreeImageAlgorithms_Label(dib2, 0);
+	FIBITMAP *dib3;
+
+	for(int i=0; i < 30; i++)
+		dib3 = FreeImageAlgorithms_Label(dib2, 0);
+
 
 	ProfileStop("LabelTest");
 
@@ -288,12 +284,12 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DilationTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ErosionTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_OpeningTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DilationTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ErosionTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_OpeningTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LabelTest);
 
 	return suite;
