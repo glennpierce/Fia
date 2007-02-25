@@ -285,7 +285,6 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 }
 
 
-/*
 static void
 TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 {
@@ -301,7 +300,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
  
 	ProfileStart("FindImageMaxima");
 
-	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, 2);
+	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, 50, 2);
 	
 	FreeImageAlgorithms_SetGreyLevelPalette(dib3);
 
@@ -316,7 +315,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 	FreeImage_Unload(dib3);
 	FreeImage_Unload(dst);
 }
-*/
+
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsMorphologySuite(void)
@@ -329,8 +328,8 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
 
 	return suite;
 }

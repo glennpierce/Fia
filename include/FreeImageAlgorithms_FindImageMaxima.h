@@ -11,9 +11,8 @@ extern "C" {
 *	Provides methods to find maxima in an image.
 */ 
 
-
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, int min_separation);
+FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, unsigned char threshold, int min_separation);
 
 
 //typedef struct
