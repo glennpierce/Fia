@@ -6,9 +6,6 @@
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
 
-#include "FreeImageAlgorithms_Drawing.h"
-#include "FreeImageAlgorithms_IO.h"
-
 typedef struct _blob blob;
 
 struct _blob
@@ -109,8 +106,8 @@ static inline void MergeBlobs(blob *blob1, blob *blob2)
 }
 
 
-FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char white_on_black)
+int DLL_CALLCONV
+FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned char white_on_black)
 {
 	const int width = FreeImage_GetWidth(src);
 	const int height = FreeImage_GetHeight(src);
@@ -235,30 +232,52 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, unsigned char white_on_black)
 		last_row_run_count = current_run_count;
 	}
 
-	FIBITMAP *dst = FreeImage_ConvertTo24Bits(src);
+	int number_of_blobs = 0;
 
-	for(int i=0; i < blobcount; i++)
-	{
+	// Get blob count
+	for(int i=0; i < blobcount; i++) {
+
 		blob* ptr = &blobpool[i]; 
 
 		if(ptr != ptr->parent)
 			continue;
+	
+		number_of_blobs++;
+	}
+		
+	 // Create PARTICLEINFO/BLOBINFO array
+	*info = (PARTICLEINFO*) malloc (sizeof(PARTICLEINFO));
+	(*info)->number_of_blobs = number_of_blobs;
+	(*info)->blobs = (BLOBINFO*) malloc (sizeof(BLOBINFO) * number_of_blobs);
 
-		RECT rect;
-		rect.left = ptr->left;
-		rect.bottom = FreeImage_GetHeight(dst) - ptr->bottom;
-		rect.right = ptr->right;
-		rect.top = FreeImage_GetHeight(dst) - ptr->top;
+	// Get blob count
+	for(int i=0, j=0; i < blobcount; i++) {
 
-		FreeImageAlgorithms_DrawColourRect (dst, rect, RGB(255,0,0), 2);
+		blob* ptr = &blobpool[i]; 
+
+		if(ptr != ptr->parent)
+			continue;
+	
+		(*info)->blobs[j].left = ptr->left;
+		(*info)->blobs[j].top = ptr->top;
+		(*info)->blobs[j].right = ptr->right;
+		(*info)->blobs[j].bottom = ptr->bottom;
+
+		j++;
 	}
 	
-	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.jpg", BIT24);
-
 	UnionFindFree();
 	free(current_runs);
 	free(last_runs);
 
-	return NULL;
-
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
 };
+
+void DLL_CALLCONV
+FreeImageAlgorithms_FreeParticleInfo(PARTICLEINFO* info)
+{
+	free(info->blobs);
+	info->blobs = NULL;
+
+	free(info);
+}

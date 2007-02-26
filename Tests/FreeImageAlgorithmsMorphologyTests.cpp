@@ -7,6 +7,9 @@
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Morphology.h"
+#include "FreeImageAlgorithms_Drawing.h"
+
+#include <iostream>
 
 static double kernel_values[] = {1.0, 1.0, 1.0, 1.0, 1.0,
 								 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -234,7 +237,7 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 {
 	//char *file = IMAGE_DIR "\\fillhole_test.bmp";
 	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
-
+	
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, dib1 != NULL);
@@ -242,38 +245,42 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 	FIBITMAP *dib2 = FreeImage_ConvertTo8Bits(dib1);
 	
 	CuAssertTrue(tc, dib2 != NULL);
+ 
+	ProfileStart("ParticleInfo");
 
-	const int width = FreeImage_GetWidth(dib2);
+	PARTICLEINFO *info;
 
-	printf("width %d\n", width);
+	for(int i=0; i < 30; i++) {
 
-	ProfileStart("LabelTest");
+		FreeImageAlgorithms_ParticleInfo(dib2, &info, 1);
+	}
 
-	FIBITMAP *dib3;
+	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib2);
 
-	for(int i=0; i < 30; i++)
-		dib3 = FreeImageAlgorithms_ParticleInfo(dib2, 0);
+	for(int i=0; i < info->number_of_blobs; i++)
+	{
+		BLOBINFO blobinfo = info->blobs[i];
 
+		RECT rect;
+		rect.left = blobinfo.left;
+		rect.bottom = FreeImage_GetHeight(dst) - blobinfo.bottom;
+		rect.right = blobinfo.right;
+		rect.top = FreeImage_GetHeight(dst) - blobinfo.top;
 
-	ProfileStop("LabelTest");
-
-	/*
-	FreeImageAlgorithms_SetTernaryPalettePalette(dib3, 
-									FreeImageAlgorithms_GetRGBQUAD(255, 0, 0),
-									2, FreeImageAlgorithms_GetRGBQUAD(0, 0, 255),
-									255, FreeImageAlgorithms_GetRGBQUAD(0, 255, 0));
-
-	*/
-
+		FreeImageAlgorithms_DrawColourRect (dst, rect, RGB(255,0,0), 2);
+	}
 	
+	std::cout << "Number of particles " << info->number_of_blobs << std::endl;
 
-	CuAssertTrue(tc, dib3 != NULL);
+	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.jpg", BIT24);
 
-	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\label.jpg", BIT24);
+	ProfileStop("ParticleInfo");
+
+	FreeImageAlgorithms_FreeParticleInfo(info);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
-	FreeImage_Unload(dib3);
+	FreeImage_Unload(dst);
 }
 
 
