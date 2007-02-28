@@ -8,6 +8,7 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Morphology.h"
 #include "FreeImageAlgorithms_Drawing.h"
+#include "FreeImageAlgorithms_FindImageMaxima.h"
 
 #include <iostream>
 
@@ -284,7 +285,38 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 }
 
 
+/*
+static void
+TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
+{
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+	
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
+	CuAssertTrue(tc, dib1 != NULL);
+
+	FIBITMAP *dib2 = FreeImage_ConvertTo8Bits(dib1);
+	
+	CuAssertTrue(tc, dib2 != NULL);
+ 
+	ProfileStart("FindImageMaxima");
+
+	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, 2);
+	
+	FreeImageAlgorithms_SetGreyLevelPalette(dib3);
+
+	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib3);
+
+	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\find_image_maxima.jpg", BIT24);
+
+	ProfileStop("FindImageMaxima");
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+	FreeImage_Unload(dib3);
+	FreeImage_Unload(dst);
+}
+*/
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsMorphologySuite(void)
@@ -298,6 +330,7 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
 
 	return suite;
 }

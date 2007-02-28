@@ -1,58 +1,249 @@
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Drawing.h"
+#include "FreeImageAlgorithms_Palettes.h"
+#include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Morphology.h"
 #include "FreeImageAlgorithms_FindImageMaxima.h"
 
 #define MAX_REGIONGROW_CALLS 5000
+static int	regionGrowCount=0;
 
-// for maxima finding
-static int				regionGrowCount=0;
-static double 			*imageArray;
-static int 				*maxima;
-
-//********************************* nms **********************************************************************
-
-static int nms (int pos)
-// non-max supression of the imageArray map
+static inline int NeighbourhoodNMS(unsigned char *ptr, unsigned int pitch_in_pixels)
 {
-	int n_pos;
+	unsigned char *tmp_ptr = ptr - pitch_in_pixels - 1;
 
-	n_pos = pos - x_points - 1 ; // position of neighbour
-	
-	if (imageArray[pos]<imageArray[n_pos++])
+	if(*ptr < tmp_ptr[0])
 		return 0;
 
-	if (imageArray[pos]<imageArray[n_pos++])
+	if(*ptr < tmp_ptr[1])
 		return 0;
 
-	if (imageArray[pos]<imageArray[n_pos])
+	if(*ptr < tmp_ptr[2])
 		return 0;
 
-	n_pos+=x_points;
-	
-	if (imageArray[pos]<imageArray[n_pos])
-		return(0);
-	
-	n_pos-=2;
-	
-	if (imageArray[pos]<imageArray[n_pos])
-		return(0);
-	
-	n_pos+=x_points;
-	
-	if (imageArray[pos]<imageArray[n_pos++])
-		return(0);
-	
-	if (imageArray[pos]<imageArray[n_pos++])
-		return(0);
-	
-	if (imageArray[pos]<imageArray[n_pos])
-		return(0);
-	
-	return (1);
+	// Next kernel line
+	tmp_ptr += pitch_in_pixels;
+
+	if(*ptr < tmp_ptr[0])
+		return 0;
+
+	if(*ptr < tmp_ptr[2])
+		return 0;
+
+	// Next kernel line
+	tmp_ptr += pitch_in_pixels;
+
+	if(*ptr < tmp_ptr[0])
+		return 0;
+
+	if(*ptr < tmp_ptr[1])
+		return 0;
+
+	if(*ptr < tmp_ptr[2])
+		return 0;
+
+	return 1;
 }
 
-//********************************* regionGrow **********************************************************************
+static FIBITMAP* NonMaxSupression(FIBITMAP *src, int threshold)
+{
+	FIABITMAP *bordered_src = FreeImageAlgorithms_SetBorder(src, 1, 1);
 
+	const int width = FreeImage_GetWidth(bordered_src->fib);
+	const int height = FreeImage_GetHeight(bordered_src->fib);
+
+	FIBITMAP *dst = FreeImage_Allocate(width, height, 8, 0, 0, 0);
+
+	assert(dst != NULL);
+
+	const int pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(unsigned char);
+
+	register unsigned char *src_ptr, *dst_ptr;
+
+	unsigned char *src_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(bordered_src->fib);
+	unsigned char *dst_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(dst);
+
+	for (register int y=1; y < height - 1; y++)
+	{		
+		src_ptr = (src_first_pixel_address_ptr + y * pitch_in_pixels + 1);
+		dst_ptr = (dst_first_pixel_address_ptr + y * pitch_in_pixels + 1);
+
+		for (register int x=0; x < width - 1; x++) 
+		{
+			if(*src_ptr > threshold)
+				*dst_ptr = NeighbourhoodNMS(src_ptr, pitch_in_pixels);
+
+			src_ptr++;
+			dst_ptr++;
+		}
+	}
+
+	return dst;
+}
+
+static inline void SetNeighbours(unsigned char *ptr, unsigned int pitch_in_pixels)
+{
+	unsigned char *tmp_ptr = ptr - pitch_in_pixels - 1;
+
+	if(!tmp_ptr[0])
+		tmp_ptr[0] = 2;
+
+	if(!tmp_ptr[1])
+		tmp_ptr[1] = 2;
+	
+	if(!tmp_ptr[2])
+		tmp_ptr[2] = 2;
+
+	// Next kernel line
+	tmp_ptr += pitch_in_pixels;
+
+	if(!tmp_ptr[0])
+		tmp_ptr[0] = 2;
+
+	if(!tmp_ptr[2])
+		tmp_ptr[2] = 2;
+
+	// Next kernel line
+	tmp_ptr += pitch_in_pixels;
+
+	if(!tmp_ptr[0])
+		tmp_ptr[0] = 2;
+
+	if(!tmp_ptr[1])
+		tmp_ptr[1] = 2;
+	
+	if(!tmp_ptr[2])
+		tmp_ptr[2] = 2;
+}
+
+// Set adjoining pixels to 2
+static void SetNeigbourPixels(FIBITMAP *src)
+{
+	const int width = FreeImage_GetWidth(src);
+	const int height = FreeImage_GetHeight(src);
+
+	const int pitch_in_pixels = FreeImage_GetPitch(src) / sizeof(unsigned char);
+
+	register unsigned char *src_ptr;
+
+	unsigned char *src_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(src);
+
+	for (register int y=1; y < height - 1; y++)
+	{		
+		src_ptr = (src_first_pixel_address_ptr + y * pitch_in_pixels + 1);
+		
+		for (register int x=0; x < width - 1; x++) 
+		{
+			if(*src_ptr== 1)
+				SetNeighbours(src_ptr, pitch_in_pixels);
+			
+			src_ptr++;
+		}
+	}
+
+	return dst;
+}
+
+static void regionGrow(int x, int y)
+// region growing downhill
+{
+	int pos, n_pos;
+
+	regionGrowCount++;
+	
+	if (regionGrowCount > MAX_REGIONGROW_CALLS)
+		return;
+
+	if (x>0 && x<x_points-1 && y>0 && y<y_points-1)
+	{
+		pos = y * x_points + x;
+		n_pos = pos - x_points - 1 ; // position of neighbour
+		maxima[pos]=3;
+		
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x-1,y-1);
+		n_pos++;
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x,y-1);
+		n_pos++;
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x+1,y-1);
+		n_pos+=x_points;
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x+1,y);
+		n_pos-=2;
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x-1,y);
+		n_pos+=x_points;
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x-1,y+1);
+		n_pos++;
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x,y+1);
+		n_pos++;
+		if (imageArray[n_pos]<=imageArray[pos] && imageArray[n_pos]!=0 && maxima[n_pos]!=3) regionGrow(x+1,y+1);
+	}
+}
+
+static FIBITMAP* DrawMaxima (FIBITMAP* src, int size )
+{
+	// A large size allows the peask to merge together if this is desirable
+	
+	if (size < 1)
+		size = 1; // Just a check as this has created much confusion
+
+	const int width = FreeImage_GetWidth(src);
+	const int height = FreeImage_GetHeight(src);
+
+	FIBITMAP *dst = FreeImage_Allocate(width, height, 8, 0, 0, 0);
+
+	FreeImageAlgorithms_SetGreyLevelPalette(dst);
+
+	const int pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(unsigned char);
+
+	register unsigned char *src_ptr;
+
+	unsigned char *src_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(src);
+
+	RECT rect;
+
+	for (register int y=0; y < height; y++)
+	{		
+		src_ptr = (src_first_pixel_address_ptr + y * pitch_in_pixels);
+	
+		for (register int x=0; x < width; x++) 
+		{
+			if(src_ptr[0] == 1) {
+
+				rect.left = x-size/2;
+				rect.top = y-size/2;
+				rect.right = rect.left + size;
+				rect.bottom = rect.top + size;
+
+				FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (dst, rect, 255); 
+			}
+
+			src_ptr++;
+		}
+	}
+
+	return dst;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, int min_separation)
+{
+	
+	FIBITMAP* nms = NonMaxSupression(src, 50);
+
+	SetNeigbourPixels(nms);
+
+
+	FIBITMAP* drawnMaxima = DrawMaxima (nms, min_separation);
+
+	FreeImage_Unload(nms);
+
+	return drawnMaxima;
+}
+
+
+
+//********************************* regionGrow **********************************************************************
+/*
 static void regionGrow(int x, int y)
 // region growing downhill
 {
@@ -84,8 +275,11 @@ static void regionGrow(int x, int y)
 	}
 }
 
+*/
+
 //********************************* FindOnlyMaxima **********************************************************************
 
+/*
 static void FindOnlyMaxima(double threshold, double *imageArray, int *maxima)
 // find peaks and plateaux(?), no shoulders, no local minima.
 {
@@ -145,9 +339,11 @@ static void FindOnlyMaxima(double threshold, double *imageArray, int *maxima)
 	}
 	
 }
+*/
 
 //********************************* DrawMaxima **********************************************************************
 
+/*
 static void DrawMaxima ( IPIImageRef input, int rectOrOval, int size )
 // draw these maxima in an IPI image
 // specify marker type and size
@@ -178,8 +374,11 @@ static void DrawMaxima ( IPIImageRef input, int rectOrOval, int size )
 	} 
 }
 
+*/
+
 //********************************* comparePeaks **********************************************************************
 
+/*
 static int __cdecl comparePeaks (const void *element1, const void *element2)
 {
 	GlPeak peak1, peak2;
@@ -191,9 +390,11 @@ static int __cdecl comparePeaks (const void *element1, const void *element2)
 	else if (peak2.value > peak1.value) return(-1);
 	else return(0);
 }
+*/
 
 //********************************* StoreBrightestPeaks **********************************************************************
 
+/*
 static int StoreBrightestPeaks (IPIImageRef peakImage, IPIImageRef brightnessImage, int number, GlPeak **pCentres)
 {
 	// store a number of brightest peaks from peakImage according to brightnessImage
@@ -238,9 +439,12 @@ static int StoreBrightestPeaks (IPIImageRef peakImage, IPIImageRef brightnessIma
 	free (peakList);
 	return(count);
 }
+*/
+
 
 //********************************* findImageMaxima Public fns **********************************************************************
 
+/*
 int findImageMaxima_imageOut (FIBITMAP* image, FIBITMAP* mask, int number, double threshold_in, int minSeparation, GlPeak **pCentresIn, FIBITMAP** imageOut)
 
 // number is the number of maxima to try and find, if number<=0 all peaks are found
@@ -307,6 +511,7 @@ int findImageMaxima (IPIImageRef image, int number, IPIImageRef mask,  GlPeak *c
 {   // this is for lagacy cell finding where centres is pre allocated and minSeparation = 11 pixels, and no mask
 	return (findImageMaxima_imageOut (image, 0, number, 0, 11, &centres, 0));
 }
+*/
 
 
 

@@ -120,7 +120,7 @@ Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour)
     // Create the rendering buffer 
     agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
-    // Create the rendering buffer 
+    // Create the renderer 
     agg::renderer<agg::span_bgra32> ren(rbuf);
     agg::rasterizer ras;
 
@@ -135,6 +135,32 @@ Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
+int DLL_CALLCONV
+FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, int value) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = FreeImage_GetBits(src);
+
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+
+    // Create the renderer 
+    agg::renderer<agg::span_mono8> ren(rbuf);
+    agg::rasterizer ras;
+
+    ras.move_to_d(rect.left, rect.top);
+	ras.line_to_d(rect.right, rect.top);
+	ras.line_to_d(rect.right, rect.bottom);
+	ras.line_to_d(rect.left, rect.bottom);
+	ras.line_to_d(rect.left, rect.top);
+
+    ras.render(ren, agg::rgba8(value, value, value));
+ 
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+} 
 
 
 static int 

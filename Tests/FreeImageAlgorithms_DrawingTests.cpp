@@ -94,6 +94,42 @@ TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
 
 	FreeImage_Unload(src);
 }
+
+static void
+TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+
+	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+
+	CuAssertTrue(tc, src != NULL);
+
+	FIBITMAP *gs_src = FreeImage_ConvertTo8Bits(src);
+
+	CuAssertTrue(tc, gs_src != NULL);
+
+	POINT p1, p2;
+
+	p1.x = 10;
+	p1.y = 10;
+	p2.x = 500;
+	p2.y = 800;
+
+	RECT rect;
+	rect.left = 100;
+	rect.top = 100;
+	rect.bottom = 500;
+	rect.right = 500;
+	
+	FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (gs_src, rect, 100);
+
+	FreeImageAlgorithms_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.jpg", BIT24);
+
+	FreeImage_Unload(src);
+	FreeImage_Unload(gs_src);
+}
+
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsDrawingSuite(void)
 {
@@ -102,6 +138,7 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LineTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_RectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidRectTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidGSRectTest);
 
 	return suite;
 }
