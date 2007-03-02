@@ -10,10 +10,8 @@ extern "C" {
 
 typedef struct
 {
-	int left;
-	int top;
-	int right;
-	int bottom;
+	RECT rect;
+	int area;
 
 } BLOBINFO;
 

@@ -42,10 +42,10 @@ Draw24BitColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width)
     agg::rasterizer ras;
 
 	// Adding line_width seems to account for anti aliasing or sub pixel positioning
-	draw_line(ras, rect.left+line_width, rect.top, rect.left+line_width, rect.bottom, line_width);
+	draw_line(ras, rect.left, rect.top, rect.left, rect.bottom, line_width);
 	draw_line(ras, rect.left, rect.top, rect.right, rect.top, line_width);
 	draw_line(ras, rect.left, rect.bottom, rect.right, rect.bottom, line_width);
-	draw_line(ras, rect.right-line_width, rect.bottom, rect.right-line_width, rect.top, line_width);
+	draw_line(ras, rect.right, rect.bottom, rect.right, rect.top, line_width);
 
     ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
  

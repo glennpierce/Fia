@@ -12,14 +12,14 @@ extern "C" {
 */ 
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, unsigned char threshold, int min_separation);
+FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation);
 
+typedef struct
+{
+  POINT centre;
+  float value;
 
-//typedef struct
-//{
-//  Point centre;
-//  float value;
-//} GlPeak;
+} FIAPeak;
 
 // you can specify the top n to find with number
 // maxima above the threshold are found and the actual number found is returned

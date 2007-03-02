@@ -256,26 +256,26 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 		FreeImageAlgorithms_ParticleInfo(dib2, &info, 1);
 	}
 
+	ProfileStop("ParticleInfo");
+
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib2);
 
 	for(int i=0; i < info->number_of_blobs; i++)
 	{
 		BLOBINFO blobinfo = info->blobs[i];
 
-		RECT rect;
-		rect.left = blobinfo.left;
-		rect.bottom = FreeImage_GetHeight(dst) - blobinfo.bottom;
-		rect.right = blobinfo.right;
-		rect.top = FreeImage_GetHeight(dst) - blobinfo.top;
+		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, RGB(255,0,0), 1);
 
-		FreeImageAlgorithms_DrawColourRect (dst, rect, RGB(255,0,0), 2);
+		std::cout << "partcle " << i + 1 << "  left  "
+			<< blobinfo.rect.left << "  top  "  << blobinfo.rect.top
+			<< "  width  " << blobinfo.rect.right - blobinfo.rect.left
+			<< "  height  " << blobinfo.rect.bottom - blobinfo.rect.top
+			<< "  area: " << blobinfo.area << std::endl;
 	}
 	
 	std::cout << "Number of particles " << info->number_of_blobs << std::endl;
 
-	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.jpg", BIT24);
-
-	ProfileStop("ParticleInfo");
+	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.bmp", BIT24);
 
 	FreeImageAlgorithms_FreeParticleInfo(info);
 
@@ -300,7 +300,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
  
 	ProfileStart("FindImageMaxima");
 
-	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, 50, 2);
+	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 50, 2);
 	
 	FreeImageAlgorithms_SetGreyLevelPalette(dib3);
 
@@ -328,8 +328,8 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
 
 	return suite;
 }

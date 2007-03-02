@@ -14,6 +14,7 @@ struct _blob
 	int bottom;
 	int right;
 	int top;
+	int area;
 
 	int rank;
 	blob *parent;
@@ -74,6 +75,8 @@ static inline blob* NewBlob(BLOBPOOL *pool, run *run)
 	b->right = run->end_x;
 	b->top = b->bottom;
 
+	b->area = run->end_x - run->x + 1;
+
 	run->blob = b;
 
 	pool->blobpool_ptr++;
@@ -95,7 +98,7 @@ static inline blob* FindBlob(blob *blob)
 }
 
 // Return toplevel blob
-static inline void MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
+static inline blob* MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
 {
 	// Union by rank, Always hanges the smaller tree off the larger
 	blob *b1 = FindBlob(blob1);
@@ -115,10 +118,13 @@ static inline void MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
 	// Set new width height etc
 	b1->parent->left = min(b1->left, b2->left);
 	b1->parent->bottom = min(b1->bottom, b2->bottom);
-	b1->parent->right= max(b1->right, b2->right);
+	b1->parent->right = max(b1->right, b2->right);
 	b1->parent->top = max(b1->top, b2->top);
+	b1->parent->area = b1->area + b2->area;
 
 	pool->real_blobcount--;
+
+	return b1->parent;
 }
 
 
@@ -162,9 +168,10 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		last_runs_ptr[last_row_run_count].y = 0;
 		
 		// While fg pixel increment.
-		while(src_ptr[x++] != bg_val && x < width) ;
-
-		last_runs_ptr[last_row_run_count].end_x = x;			
+		while(src_ptr[x] != bg_val && x < width)
+			x++;
+ 
+		last_runs_ptr[last_row_run_count].end_x = x - 1;			
 
 		// This is the first line so all new runs are new blobs update the blob info
 		NewBlob(pool, &last_runs_ptr[last_row_run_count]);
@@ -193,38 +200,43 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 			tmp_run.blob = NULL;
 
 			// While fg pixel increment.
-			while(src_ptr[x++] != bg_val && x < width) ;
+			while(src_ptr[x] != bg_val && x < width)
+				x++;
 
-			tmp_run.end_x = x;
-					
+			tmp_run.end_x = x - 1;
+				 	
 			// Check whether run is overlapping with previous runs
 			for(i=0; i < last_row_run_count; i++) {
 
 				run *last_run = &last_runs_ptr[i];
 
 				// Are runs overlapping ?
-				if(tmp_run.end_x >= last_run->x && tmp_run.x <= last_run->end_x) {
+				// The -1 are to allow pixels connected on the diagonal
+				if(tmp_run.end_x >= last_run->x - 1 && tmp_run.x <= last_run->end_x + 1) {
 
 					// Point to same blob as overlapped run if the blobs are the same
 					// Or if its the first overlapping run in the previous line.
-					if(tmp_run.blob == NULL || tmp_run.blob == last_run->blob) {
-
-						tmp_run.blob = FindBlob(last_run->blob);
+					if(tmp_run.blob == NULL) {
 
 						// Set new width height etc
-						if(last_run->x < tmp_run.blob->left)
-							tmp_run.blob->left = last_run->x;	
+						tmp_run.blob = FindBlob(last_run->blob);
 
-						if(last_run->end_x > tmp_run.blob->right)
-							tmp_run.blob->right = last_run->end_x;
+						if(tmp_run.x < last_run->blob->left)
+							last_run->blob->left = tmp_run.x;	
+
+						if(tmp_run.end_x > last_run->blob->right)
+							last_run->blob->right = tmp_run.end_x;
 
 						tmp_run.blob->top = y;
+
+						tmp_run.blob->area = tmp_run.end_x - tmp_run.x + 1 + last_run->blob->area;
+						
 					}
-					else {
+					else if(tmp_run.blob != last_run->blob) {
 
 						// We have more than one previous overlapping run.
 						// The blobs are not the same so we merge them.
-						MergeBlobs(pool, tmp_run.blob, last_run->blob);
+						tmp_run.blob = MergeBlobs(pool, tmp_run.blob, last_run->blob);
 					}	
 				}
 			}
@@ -253,7 +265,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 	(*info)->number_of_blobs = pool->real_blobcount;
 	(*info)->blobs = (BLOBINFO*) malloc (sizeof(BLOBINFO) * pool->real_blobcount);
 
-	// Get blob count
+	// Get blobs
 	for(int i=0, j=0; i < pool->blobpool_blobcount; i++) {
 
 		blob* ptr = &(pool->blobpool_start_ptr[i]); 
@@ -261,10 +273,11 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		if(ptr != ptr->parent)
 			continue;
 	
-		(*info)->blobs[j].left = ptr->left;
-		(*info)->blobs[j].top = ptr->top;
-		(*info)->blobs[j].right = ptr->right;
-		(*info)->blobs[j].bottom = ptr->bottom;
+		(*info)->blobs[j].rect.left = ptr->left;
+		(*info)->blobs[j].rect.top = height - ptr->top - 1;
+		(*info)->blobs[j].rect.right = ptr->right;
+		(*info)->blobs[j].rect.bottom = height - ptr->bottom - 1;
+		(*info)->blobs[j].area = ptr->area;
 
 		j++;
 	}
