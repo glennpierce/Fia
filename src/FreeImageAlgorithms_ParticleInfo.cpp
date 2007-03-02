@@ -6,8 +6,6 @@
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
 
-#include <iostream>
-
 typedef struct _blob blob;
 
 struct _blob
@@ -16,6 +14,7 @@ struct _blob
 	int bottom;
 	int right;
 	int top;
+
 	int rank;
 	blob *parent;
 };
@@ -29,7 +28,6 @@ struct _run
 	int end_x;
 	blob *blob;
 };
-
 
 typedef struct
 {
@@ -119,6 +117,7 @@ static inline void MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
 	b1->parent->bottom = min(b1->bottom, b2->bottom);
 	b1->parent->right= max(b1->right, b2->right);
 	b1->parent->top = max(b1->top, b2->top);
+
 	pool->real_blobcount--;
 }
 
@@ -249,8 +248,6 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		last_row_run_count = current_run_count;
 	}
 		
-	std::cout << "real_blobcount " << pool->real_blobcount << std::endl;
-
 	 // Create PARTICLEINFO/BLOBINFO array
 	*info = (PARTICLEINFO*) malloc (sizeof(PARTICLEINFO));
 	(*info)->number_of_blobs = pool->real_blobcount;
