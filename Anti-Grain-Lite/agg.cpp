@@ -32,7 +32,6 @@
 // 
 //----------------------------------------------------------------------------
 
-
 #include <math.h>
 #include "agg.h"
 
@@ -605,6 +604,7 @@ namespace agg
             if(c > m_max_x) m_max_x = c;
 
             render_line(m_cur_x, m_cur_y, x, y);
+
             m_cur_x = x;
             m_cur_y = y;
             m_flags |= not_closed;

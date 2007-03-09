@@ -136,29 +136,30 @@ Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour)
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, int value) 
+FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsigned char value) 
 {  
+	// Seems that Anti grain method is to slow probably  because it is too advanced
+	// Does accurate drawing etc with anti aliasing.
+	// We just want a simple rectangle.
+
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	// Allocate the framebuffer
-	unsigned char* buf = FreeImage_GetBits(src);
+	unsigned char* buf = NULL; 
+	RECT tmp_rect = rect;
 
-    // Create the rendering buffer 
-    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+	// FreeImages are flipped
+	tmp_rect.top = height - rect.top;
+	tmp_rect.bottom = height - rect.bottom;
 
-    // Create the renderer 
-    agg::renderer<agg::span_mono8> ren(rbuf);
-    agg::rasterizer ras;
+	for(register int y=tmp_rect.bottom; y < tmp_rect.top; y++) {
 
-    ras.move_to_d(rect.left, rect.top);
-	ras.line_to_d(rect.right, rect.top);
-	ras.line_to_d(rect.right, rect.bottom);
-	ras.line_to_d(rect.left, rect.bottom);
-	ras.line_to_d(rect.left, rect.top);
+		buf = FreeImage_GetScanLine(src, y);
 
-    ras.render(ren, agg::rgba8(value, value, value));
- 
+		memset(buf + tmp_rect.left, value, tmp_rect.right - tmp_rect.left);
+	}
+
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 

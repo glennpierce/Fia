@@ -25,7 +25,7 @@ FreeImageAlgorithms_SetOutputMessage(FreeImageAlgorithms_OutputMessageFunction o
  *	\param message send an error from the FreeImageAlgorithms library.
 */
 DLL_API void DLL_CALLCONV
-FreeImageAlgorithms_SendOutputMessage(const char *message, ...);
+FreeImageAlgorithms_SendOutputMessage(const char *fmt, ...);
 
 #ifdef __cplusplus
 }

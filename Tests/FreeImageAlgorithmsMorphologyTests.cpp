@@ -306,7 +306,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib3);
 
-	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\find_image_maxima.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\find_image_maxima.bmp", BIT8);
 
 	ProfileStop("FindImageMaxima");
 

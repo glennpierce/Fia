@@ -33,7 +33,7 @@ class FindMaxima
 		int height;
 		int regionGrowCount;
 
-		FIABITMAP *original_image;
+		FIBITMAP *original_image;
 		FIBITMAP *processing_image;
 };
 
@@ -82,10 +82,10 @@ FindMaxima::NonMaxSupression()
 
 	for (register int y=1; y < height - 1; y++)
 	{		
-		src_ptr = (this->original_first_pixel_address_ptr + y * this->pitch_in_pixels + 1);
-		dst_ptr = (this->processing_first_pixel_address_ptr + y * this->pitch_in_pixels + 1);
+		src_ptr = this->original_first_pixel_address_ptr + y * this->pitch_in_pixels + 1;
+		dst_ptr = this->processing_first_pixel_address_ptr + y * this->pitch_in_pixels + 1;
 
-		for (register int x=0; x < width - 1; x++) 
+		for (register int x=1; x < width - 1; x++) 
 		{
 			if(*src_ptr > this->threshold)
 				*dst_ptr = NeighbourhoodNMS(src_ptr);
@@ -140,12 +140,14 @@ FindMaxima::SetNeigbourPixels()
 
 	for (register int y=1; y < height - 1; y++)
 	{		
-		src_ptr = (this->processing_first_pixel_address_ptr + y * this->pitch_in_pixels + 1);
+		src_ptr = (this->processing_first_pixel_address_ptr + y * this->pitch_in_pixels) + 1;
 
-		for (register int x=0; x < width - 1; x++) 
+		for (register int x=1; x < width - 1; x++) 
 		{
-			if(src_ptr[x] == 1)
+			if(*src_ptr == 1)
 				this->SetNeighbours(src_ptr);
+
+			src_ptr++;
 		}
 	}
 }
@@ -154,15 +156,13 @@ FindMaxima::SetNeigbourPixels()
 void
 FindMaxima::RegionGrow(int x, int y)
 {
-	int pos, n_pos;
-
-	regionGrowCount++;
-	
-	if (regionGrowCount > MAX_REGIONGROW_CALLS)
+	if (regionGrowCount++ > MAX_REGIONGROW_CALLS)
 		return;
 
 	register unsigned char* optr = this->original_first_pixel_address_ptr;
 	register unsigned char* pptr = this->processing_first_pixel_address_ptr;
+
+	int pos, n_pos;
 
 	if (x > 0 && x < (this->width - 1) && y > 0 && y < (this->height - 1))
 	{
@@ -183,17 +183,17 @@ FindMaxima::RegionGrow(int x, int y)
 		if (optr[n_pos] <= optr[pos] && optr[n_pos] && pptr[n_pos] != 3)
 			RegionGrow(x+1,y-1);
 		
-		n_pos += this->pitch_in_pixels;
+		n_pos = pos - 1;
 
-		if (optr[n_pos] <= optr[pos] && optr[n_pos] && pptr[n_pos] != 3)
-			RegionGrow(x+1,y);
-		
-		n_pos-=2;
-		
 		if (optr[n_pos] <= optr[pos] && optr[n_pos] && pptr[n_pos] != 3)
 			RegionGrow(x-1,y);
 		
-		n_pos += this->pitch_in_pixels;
+		n_pos+=2;
+		
+		if (optr[n_pos] <= optr[pos] && optr[n_pos] && pptr[n_pos] != 3)
+			RegionGrow(x+1,y);
+		
+		n_pos = pos + this->pitch_in_pixels - 1; 
 		
 		if (optr[n_pos] <= optr[pos] && optr[n_pos] && pptr[n_pos] != 3)
 			RegionGrow(x-1,y+1);
@@ -217,12 +217,12 @@ FindMaxima::PerformRegionGrow()
 
 	for (register int y=1; y < height - 1; y++)
 	{		
-		src_ptr = (processing_first_pixel_address_ptr + y * this->pitch_in_pixels + 1);
+		src_ptr = processing_first_pixel_address_ptr + y * this->pitch_in_pixels;
 	
-		for (register int x=0; x < width - 1; x++) 
+		for (register int x=1; x < width - 1; x++) 
 		{
 			if(src_ptr[x] == 2) {
-				regionGrowCount++;
+				regionGrowCount=0;
 				RegionGrow(x, y);
 			}
 		}
@@ -237,24 +237,25 @@ FindMaxima::DrawMaxima (int size)
 	if (size < 1)
 		size = 1; // Just a check as this has created much confusion
 
-	// Remove border
-	FIBITMAP *dst = FreeImage_Allocate(width - 2, height - 2, 8, 0, 0, 0);
+	FIBITMAP *dst = FreeImage_Allocate(width, height , 8, 0, 0, 0);
 
 	FreeImageAlgorithms_SetGreyLevelPalette(dst);
+
+	ProfileStart("DrawRects");
 
 	register unsigned char *src_ptr;
 	RECT rect;
 
-	for (register int y=1; y < height - 1; y++)
+	for (register int y=0; y < height; y++)
 	{		
 		src_ptr = this->processing_first_pixel_address_ptr + y * this->pitch_in_pixels;
 	
-		for (register int x=1; x < width - 1; x++) 
+		for (register int x=0; x < width; x++) 
 		{
 			if(src_ptr[x] == 1) {
 
 				rect.left = x-size/2 - 1;
-				rect.top = y-size/2 - 1;
+				rect.top = (this->height - y) - size/2 - 1;
 				rect.right = rect.left + size;
 				rect.bottom = rect.top + size;
 
@@ -262,6 +263,8 @@ FindMaxima::DrawMaxima (int size)
 			}
 		}
 	}
+
+	ProfileStop("DrawRects");
 
 	return dst;
 }
@@ -274,16 +277,16 @@ FindMaxima::FindImageMaxima(FIBITMAP* src, unsigned char threshold, int min_sepa
 	this->threshold = threshold;
 	this->min_separation;
 
-	this->original_image = FreeImageAlgorithms_SetBorder(src, 1, 1);
+	this->original_image = src; // FreeImageAlgorithms_SetBorder(src, 1, 1);
 
-	this->width = FreeImage_GetWidth(this->original_image->fib);
-	this->height = FreeImage_GetHeight(this->original_image->fib);
+	this->width = FreeImage_GetWidth(this->original_image);
+	this->height = FreeImage_GetHeight(this->original_image);
 
 	this->processing_image = FreeImage_Allocate(width, height, 8, 0, 0, 0);
 
 	this->pitch_in_pixels = FreeImage_GetPitch(this->processing_image) / sizeof(unsigned char);
 	
-	this->original_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(this->original_image->fib);
+	this->original_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(this->original_image);
 	this->processing_first_pixel_address_ptr = (unsigned char*) FreeImage_GetBits(this->processing_image);
 
 	this->NonMaxSupression();
