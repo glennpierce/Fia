@@ -1,8 +1,9 @@
 #include "FreeImageAlgorithms.h"
-#include "FreeImageAlgorithms_Morphology.h"
-#include "FreeImageAlgorithms_Utilities.h"
-#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
+#include "FreeImageAlgorithms_Drawing.h"
+#include "FreeImageAlgorithms_Palettes.h"
+#include "FreeImageAlgorithms_Particle.h"
+#include "FreeImageAlgorithms_Utilities.h"
 
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Fillholes(FIBITMAP* src,

@@ -2,10 +2,9 @@
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Logic.h"
 #include "FreeImageAlgorithms_Drawing.h"
+#include "FreeImageAlgorithms_Particle.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
-#include "FreeImageAlgorithms_Morphology.h"
-#include "FreeImageAlgorithms_FindImageMaxima.h"
 
 #define MAX_REGIONGROW_CALLS 5000
 
@@ -263,7 +262,7 @@ FindMaxima::DrawMaxima (int size)
 				rect.right = rect.left + size - 1;
 				rect.top = rect.bottom - size + 1;
 
-				FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (this->peek_image, rect, 255); 
+				FreeImageAlgorithms_DrawSolidGreyscaleRect (this->peek_image, rect, 255); 
 
 				dst_ptr[x] = 255;
 

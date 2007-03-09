@@ -197,8 +197,8 @@ Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
-int DLL_CALLCONV
-FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsigned char value) 
+static int DLL_CALLCONV
+Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsigned char value) 
 {  
 	// Seems that Anti grain method is to slow probably  because it is too advanced
 	// Does accurate drawing etc with anti aliasing.
@@ -225,6 +225,28 @@ FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsign
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
+int DLL_CALLCONV
+FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, RECT rect, double value) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = NULL; 
+	RECT tmp_rect = rect;
+
+	// FreeImages are flipped
+	tmp_rect.top = height - rect.top - 1;
+	tmp_rect.bottom = height - rect.bottom - 1;
+
+	int bpp = FreeImage_GetBPP(src);
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+	if(type == FIT_BITMAP && bpp == 8)
+		return Draw8BitSolidGreyscaleRect  (src, tmp_rect, (unsigned char) value); 
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+} 
 
 static int 
 Draw24BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int line_width) 

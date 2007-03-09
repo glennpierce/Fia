@@ -1,10 +1,8 @@
 #include "FreeImageAlgorithms.h"
-#include "FreeImageAlgorithms_Convolution.h"
-#include "FreeImageAlgorithms_Convolution_Private.h"
-#include "FreeImageAlgorithms_Morphology.h"
-#include "FreeImageAlgorithms_Utilities.h"
-#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
+#include "FreeImageAlgorithms_Particle.h"
+#include "FreeImageAlgorithms_Palettes.h"
+#include "FreeImageAlgorithms_Utilities.h"
 
 typedef struct _blob blob;
 

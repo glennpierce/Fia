@@ -11,17 +11,19 @@ template<class Tsrc>
 class Histogram
 {
 public:
-	int CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist);
+	int CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
+		unsigned long *hist, HistogramReport *report);
 };
 
 
 template<class Tsrc> int
-Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist)
+Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
+									unsigned long *hist, HistogramReport *report)
 {
 	if (hist == NULL)      
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	// clear histogram array
+	// Clear histogram array
 	memset(hist, 0, number_of_bins * sizeof(unsigned long) );
 
 	double range = max - min; 
@@ -65,7 +67,8 @@ Histogram<double>				histogramDoubleImage;
  * Does not work with colour images.
 */
 int DLL_CALLCONV
-FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist)
+FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
+							  unsigned long *hist, HistogramReport *report)
 {
 	if(!src)
 		return NULL;
@@ -75,25 +78,25 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_
 	switch(src_type) {
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
-				return histogramUCharImage.CalculateHistogram(src, min, max, number_of_bins, hist);
+				return histogramUCharImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
 
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
-			return histogramUShortImage.CalculateHistogram(src, min, max, number_of_bins, hist);
+			return histogramUShortImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
 
 		case FIT_INT16:		// array of short: signed 16-bit
-			return histogramShortImage.CalculateHistogram(src, min, max, number_of_bins, hist);
+			return histogramShortImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
 
 		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-			return histogramULongImage.CalculateHistogram(src, min, max, number_of_bins, hist);
+			return histogramULongImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
 
 		case FIT_INT32:		// array of long: signed 32-bit
-			return histogramLongImage.CalculateHistogram(src, min, max, number_of_bins, hist);
+			return histogramLongImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
 
 		case FIT_FLOAT:		// array of float: 32-bit
-			return histogramFloatImage.CalculateHistogram(src, min, max, number_of_bins, hist);
+			return histogramFloatImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
 
 		case FIT_DOUBLE:	// array of double: 64-bit
-			return histogramDoubleImage.CalculateHistogram(src, min, max, number_of_bins, hist);
+			return histogramDoubleImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
 
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
 			break;

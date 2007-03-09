@@ -7,6 +7,17 @@
 extern "C" {
 #endif
 
+typedef struct
+{
+   float   minValue;	   /* miminum pixel value found */
+   float   maxValue;	   /* maximum pixel value found */
+   float   binSize;		   /* class interval value		*/
+   float   mean;		   /* mean value				*/
+   float   stdDeviation;   /* standard deviation		   */
+   int	   area;		   /* number of pixel scanned	*/
+   
+} HistogramReport;
+
 /*! \file 
 	Provides various statistical methods for FIBITMAP's.
 */ 
@@ -49,7 +60,8 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_of_bins, unsigned long *hist);
+FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max,
+							  int number_of_bins, unsigned long *hist, HistogramReport *report);
 
 /** \brief Return the histogram for a rgb image.
  *

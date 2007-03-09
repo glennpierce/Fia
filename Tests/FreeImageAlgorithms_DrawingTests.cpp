@@ -170,7 +170,7 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 	rect.bottom = 12;
 	rect.right = 12;
 	
-	FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (gs_src, rect, 100);
+	FreeImageAlgorithms_DrawSolidGreyscaleRect (gs_src, rect, 100);
 
 	FreeImageAlgorithms_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.jpg", BIT24);
 
@@ -178,6 +178,33 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 	FreeImage_Unload(gs_src);
 }
 
+static void
+TestFreeImageAlgorithms_FloodFillTest(CuTest* tc)
+{
+	char *file = "C:\\Documents and Settings\\Glenn\\Desktop\\particle-test.bmp";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+
+	CuAssertTrue(tc, dib1 != NULL);
+
+	FIBITMAP *dib2 = FreeImage_ConvertTo8Bits(dib1);
+
+	CuAssertTrue(tc, dib2 != NULL);
+
+	ProfileStart("FloodFillTest");
+
+	FIBITMAP *dib3 = FreeImageAlgorithms_FloodFill(dib2, 20, 0, 2);
+
+	ProfileStop("FloodFillTest");
+
+	CuAssertTrue(tc, dib3 != NULL);
+
+	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\floodfill.jpg", BIT24);
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+	FreeImage_Unload(dib3);
+}
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsDrawingSuite(void)
@@ -189,6 +216,7 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Rect24bitTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidGSRectTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
 
 	return suite;
 }
