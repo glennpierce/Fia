@@ -109,7 +109,7 @@ TestFreeImageAlgorithms_SeparableSobelTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\salt_and_pepper.jpg";
+	char *file = IMAGE_DIR "\\wallpaper_river-gs-salted.jpg";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -149,10 +149,9 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SobelTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MedianFilterTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SeparableSobelTest);
-
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Convolution3x3RealTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MedianFilterTest);
-
+	
 	return suite;
 }

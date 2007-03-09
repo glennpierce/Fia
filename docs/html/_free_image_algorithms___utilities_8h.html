@@ -145,21 +145,33 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#6848b170295920462827a14b4892050f">FreeImageAlgorithms_CloneImageType</a> (FIBITMAP *src, int width, int height)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Clones an image type.  <a href="#6848b170295920462827a14b4892050f"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API <a class="el" href="struct_f_i_a_b_i_t_m_a_p.html">FIABITMAP</a> DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#e30f2ea2e575815554403b2811d911de">FreeImageAlgorithms_AddBorder</a> (FIBITMAP *src, int border)</td></tr>
-
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Adds a border to an image.  <a href="#e30f2ea2e575815554403b2811d911de"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#d16ca23eeff4e3309768c0842953ad02">FreeImageAlgorithms_FloatThreshold</a> (FIBITMAP *src, float t, BYTE min, BYTE max)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Thresholds a float image.  <a href="#d16ca23eeff4e3309768c0842953ad02"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#5c27157cdc3c44740703943993848cb4">FreeImageAlgorithms_ConvertToGreyscaleFloatType</a> (FIBITMAP *src, FREE_IMAGE_TYPE type)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Converts to a float image even if the image is in colour.  <a href="#5c27157cdc3c44740703943993848cb4"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#60c3889ee72ce22b85474dc82373c6bf">FreeImageAlgorithms_8BitInplaceThreshold</a> (FIBITMAP *src, unsigned char threshold)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Performa a threshold on greyscale images.  <a href="#60c3889ee72ce22b85474dc82373c6bf"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#ba51908ea7e54ce5a9808de9213c5ca0">FreeImageAlgorithms_Is8Bit</a> (FIBITMAP *src)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Find if an image is 8bit.  <a href="#ba51908ea7e54ce5a9808de9213c5ca0"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#08011d4d76f3f3ce27cfea2d81773153">FreeImageAlgorithms_DistanceTransform</a> (FIBITMAP *src)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Compute a distance transform of an image.  <a href="#08011d4d76f3f3ce27cfea2d81773153"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___utilities_8h.html#38b74cbcb484eef00108a9ed5e4b0dc1">FreeImageAlgorithms_GetPixelValve</a> (FIBITMAP *src, int x, int y, float *val)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get the value of a particular pixel.  <a href="#38b74cbcb484eef00108a9ed5e4b0dc1"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Provides various utility methods. <hr><h2>Function Documentation</h2>
-<a class="anchor" name="e30f2ea2e575815554403b2811d911de"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_AddBorder" ref="e30f2ea2e575815554403b2811d911de" args="(FIBITMAP *src, int border)" -->
+<a class="anchor" name="60c3889ee72ce22b85474dc82373c6bf"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_8BitInplaceThreshold" ref="60c3889ee72ce22b85474dc82373c6bf" args="(FIBITMAP *src, unsigned char threshold)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">DLL_API <a class="el" href="struct_f_i_a_b_i_t_m_a_p.html">FIABITMAP</a> DLL_CALLCONV FreeImageAlgorithms_AddBorder           </td>
+          <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_8BitInplaceThreshold           </td>
           <td>(</td>
           <td class="paramtype">FIBITMAP *&nbsp;</td>
           <td class="paramname"> <em>src</em>, </td>
@@ -167,8 +179,8 @@ Provides various utility methods. <hr><h2>Function Documentation</h2>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>border</em></td><td>&nbsp;</td>
+          <td class="paramtype">unsigned char&nbsp;</td>
+          <td class="paramname"> <em>threshold</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -180,16 +192,16 @@ Provides various utility methods. <hr><h2>Function Documentation</h2>
 <div class="memdoc">
 
 <p>
-Adds a border to an image. 
+Performa a threshold on greyscale images. 
 <p>
-This function returns an image with a black (zero) border added to an image.<p>
+This function performs a in place threshold on the src image. An 8bit image is return not a 1bit image.<p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>FIBITMAP bitmap to add a border to. </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>border</em>&nbsp;</td><td>Size of the border. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to threshold. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>threshold</em>&nbsp;</td><td>unsigned char Threshold to use. </td></tr>
   </table>
 </dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>A <a class="el" href="struct_f_i_a_b_i_t_m_a_p.html">FIABITMAP</a> structure containing a FIBITMAP and a border size. </dd></dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
 
 </div>
 </div><p>
@@ -312,6 +324,72 @@ This function clones the type not the image data. Ie it clones the bpp, pitch et
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP* on success or NULL on error. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="5c27157cdc3c44740703943993848cb4"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_ConvertToGreyscaleFloatType" ref="5c27157cdc3c44740703943993848cb4" args="(FIBITMAP *src, FREE_IMAGE_TYPE type)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API FIBITMAP* DLL_CALLCONV FreeImageAlgorithms_ConvertToGreyscaleFloatType           </td>
+          <td>(</td>
+          <td class="paramtype">FIBITMAP *&nbsp;</td>
+          <td class="paramname"> <em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FREE_IMAGE_TYPE&nbsp;</td>
+          <td class="paramname"> <em>type</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Converts to a float image even if the image is in colour. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to convert. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>type</em>&nbsp;</td><td>FREE_IMAGE_TYPE type to convert to. Can be FIT_FLOAT or FIT_DOUBLE. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>FIT_FLOAT image. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="08011d4d76f3f3ce27cfea2d81773153"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_DistanceTransform" ref="08011d4d76f3f3ce27cfea2d81773153" args="(FIBITMAP *src)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API FIBITMAP* DLL_CALLCONV FreeImageAlgorithms_DistanceTransform           </td>
+          <td>(</td>
+          <td class="paramtype">FIBITMAP *&nbsp;</td>
+          <td class="paramname"> <em>src</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Compute a distance transform of an image. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to transform. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP* Returns FIBITMAP* on success or NULL on error. </dd></dl>
 
 </div>
 </div><p>
@@ -1559,6 +1637,59 @@ Returns the minimum allowed value for a greyscale FREE_IMAGE_TYPE type.
 
 </div>
 </div><p>
+<a class="anchor" name="38b74cbcb484eef00108a9ed5e4b0dc1"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_GetPixelValve" ref="38b74cbcb484eef00108a9ed5e4b0dc1" args="(FIBITMAP *src, int x, int y, float *val)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetPixelValve           </td>
+          <td>(</td>
+          <td class="paramtype">FIBITMAP *&nbsp;</td>
+          <td class="paramname"> <em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>x</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>y</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">float *&nbsp;</td>
+          <td class="paramname"> <em>val</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get the value of a particular pixel. 
+<p>
+Does not check the position is valid works with all greyscale types.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to get pixel value from. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>x</em>&nbsp;</td><td>int The x position. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>y</em>&nbsp;</td><td>int The y position. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>val</em>&nbsp;</td><td>float* The returned value. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="bc83f004ce8052412263b750942de8a5"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_GetRGBPixelValuesForLine" ref="bc83f004ce8052412263b750942de8a5" args="(FIBITMAP *src, POINT p1, POINT p2, char *red_values, char *green_values, char *blue_values)" -->
 <div class="memitem">
 <div class="memproto">
@@ -1847,6 +1978,34 @@ Return 1 if a 16bit image is really 12bit.
 
 </div>
 </div><p>
+<a class="anchor" name="ba51908ea7e54ce5a9808de9213c5ca0"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_Is8Bit" ref="ba51908ea7e54ce5a9808de9213c5ca0" args="(FIBITMAP *src)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_Is8Bit           </td>
+          <td>(</td>
+          <td class="paramtype">FIBITMAP *&nbsp;</td>
+          <td class="paramname"> <em>src</em>          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Find if an image is 8bit. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to check. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="f14091bef6b9974735626d1ad13b6367"></a><!-- doxytag: member="FreeImageAlgorithms_Utilities.h::FreeImageAlgorithms_IsGreyScale" ref="f14091bef6b9974735626d1ad13b6367" args="(FIBITMAP *src)" -->
 <div class="memitem">
 <div class="memproto">
@@ -2104,7 +2263,7 @@ Reverse a array of unsigned short int.
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Thu Nov 30 16:05:35 2006 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 7 14:51:39 2007 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>

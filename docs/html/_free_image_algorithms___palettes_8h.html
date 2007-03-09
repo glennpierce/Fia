@@ -19,6 +19,9 @@
 <h1>include/FreeImageAlgorithms_Palettes.h File Reference</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API RGBQUAD DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#c18b65c7fc64e5fa187bd0a7144591c0">FreeImageAlgorithms_GetRGBQUAD</a> (unsigned char red, unsigned char green, unsigned char blue)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a RGBQUAD from the three colours.  <a href="#c18b65c7fc64e5fa187bd0a7144591c0"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#a1f9c58de19679a57bf9d26124d4fbff">FreeImageAlgorithms_CopyPaletteToRGBQUAD</a> (FIBITMAP *src, RGBQUAD *palette)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copies the palette for an image to an array of RGBQUAD.  <a href="#a1f9c58de19679a57bf9d26124d4fbff"></a><br></td></tr>
@@ -49,6 +52,9 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#b9eff43e7a6fc15a4e20f436cc7061f8">FreeImageAlgorithms_SetGreyLevelOverLoadPalette</a> (FIBITMAP *src)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a greyscale overload palette.  <a href="#b9eff43e7a6fc15a4e20f436cc7061f8"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#5ac6e503ca04999635fea1bcfe28273a">FreeImageAlgorithms_SetTernaryPalettePalette</a> (FIBITMAP *src, RGBQUAD background_colour, int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set a pallete specify three unique colours and a background.  <a href="#5ac6e503ca04999635fea1bcfe28273a"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#f91e7219d2aea1eaad12a8ce77d9d464">FreeImageAlgorithms_SetSeismicColourPalette</a> (FIBITMAP *src)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set the pallete of a FIBITMAP image to a seismic palette.  <a href="#f91e7219d2aea1eaad12a8ce77d9d464"></a><br></td></tr>
@@ -58,6 +64,9 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#d2b42bc9902864e3a75f374cd53a340e">FreeImageAlgorithms_GetGreyLevelOverLoadPalette</a> (RGBQUAD *palette)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a greyscale overload pallete into a RGBQUAD array.  <a href="#d2b42bc9902864e3a75f374cd53a340e"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#cd2174ff3b057bc34be182fad2d5a48d">FreeImageAlgorithms_GetTernaryPalette</a> (RGBQUAD *palette, RGBQUAD background_colour, int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a pallete specify three unique colours and a background.  <a href="#cd2174ff3b057bc34be182fad2d5a48d"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#222b0c14374fffc718874f1e7aae528d">FreeImageAlgorithms_GetRainBowPalette</a> (RGBQUAD *palette)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a rainbow pallete into a RGBQUAD array.  <a href="#222b0c14374fffc718874f1e7aae528d"></a><br></td></tr>
@@ -340,6 +349,51 @@ Get a rainbow pallete into a RGBQUAD array.
 
 </div>
 </div><p>
+<a class="anchor" name="c18b65c7fc64e5fa187bd0a7144591c0"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_GetRGBQUAD" ref="c18b65c7fc64e5fa187bd0a7144591c0" args="(unsigned char red, unsigned char green, unsigned char blue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API RGBQUAD DLL_CALLCONV FreeImageAlgorithms_GetRGBQUAD           </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char&nbsp;</td>
+          <td class="paramname"> <em>red</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char&nbsp;</td>
+          <td class="paramname"> <em>green</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char&nbsp;</td>
+          <td class="paramname"> <em>blue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get a RGBQUAD from the three colours. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>red</em>&nbsp;</td><td>Red colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>green</em>&nbsp;</td><td>Green colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>blue</em>&nbsp;</td><td>Blue colour. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="9a52899e6a4041117a9d1a47aa3b60f3"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_GetSeismicColourPalette" ref="9a52899e6a4041117a9d1a47aa3b60f3" args="(RGBQUAD *palette)" -->
 <div class="memitem">
 <div class="memproto">
@@ -390,6 +444,73 @@ Get a temperature pallete into a RGBQUAD array.
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
+
+</div>
+</div><p>
+<a class="anchor" name="cd2174ff3b057bc34be182fad2d5a48d"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_GetTernaryPalette" ref="cd2174ff3b057bc34be182fad2d5a48d" args="(RGBQUAD *palette, RGBQUAD background_colour, int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_GetTernaryPalette           </td>
+          <td>(</td>
+          <td class="paramtype">RGBQUAD *&nbsp;</td>
+          <td class="paramname"> <em>palette</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RGBQUAD&nbsp;</td>
+          <td class="paramname"> <em>background_colour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>pos1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RGBQUAD&nbsp;</td>
+          <td class="paramname"> <em>colour1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>pos2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RGBQUAD&nbsp;</td>
+          <td class="paramname"> <em>colour2</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get a pallete specify three unique colours and a background. 
+<p>
+Useful for displaying binary images.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>background_colour</em>&nbsp;</td><td>RGBQUAD representing the background. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>pos1</em>&nbsp;</td><td>int Position in palette for first colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colour1</em>&nbsp;</td><td>RGBQUAD representing the first colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>pos2</em>&nbsp;</td><td>int Position in palette for second colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colour2</em>&nbsp;</td><td>RGBQUAD representing the second colour. </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
@@ -647,7 +768,74 @@ Set the pallete of a FIBITMAP image to a temperature palette.
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Thu Nov 30 16:05:35 2006 for FreeImageAlgorithms by&nbsp;
+<a class="anchor" name="5ac6e503ca04999635fea1bcfe28273a"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_SetTernaryPalettePalette" ref="5ac6e503ca04999635fea1bcfe28273a" args="(FIBITMAP *src, RGBQUAD background_colour, int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API int DLL_CALLCONV FreeImageAlgorithms_SetTernaryPalettePalette           </td>
+          <td>(</td>
+          <td class="paramtype">FIBITMAP *&nbsp;</td>
+          <td class="paramname"> <em>src</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RGBQUAD&nbsp;</td>
+          <td class="paramname"> <em>background_colour</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>pos1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RGBQUAD&nbsp;</td>
+          <td class="paramname"> <em>colour1</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>pos2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">RGBQUAD&nbsp;</td>
+          <td class="paramname"> <em>colour2</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Set a pallete specify three unique colours and a background. 
+<p>
+Useful for displaying binary images.<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>src</em>&nbsp;</td><td>Image to set palette to greyscale overload. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>background_colour</em>&nbsp;</td><td>RGBQUAD representing the background. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>pos1</em>&nbsp;</td><td>int Position in palette for first colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colour1</em>&nbsp;</td><td>RGBQUAD representing the first colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>pos2</em>&nbsp;</td><td>int Position in palette for second colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>colour2</em>&nbsp;</td><td>RGBQUAD representing the second colour. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
+
+</div>
+</div><p>
+<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 7 14:51:39 2007 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>

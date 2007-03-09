@@ -49,7 +49,7 @@ TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
 
 	FreeImageAlgorithms_DrawColourLine (src32, p1, p2, RGB(255, 0, 0), 5);
 
-	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_line32.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_line32.bmp", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src32);
@@ -82,7 +82,7 @@ TestFreeImageAlgorithms_Rect24bitTest(CuTest* tc)
 	
 	FreeImageAlgorithms_DrawColourRect (src24, rect, RGB(255,0,0), 7);
 
-	FreeImageAlgorithms_SaveFIBToFile(src24, TEMP_DIR "\\wallpaper_rect24bit.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(src24, TEMP_DIR "\\wallpaper_rect24bit.bmp", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src24);
@@ -115,7 +115,7 @@ TestFreeImageAlgorithms_Rect32bitTest(CuTest* tc)
 	
 	FreeImageAlgorithms_DrawColourRect (src32, rect, RGB(255,0,0), 7);
 
-	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_rect32bit.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_rect32bit.bmp", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src32);
@@ -146,7 +146,7 @@ TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
 	
 	FreeImageAlgorithms_DrawColourSolidRect (src, rect, RGB(255,0,0));
 
-	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_solidrect24bit.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_solidrect24bit.bmp", BIT24);
 
 	FreeImage_Unload(src);
 }
@@ -172,7 +172,7 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 	
 	FreeImageAlgorithms_DrawSolidGreyscaleRect (gs_src, rect, 100);
 
-	FreeImageAlgorithms_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.bmp", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(gs_src);
@@ -181,7 +181,7 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_FloodFillTest(CuTest* tc)
 {
-	char *file = "C:\\Documents and Settings\\Glenn\\Desktop\\particle-test.bmp";
+	char *file = IMAGE_DIR "\\particle-test.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 

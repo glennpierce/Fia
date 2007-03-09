@@ -112,7 +112,7 @@ TestFreeImageAlgorithms_DistanceTransformTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib2 != NULL);
 
-	FIBITMAP *dib3 = FreeImageAlgorithms_DistanceTransform(dib2, 1);
+	FIBITMAP *dib3 = FreeImageAlgorithms_DistanceTransform(dib2);
 
 	CuAssertTrue(tc, dib3 != NULL);
 

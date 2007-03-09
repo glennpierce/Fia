@@ -25,19 +25,19 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___i_o_8h.html#585335308f1069e2ba2a8cda914026c1">FreeImageAlgorithms_SaveFIBToFile</a> (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Save a FIBITMAP to a file. The file to be saved using a plugin determined from the filename extension.  <a href="#585335308f1069e2ba2a8cda914026c1"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API void DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___i_o_8h.html#7b4fe582f77de29b9f3fccd987f44a96">FreeImageAlgorithms_CopyBytesToFBitmap</a> (FIBITMAP *src, char *data, int padded)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API void DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___i_o_8h.html#0a92d891cff313a2e3e7e07b8e8c0184">FreeImageAlgorithms_CopyBytesToFBitmap</a> (FIBITMAP *src, BYTE *data, int padded)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copy an array of bytes to FIBITMAP.  <a href="#7b4fe582f77de29b9f3fccd987f44a96"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___i_o_8h.html#128e5fd7d07f44298de695eac76a2c77">FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData</a> (char *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copy an array of bytes to FIBITMAP.  <a href="#0a92d891cff313a2e3e7e07b8e8c0184"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___i_o_8h.html#cf168c9414f6655c53d04de6977ca770">FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData</a> (BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded, int vertical_flip)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Load a greyscale FIBITMAP from an array of bytes.  <a href="#128e5fd7d07f44298de695eac76a2c77"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___i_o_8h.html#f9109b995ebd4d5300a0c789f01755f4">FreeImageAlgorithms_LoadColourFIBFromArrayData</a> (char *data, int bpp, int width, int height, int padded)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Load a greyscale FIBITMAP from an array of bytes.  <a href="#cf168c9414f6655c53d04de6977ca770"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API FIBITMAP *DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___i_o_8h.html#abda9f4bdcaf0286f3e043196aacbe31">FreeImageAlgorithms_LoadColourFIBFromArrayData</a> (BYTE *data, int bpp, int width, int height, int padded, int vertical_flip)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Load a rgb FIBITMAP from an array of bytes.  <a href="#f9109b995ebd4d5300a0c789f01755f4"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Load a rgb FIBITMAP from an array of bytes.  <a href="#abda9f4bdcaf0286f3e043196aacbe31"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Provides various input and output methods. <hr><h2>Function Documentation</h2>
-<a class="anchor" name="7b4fe582f77de29b9f3fccd987f44a96"></a><!-- doxytag: member="FreeImageAlgorithms_IO.h::FreeImageAlgorithms_CopyBytesToFBitmap" ref="7b4fe582f77de29b9f3fccd987f44a96" args="(FIBITMAP *src, char *data, int padded)" -->
+<a class="anchor" name="0a92d891cff313a2e3e7e07b8e8c0184"></a><!-- doxytag: member="FreeImageAlgorithms_IO.h::FreeImageAlgorithms_CopyBytesToFBitmap" ref="0a92d891cff313a2e3e7e07b8e8c0184" args="(FIBITMAP *src, BYTE *data, int padded)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -50,7 +50,7 @@ Provides various input and output methods. <hr><h2>Function Documentation</h2>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramtype">BYTE *&nbsp;</td>
           <td class="paramname"> <em>data</em>, </td>
         </tr>
         <tr>
@@ -81,14 +81,14 @@ Copy an array of bytes to FIBITMAP.
 
 </div>
 </div><p>
-<a class="anchor" name="f9109b995ebd4d5300a0c789f01755f4"></a><!-- doxytag: member="FreeImageAlgorithms_IO.h::FreeImageAlgorithms_LoadColourFIBFromArrayData" ref="f9109b995ebd4d5300a0c789f01755f4" args="(char *data, int bpp, int width, int height, int padded)" -->
+<a class="anchor" name="abda9f4bdcaf0286f3e043196aacbe31"></a><!-- doxytag: member="FreeImageAlgorithms_IO.h::FreeImageAlgorithms_LoadColourFIBFromArrayData" ref="abda9f4bdcaf0286f3e043196aacbe31" args="(BYTE *data, int bpp, int width, int height, int padded, int vertical_flip)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">DLL_API FIBITMAP* DLL_CALLCONV FreeImageAlgorithms_LoadColourFIBFromArrayData           </td>
           <td>(</td>
-          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramtype">BYTE *&nbsp;</td>
           <td class="paramname"> <em>data</em>, </td>
         </tr>
         <tr>
@@ -113,7 +113,13 @@ Copy an array of bytes to FIBITMAP.
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>padded</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>padded</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>vertical_flip</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -134,6 +140,7 @@ Load a rgb FIBITMAP from an array of bytes.
     <tr><td valign="top"></td><td valign="top"><em>width</em>&nbsp;</td><td>of resulting image. </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>height</em>&nbsp;</td><td>of resulting image. </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>padded</em>&nbsp;</td><td>Is the data padded to 32 bit boundaries. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>vertical_flip</em>&nbsp;</td><td>int Should the image be vertically flipped. </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP* on success and NULL on error. </dd></dl>
@@ -168,14 +175,14 @@ Load a FIBITMAP from a file. The file is loaded using a plugin determined from t
 
 </div>
 </div><p>
-<a class="anchor" name="128e5fd7d07f44298de695eac76a2c77"></a><!-- doxytag: member="FreeImageAlgorithms_IO.h::FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData" ref="128e5fd7d07f44298de695eac76a2c77" args="(char *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded)" -->
+<a class="anchor" name="cf168c9414f6655c53d04de6977ca770"></a><!-- doxytag: member="FreeImageAlgorithms_IO.h::FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData" ref="cf168c9414f6655c53d04de6977ca770" args="(BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded, int vertical_flip)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">DLL_API FIBITMAP* DLL_CALLCONV FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData           </td>
           <td>(</td>
-          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramtype">BYTE *&nbsp;</td>
           <td class="paramname"> <em>data</em>, </td>
         </tr>
         <tr>
@@ -206,7 +213,13 @@ Load a FIBITMAP from a file. The file is loaded using a plugin determined from t
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&nbsp;</td>
-          <td class="paramname"> <em>padded</em></td><td>&nbsp;</td>
+          <td class="paramname"> <em>padded</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&nbsp;</td>
+          <td class="paramname"> <em>vertical_flip</em></td><td>&nbsp;</td>
         </tr>
         <tr>
           <td></td>
@@ -228,6 +241,7 @@ Load a greyscale FIBITMAP from an array of bytes.
     <tr><td valign="top"></td><td valign="top"><em>height</em>&nbsp;</td><td>of resulting image. </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>data_type</em>&nbsp;</td><td>FREE_IMAGE_TYPE of resulting image. </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>padded</em>&nbsp;</td><td>Is the data padded to 32 bit boundaries. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>vertical_flip</em>&nbsp;</td><td>int Should the image be vertically flipped. </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>FIBITMAP* on success and NULL on error. </dd></dl>
@@ -279,7 +293,7 @@ Save a FIBITMAP to a file. The file to be saved using a plugin determined from t
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Thu Nov 30 16:05:35 2006 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 7 14:51:39 2007 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>

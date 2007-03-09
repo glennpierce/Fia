@@ -59,7 +59,7 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\mmorpholology_test.bmp";
+	char *file = IMAGE_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	

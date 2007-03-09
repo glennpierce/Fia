@@ -99,7 +99,7 @@ static void dt2d(FIBITMAP *src)
 
 /* dt of binary image using squared distance */
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_DistanceTransform(FIBITMAP *src, unsigned char on)
+FreeImageAlgorithms_DistanceTransform(FIBITMAP *src)
 {
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);

@@ -22,13 +22,13 @@
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API void DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___error_8h.html#b4fc3e9f7cef4f71969346cb03d8666e">FreeImageAlgorithms_SetOutputMessage</a> (FreeImageAlgorithms_OutputMessageFunction omf)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Handles FreeImageAlgorithm Errors.  <a href="#b4fc3e9f7cef4f71969346cb03d8666e"></a><br></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API void DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___error_8h.html#438ac842c527d50b0303e7708621dc25">FreeImageAlgorithms_SendOutputMessage</a> (const char *message,...)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API void DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___error_8h.html#9b5fefa526d3c92e996174b9771a196d">FreeImageAlgorithms_SendOutputMessage</a> (const char *fmt,...)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sends a FreeImageAlgorithm Error.  <a href="#438ac842c527d50b0303e7708621dc25"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Sends a FreeImageAlgorithm Error.  <a href="#9b5fefa526d3c92e996174b9771a196d"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Provides Setting up of a error handler. <hr><h2>Function Documentation</h2>
-<a class="anchor" name="438ac842c527d50b0303e7708621dc25"></a><!-- doxytag: member="FreeImageAlgorithms_Error.h::FreeImageAlgorithms_SendOutputMessage" ref="438ac842c527d50b0303e7708621dc25" args="(const char *message,...)" -->
+<a class="anchor" name="9b5fefa526d3c92e996174b9771a196d"></a><!-- doxytag: member="FreeImageAlgorithms_Error.h::FreeImageAlgorithms_SendOutputMessage" ref="9b5fefa526d3c92e996174b9771a196d" args="(const char *fmt,...)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -36,7 +36,7 @@ Provides Setting up of a error handler. <hr><h2>Function Documentation</h2>
           <td class="memname">DLL_API void DLL_CALLCONV FreeImageAlgorithms_SendOutputMessage           </td>
           <td>(</td>
           <td class="paramtype">const char *&nbsp;</td>
-          <td class="paramname"> <em>message</em>, </td>
+          <td class="paramname"> <em>fmt</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -58,7 +58,7 @@ Sends a FreeImageAlgorithm Error.
 <p>
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>message</em>&nbsp;</td><td>send an error from the FreeImageAlgorithms library. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>fmt</em>&nbsp;</td><td>const char * Format of the error message. </td></tr>
   </table>
 </dl>
 
@@ -91,7 +91,7 @@ Handles FreeImageAlgorithm Errors.
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Thu Nov 30 16:05:35 2006 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 7 14:51:39 2007 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>
