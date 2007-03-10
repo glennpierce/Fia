@@ -274,7 +274,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 			continue;
 	
 		(*info)->blobs[j].rect.left = ptr->left;
-		(*info)->blobs[j].rect.top = height - ptr->top - 1;
+		(*info)->blobs[j].rect.top = height - ptr->top - 1;    // -1 as lines start from 0
 		(*info)->blobs[j].rect.right = ptr->right;
 		(*info)->blobs[j].rect.bottom = height - ptr->bottom - 1;
 		(*info)->blobs[j].area = ptr->area;

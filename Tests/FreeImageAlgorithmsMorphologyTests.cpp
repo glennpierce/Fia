@@ -264,12 +264,12 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 	{
 		BLOBINFO blobinfo = info->blobs[i];
 
-		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, RGB(255,0,0), 1);
+		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, RGB(255,0,0), 5);
 
 		std::cout << "partcle " << i + 1 << "  left  "
 			<< blobinfo.rect.left << "  top  "  << blobinfo.rect.top
-			<< "  width  " << blobinfo.rect.right - blobinfo.rect.left
-			<< "  height  " << blobinfo.rect.bottom - blobinfo.rect.top
+			<< "  width  " << blobinfo.rect.right - blobinfo.rect.left + 1
+			<< "  height  " << blobinfo.rect.bottom - blobinfo.rect.top + 1
 			<< "  area: " << blobinfo.area << std::endl;
 	}
 	

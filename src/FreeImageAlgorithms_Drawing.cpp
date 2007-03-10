@@ -6,7 +6,7 @@
 #include <math.h>
 #include "agg.h"
 
-void draw_line(agg::rasterizer& ras,
+static void draw_line(agg::rasterizer& ras,
                double x1, double y1, 
                double x2, double y2,
                double width)
@@ -25,61 +25,123 @@ void draw_line(agg::rasterizer& ras,
     ras.line_to_d(x1 + dx,  y1 - dy);
 }
 
-static int 
-Draw24BitColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
-{  
+// Draws a orthogonal no aa line of width one pixel
+// This is for drawing rectangles fast
+static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, int y2, COLORREF colour)
+{
+	if(!src)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
-
-	// Allocate the framebuffer
-	unsigned char* buf = FreeImage_GetBits(src);
-
-    // Create the rendering buffer 
-    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
-
-    // Create the rendering buffer 
-    agg::renderer<agg::span_bgr24> ren(rbuf);
-    agg::rasterizer ras;
-
-	// Adding line_width seems to account for anti aliasing or sub pixel positioning
-	draw_line(ras, rect.left, rect.top, rect.left, rect.bottom, line_width);
-	draw_line(ras, rect.left, rect.top, rect.right, rect.top, line_width);
-	draw_line(ras, rect.left, rect.bottom, rect.right, rect.bottom, line_width);
-	draw_line(ras, rect.right, rect.bottom, rect.right, rect.top, line_width);
-
-    ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
  
-	return FREEIMAGE_ALGORITHMS_SUCCESS;
-} 
+	// Draw from the left
+	if(x2 < x1)
+		SWAP(x1, x2);
 
+	// Draw from the top
+	if(y2 < y1)
+		SWAP(y1, y2);
+
+	if(x2 < 0 || y2 < 0)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(x1 < 0)
+		x1 = 0;
+		
+	if(x2 >= width)
+		x2 = width - 1;
+
+	if(y1 < 0)
+		y1 = 0;
+		
+	if(y2 >= height)
+		y2 = height - 1;
+
+	int bytespp = FreeImage_GetLine(src) / FreeImage_GetWidth(src); 
+	int pitch = FreeImage_GetPitch(src);
+
+	if(x1 != x2) {
+
+		// We have a horizontal line
+		// Make sure y's are the same
+		if(y1 != y2)
+			return FREEIMAGE_ALGORITHMS_ERROR;
+
+		BYTE *bits = (BYTE *) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
+
+		for(register int x = x1; x <= x2; x++) {
+				
+			bits[FI_RGBA_RED] = GetRValue(colour);
+			bits[FI_RGBA_GREEN] =  GetGValue(colour);
+			bits[FI_RGBA_BLUE] = GetBValue(colour);
+
+			if(bytespp == 4)
+				bits[FI_RGBA_ALPHA] = 0;
+
+			// jump to next pixel
+			bits += bytespp;
+			
+		}
+
+		return FREEIMAGE_ALGORITHMS_SUCCESS;
+	}
+
+	if(y1 != y2) {
+
+		// We have a verticle line
+		// Make sure x's are the same
+		if(x1 != x2)
+			return FREEIMAGE_ALGORITHMS_ERROR;	
+
+		// Get starting point
+		BYTE *bits = (BYTE*) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
+
+		while(y1 <= y2) {
+
+			bits[FI_RGBA_RED] = GetRValue(colour);
+			bits[FI_RGBA_GREEN] =  GetGValue(colour);
+			bits[FI_RGBA_BLUE] = GetBValue(colour);
+
+			if(bytespp == 4)
+				bits[FI_RGBA_ALPHA] = 0;
+
+			bits += pitch;
+
+			y1++;
+		}
+
+		return FREEIMAGE_ALGORITHMS_SUCCESS;
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+}
 
 static int 
-Draw32BitColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
 {  
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
+	int err;
 
-	// Allocate the framebuffer
-	unsigned char* buf = FreeImage_GetBits(src);
+	for(int i=0; i < line_width; i++) {
+	
+		// Top
+		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.top + i, rect.right + line_width - 1, rect.top + i, colour);
+	
+		// Bottom
+		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.bottom - i, rect.right + line_width - 1, rect.bottom - i, colour);
 
-    // Create the rendering buffer 
-    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+		// Left
+		err = orthogonal_draw_colour_line(src, rect.left - i, rect.top, rect.left - i, rect.bottom, colour);
 
-    // Create the rendering buffer 
-    agg::renderer<agg::span_bgra32> ren(rbuf);
-    agg::rasterizer ras;
+		// Right
+		err = orthogonal_draw_colour_line(src, rect.right + i, rect.top, rect.right + i, rect.bottom, colour);
+	}
 
-	// Adding line_width seems to account for anti aliasing or sub pixel positioning
-	draw_line(ras, rect.left+line_width, rect.top, rect.left+line_width, rect.bottom, line_width);
-	draw_line(ras, rect.left, rect.top, rect.right, rect.top, line_width);
-	draw_line(ras, rect.left, rect.bottom, rect.right, rect.bottom, line_width);
-	draw_line(ras, rect.right-line_width, rect.bottom, rect.right-line_width, rect.top, line_width);
+	if(err == FREEIMAGE_ALGORITHMS_ERROR)
+		return FREEIMAGE_ALGORITHMS_ERROR;
 
-    ras.render(ren, agg::rgba8(GetRValue(colour), GetGValue(colour), GetBValue(colour)));
- 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
-
 
 static int 
 Draw24BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour) 
@@ -250,19 +312,13 @@ FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, i
 	RECT tmp_rect = rect;
 
 	// FreeImages are flipped
-	tmp_rect.top = height - rect.top;
-	tmp_rect.bottom = height - rect.bottom;
+	tmp_rect.top = height - rect.top - 1;
+	tmp_rect.bottom = height - rect.bottom - 1;
 
 	int bpp = FreeImage_GetBPP(src);
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
-	if(type == FIT_BITMAP && bpp == 32)
-		return Draw32BitColourRect (src, tmp_rect, colour, line_width); 
-
-	if(type == FIT_BITMAP && bpp == 24)
-		return Draw24BitColourRect (src, tmp_rect, colour, line_width); 
-
-	return FREEIMAGE_ALGORITHMS_ERROR;
+	return DrawColourRect (src, tmp_rect, colour, line_width); 
 } 
 
 int DLL_CALLCONV
