@@ -3,10 +3,10 @@
 #include "FreeImage.h"
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Filters.h"
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
-#include "FreeImageAlgorithms_MedianFilter.h"
 
 static const double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,

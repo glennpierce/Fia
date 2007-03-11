@@ -1,6 +1,6 @@
-#include "FreeImageAlgorithms_MedianFilter.h"
-#include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
+#include "FreeImageAlgorithms_Filters.h"
+#include "FreeImageAlgorithms_Utilities.h"
 
 #define BLOCKSIZE 8
 

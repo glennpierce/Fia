@@ -44,13 +44,6 @@ FreeImageAlgorithms_Convolve(FIABITMAP *src, const FilterKernel kernel);
 //DLL_API FIBITMAP* DLL_CALLCONV
 //FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel kernel1, FilterKernel kernel2);
 
-/** \brief Perform a soble filtering.
- *
- *  \param src FIBITMAP bitmap to perform the sobel filter on.
- *  \return FIBITMAP on success or NULL on error.
-*/
-DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Sobel(FIBITMAP *src);
 
 #ifdef __cplusplus
 }

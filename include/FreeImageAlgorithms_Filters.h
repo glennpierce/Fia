@@ -1,5 +1,5 @@
-#ifndef __FREEIMAGE_ALGORITHMS_MEDIAN_FILTER__
-#define __FREEIMAGE_ALGORITHMS_MEDIAN_FILTER__
+#ifndef __FREEIMAGE_ALGORITHMS_FILTERS__
+#define __FREEIMAGE_ALGORITHMS_FILTERS__
 
 #include "FreeImageAlgorithms.h"
 
@@ -17,6 +17,14 @@ extern "C" {
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius);
+
+/** \brief Perform a soble filtering.
+ *
+ *  \param src FIBITMAP bitmap to perform the sobel filter on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Sobel(FIBITMAP *src);
 
 #ifdef __cplusplus
 }
