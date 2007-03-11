@@ -15,6 +15,8 @@ struct _blob
 	int right;
 	int top;
 	int area;
+	int sum_x;
+	int sum_y;
 
 	int rank;
 	blob *parent;
@@ -27,6 +29,8 @@ struct _run
 	int x;
 	int y;
 	int end_x;
+	int sum_x;
+
 	blob *blob;
 };
 
@@ -76,6 +80,8 @@ static inline blob* NewBlob(BLOBPOOL *pool, run *run)
 	b->top = b->bottom;
 
 	b->area = run->end_x - run->x + 1;
+	b->sum_x = run->sum_x;
+	b->sum_y = (run->y + 1) * b->area;		// Current row times number in run
 
 	run->blob = b;
 
@@ -121,6 +127,8 @@ static inline blob* MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
 	b1->parent->right = max(b1->right, b2->right);
 	b1->parent->top = max(b1->top, b2->top);
 	b1->parent->area = b1->area + b2->area;
+	b1->parent->sum_x = b1->sum_x + b2->sum_x;
+	b1->parent->sum_y = b1->sum_y + b2->sum_y;
 
 	pool->real_blobcount--;
 
@@ -166,10 +174,14 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		// new blob
 		last_runs_ptr[last_row_run_count].x = x;
 		last_runs_ptr[last_row_run_count].y = 0;
-		
+		last_runs_ptr[last_row_run_count].sum_x = 0;
+
 		// While fg pixel increment.
-		while(src_ptr[x] != bg_val && x < width)
+		while(src_ptr[x] != bg_val && x < width) {
+
+			last_runs_ptr[last_row_run_count].sum_x += x;		
 			x++;
+		}
  
 		last_runs_ptr[last_row_run_count].end_x = x - 1;			
 
@@ -197,11 +209,14 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 
 			tmp_run.x = x;
 			tmp_run.y = y;
+			tmp_run.sum_x = 0;
 			tmp_run.blob = NULL;
 
 			// While fg pixel increment.
-			while(src_ptr[x] != bg_val && x < width)
+			while(src_ptr[x] != bg_val && x < width) {
+				tmp_run.sum_x += x;
 				x++;
+			}
 
 			tmp_run.end_x = x - 1;
 				 	
@@ -230,6 +245,8 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 						tmp_run.blob->top = y;
 
 						tmp_run.blob->area = tmp_run.end_x - tmp_run.x + 1 + last_run->blob->area;
+						tmp_run.blob->sum_x = tmp_run.sum_x + last_run->blob->sum_x;
+						tmp_run.blob->sum_y += ((y + 1) * (tmp_run.end_x - tmp_run.x + 1));
 						
 					}
 					else if(tmp_run.blob != last_run->blob) {
@@ -249,6 +266,8 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 			current_runs_ptr[current_run_count].x  = tmp_run.x;
 			current_runs_ptr[current_run_count].y  = tmp_run.y;
 			current_runs_ptr[current_run_count].end_x  = tmp_run.end_x;
+			current_runs_ptr[current_run_count].sum_x  = tmp_run.sum_x;
+			//current_runs_ptr[current_run_count].sum_y  = tmp_run.sum_y;
 			current_runs_ptr[current_run_count].blob  = tmp_run.blob;
 
 			current_run_count++;
@@ -278,6 +297,8 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		(*info)->blobs[j].rect.right = ptr->right;
 		(*info)->blobs[j].rect.bottom = height - ptr->bottom - 1;
 		(*info)->blobs[j].area = ptr->area;
+		(*info)->blobs[j].center_x = ptr->sum_x / ptr->area;
+		(*info)->blobs[j].center_y = height - (ptr->sum_y / ptr->area) - 1;
 
 		j++;
 	}

@@ -260,17 +260,28 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib2);
 
+	RECT centre;
+
 	for(int i=0; i < info->number_of_blobs; i++)
 	{
 		BLOBINFO blobinfo = info->blobs[i];
 
 		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, RGB(255,0,0), 5);
 
+		centre.left = blobinfo.center_x - 3;
+		centre.right = blobinfo.center_x + 3;
+		centre.top = blobinfo.center_y - 3;
+		centre.bottom = blobinfo.center_y + 3;
+
+		FreeImageAlgorithms_DrawColourSolidRect(dst, centre, RGB(0,255,0));
+
 		std::cout << "partcle " << i + 1 << "  left  "
 			<< blobinfo.rect.left << "  top  "  << blobinfo.rect.top
 			<< "  width  " << blobinfo.rect.right - blobinfo.rect.left + 1
 			<< "  height  " << blobinfo.rect.bottom - blobinfo.rect.top + 1
-			<< "  area: " << blobinfo.area << std::endl;
+			<< "  area: " << blobinfo.area
+			<< "  centre x: " << blobinfo.center_x
+			<< "  centre y: " << blobinfo.center_y << std::endl;
 	}
 	
 	std::cout << "Number of particles " << info->number_of_blobs << std::endl;

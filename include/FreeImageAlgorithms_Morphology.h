@@ -12,6 +12,8 @@ typedef struct
 {
 	RECT rect;
 	int area;
+	int center_x;
+	int center_y;
 
 } BLOBINFO;
 
