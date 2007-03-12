@@ -879,6 +879,7 @@ FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+
 int DLL_CALLCONV
 FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2)
 {

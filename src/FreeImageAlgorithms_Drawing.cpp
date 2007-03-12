@@ -212,14 +212,14 @@ FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsign
 	RECT tmp_rect = rect;
 
 	// FreeImages are flipped
-	tmp_rect.top = height - rect.top;
-	tmp_rect.bottom = height - rect.bottom;
+	tmp_rect.top = height - rect.top - 1;
+	tmp_rect.bottom = height - rect.bottom - 1;
 
-	for(register int y=tmp_rect.bottom; y < tmp_rect.top; y++) {
+	for(register int y=tmp_rect.bottom; y <= tmp_rect.top; y++) {
 
 		buf = FreeImage_GetScanLine(src, y);
 
-		memset(buf + tmp_rect.left, value, tmp_rect.right - tmp_rect.left);
+		memset(buf + tmp_rect.left, value, tmp_rect.right - tmp_rect.left + 1);
 	}
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;

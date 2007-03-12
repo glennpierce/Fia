@@ -78,7 +78,7 @@ FindMaxima::NeighbourhoodNMS(unsigned char *ptr)
 		return 0;
 
 	return 1;
-}
+} 
 
 void
 FindMaxima::NonMaxSupression()
@@ -246,23 +246,27 @@ FindMaxima::DrawMaxima (int size)
 
 	FreeImageAlgorithms_SetGreyLevelPalette(this->peek_image);
 
-	register unsigned char *src_ptr;
+	register unsigned char *src_ptr, *dst_ptr;
 	RECT rect;
 
 	for (register int y=1; y < height - 1; y++)
 	{		
 		src_ptr = this->processing_first_pixel_address_ptr + y * this->pitch_in_pixels;
-	
+		dst_ptr = FreeImage_GetScanLine(this->peek_image, y);
+
 		for (register int x=1; x < width - 1; x++) 
 		{
 			if(src_ptr[x] == 1) {
 
-				rect.left = x-size/2 - 1;
-				rect.top = (this->height - y) - size/2 - 1;
-				rect.right = rect.left + size;
-				rect.bottom = rect.top + size;
+				rect.left = x;
+				rect.bottom = this->height - y - 1;
+				rect.right = rect.left + size - 1;
+				rect.top = rect.bottom - size + 1;
 
-				FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (this->peek_image, rect, 1); 
+				FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (this->peek_image, rect, 255); 
+
+				dst_ptr[x] = 255;
+
 			}
 		}
 	}

@@ -309,8 +309,10 @@ static void
 TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 {
 	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+	char *shouldbefile = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
 	
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *shouldbe_dib = FreeImageAlgorithms_LoadFIBFromFile(shouldbefile);
 
 	CuAssertTrue(tc, dib1 != NULL);
 
@@ -343,7 +345,14 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 	FreeImageAlgorithms_SetGreyLevelPalette(dib3);
 
+
+
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib3);
+
+
+	
+
+
 
 	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\find_image_maxima.bmp", BIT8); 
 
