@@ -288,27 +288,6 @@ static inline int __cdecl ComparePeaks (const void *element1, const void *elemen
 	return 0;
 }
 
-
-static float GetPixelValue8Bit(FIBITMAP *src, int x, int y)
-{
-	return (float) (*(FreeImage_GetScanLine(src, y) + x));
-}
-
-static float GetPixelValueU16Bit(FIBITMAP *src, int x, int y)
-{
-	return (float) (*((unsigned short *)FreeImage_GetScanLine(src, y) + x));
-}
-
-static float GetPixelValue16Bit(FIBITMAP *src, int x, int y)
-{
-	return (float) (*((short *)FreeImage_GetScanLine(src, y) + x));
-}
-
-static float GetPixelValue32Bit(FIBITMAP *src, int x, int y)
-{
-	return *((float *) FreeImage_GetScanLine(src, y) + x);
-}
-
 int
 FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 {
@@ -338,15 +317,6 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
  
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(this->original_image);
 
-	if(bpp == 8)
-		GetPixelValue = GetPixelValue8Bit;
-	else if(bpp == 16 && type == FIT_UINT16)
-		GetPixelValue = GetPixelValueU16Bit;
-	else if(bpp == 16 && type == FIT_INT16)
-		GetPixelValue = GetPixelValue16Bit;
-	else if(bpp == 32)
-		GetPixelValue = GetPixelValue32Bit;
-
 	for(int i=0; i < number; i++)
 	{
 		BLOBINFO blobinfo = info->blobs[i];
@@ -354,7 +324,9 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 		peaks[i].centre.x = blobinfo.center_x;
 		peaks[i].centre.y = blobinfo.center_y;
 
-		peaks[i].value = GetPixelValue (this->original_image,peaks[i].centre.x, peaks[i].centre.y);
+		FreeImageAlgorithms_GetPixelValve(
+			this->original_image,peaks[i].centre.x,
+			peaks[i].centre.y, &(peaks[i].value));
 	}
 
 	FreeImageAlgorithms_FreeParticleInfo(info);

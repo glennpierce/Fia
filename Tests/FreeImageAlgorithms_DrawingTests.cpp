@@ -8,7 +8,29 @@
 #include "FreeImageAlgorithms_Testing.h"
 
 static void
-TestFreeImageAlgorithms_LineTest(CuTest* tc)
+TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
+
+	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	CuAssertTrue(tc, src != NULL);
+
+	POINT p1, p2;
+
+	p1.x = 10;
+	p1.y = 10;
+	p2.x = 500;
+	p2.y = 800;
+
+	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 1);
+
+	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_line8bit.bmp", BIT8);
+
+	FreeImage_Unload(src);
+}
+
+static void
+TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
@@ -162,7 +184,8 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LineTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_GSLineTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ColourLineTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Rect24bitTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidGSRectTest);

@@ -487,6 +487,9 @@ FreeImageAlgorithms_Is8Bit(FIBITMAP *src);
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_DistanceTransform(FIBITMAP *src, unsigned char on);
 
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, float* val);
+
 #ifdef __cplusplus
 }
 #endif

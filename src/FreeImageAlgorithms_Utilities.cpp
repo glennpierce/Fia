@@ -1069,3 +1069,43 @@ void CheckMemory(void *ptr)
 		exit(-1);
 	}
 }
+
+int FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, float* val)
+{
+	int bpp = FreeImage_GetBPP(src);
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+	BYTE *line_ptr = FreeImage_GetScanLine(src, y);
+
+	// bpp >> 3;   // Divide by 8
+	switch(bpp) {
+		case 8:
+		{
+			*val = *(line_ptr + x);
+			return FREEIMAGE_ALGORITHMS_SUCCESS;
+		}
+
+		case 16:
+		{
+			if(type == FIT_INT16)
+				*val = *((short *)line_ptr + x);
+			else if(type == FIT_UINT16)
+				*val = *((unsigned short *)line_ptr + x);
+
+			return FREEIMAGE_ALGORITHMS_SUCCESS;
+		}
+
+		case 32:
+		{
+			if(type == FIT_FLOAT)
+				*val = *((float *)line_ptr + x);
+			
+			if(type == FIT_DOUBLE)
+				*val = *((double *)line_ptr + x);
+
+			return FREEIMAGE_ALGORITHMS_SUCCESS;
+		}
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+}

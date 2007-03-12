@@ -34,6 +34,9 @@ FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colo
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsigned char value);
 
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, double value, int line_width);
+
 #ifdef __cplusplus
 }
 #endif

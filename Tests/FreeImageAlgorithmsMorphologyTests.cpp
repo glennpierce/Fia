@@ -168,8 +168,7 @@ TestFreeImageAlgorithms_ClosingTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 {
-	//char *file = IMAGE_DIR "\\fillhole_test.bmp";
-	char *file = "C:\\Documents and Settings\\Glenn\\Desktop\\particle-test.bmp";
+	char *file = IMAGE_DIR "\\fillhole_test.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -191,7 +190,7 @@ TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 
 	ProfileStop("FillholeTest");
 	
-	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -254,10 +253,7 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 
 	PARTICLEINFO *info;
 
-	for(int i=0; i < 30; i++) {
-
-		FreeImageAlgorithms_ParticleInfo(dib2, &info, 1);
-	}
+	FreeImageAlgorithms_ParticleInfo(dib2, &info, 1);
 
 	ProfileStop("ParticleInfo");
 
@@ -324,9 +320,8 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 	FIAPeak *peaks = NULL;
 	int number_of_peaks;
-
 	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 50, 2, &peaks, 0, &number_of_peaks);
-	
+
 	ProfileStop("FindImageMaxima");
 
 	FILE *fp;
@@ -372,7 +367,7 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ErosionTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_OpeningTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);

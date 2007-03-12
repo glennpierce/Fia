@@ -303,6 +303,54 @@ FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
 
+
+static int 
+Draw8BitGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, unsigned char value, int line_width) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = FreeImage_GetBits(src);
+
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+
+    // Create the rendering buffer 
+    agg::renderer<agg::span_mono8> ren(rbuf);
+    agg::rasterizer ras;
+
+    // Setup the rasterizer
+    ras.filling_rule(agg::fill_even_odd);
+
+	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
+
+    ras.render(ren, agg::rgba8(value, value, value));
+ 
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+} 
+
+int DLL_CALLCONV
+FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, double value, int line_width) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	POINT p1_tmp = p1, p2_tmp = p2;
+
+	// FreeImages are flipped
+	p1_tmp.y = height - p1.y;
+	p2_tmp.y = height - p2.y;
+
+	int bpp = FreeImage_GetBPP(src);
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+	if(type == FIT_BITMAP && bpp == 8)
+		return Draw8BitGreyscaleLine (src, p1_tmp, p2_tmp, (unsigned char) value, line_width); 
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+} 
+
 int DLL_CALLCONV
 FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
 {  
