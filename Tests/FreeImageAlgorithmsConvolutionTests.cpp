@@ -8,6 +8,8 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
 
+#include <iostream>
+
 static const double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 			 			  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -39,7 +41,7 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib1 != NULL);
 
-	FIABITMAP *dib2 = FreeImageAlgorithms_SetBorder(dib1, 10, 10);
+	FIABITMAP *dib2 = FreeImageAlgorithms_SetBorder(dib1, 300, 300);
 
 	CuAssertTrue(tc, dib2->fib != NULL);
 
@@ -53,7 +55,7 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
 	PROFILE_STOP("FreeImageAlgorithms_Convolve");
 
-	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\wallpaper_river_blured_new.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\wallpaper_river_blured.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImageAlgorithms_Unload(dib2);
@@ -110,6 +112,8 @@ static void
 TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river-gs-salted.jpg";
+	//char *file = IMAGE_DIR "\\med.bmp";
+	//char *file = IMAGE_DIR "\\test_image_5sq.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -119,7 +123,7 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib2 != NULL);
 
-	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_DOUBLE, 1);
+	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_FLOAT, 1);
 
 	CuAssertTrue(tc, dib3 != NULL);
 
@@ -132,6 +136,18 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 	CuAssertTrue(tc, dib5 != NULL);
 
 	PROFILE_STOP("MedianFilter");
+
+	/*
+	for(int y=0; y < FreeImage_GetHeight(dib5); y++) {
+	
+		float *bits = (float*) FreeImage_GetScanLine(dib5, y);
+
+		for(int x=0; x < FreeImage_GetWidth(dib5); x++)
+			std::cout << bits[x] << ", ";
+
+		std::cout << std::endl;
+	}
+	*/
 
 	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\salt_and_pepper_median.jpg", BIT24);
 

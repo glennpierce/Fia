@@ -71,7 +71,7 @@ class Kernel
 		inline void Move(int x, int y)
 		{ 
 			this->current_src_ptr = (const_cast<Tsrc*>(this->src_first_pixel_address_ptr) 
-				+ (y * this->src_pitch_in_pixels) + x);
+				+ (y + this->y_amount_to_image) * this->src_pitch_in_pixels + x_amount_to_image + x);
 			
 			this->current_src_center_ptr = this->current_src_ptr
 				+ (y_radius * this->src_pitch_in_pixels) - x_radius;
@@ -129,6 +129,9 @@ class Kernel
 		const int src_pitch_in_pixels;
 		const FREE_IMAGE_TYPE src_image_type;
 		const Tsrc *values;	
+		int x_amount_to_image;
+		int y_amount_to_image;
+
 		Tsrc *src_first_pixel_address_ptr;
 
 		double sum;
@@ -166,6 +169,10 @@ Kernel<Tsrc>::Kernel(FIABITMAP* src, int x_radius, int y_radius, const Tsrc *val
 
 	this->src_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(this->dib);
 	this->current_src_ptr = const_cast<Tsrc*>(this->src_first_pixel_address_ptr);
+
+	// Amount we need to move in x to get pass the border and onto the image.
+	this->x_amount_to_image = this->xborder - this->x_radius; 
+	this->y_amount_to_image = this->yborder - this->y_radius; 
 
 	this->Move(0, 0);
 }

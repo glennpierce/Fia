@@ -260,9 +260,15 @@ FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP* src, int kernel_x_radius, int ke
 	register Tsrc *dst_ptr;
 	register Tsrc *src_row_ptr;
 
+	// Amount we need to move in x to get pass the border and onto the image.
+	int x_amount_to_image = src->xborder - kernel_x_radius; 
+	int y_amount_to_image = src->yborder - kernel_y_radius; 
+
 	for (register int y=0; y < dst_height; y++)
 	{		
-		src_row_ptr = (src_first_pixel_address_ptr + y * this->src_pitch_in_pixels);
+		src_row_ptr = src_first_pixel_address_ptr + 
+			(y + y_amount_to_image) * this->src_pitch_in_pixels + x_amount_to_image;
+
 		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
 
 		for (register int x=0; x < dst_width; x++) 

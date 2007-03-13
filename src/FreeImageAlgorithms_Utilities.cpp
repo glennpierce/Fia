@@ -939,6 +939,7 @@ void DLL_CALLCONV
 FreeImageAlgorithms_Unload(FIABITMAP* src)
 {
 	FreeImage_Unload(src->fib);
+	src->fib = NULL;
 	free(src);
 }
 
