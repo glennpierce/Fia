@@ -456,8 +456,8 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
  *  \param max Value that pixels above and equal to t are set to.
  *  \return FIBITMAP 8bit fi bitmap with pixel values between min and max.
 */
-DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max);
+//DLL_API FIBITMAP* DLL_CALLCONV
+//FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max);
 
 
 /** \brief Converts to a float image even if the image is in colour.
@@ -479,8 +479,17 @@ FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE t
  *  \param threshold unsigned char Threshold to use.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
+//DLL_API int DLL_CALLCONV
+//FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold);
+
+
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_Threshold(FIBITMAP *src, double min, double max, double new_value);
+
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold);
+FreeImageAlgorithms_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value);
+
 
 /** \brief Find if an image is 8bit.
  *

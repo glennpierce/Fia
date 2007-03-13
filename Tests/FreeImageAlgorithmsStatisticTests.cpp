@@ -10,6 +10,86 @@
 #include <math.h>
 
 static void
+TestFreeImageAlgorithms_HistogramTest(CuTest* tc)
+{
+	//char *file = IMAGE_DIR "\\mask.bmp";
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+
+	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib != NULL);
+
+	unsigned long hist[256];
+
+	PROFILE_START("FreeImageAlgorithms_Histogram");
+
+	for(int i=0; i< 100; i++) {
+		if(FreeImageAlgorithms_Histogram(dib, 0, 255, 2, hist) == FREEIMAGE_ALGORITHMS_ERROR)
+			CuFail(tc, "Failed");
+	}
+
+	PROFILE_STOP("FreeImageAlgorithms_Histogram");
+
+	FreeImage_Unload(dib);
+}
+
+static void
+TestFreeImageAlgorithms_StatisticsTest(CuTest* tc)
+{
+	//char *file = IMAGE_DIR "\\mask.bmp";
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+
+	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib != NULL);
+
+	StatisticReport report;
+ 
+	PROFILE_START("FreeImageAlgorithms_StatisticReport");
+
+	for(int i=0; i< 100; i++) {
+		if(FreeImageAlgorithms_StatisticReport(dib, &report) == FREEIMAGE_ALGORITHMS_ERROR)
+			CuFail(tc, "Failed");
+	}
+
+	PROFILE_STOP("FreeImageAlgorithms_StatisticReport");
+
+	FreeImage_Unload(dib);
+
+	std::cout << "mean " << report.mean
+		<< "  standard deviation " << report.stdDeviation << std::endl;
+}
+
+
+static void
+TestFreeImageAlgorithms_CentroidTest(CuTest* tc)
+{
+	//char *file = IMAGE_DIR "\\mask.bmp";
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+
+	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib != NULL);
+ 
+	PROFILE_START("FreeImageAlgorithms_StatisticReport");
+
+	float x_centroid, y_centroid;    
+
+	//for(int i=0; i< 100; i++) {
+		if(FreeImageAlgorithms_Centroid(dib, &x_centroid, &y_centroid) == FREEIMAGE_ALGORITHMS_ERROR)
+			CuFail(tc, "Failed");
+	//}
+
+	PROFILE_STOP("FreeImageAlgorithms_StatisticReport");
+
+	FreeImage_Unload(dib);
+
+	std::cout << "x_centroid " << x_centroid
+		<< "  y_centroid " << y_centroid << std::endl;
+}
+
+
+static void
 TestFreeImageAlgorithms_MonoAreaTest(CuTest* tc)
 {
 	double white_area, black_area;
@@ -73,6 +153,9 @@ CuGetFreeImageAlgorithmsStatisticSuite(void)
 
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MonoAreaTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MonoComparisonTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_HistogramTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_StatisticsTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_CentroidTest);
 
 	return suite;
 }

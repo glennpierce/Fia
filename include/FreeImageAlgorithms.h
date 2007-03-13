@@ -7,6 +7,8 @@
 
 #include "FreeImage.h"
 
+//#define DONT_PROFILE
+
 #include "profile.h"
 
 #ifdef __cplusplus

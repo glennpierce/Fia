@@ -37,7 +37,7 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 
 	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
 
-	ProfileStart("DilationFilter");
+	PROFILE_START("DilationFilter");
 
 	FilterKernel kernel = FreeImageAlgorithms_NewKernel(2, 2, kernel_values, 1.0);
 
@@ -45,7 +45,7 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 
 	CuAssertTrue(tc, result_dib != NULL);
 
-	ProfileStop("DilationFilter");
+	PROFILE_STOP("DilationFilter");
 
 	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\dilation_result.jpg", BIT24);
 
@@ -75,7 +75,7 @@ TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 
 	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
 
-	ProfileStart("ErosionFilter");
+	PROFILE_START("ErosionFilter");
 
 	FilterKernel kernel = FreeImageAlgorithms_NewKernel(2, 2, kernel_values, 1.0);
 
@@ -83,7 +83,7 @@ TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 
 	CuAssertTrue(tc, result_dib != NULL);
 
-	ProfileStop("ErosionFilter");
+	PROFILE_STOP("ErosionFilter");
 
 	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\erosion_result.jpg", BIT24);
 

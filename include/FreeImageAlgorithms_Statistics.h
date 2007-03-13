@@ -11,12 +11,11 @@ typedef struct
 {
    float   minValue;	   /* miminum pixel value found */
    float   maxValue;	   /* maximum pixel value found */
-   float   binSize;		   /* class interval value		*/
    float   mean;		   /* mean value				*/
    float   stdDeviation;   /* standard deviation		   */
    int	   area;		   /* number of pixel scanned	*/
    
-} HistogramReport;
+} StatisticReport;
 
 /*! \file 
 	Provides various statistical methods for FIBITMAP's.
@@ -61,7 +60,7 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src);
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max,
-							  int number_of_bins, unsigned long *hist, HistogramReport *report);
+							  int number_of_bins, unsigned long *hist);
 
 /** \brief Return the histogram for a rgb image.
  *
@@ -78,7 +77,8 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max,
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
+FreeImageAlgorithms_RGBHistogram(FIBITMAP *src,
+			unsigned char  min, unsigned char  max, int number_of_bins,
 			unsigned long *rhist, unsigned long *ghist, unsigned long *bhist);
 
 
@@ -114,6 +114,27 @@ FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
 													int *tp, int *tn, int *fp, int *fn);
+
+/** \brief This function determines how a detail is present though two images.
+ *
+ *  \param src FIBITMAP bitmap to perform the computation on.
+ *  \param report StatisticReport * Report describing the statistics of the image.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ */
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_StatisticReport(FIBITMAP *src, StatisticReport *report);
+
+
+/** \brief This function determines the center of pixel energy of an image.
+ *
+ *  \param src FIBITMAP bitmap to perform the computation on.
+ *  \param x_centroid float * X centre.
+ *  \param y_centroid float * Y centre.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ */
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid);
+
 
 #ifdef __cplusplus
 }

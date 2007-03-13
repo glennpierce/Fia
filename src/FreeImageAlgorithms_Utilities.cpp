@@ -960,45 +960,6 @@ FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder)
 	return dst;
 }
 
-
-FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max)
-{
-	FIBITMAP *dst;
-	float *src_bits;
-	BYTE *dst_bits;
-	int height,width;
-	
-	if (!src)
-		return NULL;
-
-	if(FreeImage_GetImageType(src) != FIT_FLOAT &&
-		FreeImage_GetImageType(src) != FIT_DOUBLE)
-		return NULL;
-
-	width = FreeImage_GetWidth(src);
-	height = FreeImage_GetHeight(src);
-
-	dst = FreeImage_Allocate(width, height, 8, 0, 0, 0);
-	FreeImageAlgorithms_SetGreyLevelPalette(dst);
-
-	for (int y=0; y < height; y++)
-	{
-		src_bits = (float*) FreeImage_GetScanLine(src, y);
-		dst_bits = (BYTE*) FreeImage_GetScanLine(dst, y);
-			
-		for (int x=0; x < width; x++)
-		{
-			if(src_bits[x] < t)
-				dst_bits[x] = min;
-			else
-				dst_bits[x] = max;
-		}
-	}
-
-	return dst;	
-}
-
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type)
 {
@@ -1025,33 +986,6 @@ FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE t
 	return NULL;
 }
 
-
-int DLL_CALLCONV
-FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold)
-{
-	if(src == NULL)
-		return FREEIMAGE_ALGORITHMS_ERROR;
-
-	if(!FreeImageAlgorithms_IsGreyScale(src))
-		return FREEIMAGE_ALGORITHMS_ERROR;
-
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
-
-	for(register int y = 0; y < height; y++) { 
-		
-		unsigned char *src_ptr = (unsigned char *)FreeImage_GetScanLine(src, y);
-
-		for(register int x=0; x < width; x++) {
-			if(src_ptr[x] < threshold)
-				src_ptr[x] = 0;
-			else
-				src_ptr[x] = 255;
-		}
-	}
-
-	return FREEIMAGE_ALGORITHMS_SUCCESS;
-}
 
 int DLL_CALLCONV
 FreeImageAlgorithms_Is8Bit(FIBITMAP *src)

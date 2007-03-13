@@ -23,7 +23,7 @@ TestFreeImageAlgorithms_DisplayFFT(CuTest* tc)
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);	
 	FIBITMAP *greyscale_dib = FreeImage_ConvertToGreyscale(dib);
 
-	ProfileStart("FFT");
+	PROFILE_START("FFT");
 
 	fft_dib = FreeImageAlgorithms_FFT(greyscale_dib, 0, 1);  
 
@@ -33,9 +33,7 @@ TestFreeImageAlgorithms_DisplayFFT(CuTest* tc)
 
 	FreeImageAlgorithms_SaveFIBToFile(log_dib, TEMP_DIR "\\fft.bmp", BIT8);
 
-	ProfileStop("FFT");
-
-	ProfilePrint();
+	PROFILE_STOP("FFT");
 
 	FreeImage_Unload(dib);
 	FreeImage_Unload(greyscale_dib);

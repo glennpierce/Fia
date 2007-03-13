@@ -19,7 +19,7 @@ TestFreeImageAlgorithms_MaskTest(CuTest* tc)
 
 	FIBITMAP *mask_8bit = FreeImage_ConvertTo8Bits(mask);
 	FreeImageAlgorithms_SetGreyLevelPalette(mask_8bit);
-	FreeImageAlgorithms_8BitInplaceThreshold(mask_8bit, 100);
+	FreeImageAlgorithms_InPlaceThreshold(mask_8bit, 100, 255, 255);
 
 	CuAssertTrue(tc, src != NULL);
 	CuAssertTrue(tc, mask != NULL);

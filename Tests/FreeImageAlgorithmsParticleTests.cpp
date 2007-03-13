@@ -29,13 +29,13 @@ TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 	
 	CuAssertTrue(tc, threshold_8bit_dib != NULL);
 
-	ProfileStart("FillholeTest");
+	PROFILE_START("FillholeTest");
 
 	FIBITMAP* result_dib = FreeImageAlgorithms_Fillholes(threshold_8bit_dib, 1);
 
 	CuAssertTrue(tc, result_dib != NULL);
 
-	ProfileStop("FillholeTest");
+	PROFILE_STOP("FillholeTest");
 	
 	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT8);
 
@@ -62,13 +62,13 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 	
 	CuAssertTrue(tc, dib2 != NULL);
  
-	ProfileStart("ParticleInfo");
+	PROFILE_START("ParticleInfo");
 
 	PARTICLEINFO *info;
 
 	FreeImageAlgorithms_ParticleInfo(dib2, &info, 1);
 
-	ProfileStop("ParticleInfo");
+	PROFILE_STOP("ParticleInfo");
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib2);
 
@@ -129,13 +129,13 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 	
 	CuAssertTrue(tc, dib2 != NULL);
  
-	ProfileStart("FindImageMaxima");
+	PROFILE_START("FindImageMaxima");
 
 	FIAPeak *peaks = NULL;
 	int number_of_peaks;
 	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 50, 2, &peaks, 0, &number_of_peaks);
 
-	ProfileStop("FindImageMaxima");
+	PROFILE_STOP("FindImageMaxima");
 
 	FILE *fp;
 

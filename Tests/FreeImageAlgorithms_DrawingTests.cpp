@@ -191,11 +191,11 @@ TestFreeImageAlgorithms_FloodFillTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib2 != NULL);
 
-	ProfileStart("FloodFillTest");
+	PROFILE_START("FloodFillTest");
 
 	FIBITMAP *dib3 = FreeImageAlgorithms_FloodFill(dib2, 20, 0, 2);
 
-	ProfileStop("FloodFillTest");
+	PROFILE_STOP("FloodFillTest");
 
 	CuAssertTrue(tc, dib3 != NULL);
 

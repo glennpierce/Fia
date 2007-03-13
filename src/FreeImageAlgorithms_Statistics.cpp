@@ -8,58 +8,149 @@
 #include <math.h>
 
 template<class Tsrc>
-class Histogram
+class Statistic
 {
 public:
 	int CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
-		unsigned long *hist, HistogramReport *report);
+		unsigned long *hist);
+
+	int CalculateStatisticReport(FIBITMAP *src, StatisticReport *report);
+
+	int Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid);
 };
 
 
 template<class Tsrc> int
-Histogram<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
-									unsigned long *hist, HistogramReport *report)
+Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
+									unsigned long *hist)
 {
 	if (hist == NULL)      
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
+	// We need to find the min and max in the image.
+	if(min == 0 && max == 0)
+		FreeImageAlgorithms_FindMinMax(src, &min, &max);
+
+	if(min >= max)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+ 
 	// Clear histogram array
 	memset(hist, 0, number_of_bins * sizeof(unsigned long) );
 
-	double range = max - min; 
-	double range_per_bin = range / (number_of_bins - 1);     
+	Tsrc tmp_min = (Tsrc) min;
+	Tsrc tmp_max = (Tsrc) max;
+	Tsrc range = tmp_max - tmp_min; 
+	Tsrc range_per_bin = range / (number_of_bins - 1);     
 
-	long total_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);   
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);   
 
 	Tsrc *bits = (Tsrc *) FreeImage_GetBits(src);
 	Tsrc pixel;
-	int bin;
+	unsigned int bin;
 
-	for(int x=0; x < total_pixels ; x++) {
-	
-		pixel = (Tsrc) *bits;
-				
-		if(pixel >= (Tsrc)min && pixel <= (Tsrc)max) {
-	
-			bin = (int) floor( (pixel - min) / range_per_bin );
+	for(register int y=0; y < height ; y++) {
+		
+		bits = (Tsrc*) FreeImage_GetScanLine(src, y);
 
-			hist[bin]++;
+		for(register int x=0; x < width ; x++) {
+		
+			pixel = bits[x];
+					
+			if(pixel >= tmp_min && pixel <= tmp_max) {
+		
+				// If range_per_bin == 1 with dont need the divide. The divide is very slow.
+				if(range_per_bin == 1)
+					bin = (int) (pixel - tmp_min);
+				else
+					bin = (int) ((pixel - tmp_min) / range_per_bin);
+
+				hist[bin]++;
+			}
 		}
-
-		bits++;
 	}
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
 
-Histogram<unsigned char>		histogramUCharImage;
-Histogram<unsigned short>		histogramUShortImage;
-Histogram<short>				histogramShortImage;
-Histogram<unsigned long>		histogramULongImage;
-Histogram<long>					histogramLongImage;
-Histogram<float>				histogramFloatImage;
-Histogram<double>				histogramDoubleImage;
+template<class Tsrc> int
+Statistic<Tsrc>::CalculateStatisticReport(FIBITMAP *src, StatisticReport *report)
+{
+	if (report == NULL)      
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);   
+
+	double sum = 0.0, sd_sum = 0.0;
+	Tsrc *bits;
+
+	for(register int y=0; y < height ; y++) {
+		
+		bits = (Tsrc*) FreeImage_GetScanLine(src, y);
+
+		for(register int x=0; x < width ; x++)	
+			sum += bits[x];				
+	}
+
+	report->area = width * height;
+	report->mean = (float) sum / report->area; 
+
+	for(register int y=0; y < height ; y++) {
+		
+		bits = (Tsrc*) FreeImage_GetScanLine(src, y);
+
+		for(register int x=0; x < width ; x++)	
+			sd_sum += ((bits[x] - report->mean) * (bits[x] - report->mean));				
+	}
+
+	report->stdDeviation = sqrt((float) sd_sum / (report->area - 1));
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+template<class Tsrc> int
+Statistic<Tsrc>::Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
+{
+	*x_centroid = 0;
+	*y_centroid = 0;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);   
+
+	Tsrc *bits;
+	double sum_x = 0.0, sum_y = 0.0, sum_i = 0.0;
+	int row;
+
+	for(register int y=0; y < height ; y++) {
+		
+		bits = (Tsrc*) FreeImage_GetScanLine(src, y);
+		
+		row = height - y;
+
+		for(register int x=0; x < width ; x++) {	
+			sum_i += (double) bits[x];
+			sum_x += (double)((x + 1) * bits[x]);		
+			sum_y += (double)(row * bits[x]);		
+		}
+	}
+
+	*x_centroid = (float) (sum_x / sum_i);
+	*y_centroid = (float) (sum_y / sum_i);
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+Statistic<unsigned char>		statisticUCharImage;
+Statistic<unsigned short>		statisticUShortImage;
+Statistic<short>				statisticShortImage;
+Statistic<unsigned long>		statisticULongImage;
+Statistic<long>					statisticLongImage;
+Statistic<float>				statisticFloatImage;
+Statistic<double>				statisticDoubleImage;
 
 
 /** 
@@ -68,7 +159,7 @@ Histogram<double>				histogramDoubleImage;
 */
 int DLL_CALLCONV
 FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
-							  unsigned long *hist, HistogramReport *report)
+							  unsigned long *hist)
 {
 	if(!src)
 		return NULL;
@@ -78,25 +169,25 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_
 	switch(src_type) {
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
-				return histogramUCharImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
+				return statisticUCharImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
-			return histogramUShortImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
+			return statisticUShortImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
 		case FIT_INT16:		// array of short: signed 16-bit
-			return histogramShortImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
+			return statisticShortImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
 		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-			return histogramULongImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
+			return statisticULongImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
 		case FIT_INT32:		// array of long: signed 32-bit
-			return histogramLongImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
+			return statisticLongImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
 		case FIT_FLOAT:		// array of float: 32-bit
-			return histogramFloatImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
+			return statisticFloatImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
 		case FIT_DOUBLE:	// array of double: 64-bit
-			return histogramDoubleImage.CalculateHistogram(src, min, max, number_of_bins, hist, report);
+			return statisticDoubleImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
 			break;
@@ -107,10 +198,90 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int number_of_bins,
-			unsigned long *rhist, unsigned long *ghist, unsigned long *bhist)
+FreeImageAlgorithms_StatisticReport(FIBITMAP *src, StatisticReport *report)
+{
+	if(!src)
+		return NULL;
+
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				return statisticUCharImage.CalculateStatisticReport(src, report);
+
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			return statisticUShortImage.CalculateStatisticReport(src, report);
+
+		case FIT_INT16:		// array of short: signed 16-bit
+			return statisticShortImage.CalculateStatisticReport(src, report);
+
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			return statisticULongImage.CalculateStatisticReport(src, report);
+
+		case FIT_INT32:		// array of long: signed 32-bit
+			return statisticLongImage.CalculateStatisticReport(src, report);
+
+		case FIT_FLOAT:		// array of float: 32-bit
+			return statisticFloatImage.CalculateStatisticReport(src, report);
+
+		case FIT_DOUBLE:	// array of double: 64-bit
+			return statisticDoubleImage.CalculateStatisticReport(src, report);
+
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+}
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
+{
+	if(!src)
+		return NULL;
+
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				return statisticUCharImage.Centroid(src, x_centroid, y_centroid);
+
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			return statisticUShortImage.Centroid(src, x_centroid, y_centroid);
+
+		case FIT_INT16:		// array of short: signed 16-bit
+			return statisticShortImage.Centroid(src, x_centroid, y_centroid);
+
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			return statisticULongImage.Centroid(src, x_centroid, y_centroid);
+
+		case FIT_INT32:		// array of long: signed 32-bit
+			return statisticLongImage.Centroid(src, x_centroid, y_centroid);
+
+		case FIT_FLOAT:		// array of float: 32-bit
+			return statisticFloatImage.Centroid(src, x_centroid, y_centroid);
+
+		case FIT_DOUBLE:	// array of double: 64-bit
+			return statisticDoubleImage.Centroid(src, x_centroid, y_centroid);
+
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+}
+
+int DLL_CALLCONV
+FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char max,
+			int number_of_bins, unsigned long *rhist, unsigned long *ghist, unsigned long *bhist)
 {
 	if (rhist == NULL || ghist == NULL || bhist == NULL)      
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(min >= max)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	// clear histogram arrays
@@ -118,15 +289,15 @@ FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int numb
 	memset(ghist, 0, number_of_bins * sizeof(unsigned long) );
 	memset(bhist, 0, number_of_bins * sizeof(unsigned long) );
 
-	double range = max - min; 
-	double range_per_bin = range / (number_of_bins - 1);     
+	unsigned char range = max - min; 
+	unsigned char range_per_bin = range / (number_of_bins - 1);     
 
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	unsigned int *bits;
 	unsigned char red_pixel, green_pixel, blue_pixel;
-	int bin;
+	unsigned int bin;
 
 	for(int y = 0; y < height; y++) {
 
@@ -140,21 +311,31 @@ FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, double min, double max, int numb
 
 			if(red_pixel >= (unsigned int) min && red_pixel <= (unsigned int) max) {
 	
-				bin = (int) floor( (red_pixel - min) / range_per_bin );
+				// If range_per_bin == 1 with dont need the divide. The divide is very slow.
+				if(range_per_bin == 1)
+					bin = (unsigned int) (red_pixel - min);
+				else
+					bin = (unsigned int) ((red_pixel - min) / range_per_bin);
 		
 				rhist[bin]++;
 			}
 
 			if(green_pixel >= (unsigned int) min && green_pixel <= (unsigned int) max) {
 	
-				bin = (int) floor( (green_pixel - min) / range_per_bin );
+				if(range_per_bin == 1)
+					bin = (unsigned int) (green_pixel - min);
+				else
+					bin = (unsigned int) ((green_pixel - min) / range_per_bin);
 		
 				ghist[bin]++;
 			}
 
 			if(blue_pixel >= (unsigned int) min && blue_pixel <= (unsigned int) max) {
 	
-				bin = (int) floor( (blue_pixel - min) / range_per_bin );
+				if(range_per_bin == 1)
+					bin = (unsigned int) (blue_pixel - min);
+				else
+					bin = (unsigned int) ((blue_pixel - min) / range_per_bin);
 		
 				bhist[bin]++;
 			}

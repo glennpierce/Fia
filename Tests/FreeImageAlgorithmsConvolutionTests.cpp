@@ -43,7 +43,7 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib2->fib != NULL);
 
-	ProfileStart("FreeImageAlgorithms_Convolve");
+	PROFILE_START("FreeImageAlgorithms_Convolve");
 
 	FilterKernel convolve_kernel = FreeImageAlgorithms_NewKernel(10, 10, kernel, 48.0);
 
@@ -51,7 +51,7 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	ProfileStop("FreeImageAlgorithms_Convolve");
+	PROFILE_STOP("FreeImageAlgorithms_Convolve");
 
 	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\wallpaper_river_blured_new.jpg", BIT24);
 
@@ -70,11 +70,11 @@ TestFreeImageAlgorithms_SobelTest(CuTest* tc)
 	
 	CuAssertTrue(tc, dib1 != NULL);
 
-	ProfileStart("FreeImageAlgorithms_Sobel");
+	PROFILE_START("FreeImageAlgorithms_Sobel");
 
 	FIBITMAP *dib2 = FreeImageAlgorithms_Sobel(dib1);
 
-	ProfileStop("FreeImageAlgorithms_Sobel");
+	PROFILE_STOP("FreeImageAlgorithms_Sobel");
 
 	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\wallpaper_river_sobel.jpg", BIT24);
 
@@ -125,13 +125,13 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 
 	FIABITMAP* dib4 = FreeImageAlgorithms_SetBorder(dib3, 1, 1);
 
-	ProfileStart("MedianFilter");
+	PROFILE_START("MedianFilter");
 
 	FIBITMAP* dib5 = FreeImageAlgorithms_MedianFilter(dib4, 1, 1);
 
 	CuAssertTrue(tc, dib5 != NULL);
 
-	ProfileStop("MedianFilter");
+	PROFILE_STOP("MedianFilter");
 
 	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\salt_and_pepper_median.jpg", BIT24);
 
