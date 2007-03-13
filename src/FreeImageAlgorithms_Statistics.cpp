@@ -162,7 +162,7 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_
 							  unsigned long *hist)
 {
 	if(!src)
-		return NULL;
+		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -201,7 +201,7 @@ int DLL_CALLCONV
 FreeImageAlgorithms_StatisticReport(FIBITMAP *src, StatisticReport *report)
 {
 	if(!src)
-		return NULL;
+		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -240,7 +240,7 @@ int DLL_CALLCONV
 FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
 {
 	if(!src)
-		return NULL;
+		return  FREEIMAGE_ALGORITHMS_ERROR;
 
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 

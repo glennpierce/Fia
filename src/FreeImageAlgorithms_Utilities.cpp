@@ -8,6 +8,8 @@
 #include <limits.h>
 #include <float.h>
 
+#ifdef _MSC_VER
+
 #include <xmmintrin.h>
 
 /***
@@ -60,6 +62,7 @@ _os_support(int feature)
     return 1;
 }
 
+
 void DLL_CALLCONV
 FreeImageAlgorithms_SSEFindFloatMinMax(const float *data, long n, float *min, float *max)
 {
@@ -89,6 +92,8 @@ FreeImageAlgorithms_SSEFindFloatMinMax(const float *data, long n, float *min, fl
     x.m = max128;
     *max = max(x.f[0], max(x.f[1], max(x.f[2], x.f[3])));
 }
+
+#endif //  _MSC_VER
 
 
 void DLL_CALLCONV
@@ -583,7 +588,7 @@ FreeImageAlgorithms_Is16BitReally12BitImage(FIBITMAP *src)
 
 /* Gets the values of the pixels along a line calculated using the Midpoint Line algorithm */
 template <class T> int
-GetPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, T *values) 
+GetPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, T *values) 
 {  
 	T value;
    	int swapped = 0, dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
@@ -680,37 +685,37 @@ GetPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, T *values)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *values)
+FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned char *values)
+FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, short *values)
+FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned short *values)
+FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned short *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, float *values)
+FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, double *values)
+FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
@@ -718,7 +723,7 @@ FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT 
 
 /* Midpoint Line algorithm */
 int DLL_CALLCONV
-FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_values, char *green_values, char *blue_values) 
+FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *red_values, char *green_values, char *blue_values) 
 {  
 	RGBQUAD value;
    	int dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0; 
@@ -1000,7 +1005,13 @@ FreeImageAlgorithms_Is8Bit(FIBITMAP *src)
 void CheckMemory(void *ptr)
 {
 	if(ptr == NULL) {
+
+		#ifdef _WIN32
 		MessageBox(NULL, "Memory allocation failed this is most likely a freeimagealgorithms bug.", NULL, NULL);
+		#else
+		printf("Memory allocation failed this is most likely a freeimagealgorithms bug.");
+		#endif
+
 		exit(-1);
 	}
 }

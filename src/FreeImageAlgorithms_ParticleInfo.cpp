@@ -4,9 +4,7 @@
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
-typedef struct _blob blob;
-
-struct _blob
+struct Blob
 {
 	int left;
 	int bottom;
@@ -17,25 +15,23 @@ struct _blob
 	int sum_y;
 
 	int rank;
-	blob *parent;
+	Blob *parent;
 };
 
-typedef struct _run run;
-
-struct _run
+struct Run
 {
 	int x;
 	int y;
 	int end_x;
 	int sum_x;
 
-	blob *blob;
+	Blob *blob;
 };
 
 typedef struct
 {
-    blob* blobpool_start_ptr;  // Start of memory allocated for blobpool
-    blob* blobpool_ptr;		   // The current pointer into the blobpool
+    Blob* blobpool_start_ptr;  // Start of memory allocated for blobpool
+    Blob* blobpool_ptr;		   // The current pointer into the blobpool
     int blobpool_blobcount;	   // Number of blobs in the pool including merged ones.
 						 	   // We don't want to delete merged blobs until the end for performance.
     int real_blobcount;		   // This is the real blob count that takes account of merging.
@@ -48,7 +44,7 @@ static BLOBPOOL* UnionFindInit(int size)
 
 	CheckMemory(pool);
 
-	pool->blobpool_start_ptr = (blob*) malloc(size * sizeof(blob));
+	pool->blobpool_start_ptr = (Blob*) malloc(size * sizeof(Blob));
  
 	CheckMemory(pool->blobpool_start_ptr);
 
@@ -68,9 +64,9 @@ static void UnionFindFree(BLOBPOOL* pool)
 }
 
 // New blob references itself as parent.
-static inline blob* NewBlob(BLOBPOOL *pool, unsigned int top_row, run *run)
+static inline Blob* NewBlob(BLOBPOOL *pool, unsigned int top_row, Run *run)
 {
-	blob *b = pool->blobpool_ptr;
+	Blob *b = pool->blobpool_ptr;
 
 	b->parent = b;
 	b->rank = 0;
@@ -92,7 +88,7 @@ static inline blob* NewBlob(BLOBPOOL *pool, unsigned int top_row, run *run)
 	return b;
 }
 
-static inline blob* FindBlob(blob *blob)
+static inline Blob* FindBlob(Blob *blob)
 {
 	// Path Compression
 	// Since, anyway, we travel the path to the root during a find operation,
@@ -104,11 +100,11 @@ static inline blob* FindBlob(blob *blob)
 }
 
 // Return toplevel blob
-static inline blob* MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
+static inline Blob* MergeBlobs(BLOBPOOL *pool, Blob *blob1, Blob *blob2)
 {
 	// Union by rank, Always hanges the smaller tree off the larger
-	blob *b1 = FindBlob(blob1);
-	blob *b2 = FindBlob(blob2);
+	Blob *b1 = FindBlob(blob1);
+	Blob *b2 = FindBlob(blob2);
 
 	if(b1->rank > b2->rank) {
 		b2->parent = b1;
@@ -122,10 +118,10 @@ static inline blob* MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
 	}
 	
 	// Set new width height etc
-	b1->parent->left = min(b1->left, b2->left);
-	b1->parent->bottom = min(b1->bottom, b2->bottom);
-	b1->parent->right = max(b1->right, b2->right);
-	b1->parent->top = max(b1->top, b2->top);
+	b1->parent->left = MIN(b1->left, b2->left);
+	b1->parent->bottom = MIN(b1->bottom, b2->bottom);
+	b1->parent->right = MAX(b1->right, b2->right);
+	b1->parent->top = MAX(b1->top, b2->top);
 	b1->parent->area = b1->area + b2->area;
 	b1->parent->sum_x = b1->sum_x + b2->sum_x;
 	b1->parent->sum_y = b1->sum_y + b2->sum_y;
@@ -159,13 +155,13 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 	if(!white_on_black)
 		bg_val = 1;
 
-	run* current_runs = (run *) malloc(sizeof(run) * width / 2);		// Array of all runs
+	Run* current_runs = (Run *) malloc(sizeof(Run) * width / 2);		// Array of all runs
 	CheckMemory(current_runs);
 
-	run* last_runs = (run *) malloc(sizeof(run) * width / 2);
+	Run* last_runs = (Run *) malloc(sizeof(Run) * width / 2);
 	CheckMemory(last_runs);
 
-	run* last_runs_ptr = last_runs, *current_runs_ptr = current_runs;
+	Run* last_runs_ptr = last_runs, *current_runs_ptr = current_runs;
 
 	BLOBPOOL *pool = UnionFindInit(width * height / 2);
 
@@ -202,7 +198,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		last_row_run_count++;
 	}
 
-	blob *last_blob = NULL;
+	Blob *last_blob = NULL;
 
 	// Do the rest of the rows
 	for(register int y=1; y < height; y++)
@@ -211,7 +207,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 
 		src_ptr = (unsigned char*) FreeImage_GetScanLine(src, y);
 
-		run tmp_run;
+		Run tmp_run;
 
 		// Pass through next row - Skip background pixels
 		for(x=0; x < width; x++) {
@@ -236,7 +232,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 			// Check whether run is overlapping with previous runs
 			for(i=0; i < last_row_run_count; i++) {
 
-				run *last_run = &last_runs_ptr[i];
+				Run *last_run = &last_runs_ptr[i];
 				last_blob = FindBlob(last_run->blob);
 
 				// Are runs overlapping ?
@@ -303,7 +299,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 	// Get blobs
 	for(int i=0, j=0; i < pool->blobpool_blobcount; i++) {
 
-		blob* ptr = &(pool->blobpool_start_ptr[i]); 
+		Blob* ptr = &(pool->blobpool_start_ptr[i]); 
  
 		if(ptr != ptr->parent)
 			continue;

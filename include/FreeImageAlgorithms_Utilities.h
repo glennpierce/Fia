@@ -337,7 +337,7 @@ FreeImageAlgorithms_IsGreyScale(FIBITMAP *src);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *values); 
+FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values); 
 
 /** \brief Gets the pixels values along a line on an image where the 
  *         image consists of unsigned char data.
@@ -349,7 +349,7 @@ FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned char *values);
+FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char *values);
 
 /** \brief Gets the pixels values along a line on an image where the 
  *         image consists of short int data.
@@ -361,7 +361,7 @@ FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, short *values); 
+FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *values); 
 
 /** \brief Gets the pixels values along a line on an image where the 
  *         image consists of unsigned short data.
@@ -373,7 +373,7 @@ FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, unsigned short *values); 
+FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned short *values); 
 
 /** \brief Gets the pixels values along a line on an image where the 
  *         image consists of float data.
@@ -385,7 +385,7 @@ FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, POINT p1, POINT 
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, float *values); 
+FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *values); 
 
 /** \brief Gets the pixels values along a line on an image where the 
  *         image consists of double data.
@@ -397,7 +397,7 @@ FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, double *values); 
+FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double *values); 
 
 /** \brief Gets the pixels values along a line on an image where the 
  *         image is a colour image.
@@ -411,7 +411,7 @@ FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, POINT p1, POINT 
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, POINT p1, POINT p2, char *red_values, char *green_values, char *blue_values);
+FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *red_values, char *green_values, char *blue_values);
 
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_GetDistanceMap (int width, int height, float *distance_map);

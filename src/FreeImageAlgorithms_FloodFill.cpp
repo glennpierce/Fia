@@ -200,8 +200,8 @@ FreeImageAlgorithms_FloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_co
 int DLL_CALLCONV
 FreeImageAlgorithms_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
 {
-if(!src) return
-		NULL;
+	if(!src)
+		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 	int err = 0;

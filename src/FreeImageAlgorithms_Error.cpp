@@ -2,6 +2,7 @@
 #include "FreeImageAlgorithms_Error.h"
 
 #include <stdio.h>
+#include <stdarg.h>
 
 static FreeImageAlgorithms_OutputMessageFunction errorFunction = NULL;
 
@@ -20,9 +21,9 @@ FreeImageAlgorithms_SendOutputMessage(const char *fmt, ...)
 	va_list ap;
 	char message[500];
 	
-    va_start(ap, fmt);
+	va_start(ap, fmt);
 
-	vsprintf_s(message, 499, fmt, ap);
+	vsprintf(message, fmt, ap);
 
 	va_end(ap);
 

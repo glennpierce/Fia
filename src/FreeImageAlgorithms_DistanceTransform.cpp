@@ -1,5 +1,5 @@
 #include "FreeImageAlgorithms.h"
-//#include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
 #include <algorithm>
@@ -49,7 +49,7 @@ static void dt2d(FIBITMAP *src)
 {
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
-	float *f = new float[_cpp_max(width, height)];
+	float *f = new float[MAX(width, height)];
 	register int x, y;
 
 	register float *src_ptr;

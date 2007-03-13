@@ -1,5 +1,6 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_Logic.h"
 #include "FreeImageAlgorithms_Drawing.h"
 #include "FreeImageAlgorithms_Particle.h"
@@ -272,7 +273,7 @@ FindMaxima::DrawMaxima (int size)
 }
 
 
-static inline int __cdecl ComparePeaks (const void *element1, const void *element2)
+static inline int ComparePeaks (const void *element1, const void *element2)
 {
 	FIAPeak peak1, peak2;
 	
@@ -333,7 +334,7 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 	// Sort the peaks
 	qsort (peaks, number, sizeof(FIAPeak), ComparePeaks);   // sort into assending order
 
-	return min(number, total_blobs);
+	return MIN(number, total_blobs);
 }
 
 

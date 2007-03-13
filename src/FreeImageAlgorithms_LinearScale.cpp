@@ -130,13 +130,13 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_w
 
 
 // Convert from type X to type BYTE
-LINEAR_SCALE<unsigned char>		scaleUCharImage;
-LINEAR_SCALE<unsigned short>	scaleUShortImage;
-LINEAR_SCALE<short>				scaleShortImage;
-LINEAR_SCALE<unsigned long>		scaleULongImage;
-LINEAR_SCALE<long>				scaleLongImage;
-LINEAR_SCALE<float>				scaleFloatImage;
-LINEAR_SCALE<double>			scaleDoubleImage;
+static LINEAR_SCALE<unsigned char>	scaleUCharImage;
+static LINEAR_SCALE<unsigned short>	scaleUShortImage;
+static LINEAR_SCALE<short>		scaleShortImage;
+static LINEAR_SCALE<unsigned long>	scaleULongImage;
+static LINEAR_SCALE<long>		scaleLongImage;
+static LINEAR_SCALE<float>		scaleFloatImage;
+static LINEAR_SCALE<double>		scaleDoubleImage;
 
 FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)

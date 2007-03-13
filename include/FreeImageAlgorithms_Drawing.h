@@ -16,33 +16,33 @@ extern "C" {
  *  \param src Image to draw on.
  *  \param p1 FIAPOINT point to start the line
  *  \param p2 FIAPOINT point to end the line.
- *  \param colour COLORREF colour of the line.
+ *  \param colour RGBQUAD colour of the line.
  *  \param line_width pixel width of the line.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, COLORREF colour, int line_width);
+FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour, int line_width);
 
 /** \brief Draw a rectangle outline in colour.
  *
  *  \param src Image to draw on.
  *  \param rect Rectangle to draw.
- *  \param colour COLORREF colour of the rectangle.
+ *  \param colour RGBQUAD colour of the rectangle.
  *  \param line_width pixel width of the outline.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, FIARECT rect, COLORREF colour, int line_width);
+FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width);
 
 /** \brief Draw a solid rectangle in colour.
  *
  *  \param src Image to draw on.
  *  \param rect Rectangle to draw.
- *  \param colour COLORREF colour of the rectangle.
+ *  \param colour RGBQUAD colour of the rectangle.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, COLORREF colour);
+FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour);
 
 /** \brief Draw a solid rectangle in greyscale.
  *
