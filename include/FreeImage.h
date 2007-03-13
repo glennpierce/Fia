@@ -614,7 +614,7 @@ typedef void (DLL_CALLCONV *FI_InitProc)(Plugin *plugin, int format_id);
 #define JPEG_QUALITYNORMAL  0x0200	// save with normal quality (50:1)
 #define JPEG_QUALITYAVERAGE 0x0400	// save with average quality (25:1)
 #define JPEG_QUALITYBAD     0x0800	// save with bad quality (10:1)
-#define JPEG_PROGRESSIVE	0x2000	// save as a progressive-JPEG (use | to combine with other save flags)
+//#define JPEG_PROGRESSIVE	0x2000	// save as a progressive-JPEG (use | to combine with other save flags)
 #define KOALA_DEFAULT       0
 #define LBM_DEFAULT         0
 #define MNG_DEFAULT         0

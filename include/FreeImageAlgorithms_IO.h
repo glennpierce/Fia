@@ -50,6 +50,7 @@ FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded);
  *  \param height of resulting image.
  *  \param data_type FREE_IMAGE_TYPE of resulting image.
  *  \param padded Is the data padded to 32 bit boundaries.
+ *  \param vertical_flip int Should the image be vertically flipped.
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
@@ -63,6 +64,7 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int widt
  *  \param width of resulting image.
  *  \param height of resulting image.
  *  \param padded Is the data padded to 32 bit boundaries.
+ *  \param vertical_flip int Should the image be vertically flipped.
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV

@@ -82,11 +82,11 @@ FreeImageAlgorithms_Fillholes(FIBITMAP* src,
  *  Image data is greyscale data.
  *
  *  \param src FIBITMAP Greyscale image of particles.
- *  \param unsigned char threshold Threshold value to apply initially to image.
+ *  \param mask FIBITMAP Mask to first apply to the image.
+ *  \param threshold unsigned char Threshold value to apply initially to image.
  *  \param min_separation int The mininum separation between particles.
  *  \param peaks FIAPeak ** The address of the pointer to hold returned peak positions.
  *  \param number int Number of peaks to find. If 0 then all peaks are returned.
- *  \param white_on_black unsigned char Determines the background intensity value.
  *  \param peaks_found int* Number of peaks returned.
  *  \return FIBITMAP on success or NULL on error.
 */

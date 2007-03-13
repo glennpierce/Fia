@@ -17,6 +17,7 @@ extern "C" {
  *  \param p1 POINT point to start the line
  *  \param p2 POINT point to end the line.
  *  \param colour COLORREF colour of the line.
+ *  \param line_width pixel width of the line.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
@@ -24,6 +25,7 @@ FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF 
 
 /** \brief Draw a rectangle outline in colour.
  *
+ *  \param src Image to draw on.
  *  \param rect Rectangle to draw.
  *  \param colour COLORREF colour of the rectangle.
  *  \param line_width pixel width of the outline.
@@ -34,6 +36,7 @@ FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, i
 
 /** \brief Draw a solid rectangle in colour.
  *
+ *  \param src Image to draw on.
  *  \param rect Rectangle to draw.
  *  \param colour COLORREF colour of the rectangle.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
@@ -43,6 +46,7 @@ FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colo
 
 /** \brief Draw a solid rectangle in greyscale.
  *
+ *  \param src Image to draw on.
  *  \param rect Rectangle to draw.
  *  \param value greyscale intensity of the rectangle.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
@@ -56,6 +60,7 @@ FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, RECT rect, double val
  *  \param p1 POINT point to start the line
  *  \param p2 POINT point to end the line.
  *  \param value greyscale intensity of the line.
+ *  \param line_width pixel width of the line.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV

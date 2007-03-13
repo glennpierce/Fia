@@ -113,6 +113,11 @@ FreeImageAlgorithms_SetGreyLevelOverLoadPalette(FIBITMAP *src);
  *	Useful for displaying binary images.
  *
  *  \param src Image to set palette to greyscale overload.
+ *  \param background_colour RGBQUAD representing the background.
+ *  \param pos1 int Position in palette for first colour.
+ *  \param colour1 RGBQUAD representing the first colour.
+ *  \param pos2 int Position in palette for second colour.
+ *  \param colour2 RGBQUAD representing the second colour.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
@@ -150,6 +155,11 @@ FreeImageAlgorithms_GetGreyLevelOverLoadPalette(RGBQUAD *palette);
  *	Useful for displaying binary images.
  *
  *  \param  palette RGBQUAD* array.
+ *  \param background_colour RGBQUAD representing the background.
+ *  \param pos1 int Position in palette for first colour.
+ *  \param colour1 RGBQUAD representing the first colour.
+ *  \param pos2 int Position in palette for second colour.
+ *  \param colour2 RGBQUAD representing the second colour.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV

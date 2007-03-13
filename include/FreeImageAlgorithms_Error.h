@@ -22,7 +22,7 @@ FreeImageAlgorithms_SetOutputMessage(FreeImageAlgorithms_OutputMessageFunction o
 
 /** \brief Sends a FreeImageAlgorithm Error.
  *	
- *	\param message send an error from the FreeImageAlgorithms library.
+ *	\param fmt const char * Format of the error message.
 */
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_SendOutputMessage(const char *fmt, ...);

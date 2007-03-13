@@ -20,6 +20,14 @@ typedef struct
 
 } FilterKernel;
 
+/** \brief Create a kernel.
+ *
+ *  \param x_radius for a kernel of width 3 the x radius would be 1.
+ *  \param y_radius for a kernel of height 3 the y radius would be 1.
+ *  \param values Array representing the values of the kernel.
+ *  \param divider The divider of the kernel);
+ *  \return FilterKernel.
+*/
 DLL_API FilterKernel DLL_CALLCONV
 FreeImageAlgorithms_NewKernel(int x_radius, int y_radius, 
 							  const double *values, double divider);
@@ -27,18 +35,20 @@ FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
 /** \brief Convolve and image with a kernel.
  *
  *  \param src FIBITMAP bitmap to perform the convolution on.
- *  \param kernel_x_radius for a kernel of width 3 the x radius would be 1.
- *  \param kernel_y_radius for a kernel of height 3 the y radius would be 1.
- *  \param kernel array representing the values of the kernel.
- *  \param divider The divider of the kernel);
+ *  \param kernel FilterKernel The kernel created with FreeImageAlgorithms_NewKernel.
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Convolve(FIABITMAP *src, const FilterKernel kernel);
 
-DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel kernel1, FilterKernel kernel2);
+//DLL_API FIBITMAP* DLL_CALLCONV
+//FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel kernel1, FilterKernel kernel2);
 
+/** \brief Perform a soble filtering.
+ *
+ *  \param src FIBITMAP bitmap to perform the sobel filter on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Sobel(FIBITMAP *src);
 

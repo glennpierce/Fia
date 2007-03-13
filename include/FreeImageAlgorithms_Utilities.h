@@ -476,17 +476,38 @@ FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE t
  *	An 8bit image is return not a 1bit image.
  *
  *  \param src Image to threshold.
- *  \return unsigned char threshold to use.
+ *  \param threshold unsigned char Threshold to use.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold);
 
+/** \brief Find if an image is 8bit.
+ *
+ *  \param src Image to check.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Is8Bit(FIBITMAP *src);
 
+/** \brief Compute a distance transform of an image.
+ *
+ *  \param src Image to transform.
+ *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
+*/
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_DistanceTransform(FIBITMAP *src, unsigned char on);
+FreeImageAlgorithms_DistanceTransform(FIBITMAP *src);
 
+/** \brief Get the value of a particular pixel.
+ * 
+ *	Does not check the position is valid works with all greyscale types.
+ *
+ *  \param src Image to get pixel value from.
+ *  \param x int The x position.
+ *  \param y int The y position.
+ *  \param val float* The returned value.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, float* val);
 
