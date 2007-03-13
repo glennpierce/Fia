@@ -3,6 +3,8 @@
 
 #include "FreeImageAlgorithms.h"
 
+void CheckMemory(void *ptr);
+
 /// Max function
 template <class T> inline T
 MAX(T a, T b)

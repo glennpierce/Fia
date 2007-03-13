@@ -1060,3 +1060,11 @@ FreeImageAlgorithms_Is8Bit(FIBITMAP *src)
 
 	return 0;
 }
+
+void CheckMemory(void *ptr)
+{
+	if(ptr == NULL) {
+		MessageBox(NULL, "Memory allocation failed this is most likely a freeimagealgorithms bug.", NULL, NULL);
+		exit(-1);
+	}
+}

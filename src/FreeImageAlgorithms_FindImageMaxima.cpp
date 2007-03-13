@@ -9,11 +9,13 @@
 
 #define MAX_REGIONGROW_CALLS 5000
 
+typedef float (*GetPixelValueFunction) (FIBITMAP *src, int x, int y);
+
 class FindMaxima
 {
 	public:
 
-		FIBITMAP* FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation);
+		FIBITMAP* FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found);
 
 	private:
 
@@ -23,7 +25,8 @@ class FindMaxima
 		void SetNeigbourPixels();
 		void RegionGrow(int x, int y);
 		void PerformRegionGrow();
-		FIBITMAP* DrawMaxima (int size);
+		void DrawMaxima (int size);
+		int StoreBrightestPeaks (int number, FIAPeak **peaks);
 
 		unsigned char min_separation;
 		unsigned char threshold;
@@ -36,6 +39,7 @@ class FindMaxima
 
 		FIBITMAP *original_image;
 		FIBITMAP *processing_image;
+		FIBITMAP *peek_image;
 };
 
 inline int
@@ -53,7 +57,7 @@ FindMaxima::NeighbourhoodNMS(unsigned char *ptr)
 		return 0;
 
 	// Next kernel line
-	tmp_ptr += this->pitch_in_pixels;
+	tmp_ptr = ptr - 1;
 
 	if(*ptr < tmp_ptr[0])
 		return 0;
@@ -62,7 +66,7 @@ FindMaxima::NeighbourhoodNMS(unsigned char *ptr)
 		return 0;
 
 	// Next kernel line
-	tmp_ptr += this->pitch_in_pixels;
+	tmp_ptr = ptr + this->pitch_in_pixels - 1;
 
 	if(*ptr < tmp_ptr[0])
 		return 0;
@@ -230,7 +234,7 @@ FindMaxima::PerformRegionGrow()
 	}
 }
 
-FIBITMAP*
+void
 FindMaxima::DrawMaxima (int size)
 {
 	// A large size allows the peask to merge together if this is desirable
@@ -238,20 +242,18 @@ FindMaxima::DrawMaxima (int size)
 	if (size < 1)
 		size = 1; // Just a check as this has created much confusion
 
-	FIBITMAP *dst = FreeImage_Allocate(width, height , 8, 0, 0, 0);
+	this->peek_image = FreeImage_Allocate(width, height , 8, 0, 0, 0);
 
-	FreeImageAlgorithms_SetGreyLevelPalette(dst);
-
-	ProfileStart("DrawRects");
+	FreeImageAlgorithms_SetGreyLevelPalette(this->peek_image);
 
 	register unsigned char *src_ptr;
 	RECT rect;
 
-	for (register int y=0; y < height; y++)
+	for (register int y=1; y < height - 1; y++)
 	{		
 		src_ptr = this->processing_first_pixel_address_ptr + y * this->pitch_in_pixels;
 	
-		for (register int x=0; x < width; x++) 
+		for (register int x=1; x < width - 1; x++) 
 		{
 			if(src_ptr[x] == 1) {
 
@@ -260,89 +262,108 @@ FindMaxima::DrawMaxima (int size)
 				rect.right = rect.left + size;
 				rect.bottom = rect.top + size;
 
-				FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (dst, rect, 255); 
+				FreeImageAlgorithms_Draw8BitSolidGreyscaleRect (this->peek_image, rect, 1); 
 			}
 		}
 	}
-
-	ProfileStop("DrawRects");
-
-	return dst;
 }
 
-/*
-static int
-FindMaxima::StoreBrightestPeaks (int number, GlPeak **pCentres)
+
+static inline int __cdecl ComparePeaks (const void *element1, const void *element2)
 {
+	FIAPeak peak1, peak2;
 	
-	// store a number of brightest peaks from peakImage according to brightnessImage
+	peak1 = *(FIAPeak *) element1;
+	peak2 = *(FIAPeak *) element2;
+
+	if (peak1.value > peak2.value)
+		return 1;
+	else if (peak2.value > peak1.value)
+		return -1;
+
+	return 0;
+}
+
+
+static float GetPixelValue8Bit(FIBITMAP *src, int x, int y)
+{
+	return (float) (*(FreeImage_GetScanLine(src, y) + x));
+}
+
+static float GetPixelValueU16Bit(FIBITMAP *src, int x, int y)
+{
+	return (float) (*((unsigned short *)FreeImage_GetScanLine(src, y) + x));
+}
+
+static float GetPixelValue16Bit(FIBITMAP *src, int x, int y)
+{
+	return (float) (*((short *)FreeImage_GetScanLine(src, y) + x));
+}
+
+static float GetPixelValue32Bit(FIBITMAP *src, int x, int y)
+{
+	return *((float *) FreeImage_GetScanLine(src, y) + x);
+}
+
+int
+FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
+{
+	// Store a number of brightest peaks from peakImage according to brightnessImage
 	// if number<=0 then all the peaks are stored
 	// the actual number of peaks in the centres list is returned
 	PARTICLEINFO* info;
-	FIAPeak *peaks;
+
+	FreeImageAlgorithms_ParticleInfo(this->peek_image, &info, 1);
+
+	int total_blobs = info->number_of_blobs;
+
+	if (number <= 0)
+	    number = total_blobs;
+
+	if (*peaks_ref == NULL)
+		*peaks_ref = (FIAPeak *) malloc (number * sizeof(FIAPeak));
 	
+	FIAPeak *peaks = *peaks_ref;
+
+	if (peaks == NULL)
+	    return 0;
 	
-	IPIFullPReportPtr particleReportArray=NULL;
-	int parameterArray[] = {IPI_PP_CenterMassX, IPI_PP_CenterMassY};
-	int i, noOfParticles, count;
-	float *particleCoeffArray;
+	int bpp = FreeImage_GetBPP(this->original_image);
 
-	// Characterize the peaks in the peak image
+	GetPixelValueFunction GetPixelValue;
+ 
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(this->original_image);
 
-	FreeImageAlgorithms_ParticleInfo(this->processing_image, &info, 1);
+	if(bpp == 8)
+		GetPixelValue = GetPixelValue8Bit;
+	else if(bpp == 16 && type == FIT_UINT16)
+		GetPixelValue = GetPixelValueU16Bit;
+	else if(bpp == 16 && type == FIT_INT16)
+		GetPixelValue = GetPixelValue16Bit;
+	else if(bpp == 32)
+		GetPixelValue = GetPixelValue32Bit;
 
-
-	IPI_Particle (peakImage, TRUE, &particleReportArray, &noOfParticles);
-
-	particleCoeffArray = (float *) calloc (2*noOfParticles, sizeof(float)); if (particleCoeffArray==NULL) return(0);
-	IPI_ParticleCoeffs (peakImage, parameterArray, 2, particleReportArray, noOfParticles, particleCoeffArray);
-
-	// Create list of peaks
-	peaks = (FIAPeak *) malloc (sizeof(FIAPeak) * info->number_of_blobs);
-	
-	if (peaks==NULL)
-	    return FREEIMAGE_ALGORITHMS_ERROR;
-	
-	for (i=0; i<noOfParticles; i++) 
+	for(int i=0; i < number; i++)
 	{
-		peakList[i].centre.x = particleCoeffArray[i*2];
-		peakList[i].centre.y = particleCoeffArray[i*2+1];
-		IPI_GetPixelValue (brightnessImage, peakList[i].centre.x, peakList[i].centre.y, &(peakList[i].value));
+		BLOBINFO blobinfo = info->blobs[i];
+ 	
+		peaks[i].centre.x = blobinfo.center_x;
+		peaks[i].centre.y = blobinfo.center_y;
+
+		peaks[i].value = GetPixelValue (this->original_image,peaks[i].centre.x, peaks[i].centre.y);
 	}
-	
-	// sort the peaks
-	qsort (peakList, noOfParticles, sizeof(GlPeak), comparePeaks);   // sort into assending order
 
-	// store top "number" of particles
-	
-	if (number<=0)
-	    number = noOfParticles;
-	
-	if (*pCentres==NULL) *pCentres = (GlPeak *) calloc (number, sizeof(GlPeak));
-	
-	if (*pCentres==NULL)
-	    return(-1);
+	FreeImageAlgorithms_FreeParticleInfo(info);
 
-	for (i=noOfParticles-1, count=0; i>=0 && count<number; i--, count++)
-	{
-		(*pCentres)[count].centre.x = peakList[i].centre.x;
-		(*pCentres)[count].centre.y = peakList[i].centre.y;
-		(*pCentres)[count].value    = peakList[i].value;
-	}
-	
-	IPI_free(particleReportArray);
-	free (particleCoeffArray);
-	free (peakList);
-	return(count);
-	
+	// Sort the peaks
+	qsort (peaks, number, sizeof(FIAPeak), ComparePeaks);   // sort into assending order
 
-	return FREEIMAGE_ALGORITHMS_SUCCESS;
+	return min(number, total_blobs);
 }
-*/
 
 
 FIBITMAP*
-FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation)
+FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found)
 {
 	this->regionGrowCount=0;
 	this->threshold = threshold;
@@ -366,171 +387,23 @@ FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char thresho
 
 	PerformRegionGrow();
 
-	FIBITMAP* drawnMaxima = DrawMaxima (min_separation);
-
-	FreeImage_Unload(this->processing_image);
+	DrawMaxima (min_separation);
 
 	// allow for masking of the image
 	if (mask != NULL)
 		FreeImageAlgorithms_MaskImage(src, mask);
 
+	*peaks_found = StoreBrightestPeaks (number, peaks);      
 
+	FreeImage_Unload(this->processing_image);
 
-	return drawnMaxima;
+	return this->peek_image;
 }
 
-
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation)
+FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found)
 {
 	FindMaxima maxima;
 
-	return maxima.FindImageMaxima(src, mask, threshold, min_separation);
+	return maxima.FindImageMaxima(src, mask, threshold, min_separation, peaks, number, peaks_found);
 }
-
-
-
-
-//********************************* comparePeaks **********************************************************************
-
-/*
-static int __cdecl comparePeaks (const void *element1, const void *element2)
-{
-	GlPeak peak1, peak2;
-	
-	peak1 = *(GlPeak *)element1;
-	peak2 = *(GlPeak *)element2;
-
-	if (peak1.value > peak2.value) return(+1);
-	else if (peak2.value > peak1.value) return(-1);
-	else return(0);
-}
-*/
-
-//********************************* StoreBrightestPeaks **********************************************************************
-
-/*
-static int StoreBrightestPeaks (IPIImageRef peakImage, IPIImageRef brightnessImage, int number, GlPeak **pCentres)
-{
-	// store a number of brightest peaks from peakImage according to brightnessImage
-	// if number<=0 then all the peaks are stored
-	// the actual number of peaks in the centres list is returned
-	
-	IPIFullPReportPtr particleReportArray=NULL;
-	int parameterArray[] = {IPI_PP_CenterMassX, IPI_PP_CenterMassY};
-	int i, noOfParticles, count;
-	float *particleCoeffArray;
-	GlPeak *peakList;
-	
-	// characterize the peaks in the peak image
-	IPI_Particle (peakImage, TRUE, &particleReportArray, &noOfParticles);
-	particleCoeffArray = (float *) calloc (2*noOfParticles, sizeof(float)); if (particleCoeffArray==NULL) return(0);
-	IPI_ParticleCoeffs (peakImage, parameterArray, 2, particleReportArray, noOfParticles, particleCoeffArray);
-
-	// load up the list of peaks
-	peakList = (GlPeak *) calloc (noOfParticles, sizeof(GlPeak));
-	
-	if (peakList==NULL)
-	    return(0);
-	
-	for (i=0; i<noOfParticles; i++) 
-	{
-		peakList[i].centre.x = particleCoeffArray[i*2];
-		peakList[i].centre.y = particleCoeffArray[i*2+1];
-		IPI_GetPixelValue (brightnessImage, peakList[i].centre.x, peakList[i].centre.y, &(peakList[i].value));
-	}
-	
-	// sort the peaks
-	qsort (peakList, noOfParticles, sizeof(GlPeak), comparePeaks);   // sort into assending order
-
-	// store top "number" of particles
-	
-	if (number<=0)
-	    number = noOfParticles;
-	
-	if (*pCentres==NULL) *pCentres = (GlPeak *) calloc (number, sizeof(GlPeak));
-	
-	if (*pCentres==NULL)
-	    return(-1);
-
-	for (i=noOfParticles-1, count=0; i>=0 && count<number; i--, count++)
-	{
-		(*pCentres)[count].centre.x = peakList[i].centre.x;
-		(*pCentres)[count].centre.y = peakList[i].centre.y;
-		(*pCentres)[count].value    = peakList[i].value;
-	}
-	
-	IPI_free(particleReportArray);
-	free (particleCoeffArray);
-	free (peakList);
-	return(count);
-}
-*/
-
-
-//********************************* findImageMaxima Public fns **********************************************************************
-
-/*
-int findImageMaxima_imageOut (FIBITMAP* image, FIBITMAP* mask, int number, double threshold_in, int minSeparation, GlPeak **pCentresIn, FIBITMAP** imageOut)
-
-// number is the number of maxima to try and find, if number<=0 all peaks are found
-// cetres can be already allocated to take a maximum of number points.
-// the actual number of maxima found is returned.
-{
-	int maximaFound;
-	FIBITMAP* temp=NULL;
-	float threshold;
-	GlPeak **pCentres=NULL;
-
-	PROFILE_START("findImageMaxima");
-
-	if (pCentresIn!=NULL)
-		pCentres = pCentresIn;
-
-	if (threshold_in<0)
-		threshold = 10.0;
-	else 
-		threshold = threshold_in;
-	
-	x_points = FreeImage_GetWidth(image)
-	y_points = FreeImage_GetHeight(image)
-	
-	imageArray = (double *) calloc (x_points * y_points, sizeof(double));
-	maxima     = (int *)    calloc (x_points * y_points, sizeof(int));
-	IPI_ImageToArray (image, IPI_FULL_RECT, VAL_DOUBLE, imageArray, &x_points, &y_points);
-	
-	// stores the maxima as single points in the maxima array
-	FindOnlyMaxima(threshold, imageArray, maxima);
-
-	IPI_Create (&temp, IPI_PIXEL_U8, 2);
-	IPI_SetImageSize (temp, info.width, info.height);
-
-	// draw these maxima in an IPI image
-	// specify marker type and size
-	// a large size allows the peask to merge together if this is desirable
-	DrawMaxima ( temp, 1, minSeparation );
-
-	// allow for masking of the image
-	if (mask>0)
-		IPI_Mask (temp, mask, temp);
-
-	free (imageArray);
-	free (maxima);
-
-	// stores the peaks from the temp image as a list of centres
-	maximaFound = StoreBrightestPeaks (temp, image, number, pCentres);
-	
-	if (imageOut>0)
-		IPI_Copy(temp, imageOut);
-	
-	IPI_Dispose(temp);
-	PROFILE_STOP("findImageMaxima");
-	return (maximaFound);
-}
-
-
-
-*/
-
-
-

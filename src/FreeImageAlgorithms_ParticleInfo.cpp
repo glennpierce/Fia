@@ -48,10 +48,12 @@ static BLOBPOOL* UnionFindInit(int size)
 {
 	BLOBPOOL *pool = (BLOBPOOL*) malloc(sizeof(BLOBPOOL));
 
-	if(pool == NULL)
-		return NULL;
+	CheckMemory(pool);
 
 	pool->blobpool_start_ptr = (blob*) malloc(size * sizeof(blob));
+ 
+	CheckMemory(pool->blobpool_start_ptr);
+
 	pool->blobpool_ptr = pool->blobpool_start_ptr;
 	pool->blobpool_blobcount = 0;
 	pool->real_blobcount = 0;
@@ -59,16 +61,16 @@ static BLOBPOOL* UnionFindInit(int size)
 	return pool;
 }
 
-static void UnionFindFree(BLOBPOOL* blobpool)
+static void UnionFindFree(BLOBPOOL* pool)
 {
-	free(blobpool->blobpool_start_ptr);
-	blobpool->blobpool_start_ptr = NULL;
-	blobpool->blobpool_ptr = NULL;
-	free(blobpool);
+	free(pool->blobpool_start_ptr);
+	pool->blobpool_start_ptr = NULL;
+	pool->blobpool_ptr = NULL;
+	free(pool);
 }
 
 // New blob references itself as parent.
-static inline blob* NewBlob(BLOBPOOL *pool, run *run)
+static inline blob* NewBlob(BLOBPOOL *pool, unsigned int top_row, run *run)
 {
 	blob *b = pool->blobpool_ptr;
 
@@ -81,7 +83,7 @@ static inline blob* NewBlob(BLOBPOOL *pool, run *run)
 
 	b->area = run->end_x - run->x + 1;
 	b->sum_x = run->sum_x;
-	b->sum_y = (run->y + 1) * b->area;		// Current row times number in run
+	b->sum_y = (top_row - run->y) * b->area;		// Current row times number in run
 
 	run->blob = b;
 
@@ -139,9 +141,16 @@ static inline blob* MergeBlobs(BLOBPOOL *pool, blob *blob1, blob *blob2)
 int DLL_CALLCONV
 FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned char white_on_black)
 {
+	if(src == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(FreeImage_GetBPP(src) != 8 && FreeImage_GetImageType(src) != FIT_BITMAP)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
 	const int width = FreeImage_GetWidth(src);
 	const int height = FreeImage_GetHeight(src);
 	
+	unsigned int top_row = height - 1;
 	unsigned char *src_ptr;
 
 	register int i = 0;
@@ -153,7 +162,11 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		bg_val = 1;
 
 	run* current_runs = (run *) malloc(sizeof(run) * width / 2);		// Array of all runs
+	CheckMemory(current_runs);
+
 	run* last_runs = (run *) malloc(sizeof(run) * width / 2);
+	CheckMemory(last_runs);
+
 	run* last_runs_ptr = last_runs, *current_runs_ptr = current_runs;
 
 	BLOBPOOL *pool = UnionFindInit(width * height / 2);
@@ -181,15 +194,17 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 
 			last_runs_ptr[last_row_run_count].sum_x += x;		
 			x++;
-		}
+		} 
  
 		last_runs_ptr[last_row_run_count].end_x = x - 1;			
 
 		// This is the first line so all new runs are new blobs update the blob info
-		NewBlob(pool, &last_runs_ptr[last_row_run_count]);
+		NewBlob(pool, top_row, &last_runs_ptr[last_row_run_count]);
 
 		last_row_run_count++;
 	}
+
+	blob *last_blob = NULL;
 
 	// Do the rest of the rows
 	for(register int y=1; y < height; y++)
@@ -219,11 +234,12 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 			}
 
 			tmp_run.end_x = x - 1;
-				 	
+			
 			// Check whether run is overlapping with previous runs
 			for(i=0; i < last_row_run_count; i++) {
 
 				run *last_run = &last_runs_ptr[i];
+				last_blob = FindBlob(last_run->blob);
 
 				// Are runs overlapping ?
 				// The -1 are to allow pixels connected on the diagonal
@@ -234,40 +250,39 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 					if(tmp_run.blob == NULL) {
 
 						// Set new width height etc
-						tmp_run.blob = FindBlob(last_run->blob);
+						tmp_run.blob = last_blob;
 
-						if(tmp_run.x < last_run->blob->left)
-							last_run->blob->left = tmp_run.x;	
+						if(tmp_run.x < last_blob->left)
+							last_blob->left = tmp_run.x;	
 
-						if(tmp_run.end_x > last_run->blob->right)
-							last_run->blob->right = tmp_run.end_x;
+						if(tmp_run.end_x > last_blob->right)
+							last_blob->right = tmp_run.end_x;
 
 						tmp_run.blob->top = y;
 
-						tmp_run.blob->area = tmp_run.end_x - tmp_run.x + 1 + last_run->blob->area;
-						tmp_run.blob->sum_x = tmp_run.sum_x + last_run->blob->sum_x;
-						tmp_run.blob->sum_y += ((y + 1) * (tmp_run.end_x - tmp_run.x + 1));
+						tmp_run.blob->area = tmp_run.end_x - tmp_run.x + 1 + last_blob->area;
+						tmp_run.blob->sum_x = tmp_run.sum_x + last_blob->sum_x;
+						tmp_run.blob->sum_y += ((top_row - y) * (tmp_run.end_x - tmp_run.x + 1));
 						
 					}
-					else if(tmp_run.blob != last_run->blob) {
+					else if(tmp_run.blob != last_blob) {
 
 						// We have more than one previous overlapping run.
 						// The blobs are not the same so we merge them.
-						tmp_run.blob = MergeBlobs(pool, tmp_run.blob, last_run->blob);
+						tmp_run.blob = MergeBlobs(pool, tmp_run.blob, last_blob);
 					}	
 				}
 			}
 
 			// We have no connected runs create a new blob
 			if(tmp_run.blob == NULL)
-				NewBlob(pool, &tmp_run);	
+				NewBlob(pool, top_row, &tmp_run);	
 		
 			// Add run to current run array
 			current_runs_ptr[current_run_count].x  = tmp_run.x;
 			current_runs_ptr[current_run_count].y  = tmp_run.y;
 			current_runs_ptr[current_run_count].end_x  = tmp_run.end_x;
 			current_runs_ptr[current_run_count].sum_x  = tmp_run.sum_x;
-			//current_runs_ptr[current_run_count].sum_y  = tmp_run.sum_y;
 			current_runs_ptr[current_run_count].blob  = tmp_run.blob;
 
 			current_run_count++;
@@ -277,35 +292,40 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 		SWAP(last_runs_ptr, current_runs_ptr);
 
 		last_row_run_count = current_run_count;
-	}
-		
+	}	
+	
 	 // Create PARTICLEINFO/BLOBINFO array
 	*info = (PARTICLEINFO*) malloc (sizeof(PARTICLEINFO));
+	CheckMemory(*info);
+
 	(*info)->number_of_blobs = pool->real_blobcount;
 	(*info)->blobs = (BLOBINFO*) malloc (sizeof(BLOBINFO) * pool->real_blobcount);
-
+	CheckMemory((*info)->blobs);
+	
 	// Get blobs
 	for(int i=0, j=0; i < pool->blobpool_blobcount; i++) {
 
 		blob* ptr = &(pool->blobpool_start_ptr[i]); 
-
+ 
 		if(ptr != ptr->parent)
 			continue;
 	
 		(*info)->blobs[j].rect.left = ptr->left;
-		(*info)->blobs[j].rect.top = height - ptr->top - 1;    // -1 as lines start from 0
+		(*info)->blobs[j].rect.top = top_row - ptr->top;  
 		(*info)->blobs[j].rect.right = ptr->right;
-		(*info)->blobs[j].rect.bottom = height - ptr->bottom - 1;
+		(*info)->blobs[j].rect.bottom = top_row - ptr->bottom;
 		(*info)->blobs[j].area = ptr->area;
-		(*info)->blobs[j].center_x = ptr->sum_x / ptr->area;
-		(*info)->blobs[j].center_y = height - (ptr->sum_y / ptr->area) - 1;
+		(*info)->blobs[j].center_x = ptr->sum_x / ptr->area; 
+		(*info)->blobs[j].center_y = ptr->sum_y / ptr->area;
 
 		j++;
 	}
-	
+
 	UnionFindFree(pool);
 	free(current_runs);
+	current_runs = NULL;
 	free(last_runs);
+	last_runs = NULL;
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 };

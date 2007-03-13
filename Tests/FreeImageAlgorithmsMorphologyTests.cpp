@@ -11,6 +11,7 @@
 #include "FreeImageAlgorithms_FindImageMaxima.h"
 
 #include <iostream>
+#include <fstream>
 
 static double kernel_values[] = {1.0, 1.0, 1.0, 1.0, 1.0,
 								 1.0, 1.0, 1.0, 1.0, 1.0,
@@ -237,8 +238,10 @@ static void
 TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 {
 	//char *file = IMAGE_DIR "\\fillhole_test.bmp";
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
-	
+	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
+	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe_no_region_grow.bmp";
+
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, dib1 != NULL);
@@ -262,20 +265,24 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 
 	RECT centre;
 
+	int height = FreeImage_GetHeight(dst);
+
+	std::ofstream myfile ("C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.txt");
+
 	for(int i=0; i < info->number_of_blobs; i++)
 	{
 		BLOBINFO blobinfo = info->blobs[i];
 
-		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, RGB(255,0,0), 5);
+		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, RGB(255,0,0), 2);
 
-		centre.left = blobinfo.center_x - 3;
-		centre.right = blobinfo.center_x + 3;
-		centre.top = blobinfo.center_y - 3;
-		centre.bottom = blobinfo.center_y + 3;
+		centre.left = blobinfo.center_x - 2;
+		centre.right = blobinfo.center_x + 2;
+		centre.top = blobinfo.center_y - 2;
+		centre.bottom = blobinfo.center_y + 2;
 
 		FreeImageAlgorithms_DrawColourSolidRect(dst, centre, RGB(0,255,0));
 
-		std::cout << "partcle " << i + 1 << "  left  "
+		myfile << "left  "
 			<< blobinfo.rect.left << "  top  "  << blobinfo.rect.top
 			<< "  width  " << blobinfo.rect.right - blobinfo.rect.left + 1
 			<< "  height  " << blobinfo.rect.bottom - blobinfo.rect.top + 1
@@ -284,7 +291,9 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 			<< "  centre y: " << blobinfo.center_y << std::endl;
 	}
 	
-	std::cout << "Number of particles " << info->number_of_blobs << std::endl;
+	myfile << "Number of particles " << info->number_of_blobs << std::endl;
+
+	myfile.close();
 
 	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.bmp", BIT24);
 
@@ -311,15 +320,32 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
  
 	ProfileStart("FindImageMaxima");
 
-	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 50, 2);
+	FIAPeak *peaks = NULL;
+	int number_of_peaks;
+
+	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 50, 2, &peaks, 0, &number_of_peaks);
 	
+	ProfileStop("FindImageMaxima");
+
+	FILE *fp;
+
+	fp = fopen("C:\\Documents and Settings\\Pierce\\Desktop\\mine.txt", "w");
+	
+	for(int i=0; i < number_of_peaks; i++)
+	{
+		fprintf(fp, "center x %d  centre y %d  value %f\n", peaks[i].centre.x, peaks[i].centre.y, peaks[i].value);		
+	}
+	
+	fprintf(fp, "number of blobs %d\n", number_of_peaks);	
+	
+	
+	fclose(fp);
+
 	FreeImageAlgorithms_SetGreyLevelPalette(dib3);
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib3);
 
-	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\find_image_maxima.bmp", BIT8);
-
-	ProfileStop("FindImageMaxima");
+	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\find_image_maxima.bmp", BIT8); 
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -339,8 +365,8 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ClosingTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
+	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
 
 	return suite;
 }
