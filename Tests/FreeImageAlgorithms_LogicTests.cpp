@@ -29,8 +29,6 @@ TestFreeImageAlgorithms_MaskTest(CuTest* tc)
 
 	CuAssertTrue(tc, err != FREEIMAGE_ALGORITHMS_ERROR);
 
-	FreeImageAlgorithms_SaveFIBToFile(mask_8bit, TEMP_DIR "\\mask.jpg", BIT24);
-
 	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_masked.jpg", BIT24);
 
 	FreeImage_Unload(src);
