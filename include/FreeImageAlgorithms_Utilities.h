@@ -11,6 +11,28 @@
 extern "C" {
 #endif
 
+/** \brief Find the mininum and maximum values in a char array.
+ *
+ *  \param data Array of char data.
+ *  \param x x point of point.
+ *  \param y y point of point.
+ *  \return FIAPOINT point.
+*/
+DLL_API FIAPOINT DLL_CALLCONV
+MakeFIAPoint(int x, int y);
+
+/** \brief Find the mininum and maximum values in a char array.
+ *
+ *  \param data Array of char data.
+ *  \param left left point of rect.
+ *  \param top top point of rect.
+ *  \param right right point of rect.
+ *  \param bottom bottom point of rect.
+ *  \return FIARECT rectangle.
+*/
+DLL_API FIARECT DLL_CALLCONV
+MakeFIARect(int left, int top, int right, int bottom);
+
 DLL_API int DLL_CALLCONV
 _os_support(int feature);
 
@@ -513,7 +535,7 @@ FreeImageAlgorithms_DistanceTransform(FIBITMAP *src);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, double* val);
+FreeImageAlgorithms_GetPixelValue(FIBITMAP *src, int x, int y, double* val);
 
 #ifdef __cplusplus
 }

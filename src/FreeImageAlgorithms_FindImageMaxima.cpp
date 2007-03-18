@@ -323,7 +323,7 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 		peaks[i].centre.x = blobinfo.center_x;
 		peaks[i].centre.y = blobinfo.center_y;
 
-		FreeImageAlgorithms_GetPixelValve(
+		FreeImageAlgorithms_GetPixelValue(
 			this->original_image,peaks[i].centre.x,
 			peaks[i].centre.y, &(peaks[i].value));
 	}

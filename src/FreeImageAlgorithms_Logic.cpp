@@ -94,3 +94,34 @@ FreeImageAlgorithms_MaskImage(FIBITMAP* src, FIBITMAP* mask)
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
 }
+
+
+int DLL_CALLCONV 
+FreeImageAlgorithms_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val)
+{
+    if(mask == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Mask has to be 8 bit 
+	if(FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int width = FreeImage_GetWidth(mask);
+	int height = FreeImage_GetHeight(mask);
+
+	for(register int y = 0; y < height; y++) { 
+		
+		unsigned char *mask_ptr = (unsigned char *)FreeImage_GetScanLine(mask, y);
+
+		for(register int x=0; x < width; x++) {
+			if(!mask_ptr[x])
+				mask_ptr[x] = foreground_val;
+            else
+                mask_ptr[x] = 0;
+		}
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+

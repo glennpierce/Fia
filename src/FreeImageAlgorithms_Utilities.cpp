@@ -96,6 +96,30 @@ FreeImageAlgorithms_SSEFindFloatMinMax(const float *data, long n, float *min, fl
 #endif //  _MSC_VER
 
 
+FIAPOINT DLL_CALLCONV
+MakeFIAPoint(int x, int y)
+{
+    FIAPOINT p;
+
+    p.x = x;
+    p.y = y;
+
+    return p;
+}
+
+DLL_API FIARECT DLL_CALLCONV
+MakeFIARect(int left, int top, int right, int bottom)
+{
+    FIARECT rect;
+
+    rect.left = left;
+    rect.top = top;
+    rect.right = right;
+    rect.bottom = bottom;
+
+    return rect;
+}
+
 void DLL_CALLCONV
 FreeImageAlgorithms_FindCharMinMax(const char *data, long n, char *min, char *max)
 {
@@ -1017,7 +1041,7 @@ void CheckMemory(void *ptr)
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, double* val)
+FreeImageAlgorithms_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
 {
 	int bpp = FreeImage_GetBPP(src);
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
