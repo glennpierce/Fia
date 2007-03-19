@@ -167,7 +167,7 @@ FreeImage_ConvexHull(FIBITMAP *src)
 
     delete sort_array;
 
-    FreeImageAlgorithms_DrawGreyscalePolygon (dst, hull_array, number_of_points, 255, 1); 
+    FreeImageAlgorithms_DrawGreyscalePolygon (dst, hull_array, number_of_points, 255, 0); 
 
     delete hull_array;
 

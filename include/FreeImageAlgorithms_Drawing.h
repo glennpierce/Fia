@@ -18,6 +18,7 @@ extern "C" {
  *  \param p2 FIAPOINT point to end the line.
  *  \param colour RGBQUAD colour of the line.
  *  \param line_width pixel width of the line.
+ *  \param antialiased Whether the polygon is antialiased.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
@@ -62,6 +63,7 @@ FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double 
  *  \param p2 FIAPOINT point to end the line.
  *  \param value greyscale intensity of the line.
  *  \param line_width pixel width of the line.
+ *  \param antialiased Whether the polygon is antialiased.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
@@ -95,10 +97,24 @@ DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour);
 
 
+/** \brief Draw a polygon from an array of FIAPOINT's.
+ *
+ *  \param src Image to draw on.
+ *  \param points FIAPOINT array.
+ *  \param number_of_points int number of points.
+ *  \param value intensity of the fill.
+ *  \param antialiased Whether the polygon is antialiased.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
-                                          unsigned char value, int line_width);
+                                          unsigned char value, int antialiased);
 
+/** \brief Draw a convexhull for points on an image.
+ *
+ *  \param src Image to draw on.
+ *  \return FIBITMAP* image success or NULL on error.
+*/
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImage_ConvexHull(FIBITMAP *src);
 

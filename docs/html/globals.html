@@ -32,14 +32,18 @@
 Here is a list of all documented functions, variables, defines, enums, and typedefs with links to the documentation:
 <p>
 <h3><a class="anchor" name="index_f">- f -</a></h3><ul>
-<li>FreeImageAlgorithms_8BitInplaceThreshold()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#60c3889ee72ce22b85474dc82373c6bf">FreeImageAlgorithms_Utilities.h</a>
+<li>FIA_RGBQUAD()
+: <a class="el" href="_free_image_algorithms___palettes_8h.html#da90241378fe1ee055a5edfc5fa386e7">FreeImageAlgorithms_Palettes.h</a>
+<li>FreeImage_ConvexHull()
+: <a class="el" href="_free_image_algorithms___drawing_8h.html#3f9a0027578566763b95fccd836985a2">FreeImageAlgorithms_Drawing.h</a>
 <li>FreeImageAlgorithms_AddGreyLevelImageConstant()
 : <a class="el" href="_free_image_algorithms___arithmetic_8h.html#95d7a87aaa797300480f41fae1220549">FreeImageAlgorithms_Arithmetic.h</a>
 <li>FreeImageAlgorithms_AddGreyLevelImages()
 : <a class="el" href="_free_image_algorithms___arithmetic_8h.html#c3d610053ed73e3a1aac85bfd985937f">FreeImageAlgorithms_Arithmetic.h</a>
 <li>FreeImageAlgorithms_BitwiseCompare()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#a9970453cc2dcd58872006ea105da751">FreeImageAlgorithms_Utilities.h</a>
+<li>FreeImageAlgorithms_Centroid()
+: <a class="el" href="_free_image_algorithms___statistics_8h.html#de5e9e1c4f2eb59f643d35e10718ecd5">FreeImageAlgorithms_Statistics.h</a>
 <li>FreeImageAlgorithms_CharArrayReverse()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#7618cdb1ad1c671a484432634c29bb72">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_CloneImageType()
@@ -60,10 +64,6 @@ Here is a list of all documented functions, variables, defines, enums, and typed
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#f1d4ccca8d35d761f0154ec6bf408ee5">FreeImageAlgorithms_Palettes.h</a>
 <li>FreeImageAlgorithms_CopyPaletteToRGBQUAD()
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#a1f9c58de19679a57bf9d26124d4fbff">FreeImageAlgorithms_Palettes.h</a>
-<li>FreeImageAlgorithms_CopyToDibSection()
-: <a class="el" href="_free_image_algorithms___h_bitmap_8h.html#18b09bd50be64b83efd07828bcdc670f">FreeImageAlgorithms_HBitmap.h</a>
-<li>FreeImageAlgorithms_CreateDibSection()
-: <a class="el" href="_free_image_algorithms___h_bitmap_8h.html#8f92b119c9fa95f1488c69e2bb973949">FreeImageAlgorithms_HBitmap.h</a>
 <li>FreeImageAlgorithms_DistanceTransform()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#08011d4d76f3f3ce27cfea2d81773153">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_DivideGreyLevelImageConstant()
@@ -73,19 +73,19 @@ Here is a list of all documented functions, variables, defines, enums, and typed
 <li>FreeImageAlgorithms_DoubleArrayReverse()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#37dcd3793f1531982aaa54d57e5e4e2b">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_DrawColourLine()
-: <a class="el" href="_free_image_algorithms___drawing_8h.html#41a710489d0f1cbe18f7d62d62086539">FreeImageAlgorithms_Drawing.h</a>
+: <a class="el" href="_free_image_algorithms___drawing_8h.html#38e0e686371bb6990caaba629f3961e8">FreeImageAlgorithms_Drawing.h</a>
 <li>FreeImageAlgorithms_DrawColourRect()
-: <a class="el" href="_free_image_algorithms___drawing_8h.html#ab4b8f2d9f8a1c0c0676fd0fc16ae9e8">FreeImageAlgorithms_Drawing.h</a>
+: <a class="el" href="_free_image_algorithms___drawing_8h.html#0c62b7ffcbd5bca1ab94e5d4c25daaa8">FreeImageAlgorithms_Drawing.h</a>
 <li>FreeImageAlgorithms_DrawColourSolidRect()
-: <a class="el" href="_free_image_algorithms___drawing_8h.html#bd1b39da7c8739b107caed1b4d059b2f">FreeImageAlgorithms_Drawing.h</a>
+: <a class="el" href="_free_image_algorithms___drawing_8h.html#609567f08269bea72d9611a0e71cd85d">FreeImageAlgorithms_Drawing.h</a>
 <li>FreeImageAlgorithms_DrawGreyscaleLine()
-: <a class="el" href="_free_image_algorithms___drawing_8h.html#37675194964028594d9d71b750821e75">FreeImageAlgorithms_Drawing.h</a>
+: <a class="el" href="_free_image_algorithms___drawing_8h.html#d61e639ba0fdf3bf15e77d98ca48373f">FreeImageAlgorithms_Drawing.h</a>
+<li>FreeImageAlgorithms_DrawGreyscalePolygon()
+: <a class="el" href="_free_image_algorithms___drawing_8h.html#d1be1265132f1747a0b4babbe672490a">FreeImageAlgorithms_Drawing.h</a>
 <li>FreeImageAlgorithms_DrawSolidGreyscaleRect()
-: <a class="el" href="_free_image_algorithms___drawing_8h.html#116fec74fbd9b21f87327ccc41a2e33f">FreeImageAlgorithms_Drawing.h</a>
+: <a class="el" href="_free_image_algorithms___drawing_8h.html#9d9acb0d9ea33ba26306aa6242424fec">FreeImageAlgorithms_Drawing.h</a>
 <li>FreeImageAlgorithms_FFT()
 : <a class="el" href="_free_image_algorithms___f_f_t_8h.html#f7acd048c7285b9597c16cfe9ce434a6">FreeImageAlgorithms_FFT.h</a>
-<li>FreeImageAlgorithms_FibToHBitmap()
-: <a class="el" href="_free_image_algorithms___h_bitmap_8h.html#ba68c006cc5008e12c6de5eb91ab21f3">FreeImageAlgorithms_HBitmap.h</a>
 <li>FreeImageAlgorithms_Fillholes()
 : <a class="el" href="_free_image_algorithms___particle_8h.html#b26731540de0fb572a5cd7d3f7352919">FreeImageAlgorithms_Particle.h</a>
 <li>FreeImageAlgorithms_FindCharMax()
@@ -126,24 +126,18 @@ Here is a list of all documented functions, variables, defines, enums, and typed
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#6a696465b2f4a257e73e40d0b2db54d8">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_FloatArrayReverse()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#61e92dbda035038ce11a91b92a04b7ac">FreeImageAlgorithms_Utilities.h</a>
-<li>FreeImageAlgorithms_FloatThreshold()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#d16ca23eeff4e3309768c0842953ad02">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_FloodFill()
 : <a class="el" href="_free_image_algorithms___drawing_8h.html#2ab69fc3c8401e27a861fb6d0df6c576">FreeImageAlgorithms_Drawing.h</a>
-<li>FreeImageAlgorithms_FreeHBitmap()
-: <a class="el" href="_free_image_algorithms___h_bitmap_8h.html#eb8c9bb1715660550e55ca256f0405be">FreeImageAlgorithms_HBitmap.h</a>
 <li>FreeImageAlgorithms_FreeParticleInfo()
 : <a class="el" href="_free_image_algorithms___particle_8h.html#6531aabb9be0a8a512d3e381ad35539c">FreeImageAlgorithms_Particle.h</a>
 <li>FreeImageAlgorithms_GetCharPixelValuesForLine()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#a37abedd4ab6c5cfcdf3bd0532f08c6e">FreeImageAlgorithms_Utilities.h</a>
-<li>FreeImageAlgorithms_GetDibSection()
-: <a class="el" href="_free_image_algorithms___h_bitmap_8h.html#13bdec4fc6aaaad93dd3eb4c64fd272e">FreeImageAlgorithms_HBitmap.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#5aa1d9194550bcae0e92467455a7c8ec">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetDoublePixelValuesForLine()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#e74759f4b3d617cf6d555381e4c7ca52">FreeImageAlgorithms_Utilities.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#0dd7f0499ce74df071876bd3f3b50863">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetFalseColourPalette()
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#2952255f76c7e79b70dabd32274da82b">FreeImageAlgorithms_Palettes.h</a>
 <li>FreeImageAlgorithms_GetFloatPixelValuesForLine()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#53513f89d16bfaf67d84401ce0f279f3">FreeImageAlgorithms_Utilities.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#31097a03b0f0d8c8fd93dd35bf620ee3">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetGreyLevelAverage()
 : <a class="el" href="_free_image_algorithms___statistics_8h.html#93a6378e75173f1466b603b047e1b719">FreeImageAlgorithms_Statistics.h</a>
 <li>FreeImageAlgorithms_GetGreyLevelOverLoadPalette()
@@ -161,39 +155,37 @@ Here is a list of all documented functions, variables, defines, enums, and typed
 <li>FreeImageAlgorithms_GetMinPosibleValueForGreyScaleType()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#c7053a8517eeb7430f39ae0bfe8e0e85">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetPixelValve()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#38b74cbcb484eef00108a9ed5e4b0dc1">FreeImageAlgorithms_Utilities.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#ac31d2fd48638a20ee23b7473c16d1ec">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetRainBowPalette()
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#222b0c14374fffc718874f1e7aae528d">FreeImageAlgorithms_Palettes.h</a>
 <li>FreeImageAlgorithms_GetRGBPixelValuesForLine()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#bc83f004ce8052412263b750942de8a5">FreeImageAlgorithms_Utilities.h</a>
-<li>FreeImageAlgorithms_GetRGBQUAD()
-: <a class="el" href="_free_image_algorithms___palettes_8h.html#c18b65c7fc64e5fa187bd0a7144591c0">FreeImageAlgorithms_Palettes.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#fbfd01be6271069b70ccb44d1b6d40e2">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetSeismicColourPalette()
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#9a52899e6a4041117a9d1a47aa3b60f3">FreeImageAlgorithms_Palettes.h</a>
 <li>FreeImageAlgorithms_GetShortPixelValuesForLine()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#418425eb974cded2f3c53491cb1655a9">FreeImageAlgorithms_Utilities.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#d5413d51236ab4086b59d0befe3d91f3">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetTemperaturePalette()
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#372d2690937935a7bce1ad49905d20b7">FreeImageAlgorithms_Palettes.h</a>
 <li>FreeImageAlgorithms_GetTernaryPalette()
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#cd2174ff3b057bc34be182fad2d5a48d">FreeImageAlgorithms_Palettes.h</a>
 <li>FreeImageAlgorithms_GetUCharPixelValuesForLine()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#a0ef6769711bc9d5d899c3ace3ef35ae">FreeImageAlgorithms_Utilities.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#cfe7a5d02c5d8f65f9c6a13d0a2310be">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_GetUShortPixelValuesForLine()
-: <a class="el" href="_free_image_algorithms___utilities_8h.html#e7ebe1c02b7929f393690cba409e8099">FreeImageAlgorithms_Utilities.h</a>
-<li>FreeImageAlgorithms_HBitmapToFIB()
-: <a class="el" href="_free_image_algorithms___h_bitmap_8h.html#f47435a3b2c88f988f8f2b92d4a4fe89">FreeImageAlgorithms_HBitmap.h</a>
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#5d619c5784edee5f2e0f3433cfc298fd">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_HistEq()
 : <a class="el" href="_free_image_algorithms___statistics_8h.html#b4c5c09839a1528463f03b50a3ea6b1c">FreeImageAlgorithms_Statistics.h</a>
 <li>FreeImageAlgorithms_HistEq_Random_Additions()
 : <a class="el" href="_free_image_algorithms___statistics_8h.html#e5e6e27331cdc9db75bc5633887726ca">FreeImageAlgorithms_Statistics.h</a>
 <li>FreeImageAlgorithms_Histogram()
-: <a class="el" href="_free_image_algorithms___statistics_8h.html#c7c97dea0083c168a50d7fca8f0e246d">FreeImageAlgorithms_Statistics.h</a>
+: <a class="el" href="_free_image_algorithms___statistics_8h.html#9e3366aa15d39417ce348c74de30ad11">FreeImageAlgorithms_Statistics.h</a>
 <li>FreeImageAlgorithms_HSLToRGB()
 : <a class="el" href="_free_image_algorithms___colour_8h.html#e131cc25a8160197f446fb1824b7f218">FreeImageAlgorithms_Colour.h</a>
 <li>FreeImageAlgorithms_HSVToRGB()
 : <a class="el" href="_free_image_algorithms___colour_8h.html#68b32b013668ff69db6675d3a2c9d55f">FreeImageAlgorithms_Colour.h</a>
 <li>FreeImageAlgorithms_InPlaceFloodFill()
 : <a class="el" href="_free_image_algorithms___drawing_8h.html#bea9aeb3317dd4f7931106ca1c829e85">FreeImageAlgorithms_Drawing.h</a>
+<li>FreeImageAlgorithms_InPlaceThreshold()
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#7539549bc46420832353de1ad9840ea5">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_IntArrayReverse()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#cf339bdd0c8befea6f1556539af9fb58">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_Is16BitReally12BitImage()
@@ -235,7 +227,7 @@ Here is a list of all documented functions, variables, defines, enums, and typed
 <li>FreeImageAlgorithms_ReversePaletteEntries()
 : <a class="el" href="_free_image_algorithms___palettes_8h.html#237572d0f8207146c0f48db337b40288">FreeImageAlgorithms_Palettes.h</a>
 <li>FreeImageAlgorithms_RGBHistogram()
-: <a class="el" href="_free_image_algorithms___statistics_8h.html#75bb42e915852845f6d48eb1a78a3231">FreeImageAlgorithms_Statistics.h</a>
+: <a class="el" href="_free_image_algorithms___statistics_8h.html#3dac6f518cc47b55e42d3a4365659ef5">FreeImageAlgorithms_Statistics.h</a>
 <li>FreeImageAlgorithms_RGBToHSL()
 : <a class="el" href="_free_image_algorithms___colour_8h.html#81287060a2edc6c5bb0e17918c7e4ee1">FreeImageAlgorithms_Colour.h</a>
 <li>FreeImageAlgorithms_RGBToHSV()
@@ -265,13 +257,17 @@ Here is a list of all documented functions, variables, defines, enums, and typed
 <li>FreeImageAlgorithms_ShortArrayReverse()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#202268f0b2cfc75027a0d2a1b3d3602b">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_Sobel()
-: <a class="el" href="_free_image_algorithms___convolution_8h.html#faf523f27958a36350df95720ecfbabb">FreeImageAlgorithms_Convolution.h</a>
+: <a class="el" href="_free_image_algorithms___filters_8h.html#faf523f27958a36350df95720ecfbabb">FreeImageAlgorithms_Filters.h</a>
+<li>FreeImageAlgorithms_StatisticReport()
+: <a class="el" href="_free_image_algorithms___statistics_8h.html#1dec7890cb77a15f2e487cd06c1cc00f">FreeImageAlgorithms_Statistics.h</a>
 <li>FreeImageAlgorithms_StretchImageToType()
 : <a class="el" href="_free_image_algorithms___linear_scale_8h.html#9a33fec5d68836f76936585c893e19b9">FreeImageAlgorithms_LinearScale.h</a>
 <li>FreeImageAlgorithms_SubtractGreyLevelImageConstant()
 : <a class="el" href="_free_image_algorithms___arithmetic_8h.html#07e973a61fbee199d2e812f9b4c2324a">FreeImageAlgorithms_Arithmetic.h</a>
 <li>FreeImageAlgorithms_SubtractGreyLevelImages()
 : <a class="el" href="_free_image_algorithms___arithmetic_8h.html#d779f3f44df7a8f84024a67021de8a3c">FreeImageAlgorithms_Arithmetic.h</a>
+<li>FreeImageAlgorithms_Threshold()
+: <a class="el" href="_free_image_algorithms___utilities_8h.html#dda728671063ea2ba9f702adc08e7211">FreeImageAlgorithms_Utilities.h</a>
 <li>FreeImageAlgorithms_Transpose()
 : <a class="el" href="_free_image_algorithms___arithmetic_8h.html#013ae0ba37aabf134e51bc453b4e99c4">FreeImageAlgorithms_Arithmetic.h</a>
 <li>FreeImageAlgorithms_UCharArrayReverse()
@@ -283,7 +279,7 @@ Here is a list of all documented functions, variables, defines, enums, and typed
 <li>FreeImageAlgorithms_UShortArrayReverse()
 : <a class="el" href="_free_image_algorithms___utilities_8h.html#725eadcdbf7de53126a15c1c7c1ac234">FreeImageAlgorithms_Utilities.h</a>
 </ul>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 7 14:51:39 2007 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 14 17:22:28 2007 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>

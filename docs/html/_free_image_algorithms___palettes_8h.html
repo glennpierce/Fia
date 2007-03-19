@@ -19,9 +19,9 @@
 <h1>include/FreeImageAlgorithms_Palettes.h File Reference</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td></td></tr>
 <tr><td colspan="2"><br><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API RGBQUAD DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#c18b65c7fc64e5fa187bd0a7144591c0">FreeImageAlgorithms_GetRGBQUAD</a> (unsigned char red, unsigned char green, unsigned char blue)</td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API RGBQUAD DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#da90241378fe1ee055a5edfc5fa386e7">FIA_RGBQUAD</a> (unsigned char red, unsigned char green, unsigned char blue)</td></tr>
 
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a RGBQUAD from the three colours.  <a href="#c18b65c7fc64e5fa187bd0a7144591c0"></a><br></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get a RGBQUAD from the three colours.  <a href="#da90241378fe1ee055a5edfc5fa386e7"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DLL_API int DLL_CALLCONV&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="_free_image_algorithms___palettes_8h.html#a1f9c58de19679a57bf9d26124d4fbff">FreeImageAlgorithms_CopyPaletteToRGBQUAD</a> (FIBITMAP *src, RGBQUAD *palette)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Copies the palette for an image to an array of RGBQUAD.  <a href="#a1f9c58de19679a57bf9d26124d4fbff"></a><br></td></tr>
@@ -85,6 +85,51 @@
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Provides various palette modification methods. <hr><h2>Function Documentation</h2>
+<a class="anchor" name="da90241378fe1ee055a5edfc5fa386e7"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FIA_RGBQUAD" ref="da90241378fe1ee055a5edfc5fa386e7" args="(unsigned char red, unsigned char green, unsigned char blue)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">DLL_API RGBQUAD DLL_CALLCONV FIA_RGBQUAD           </td>
+          <td>(</td>
+          <td class="paramtype">unsigned char&nbsp;</td>
+          <td class="paramname"> <em>red</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char&nbsp;</td>
+          <td class="paramname"> <em>green</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">unsigned char&nbsp;</td>
+          <td class="paramname"> <em>blue</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Get a RGBQUAD from the three colours. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>red</em>&nbsp;</td><td>Red colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>green</em>&nbsp;</td><td>Green colour. </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>blue</em>&nbsp;</td><td>Blue colour. </td></tr>
+  </table>
+</dl>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
+
+</div>
+</div><p>
 <a class="anchor" name="a3ca81029ccac12e8efa96bdda6d6763"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_CopyPalette" ref="a3ca81029ccac12e8efa96bdda6d6763" args="(FIBITMAP *src, FIBITMAP *dst)" -->
 <div class="memitem">
 <div class="memproto">
@@ -343,51 +388,6 @@ Get a rainbow pallete into a RGBQUAD array.
 <dl compact><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>palette</em>&nbsp;</td><td>RGBQUAD* array. </td></tr>
-  </table>
-</dl>
-<dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
-
-</div>
-</div><p>
-<a class="anchor" name="c18b65c7fc64e5fa187bd0a7144591c0"></a><!-- doxytag: member="FreeImageAlgorithms_Palettes.h::FreeImageAlgorithms_GetRGBQUAD" ref="c18b65c7fc64e5fa187bd0a7144591c0" args="(unsigned char red, unsigned char green, unsigned char blue)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">DLL_API RGBQUAD DLL_CALLCONV FreeImageAlgorithms_GetRGBQUAD           </td>
-          <td>(</td>
-          <td class="paramtype">unsigned char&nbsp;</td>
-          <td class="paramname"> <em>red</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char&nbsp;</td>
-          <td class="paramname"> <em>green</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">unsigned char&nbsp;</td>
-          <td class="paramname"> <em>blue</em></td><td>&nbsp;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td><td width="100%"></td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>
-Get a RGBQUAD from the three colours. 
-<p>
-<dl compact><dt><b>Parameters:</b></dt><dd>
-  <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>red</em>&nbsp;</td><td>Red colour. </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>green</em>&nbsp;</td><td>Green colour. </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>blue</em>&nbsp;</td><td>Blue colour. </td></tr>
   </table>
 </dl>
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error. </dd></dl>
@@ -835,7 +835,7 @@ Useful for displaying binary images.<p>
 
 </div>
 </div><p>
-<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 7 14:51:39 2007 for FreeImageAlgorithms by&nbsp;
+<hr size="1"><address style="align: right;"><small>Generated on Wed Mar 14 17:22:28 2007 for FreeImageAlgorithms by&nbsp;
 <a href="http://www.doxygen.org/index.html">
 <img src="doxygen.png" alt="doxygen" align="middle" border="0"></a> 1.5.1-p1 </small></address>
 </body>

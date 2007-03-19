@@ -11,12 +11,17 @@
 static void
 TestFreeImageAlgorithms_ConvexHullTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\hull-test.bmp";
+	char *file = IMAGE_DIR "\\particle-test.bmp";
 
 	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
+    PROFILE_START("ConvexHull");
+
 	FIBITMAP *hull_dib = FreeImage_ConvexHull (src);
+
+    PROFILE_STOP("ConvexHull");
+
     CuAssertTrue(tc, hull_dib != NULL);
 
 	FreeImageAlgorithms_SaveFIBToFile(hull_dib, TEMP_DIR "\\convexhull.bmp", BIT8);

@@ -381,7 +381,8 @@ FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, 
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
 	if(type == FIT_BITMAP && bpp == 8)
-		return Draw8BitGreyscaleLine (src, p1_tmp, p2_tmp, (unsigned char) value, line_width, antialiased); 
+		return Draw8BitGreyscaleLine (src, p1_tmp, p2_tmp, (unsigned char) value,
+                                      line_width, antialiased); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
@@ -431,7 +432,7 @@ FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, RGBQUAD co
 
 int DLL_CALLCONV
 Draw8BitGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
-                          unsigned char value, int line_width) 
+                          unsigned char value, int antialiased) 
 {
     int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -443,30 +444,20 @@ Draw8BitGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
     agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
     // Create the rendering buffer 
-    agg::renderer<agg::span_bgr24> ren(rbuf);
+    agg::renderer<agg::span_mono8> ren(rbuf);
     agg::rasterizer ras;
 
     //int y_point = height - points[0].y;
     ras.move_to_d(points[0].x, points[0].y);
     
-    //FIARECT rect;
-
-    for(int i=1; i<=number_of_points; i++) {
-
-        //rect.left = points[i].x;
-        //rect.top = points[i].y;
-        //rect.right = rect.left + 5;
-        //rect.bottom = rect.top + 5;
-
-        //FreeImageAlgorithms_DrawSolidGreyscaleRect (src, rect, 255) ;
-
-        //y_point = height - points[i].y;
-
+    for(int i=1; i < number_of_points; i++)
 	    ras.line_to_d(points[i].x, points[i].y);
-    }
 
-    ras.render(ren, agg::rgba8(value, value, value));
- 
+    if(antialiased)
+        ras.render(ren, agg::rgba8(value, value, value));
+    else
+        ras.render_aliased(ren, agg::rgba8(value, value, value));
+
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
@@ -474,13 +465,14 @@ Draw8BitGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
 int DLL_CALLCONV
 FreeImageAlgorithms_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
                                           int number_of_points, unsigned char value, 
-                                          int line_width) 
+                                          int antialiased) 
 {  
 	int bpp = FreeImage_GetBPP(src);
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
 	if(type == FIT_BITMAP && bpp == 8)
-		return Draw8BitGreyscalePolygon (src, points, number_of_points, value, line_width); 
+		return Draw8BitGreyscalePolygon (src, points, number_of_points, value,
+                                         antialiased); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
