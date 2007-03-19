@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-/** \brief Find the mininum and maximum values in a char array.
+/** \brief Make a FIAPOINT structure.
  *
  *  \param data Array of char data.
  *  \param x x point of point.
@@ -21,7 +21,7 @@ extern "C" {
 DLL_API FIAPOINT DLL_CALLCONV
 MakeFIAPoint(int x, int y);
 
-/** \brief Find the mininum and maximum values in a char array.
+/** \brief Make a FIARECT structure.
  *
  *  \param data Array of char data.
  *  \param left left point of rect.
@@ -32,6 +32,15 @@ MakeFIAPoint(int x, int y);
 */
 DLL_API FIARECT DLL_CALLCONV
 MakeFIARect(int left, int top, int right, int bottom);
+
+/** \brief Make a FIARECT structure from an image.
+ *
+ *  \param data Array of char data.
+ *  \param src Image to construct FIARECT from.
+ *  \return FIARECT rectangle.
+*/
+DLL_API FIARECT DLL_CALLCONV
+FIAImageRect(FIBITMAP *src);
 
 DLL_API int DLL_CALLCONV
 _os_support(int feature);
@@ -536,6 +545,9 @@ FreeImageAlgorithms_DistanceTransform(FIBITMAP *src);
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetPixelValue(FIBITMAP *src, int x, int y, double* val);
+
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_InPlaceConvertToStandardType(FIBITMAP **src, int scale);
 
 #ifdef __cplusplus
 }

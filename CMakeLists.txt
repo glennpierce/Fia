@@ -1,4 +1,4 @@
-MACRO(POST_BUILD_COPY target)
+MACRO(COPY_TARGET target)
 
 IF(WIN32)
 
@@ -6,13 +6,22 @@ ADD_CUSTOM_COMMAND(TARGET "${target}"
                    POST_BUILD
                    COMMAND move "\"$\(TargetPath\)\"" "\"$\(TargetDir\)..\"")
 
-ADD_CUSTOM_COMMAND(TARGET "${target}"
-                   POST_BUILD
-                   COMMAND move "\"$\(TargetDir\)$\(TargetName\).lib\"" "\"$\(TargetDir\)..\"")
-
 ENDIF(WIN32)
 
-ENDMACRO(POST_BUILD_COPY)
+ENDMACRO(COPY_TARGET)
+
+
+MACRO(COPY_LIB target)
+
+IF(WIN32)
+
+ADD_CUSTOM_COMMAND(TARGET "${target}"
+                   POST_BUILD
+                   COMMAND ${CMAKE_COMMAND}
+                   ARGS -E copy "\"$\(TargetDir\)/$\(TargetName\).lib\"" "\"$\(TargetDir\)..\"")
+ENDIF(WIN32)
+
+ENDMACRO(COPY_LIB)
 
 
 # The name of our project is "FreeImageAlgorithms".  CMakeLists files in this project can

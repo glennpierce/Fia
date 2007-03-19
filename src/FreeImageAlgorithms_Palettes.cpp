@@ -6,13 +6,14 @@
 #include <math.h>
 
 RGBQUAD DLL_CALLCONV FIA_RGBQUAD(unsigned char red, unsigned char green,
-													unsigned char blue)
+								 unsigned char blue)
 {
 	RGBQUAD quad;
 
 	quad.rgbRed = red;
 	quad.rgbGreen = green;
 	quad.rgbBlue = blue;
+    quad.rgbReserved = 0;
 
 	return quad;
 }

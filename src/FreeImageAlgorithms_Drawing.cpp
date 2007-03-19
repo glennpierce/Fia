@@ -230,6 +230,18 @@ FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double 
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
+    if(rect.left < 0)
+        rect.left = 0;
+
+    if(rect.top < 0)
+        rect.top = 0;
+
+    if(rect.right >= width)
+        rect.right = width - 1;
+
+    if(rect.bottom >= height)
+        rect.bottom = height - 1;
+
 	// Allocate the framebuffer
 	unsigned char* buf = NULL; 
 	FIARECT tmp_rect = rect;

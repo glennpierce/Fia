@@ -344,7 +344,7 @@ FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char thresho
 	this->threshold = threshold;
 	this->min_separation;
 
-	this->original_image = src; // FreeImageAlgorithms_SetBorder(src, 1, 1);
+	this->original_image = FreeImage_ConvertToStandardType(src, 1);
 
 	this->width = FreeImage_GetWidth(this->original_image);
 	this->height = FreeImage_GetHeight(this->original_image);

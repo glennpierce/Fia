@@ -117,11 +117,12 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 {
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
-	char *shouldbefile = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
+    char *file = IMAGE_DIR "\\CHT.bmp";
+	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+	//char *shouldbefile = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
 	
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
-	FIBITMAP *shouldbe_dib = FreeImageAlgorithms_LoadFIBFromFile(shouldbefile);
+	//FIBITMAP *shouldbe_dib = FreeImageAlgorithms_LoadFIBFromFile(shouldbefile);
 
 	CuAssertTrue(tc, dib1 != NULL);
 
@@ -155,7 +156,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib3);
 
-	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\find_image_maxima.bmp", BIT8); 
+	FreeImageAlgorithms_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima.bmp", BIT8); 
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);

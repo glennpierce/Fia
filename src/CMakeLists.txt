@@ -40,4 +40,5 @@ ADD_LIBRARY (FreeImageAlgorithms SHARED ${FIA_SRCS})
 # Link the executable to the FreeImage library.
 TARGET_LINK_LIBRARIES (FreeImageAlgorithms FreeImage)
 
-POST_BUILD_COPY(FreeImageAlgorithms)
+COPY_TARGET(FreeImageAlgorithms)
+COPY_LIB(FreeImageAlgorithms)

@@ -107,7 +107,7 @@ MakeFIAPoint(int x, int y)
     return p;
 }
 
-DLL_API FIARECT DLL_CALLCONV
+FIARECT DLL_CALLCONV
 MakeFIARect(int left, int top, int right, int bottom)
 {
     FIARECT rect;
@@ -116,6 +116,19 @@ MakeFIARect(int left, int top, int right, int bottom)
     rect.top = top;
     rect.right = right;
     rect.bottom = bottom;
+
+    return rect;
+}
+
+FIARECT DLL_CALLCONV
+FIAImageRect(FIBITMAP *src)
+{
+    FIARECT rect;
+
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = FreeImage_GetWidth(src) - 1;
+    rect.bottom = FreeImage_GetHeight(src) - 1;
 
     return rect;
 }
@@ -1080,3 +1093,16 @@ FreeImageAlgorithms_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 }
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_InPlaceConvertToStandardType(FIBITMAP **src, int scale)
+{
+    FIBITMAP *dst = FreeImage_ConvertToStandardType(*src, scale);
+
+    FreeImage_Unload(*src);
+    *src = dst;
+
+    return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+

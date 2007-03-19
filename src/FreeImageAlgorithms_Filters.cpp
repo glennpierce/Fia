@@ -17,13 +17,7 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 								  0.0, 0.0, 0.0,
 								 -1.0, -2.0, -1.0};
 
-	PROFILE_START("Adding Border"); 
-
-	FIABITMAP *src_bordered = FreeImageAlgorithms_SetBorder(src, 10, 10);
-
-	PROFILE_STOP("Adding Border");
-
-	PROFILE_START("Making Kernels"); 
+	FIABITMAP *src_bordered = FreeImageAlgorithms_SetBorder(src, 1, 1);
 
 	FilterKernel convolve_kernel_left = FreeImageAlgorithms_NewKernel(1, 1,
 		sobel_left_kernel, 1.0);
@@ -31,20 +25,9 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 	FilterKernel convolve_kernel_top = FreeImageAlgorithms_NewKernel(1, 1,
 		sobel_top_kernel, 1.0);
 
-	PROFILE_STOP("Making Kernels"); 
-
-
-	PROFILE_START("Sobel Left Edge"); 
-
 	FIBITMAP* dib1 = FreeImageAlgorithms_Convolve(src_bordered, convolve_kernel_left);
 
-	PROFILE_STOP("Sobel Left Edge"); 
-
-	PROFILE_START("Sobel Top Edge"); 
-
 	FIBITMAP* dib2 = FreeImageAlgorithms_Convolve(src_bordered, convolve_kernel_top);
-
-	PROFILE_STOP("Sobel Top Edge"); 
 
 	int dst_width = FreeImage_GetWidth(dib1);
 	int dst_height = FreeImage_GetHeight(dib1);
