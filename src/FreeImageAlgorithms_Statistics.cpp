@@ -552,7 +552,7 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
 }
 
 
-DLL_API int DLL_CALLCONV
+int DLL_CALLCONV
 FreeImageAlgorithms_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area)
 {
 	int bpp = FreeImage_GetBPP(src);
