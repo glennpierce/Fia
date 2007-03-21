@@ -1,4 +1,4 @@
-#ifdef _WINDOWS_   // Hbitmap only used under windows.
+#ifdef _WINDOWS   // Hbitmap only used under windows.
 
 #ifndef __FREEIMAGE_ALGORITHMS_HBITMAP__
 #define __FREEIMAGE_ALGORITHMS_HBITMAP__
