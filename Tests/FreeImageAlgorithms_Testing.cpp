@@ -1,3 +1,5 @@
+#ifdef _WINDOWS_   // Hbitmap only used under windows.
+
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_IO.h"
@@ -152,3 +154,5 @@ ShowImageFromFile(char *filepath)
 
 	FreeImage_Unload(dib);
 }
+
+#endif // _WINDOWS_ 

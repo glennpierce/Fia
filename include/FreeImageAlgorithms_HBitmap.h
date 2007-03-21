@@ -1,3 +1,5 @@
+#ifdef _WINDOWS_   // Hbitmap only used under windows.
+
 #ifndef __FREEIMAGE_ALGORITHMS_HBITMAP__
 #define __FREEIMAGE_ALGORITHMS_HBITMAP__
 
@@ -86,4 +88,6 @@ FreeImageAlgorithms_CreateDibSection(HDC hdc, int width, int height, int bpp, in
 }
 #endif
 
-#endif
+#endif // __FREEIMAGE_ALGORITHMS_HBITMAP__
+
+#endif // _WINDOWS_

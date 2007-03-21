@@ -444,22 +444,6 @@ FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2);
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
 
-
-/** \brief Thresholds a float image.
- *
- *  Converts a bitmap to 8-bit monochrome bitmap ie values of 0 and 255 using a threshold
- *  T between [0.0..].
-
- *  \param src Image to threshold.
- *  \param t Value to threshold on
- *  \param min Value that pixels below t are set to.
- *  \param max Value that pixels above and equal to t are set to.
- *  \return FIBITMAP 8bit fi bitmap with pixel values between min and max.
-*/
-//DLL_API FIBITMAP* DLL_CALLCONV
-//FreeImageAlgorithms_FloatThreshold(FIBITMAP *src, float t, BYTE min, BYTE max);
-
-
 /** \brief Converts to a float image even if the image is in colour.
  *
  *  \param src Image to convert.
@@ -469,24 +453,35 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height);
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
 
-
-/** \brief Performa a threshold on greyscale images.
+/** \brief Performs a threshold on greyscale images.
  *
- *	This function performs a in place threshold on the src image.
- *	An 8bit image is return not a 1bit image.
+ *	This function performs a threshold on the src image.
+ *	An 8bit image is returned not a 1bit image.
+ *  The new value is used for all values between min and max.
+ *  Below min pixels are replaced by 0 and above max they are replaced by 255. 
  *
  *  \param src Image to threshold.
- *  \param threshold unsigned char Threshold to use.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \param min double minimum value to threshold.
+ *  \param max double maximum value to threshold.
+ *  \param new_value double new value to use.
+ *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
 */
-//DLL_API int DLL_CALLCONV
-//FreeImageAlgorithms_8BitInplaceThreshold(FIBITMAP *src, unsigned char threshold);
-
-
-
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Threshold(FIBITMAP *src, double min, double max, double new_value);
 
+/** \brief Performs a in place threshold on greyscale images.
+ *
+ *	This function performs a threshold on the src image.
+ *	An 8bit image is returned not a 1bit image.
+ *  The new value is used for all values between min and max.
+ *  Below min pixels are replaced by 0 and above max they are replaced by 255. 
+ *
+ *  \param src Image to threshold.
+ *  \param min double minimum value to threshold.
+ *  \param max double maximum value to threshold.
+ *  \param new_value double new value to use.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value);
 
