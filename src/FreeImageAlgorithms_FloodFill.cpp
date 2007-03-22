@@ -3,8 +3,6 @@
 #include "FreeImageAlgorithms_Drawing.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
-//#include "FreeImageAlgorithms_Convolution.h"
-//#include "FreeImageAlgorithms_Convolution_Private.h"
 
 #include <vector>
 

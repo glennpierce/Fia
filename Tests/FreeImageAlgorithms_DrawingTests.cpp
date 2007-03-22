@@ -9,6 +9,23 @@
 #include "FreeImageAlgorithms_Testing.h"
 
 static void
+TestFreeImageAlgorithms_ConvexHullTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\hull-test.bmp";
+
+	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	CuAssertTrue(tc, src != NULL);
+
+	FIBITMAP *hull_dib = FreeImage_ConvexHull (src);
+    CuAssertTrue(tc, hull_dib != NULL);
+
+	FreeImageAlgorithms_SaveFIBToFile(hull_dib, TEMP_DIR "\\convexhull.bmp", BIT8);
+
+	FreeImage_Unload(src);
+    FreeImage_Unload(hull_dib);
+}
+
+static void
 TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
@@ -16,14 +33,18 @@ TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
 	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
-	FIAPOINT p1, p2;
+	FIAPOINT p1, p2, p3;
 
 	p1.x = 10;
 	p1.y = 10;
 	p2.x = 500;
 	p2.y = 800;
+    p3.x = 500;
+	p3.y = 10;
 
-	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 1);
+	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 1, 1);
+
+    FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
 
 	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_line8bit.bmp", BIT8);
 
@@ -41,14 +62,18 @@ TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
 
 	CuAssertTrue(tc, src != NULL);
 
-	FIAPOINT p1, p2;
+	FIAPOINT p1, p2, p3;
 
 	p1.x = 10;
 	p1.y = 10;
 	p2.x = 500;
 	p2.y = 800;
+    p3.x = 500;
+	p3.y = 600;
 
-	FreeImageAlgorithms_DrawColourLine (src32, p1, p2, FIA_RGBQUAD(255, 0, 0), 5);
+	FreeImageAlgorithms_DrawColourLine (src32, p1, p2, FIA_RGBQUAD(255, 0, 0), 5, 0);
+
+    FreeImageAlgorithms_DrawColourLine (src32, p1, p3, FIA_RGBQUAD(255, 0, 0), 5, 1);
 
 	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_line32.bmp", BIT24);
 
@@ -168,8 +193,8 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 	FIARECT rect;
 	rect.left = 10;
 	rect.top = 10;
-	rect.bottom = 12;
-	rect.right = 12;
+	rect.bottom = 500;
+	rect.right = 500;
 	
 	FreeImageAlgorithms_DrawSolidGreyscaleRect (gs_src, rect, 100);
 
@@ -218,6 +243,7 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidGSRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
+    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvexHullTest);
 
 	return suite;
 }

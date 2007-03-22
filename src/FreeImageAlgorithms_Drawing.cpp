@@ -11,7 +11,6 @@ static void draw_line(agg::rasterizer& ras,
                double x2, double y2,
                double width)
 {
-
     double dx = x2 - x1;
     double dy = y2 - y1;
     double d = sqrt(dx*dx + dy*dy);
@@ -63,10 +62,10 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
 
 	if(x1 != x2) {
 
-		// We have a horizontal line
-		// Make sure y's are the same
-		if(y1 != y2)
-			return FREEIMAGE_ALGORITHMS_ERROR;
+	    // We have a horizontal line
+	    // Make sure y's are the same
+	    if(y1 != y2)
+		    return FREEIMAGE_ALGORITHMS_ERROR;
 
 		BYTE *bits = (BYTE *) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
 
@@ -125,16 +124,20 @@ DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width)
 	for(int i=0; i < line_width; i++) {
 	
 		// Top
-		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.top + i, rect.right + line_width - 1, rect.top + i, colour);
+		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.top + i,
+            rect.right + line_width - 1, rect.top + i, colour);
 	
 		// Bottom
-		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.bottom - i, rect.right + line_width - 1, rect.bottom - i, colour);
+		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.bottom - i,
+            rect.right + line_width - 1, rect.bottom - i, colour);
 
 		// Left
-		err = orthogonal_draw_colour_line(src, rect.left - i, rect.top, rect.left - i, rect.bottom, colour);
+		err = orthogonal_draw_colour_line(src, rect.left - i, rect.top, rect.left - i,
+            rect.bottom, colour);
 
 		// Right
-		err = orthogonal_draw_colour_line(src, rect.right + i, rect.top, rect.right + i, rect.bottom, colour);
+		err = orthogonal_draw_colour_line(src, rect.right + i, rect.top, rect.right + i,
+            rect.bottom, colour);
 	}
 
 	if(err == FREEIMAGE_ALGORITHMS_ERROR)
@@ -152,20 +155,20 @@ Draw24BitSolidColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour)
 	// Allocate the framebuffer
 	unsigned char* buf = FreeImage_GetBits(src);
 
-    	// Create the rendering buffer 
-    	agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
-    	// Create the rendering buffer 
-    	agg::renderer<agg::span_bgr24> ren(rbuf);
-    	agg::rasterizer ras;
+    // Create the rendering buffer 
+    agg::renderer<agg::span_bgr24> ren(rbuf);
+    agg::rasterizer ras;
 
-    	ras.move_to_d(rect.left, rect.top);
+    ras.move_to_d(rect.left, rect.top);
 	ras.line_to_d(rect.right, rect.top);
 	ras.line_to_d(rect.right, rect.bottom);
 	ras.line_to_d(rect.left, rect.bottom);
 	ras.line_to_d(rect.left, rect.top);
 
-    	ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+    ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
  
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
@@ -179,20 +182,20 @@ Draw32BitSolidColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour)
 	// Allocate the framebuffer
 	unsigned char* buf = FreeImage_GetBits(src);
 
-    	// Create the rendering buffer 
-    	agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
-    	// Create the renderer 
-    	agg::renderer<agg::span_bgra32> ren(rbuf);
-    	agg::rasterizer ras;
+    // Create the renderer 
+    agg::renderer<agg::span_bgra32> ren(rbuf);
+    agg::rasterizer ras;
 
-    	ras.move_to_d(rect.left, rect.top);
+    ras.move_to_d(rect.left, rect.top);
 	ras.line_to_d(rect.right, rect.top);
 	ras.line_to_d(rect.right, rect.bottom);
 	ras.line_to_d(rect.left, rect.bottom);
 	ras.line_to_d(rect.left, rect.top);
 
-    	ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+    ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
  
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
@@ -210,10 +213,6 @@ Draw8BitSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, unsigned char value)
 	// Allocate the framebuffer
 	unsigned char* buf = NULL; 
 	FIARECT tmp_rect = rect;
-
-	// FreeImages are flipped
-	tmp_rect.top = height - rect.top - 1;
-	tmp_rect.bottom = height - rect.bottom - 1;
 
 	for(register int y=tmp_rect.bottom; y <= tmp_rect.top; y++) {
 
@@ -249,7 +248,8 @@ FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double 
 } 
 
 static int 
-Draw24BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour, int line_width) 
+Draw24BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
+                     int line_width, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -257,52 +257,60 @@ Draw24BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour, in
 	// Allocate the framebuffer
 	unsigned char* buf = FreeImage_GetBits(src);
 
-    	// Create the rendering buffer 
-    	agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
-    	// Create the rendering buffer 
-    	agg::renderer<agg::span_bgr24> ren(rbuf);
-    	agg::rasterizer ras;
+    // Create the rendering buffer 
+    agg::renderer<agg::span_bgr24> ren(rbuf);
+    agg::rasterizer ras;
 
-    	// Setup the rasterizer
-    	ras.filling_rule(agg::fill_even_odd);
+    // Setup the rasterizer
+    ras.filling_rule(agg::fill_even_odd);
 
 	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
 
-    	ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+    if(antialiased)
+        ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+    else
+        ras.render_aliased(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
 static int 
-Draw32BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour, int line_width) 
+Draw32BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
+                     int line_width, int antialiased) 
 {  
-	int width = FreeImage_GetWidth(src);
+    int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	// Allocate the framebuffer
 	unsigned char* buf = FreeImage_GetBits(src);
 
-    	// Create the rendering buffer 
-    	agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
-    	// Create the rendering buffer 
-    	agg::renderer<agg::span_bgra32> ren(rbuf);
-    	agg::rasterizer ras;
+    // Create the rendering buffer 
+    agg::renderer<agg::span_bgra32> ren(rbuf);
+    agg::rasterizer ras;
 
-    	// Setup the rasterizer
-    	ras.filling_rule(agg::fill_even_odd);
+    // Setup the rasterizer
+    ras.filling_rule(agg::fill_even_odd);
 
 	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
 
-    	ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+    if(antialiased)
+        ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+    else
+        ras.render_aliased(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
  
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour, int line_width) 
+FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
+                                    int line_width, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -317,17 +325,18 @@ FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGB
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
 	if(type == FIT_BITMAP && bpp == 32)
-		return Draw32BitColourLine (src, p1_tmp, p2_tmp, colour, line_width); 
+		return Draw32BitColourLine (src, p1_tmp, p2_tmp, colour, line_width, antialiased); 
 
 	if(type == FIT_BITMAP && bpp == 24)
-		return Draw24BitColourLine (src, p1_tmp, p2_tmp, colour, line_width); 
+		return Draw24BitColourLine (src, p1_tmp, p2_tmp, colour, line_width, antialiased); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
 
 
 static int 
-Draw8BitGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char value, int line_width) 
+Draw8BitGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char value,
+                       int line_width, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -335,25 +344,29 @@ Draw8BitGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char va
 	// Allocate the framebuffer
 	unsigned char* buf = FreeImage_GetBits(src);
 
-    	// Create the rendering buffer 
-    	agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
 
-    	// Create the rendering buffer 
-    	agg::renderer<agg::span_mono8> ren(rbuf);
-    	agg::rasterizer ras;
+    // Create the rendering buffer 
+    agg::renderer<agg::span_mono8> ren(rbuf);
+    agg::rasterizer ras;
 
-    	// Setup the rasterizer
-    	ras.filling_rule(agg::fill_even_odd);
+    // Setup the rasterizer
+    ras.filling_rule(agg::fill_non_zero);
 
 	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
 
-    	ras.render(ren, agg::rgba8(value, value, value));
- 
+    if(antialiased)
+        ras.render_aliased(ren, agg::rgba8(value, value, value));
+    else
+        ras.render(ren, agg::rgba8(value, value, value));
+
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value, int line_width) 
+FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value,
+                                       int line_width, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -368,7 +381,7 @@ FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, 
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
 	if(type == FIT_BITMAP && bpp == 8)
-		return Draw8BitGreyscaleLine (src, p1_tmp, p2_tmp, (unsigned char) value, line_width); 
+		return Draw8BitGreyscaleLine (src, p1_tmp, p2_tmp, (unsigned char) value, line_width, antialiased); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
@@ -411,6 +424,63 @@ FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, RGBQUAD co
 
 	if(type == FIT_BITMAP && bpp == 24)
 		return Draw24BitSolidColourRect (src, tmp_rect, colour); 
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+} 
+
+
+int DLL_CALLCONV
+Draw8BitGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
+                          unsigned char value, int line_width) 
+{
+    int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = FreeImage_GetBits(src);
+
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+
+    // Create the rendering buffer 
+    agg::renderer<agg::span_bgr24> ren(rbuf);
+    agg::rasterizer ras;
+
+    //int y_point = height - points[0].y;
+    ras.move_to_d(points[0].x, points[0].y);
+    
+    //FIARECT rect;
+
+    for(int i=1; i<=number_of_points; i++) {
+
+        //rect.left = points[i].x;
+        //rect.top = points[i].y;
+        //rect.right = rect.left + 5;
+        //rect.bottom = rect.top + 5;
+
+        //FreeImageAlgorithms_DrawSolidGreyscaleRect (src, rect, 255) ;
+
+        //y_point = height - points[i].y;
+
+	    ras.line_to_d(points[i].x, points[i].y);
+    }
+
+    ras.render(ren, agg::rgba8(value, value, value));
+ 
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
+                                          int number_of_points, unsigned char value, 
+                                          int line_width) 
+{  
+	int bpp = FreeImage_GetBPP(src);
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+	if(type == FIT_BITMAP && bpp == 8)
+		return Draw8BitGreyscalePolygon (src, points, number_of_points, value, line_width); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 

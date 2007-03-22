@@ -15,7 +15,8 @@ class FindMaxima
 {
 	public:
 
-		FIBITMAP* FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found);
+		FIBITMAP* FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold,
+            int min_separation, FIAPeak **peaks, int number, int *peaks_found);
 
 	private:
 

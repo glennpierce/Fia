@@ -377,8 +377,6 @@ namespace agg
     }
 
 
-
-
     //========================================================================
     // This class template is used basically for rendering scanlines. 
     // The 'Span' argument is one of the span renderers, such as span_rgb24 
@@ -470,7 +468,42 @@ namespace agg
                     num_pix = m_rbuf->width() - x;
                     if(num_pix <= 0) continue;
                 }
+                
                 m_span.render(row, x, num_pix, covers, c);
+            }
+            while(--num_spans);
+        }
+
+        //--------------------------------------------------------------------
+        void render_aliased(const scanline& sl, const rgba8& c)
+        {
+            if(sl.y() < 0 || sl.y() >= int(m_rbuf->height()))
+            {
+                return;
+            }
+
+            unsigned num_spans = sl.num_spans();
+            int base_x = sl.base_x();
+            unsigned char* row = m_rbuf->row(sl.y());
+            scanline::iterator span(sl);
+
+            do
+            {
+                int x = span.next() + base_x;
+                int num_pix = span.num_pix();
+                if(x < 0)
+                {
+                    num_pix += x;
+                    if(num_pix <= 0) continue;
+                    x = 0;
+                }
+                if(x + num_pix >= int(m_rbuf->width()))
+                {
+                    num_pix = m_rbuf->width() - x;
+                    if(num_pix <= 0) continue;
+                }
+                
+                m_span.hline(row, x, num_pix, c);
             }
             while(--num_spans);
         }
@@ -691,6 +724,76 @@ namespace agg
             }
             if(cover > aa_mask) cover = aa_mask;
             return cover;
+        }
+
+
+        //--------------------------------------------------------------------
+        template<class Renderer> void render_aliased(Renderer& r, 
+                                                     const rgba8& c, 
+                                                     int dx=0, 
+                                                     int dy=0)
+        {
+            const cell* const* cells = m_outline.cells();
+            if(m_outline.num_cells() == 0) return;
+
+            int x, y;
+            int area;
+
+            m_scanline.reset(m_outline.min_x(), m_outline.max_x(), dx, dy);
+
+            const cell* cur_cell = *cells++;
+            for(;;)
+            {
+                const cell* start_cell = cur_cell;
+
+                int coord  = cur_cell->packed_coord;
+                x = cur_cell->x;
+                y = cur_cell->y;
+
+                area   = start_cell->area;
+
+                //accumulate all start cells
+                while((cur_cell = *cells++) != 0)
+                {
+                    if(cur_cell->packed_coord != coord) break;
+                    area  += cur_cell->area;
+                }
+
+                if(area)
+                {
+     
+                        if(m_scanline.is_ready(y))
+                        {
+                            r.render_aliased(m_scanline, c);
+                            m_scanline.reset_spans();
+                        }
+                    
+                        m_scanline.add_cell(x, y, 0);
+                    
+                    x++;
+                }
+
+                if(!cur_cell) break;
+
+                if(cur_cell->x > x)
+                {
+                    
+                        if(m_scanline.is_ready(y))
+                        {
+                            r.render_aliased(m_scanline, c);
+                            m_scanline.reset_spans();
+                        }
+                        m_scanline.add_span(x, y, 
+                                            cur_cell->x - x, 
+                                            0);
+                    
+                }
+            } 
+        
+            if(m_scanline.num_spans())
+            {
+                r.render_aliased(m_scanline, c);
+            }
         }
 
         //--------------------------------------------------------------------
