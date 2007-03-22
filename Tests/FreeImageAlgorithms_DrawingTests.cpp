@@ -3,6 +3,7 @@
 #include "FreeImage.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Drawing.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
 #include "FreeImageAlgorithms_Testing.h"
@@ -47,7 +48,7 @@ TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
 	p2.x = 500;
 	p2.y = 800;
 
-	FreeImageAlgorithms_DrawColourLine (src32, p1, p2, RGB(255, 0, 0), 5);
+	FreeImageAlgorithms_DrawColourLine (src32, p1, p2, FIA_RGBQUAD(255, 0, 0), 5);
 
 	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_line32.bmp", BIT24);
 
@@ -80,7 +81,7 @@ TestFreeImageAlgorithms_Rect24bitTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawColourRect (src24, rect, RGB(255,0,0), 7);
+	FreeImageAlgorithms_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 7);
 
 	FreeImageAlgorithms_SaveFIBToFile(src24, TEMP_DIR "\\wallpaper_rect24bit.bmp", BIT24);
 
@@ -113,7 +114,7 @@ TestFreeImageAlgorithms_Rect32bitTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawColourRect (src32, rect, RGB(255,0,0), 7);
+	FreeImageAlgorithms_DrawColourRect (src32, rect, FIA_RGBQUAD(255,0,0), 7);
 
 	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_rect32bit.bmp", BIT24);
 
@@ -144,7 +145,7 @@ TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawColourSolidRect (src, rect, RGB(255,0,0));
+	FreeImageAlgorithms_DrawColourSolidRect (src, rect, FIA_RGBQUAD(255,0,0));
 
 	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_solidrect24bit.bmp", BIT24);
 

@@ -62,7 +62,7 @@ static entry_t* AddTag (char* str_tag) {
 }
 
 /* Compare function for 'qsort' */
-int CompareEntries (const void* p_1, const void* p_2) {
+int __cdecl CompareEntries (const void* p_1, const void* p_2) {
   entry_t* p_entry1, *p_entry2 ;
   /* Cast elements to entry_t type */
   p_entry1 = (entry_t*) p_1 ;

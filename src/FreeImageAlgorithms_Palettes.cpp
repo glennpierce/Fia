@@ -5,7 +5,7 @@
 
 #include <math.h>
 
-RGBQUAD DLL_CALLCONV FreeImageAlgorithms_GetRGBQUAD(unsigned char red, unsigned char green,
+RGBQUAD DLL_CALLCONV FIA_RGBQUAD(unsigned char red, unsigned char green,
 													unsigned char blue)
 {
 	RGBQUAD quad;

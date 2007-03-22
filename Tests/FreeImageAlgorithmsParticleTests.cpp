@@ -82,14 +82,14 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 	{
 		BLOBINFO blobinfo = info->blobs[i];
 
-		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, RGB(255,0,0), 2);
+		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, FIA_RGBQUAD(255,0,0), 2);
 
 		centre.left = blobinfo.center_x - 2;
 		centre.right = blobinfo.center_x + 2;
 		centre.top = blobinfo.center_y - 2;
 		centre.bottom = blobinfo.center_y + 2;
 
-		FreeImageAlgorithms_DrawColourSolidRect(dst, centre, RGB(0,255,0));
+		FreeImageAlgorithms_DrawColourSolidRect(dst, centre, FIA_RGBQUAD(0,255,0));
 
 		myfile << "left  "
 			<< blobinfo.rect.left << "  top  "  << blobinfo.rect.top

@@ -4,8 +4,9 @@
 
 #include <algorithm>
 #include <math.h>
+#include <float.h>
 
-#define INF 1E20
+#define INF 1E10
 
 template <class T>
 static inline T square(const T &x) { return x*x; }
@@ -19,7 +20,7 @@ static float *dt(float *f, int n)
   int k = 0;
   v[0] = 0;
   z[0] = -INF;
-  z[1] = +INF;
+  z[1] = INF;
   for (int q = 1; q <= n-1; q++) {
     float s  = ((f[q]+square(q))-(f[v[k]]+square(v[k])))/(2*q-2*v[k]);
     while (s <= z[k]) {
@@ -29,7 +30,7 @@ static float *dt(float *f, int n)
     k++;
     v[k] = q;
     z[k] = s;
-    z[k+1] = +INF;
+    z[k+1] = INF;
   }
 
   k = 0;

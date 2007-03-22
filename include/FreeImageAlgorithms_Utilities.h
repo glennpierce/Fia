@@ -513,7 +513,7 @@ FreeImageAlgorithms_DistanceTransform(FIBITMAP *src);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, float* val);
+FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, double* val);
 
 #ifdef __cplusplus
 }

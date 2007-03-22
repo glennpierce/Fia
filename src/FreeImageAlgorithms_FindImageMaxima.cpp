@@ -273,7 +273,7 @@ FindMaxima::DrawMaxima (int size)
 }
 
 
-static inline int ComparePeaks (const void *element1, const void *element2)
+static inline int __cdecl ComparePeaks (const void *element1, const void *element2)
 {
 	FIAPeak peak1, peak2;
 	
@@ -313,8 +313,6 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 	
 	int bpp = FreeImage_GetBPP(this->original_image);
 
-	GetPixelValueFunction GetPixelValue;
- 
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(this->original_image);
 
 	for(int i=0; i < number; i++)

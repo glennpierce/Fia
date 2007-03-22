@@ -16,7 +16,7 @@ extern "C" {
 typedef struct
 {
   FIAPOINT centre;
-  float value;
+  double value;
 
 } FIAPeak;
 

@@ -15,6 +15,10 @@
 extern "C" {
 #endif
 
+#ifndef _WIN32
+#define __cdecl
+#endif
+
 /** Data structure for FIABITMAP type (FIBITMAP with a border)
 */
 typedef struct

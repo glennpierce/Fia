@@ -1017,7 +1017,7 @@ void CheckMemory(void *ptr)
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, float* val)
+FreeImageAlgorithms_GetPixelValve(FIBITMAP *src, int x, int y, double* val)
 {
 	int bpp = FreeImage_GetBPP(src);
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);

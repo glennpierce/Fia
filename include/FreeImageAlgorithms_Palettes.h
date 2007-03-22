@@ -18,8 +18,8 @@ extern "C" {
  *  \param blue Blue colour.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
-DLL_API RGBQUAD DLL_CALLCONV FreeImageAlgorithms_GetRGBQUAD(unsigned char red, unsigned char green,
-													unsigned char blue);
+DLL_API RGBQUAD DLL_CALLCONV FIA_RGBQUAD(unsigned char red, unsigned char green,
+										 unsigned char blue);
 
 /** \brief Copies the palette for an image to an array of RGBQUAD.
  *

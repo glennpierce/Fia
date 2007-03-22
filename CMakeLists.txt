@@ -1,23 +1,14 @@
-MACRO(SET_LIBRARY_OUTPUTS target output)
+MACRO(POST_BUILD_COPY target)
 
-IF(UNIX)
-
-SET(LIBRARY_OUTPUT_PATH "${LIBRARY_OUTPUT_PATH}")
-
-ELSE(UNIX)
+IF(WIN32)
 
 ADD_CUSTOM_COMMAND(TARGET "${target}"
                    POST_BUILD
-                   COMMAND ${CMAKE_COMMAND}
-                   ARGS -E copy "${output}/$\(OUTDIR\)/$\(TargetName\).dll" "${output}")
+                   COMMAND move "\"$\(TargetPath\)\"" "\"$\(TargetDir\)..\"")
 
-ADD_CUSTOM_COMMAND(TARGET "${target}"
-                   POST_BUILD
-                   COMMAND ${CMAKE_COMMAND}
-                   ARGS -E copy "${output}/$\(OUTDIR\)/$\(TargetName\).lib" "${output}")
-ENDIF(UNIX)
+ENDIF(WIN32)
 
-ENDMACRO(SET_LIBRARY_OUTPUTS)
+ENDMACRO(POST_BUILD_COPY)
 
 
 # The name of our project is "FreeImageAlgorithms".  CMakeLists files in this project can
@@ -29,12 +20,10 @@ SUBDIRS(src Tests)
 
 SET(CMAKE_DEBUG_POSTFIX "_d")
 
-SET(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/bin")
-
 # Make sure the compiler can find include files from our Hello library.
 INCLUDE_DIRECTORIES(include Anti-Grain-Lite Tests)
 
 # Look for the FreeImage library
-FIND_LIBRARY(FreeImage NAMES FreeImage PATHS ${CMAKE_CURRENT_SOURCE_DIR}/libs NO_DEFAULT_PATH)
+FIND_LIBRARY(FreeImage NAMES FreeImage PATHS ${LIBRARY_OUTPUT_PATH})
 
-LINK_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR}/libs)
+LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
