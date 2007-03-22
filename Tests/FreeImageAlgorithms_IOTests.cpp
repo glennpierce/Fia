@@ -6,7 +6,7 @@
 
 #include "FreeImageAlgorithms_Testing.h"
 
-static void DLL_CALLCONV
+static void
 TestFreeImageAlgorithms_IO(CuTest* tc)
 {
 	FIBITMAP *dib1, *dib2;
