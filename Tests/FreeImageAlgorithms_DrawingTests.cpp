@@ -15,7 +15,7 @@ TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
 	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
-	POINT p1, p2;
+	FIAPOINT p1, p2;
 
 	p1.x = 10;
 	p1.y = 10;
@@ -40,7 +40,7 @@ TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
 
 	CuAssertTrue(tc, src != NULL);
 
-	POINT p1, p2;
+	FIAPOINT p1, p2;
 
 	p1.x = 10;
 	p1.y = 10;
@@ -74,7 +74,7 @@ TestFreeImageAlgorithms_Rect24bitTest(CuTest* tc)
 	p2.x = 500;
 	p2.y = 800;
 
-	RECT rect;
+	FIARECT rect;
 	rect.left = 0;
 	rect.top = 100;
 	rect.bottom = 500;
@@ -107,7 +107,7 @@ TestFreeImageAlgorithms_Rect32bitTest(CuTest* tc)
 	p2.x = 500;
 	p2.y = 800;
 
-	RECT rect;
+	FIARECT rect;
 	rect.left = 100;
 	rect.top = 100;
 	rect.bottom = 500;
@@ -138,7 +138,7 @@ TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
 	p2.x = 500;
 	p2.y = 800;
 
-	RECT rect;
+	FIARECT rect;
 	rect.left = 100;
 	rect.top = 100;
 	rect.bottom = 500;
@@ -164,7 +164,7 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 
 	CuAssertTrue(tc, gs_src != NULL);
 
-	RECT rect;
+	FIARECT rect;
 	rect.left = 10;
 	rect.top = 10;
 	rect.bottom = 12;

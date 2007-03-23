@@ -27,6 +27,22 @@ typedef struct
 
 } FIABITMAP;
 
+typedef struct
+{
+	int left;
+	int top;
+	int right;
+	int bottom;
+
+} FIARECT;
+
+typedef struct
+{
+	int x;
+	int y;
+
+} FIAPOINT;
+
 #define FREEIMAGE_ALGORITHMS_SUCCESS 1
 #define FREEIMAGE_ALGORITHMS_ERROR 0
 

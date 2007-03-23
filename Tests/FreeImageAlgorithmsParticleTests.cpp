@@ -72,7 +72,7 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib2);
 
-	RECT centre;
+	FIARECT centre;
 
 	int height = FreeImage_GetHeight(dst);
 

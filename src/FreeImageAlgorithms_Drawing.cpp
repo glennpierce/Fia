@@ -118,7 +118,7 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
 }
 
 static int 
-DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+DrawColourRect (FIBITMAP *src, FIARECT rect, COLORREF colour, int line_width) 
 {  
 	int err;
 
@@ -144,7 +144,7 @@ DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width)
 } 
 
 static int 
-Draw24BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour) 
+Draw24BitSolidColourRect (FIBITMAP *src, FIARECT rect, COLORREF colour) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -171,7 +171,7 @@ Draw24BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour)
 } 
 
 static int 
-Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour) 
+Draw32BitSolidColourRect (FIBITMAP *src, FIARECT rect, COLORREF colour) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -198,7 +198,7 @@ Draw32BitSolidColourRect (FIBITMAP *src, RECT rect, COLORREF colour)
 } 
 
 static int DLL_CALLCONV
-Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsigned char value) 
+Draw8BitSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, unsigned char value) 
 {  
 	// Seems that Anti grain method is to slow probably  because it is too advanced
 	// Does accurate drawing etc with anti aliasing.
@@ -209,7 +209,7 @@ Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsigned char value)
 
 	// Allocate the framebuffer
 	unsigned char* buf = NULL; 
-	RECT tmp_rect = rect;
+	FIARECT tmp_rect = rect;
 
 	// FreeImages are flipped
 	tmp_rect.top = height - rect.top - 1;
@@ -226,14 +226,14 @@ Draw8BitSolidGreyscaleRect (FIBITMAP *src, RECT rect, unsigned char value)
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, RECT rect, double value) 
+FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double value) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	// Allocate the framebuffer
 	unsigned char* buf = NULL; 
-	RECT tmp_rect = rect;
+	FIARECT tmp_rect = rect;
 
 	// FreeImages are flipped
 	tmp_rect.top = height - rect.top - 1;
@@ -249,7 +249,7 @@ FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, RECT rect, double val
 } 
 
 static int 
-Draw24BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int line_width) 
+Draw24BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, COLORREF colour, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -275,7 +275,7 @@ Draw24BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int lin
 } 
 
 static int 
-Draw32BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int line_width) 
+Draw32BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, COLORREF colour, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -302,12 +302,12 @@ Draw32BitColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int lin
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int line_width) 
+FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, COLORREF colour, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
-	POINT p1_tmp = p1, p2_tmp = p2;
+	FIAPOINT p1_tmp = p1, p2_tmp = p2;
 
 	// FreeImages are flipped
 	p1_tmp.y = height - p1.y;
@@ -327,7 +327,7 @@ FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF 
 
 
 static int 
-Draw8BitGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, unsigned char value, int line_width) 
+Draw8BitGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char value, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -353,12 +353,12 @@ Draw8BitGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, unsigned char value, i
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, double value, int line_width) 
+FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
-	POINT p1_tmp = p1, p2_tmp = p2;
+	FIAPOINT p1_tmp = p1, p2_tmp = p2;
 
 	// FreeImages are flipped
 	p1_tmp.y = height - p1.y;
@@ -374,12 +374,12 @@ FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, double
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width) 
+FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, FIARECT rect, COLORREF colour, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
-	RECT tmp_rect = rect;
+	FIARECT tmp_rect = rect;
 
 	// FreeImages are flipped
 	tmp_rect.top = height - rect.top - 1;
@@ -392,12 +392,12 @@ FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, i
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour) 
+FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, COLORREF colour) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
-	RECT tmp_rect = rect;
+	FIARECT tmp_rect = rect;
 
 	// FreeImages are flipped
 	tmp_rect.top = height - rect.top;

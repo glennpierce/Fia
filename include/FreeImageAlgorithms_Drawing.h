@@ -14,14 +14,14 @@ extern "C" {
 /** \brief Draw a line on an image.
  *
  *  \param src Image to draw on.
- *  \param p1 POINT point to start the line
- *  \param p2 POINT point to end the line.
+ *  \param p1 FIAPOINT point to start the line
+ *  \param p2 FIAPOINT point to end the line.
  *  \param colour COLORREF colour of the line.
  *  \param line_width pixel width of the line.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF colour, int line_width);
+FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, COLORREF colour, int line_width);
 
 /** \brief Draw a rectangle outline in colour.
  *
@@ -32,7 +32,7 @@ FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, POINT p1, POINT p2, COLORREF 
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, int line_width);
+FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, FIARECT rect, COLORREF colour, int line_width);
 
 /** \brief Draw a solid rectangle in colour.
  *
@@ -42,7 +42,7 @@ FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, RECT rect, COLORREF colour, i
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colour);
+FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, COLORREF colour);
 
 /** \brief Draw a solid rectangle in greyscale.
  *
@@ -52,19 +52,19 @@ FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, RECT rect, COLORREF colo
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, RECT rect, double value);
+FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double value);
 
 /** \brief Draw a greyscale line on an image.
  *
  *  \param src Image to draw on.
- *  \param p1 POINT point to start the line
- *  \param p2 POINT point to end the line.
+ *  \param p1 FIAPOINT point to start the line
+ *  \param p2 FIAPOINT point to end the line.
  *  \param value greyscale intensity of the line.
  *  \param line_width pixel width of the line.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, POINT p1, POINT p2, double value, int line_width);
+FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value, int line_width);
 
 /** \brief Floodfills part of a greyscale image.
  *

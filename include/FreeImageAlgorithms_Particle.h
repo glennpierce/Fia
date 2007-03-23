@@ -15,7 +15,7 @@ extern "C" {
 */
 typedef struct
 {
-  POINT centre;
+  FIAPOINT centre;
   float value;
 
 } FIAPeak;
@@ -24,7 +24,7 @@ typedef struct
 */
 typedef struct
 {
-	RECT rect;
+	FIARECT rect;
 	int area;
 	int center_x;
 	int center_y;

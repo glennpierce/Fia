@@ -246,7 +246,7 @@ FindMaxima::DrawMaxima (int size)
 	FreeImageAlgorithms_SetGreyLevelPalette(this->peek_image);
 
 	register unsigned char *src_ptr, *dst_ptr;
-	RECT rect;
+	FIARECT rect;
 
 	for (register int y=1; y < height - 1; y++)
 	{		
