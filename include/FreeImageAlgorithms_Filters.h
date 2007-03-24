@@ -18,13 +18,33 @@ extern "C" {
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius);
 
-/** \brief Perform a soble filtering.
+/** \brief Perform a sobel filtering.
  *
  *  \param src FIBITMAP bitmap to perform the sobel filter on.
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Sobel(FIBITMAP *src);
+
+#define SOBEL_HORIZONTAL 1     // (0000 0001)
+#define SOBEL_VERTICAL   2     // (0000 0010) 
+#define SOBEL_MAGNITUDE  4     // (0000 0100) 
+
+/** \brief Perform a advanced sobel filtering.
+ *
+ *  Return images can be NULL. If not the image has to be freed by the user.
+ *
+ *  \param src FIBITMAP bitmap to perform the sobel filter on.
+ *  \param vertical FIBITMAP return image of the vertical stage of the sobel filter, can be NULL.
+ *  \param horizontal FIBITMAP return image of the horizontal stage of the sobel filter, can be NULL.
+ *  \param magnitude FIBITMAP return image of the magnitude image from both directions, can be NULL.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_SobelAdvanced(FIBITMAP *src,
+                                  FIBITMAP** vertical,
+                                  FIBITMAP** horizontal,
+                                  FIBITMAP** magnitude);
 
 #ifdef __cplusplus
 }

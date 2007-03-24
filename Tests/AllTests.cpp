@@ -2,6 +2,9 @@
 
 #include "CuTest.h"
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Error.h"
+
+#include <iostream>
 
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsColourSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLinearScaleSuite(void);
@@ -42,9 +45,16 @@ void RunAllTests(void)
 	PROFILE_PRINT();
 }
 
+static void OnError(const char *msg)
+{
+    std::cout << "Error: " << msg << std::endl;
+}
+
 int __cdecl main(void)
 {
 	char string[10];
+
+    FreeImageAlgorithms_SetOutputMessage(OnError);
 
 	RunAllTests();
 

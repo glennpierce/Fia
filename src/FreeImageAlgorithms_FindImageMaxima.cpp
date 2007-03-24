@@ -306,11 +306,13 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 
 	if (*peaks_ref == NULL)
 		*peaks_ref = (FIAPeak *) malloc (number * sizeof(FIAPeak));
-	
+    else
+        return -1;
+
 	FIAPeak *peaks = *peaks_ref;
 
 	if (peaks == NULL)
-	    return 0;
+	    return -1;
 	
 	int bpp = FreeImage_GetBPP(this->original_image);
 
@@ -338,7 +340,8 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 
 
 FIBITMAP*
-FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found)
+FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold,
+                            int min_separation, FIAPeak **peaks, int number, int *peaks_found)
 {
 	this->regionGrowCount=0;
 	this->threshold = threshold;
@@ -381,4 +384,11 @@ FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char
 	FindMaxima maxima;
 
 	return maxima.FindImageMaxima(src, mask, threshold, min_separation, peaks, number, peaks_found);
+}
+
+
+void DLL_CALLCONV
+FreeImageAlgorithms_FreePeaks(FIAPeak *peaks)
+{
+	free(peaks);
 }

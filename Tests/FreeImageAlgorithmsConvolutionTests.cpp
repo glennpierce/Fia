@@ -78,10 +78,52 @@ TestFreeImageAlgorithms_SobelTest(CuTest* tc)
 
 	PROFILE_STOP("FreeImageAlgorithms_Sobel");
 
-	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\wallpaper_river_sobel.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\wallpaper_river_sobel.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
+}
+
+static void
+TestFreeImageAlgorithms_SobelAdvancedTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	
+	CuAssertTrue(tc, dib1 != NULL);
+
+	PROFILE_START("FreeImageAlgorithms_SobelAdvanced");
+
+	FIBITMAP *vertical_dib = NULL, *horizontal_dib = NULL, *mag_dib = NULL;
+
+    int err = FreeImageAlgorithms_SobelAdvanced(dib1, NULL,
+        &horizontal_dib, NULL);
+     
+    CuAssertTrue(tc, err == FREEIMAGE_ALGORITHMS_SUCCESS); 
+
+	PROFILE_STOP("FreeImageAlgorithms_SobelAdvanced");
+
+    if(vertical_dib != NULL)
+	    FreeImageAlgorithms_SaveFIBToFile(vertical_dib,
+            TEMP_DIR "\\wallpaper_river_sobel_vertical.bmp", BIT24);
+
+    if(horizontal_dib != NULL)
+        FreeImageAlgorithms_SaveFIBToFile(horizontal_dib,
+            TEMP_DIR "\\wallpaper_river_sobel_horizontal_dib.bmp", BIT24);
+
+    if(mag_dib != NULL)
+        FreeImageAlgorithms_SaveFIBToFile(mag_dib,
+            TEMP_DIR "\\wallpaper_river_sobel_magnitude_dib.bmp", BIT24);
+
+    if(vertical_dib != NULL)
+	    FreeImage_Unload(vertical_dib);
+    
+    if(horizontal_dib != NULL)
+	    FreeImage_Unload(horizontal_dib);
+    
+    if(mag_dib != NULL)
+        FreeImage_Unload(mag_dib);
 }
 
 /*
@@ -165,9 +207,8 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvolutionTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SobelTest);
+    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SobelAdvancedTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MedianFilterTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SeparableSobelTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Convolution3x3RealTest);
-	
+   
 	return suite;
 }
