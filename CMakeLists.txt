@@ -6,6 +6,10 @@ ADD_CUSTOM_COMMAND(TARGET "${target}"
                    POST_BUILD
                    COMMAND move "\"$\(TargetPath\)\"" "\"$\(TargetDir\)..\"")
 
+ADD_CUSTOM_COMMAND(TARGET "${target}"
+                   POST_BUILD
+                   COMMAND move "\"$\(TargetDir\)$\(TargetName\).lib\"" "\"$\(TargetDir\)..\"")
+
 ENDIF(WIN32)
 
 ENDMACRO(POST_BUILD_COPY)
