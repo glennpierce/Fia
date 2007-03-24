@@ -66,7 +66,7 @@ FreeImageAlgorithms_Threshold(FIBITMAP *src, double min, double max, double new_
 	// convert from src_type to FIT_BITMAP
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-	dst = FreeImageAlgorithms_CloneImageType(src, FreeImage_GetWidth(src), FreeImage_GetHeight(src));
+	dst = FreeImage_Clone(src);
 
 	int err;
 

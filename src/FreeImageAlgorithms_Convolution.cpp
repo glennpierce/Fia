@@ -30,38 +30,16 @@ FreeImageAlgorithms_Convolve(FIABITMAP *src, FilterKernel kernel)
 	if(!src)
 		return NULL;
 
-	tmp = src;
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
-	// convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
+    if(src_type == FIT_COMPLEX)
+        return NULL;
 
-	switch(src_type) {
-		
-		case FIT_FLOAT:		// array of float: 32-bit
-		case FIT_DOUBLE:	// array of double: 64-bit
-			break;
+    border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+    border_tmp.xborder = src->xborder;
+	border_tmp.yborder = src->yborder;
 
-		case FIT_INT16:		// array of short: signed 16-bit
-		case FIT_UINT16:    // array of unsigned short: unsigned 16-bit
-		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-		case FIT_INT32:		// array of long: signed 32-bit
-		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit	
-		{
-			// Converting to float. Seems to be much faster.		
-			border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
-			border_tmp.xborder = src->xborder;
-			border_tmp.yborder = src->yborder;
-			
-			tmp = &border_tmp;
-
-			break;
-		}
-
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
-			break;
-	}
-
-	Kernel<double> *kern = new Kernel<double>(tmp, kernel.x_radius,
+	Kernel<double> *kern = new Kernel<double>(&border_tmp, kernel.x_radius,
 					kernel.y_radius, kernel.values, kernel.divider);
 
 	dst = kern->Convolve();
@@ -69,7 +47,10 @@ FreeImageAlgorithms_Convolve(FIABITMAP *src, FilterKernel kernel)
 	FreeImage_Unload(border_tmp.fib);
 
 	if(NULL == dst) {
-		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+		FreeImage_OutputMessageProc(
+            FIF_UNKNOWN,
+            "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.",
+            src_type, FIT_BITMAP);
 	}
 
 	delete kern;

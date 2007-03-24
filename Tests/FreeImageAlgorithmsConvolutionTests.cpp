@@ -35,11 +35,15 @@ static const double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
 static void
 TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
 
-	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *dib_src = FreeImageAlgorithms_LoadFIBFromFile(file);
 
-	CuAssertTrue(tc, dib1 != NULL);
+	CuAssertTrue(tc, dib_src != NULL);
+
+    FIBITMAP* dib1 = FreeImage_ConvertToType(dib_src, FIT_DOUBLE, 0);
+
+    CuAssertTrue(tc, dib1 != NULL);
 
 	FIABITMAP *dib2 = FreeImageAlgorithms_SetBorder(dib1, 300, 300);
 
