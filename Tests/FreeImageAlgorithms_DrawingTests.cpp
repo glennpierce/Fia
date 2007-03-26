@@ -44,12 +44,12 @@ TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
 	p1.y = 10;
 	p2.x = 500;
 	p2.y = 800;
-    p3.x = 500;
+	p3.x = 500;
 	p3.y = 10;
 
 	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 1, 1);
 
-    FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
+	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
 
 	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_line8bit.bmp", BIT8);
 
@@ -98,13 +98,6 @@ TestFreeImageAlgorithms_Rect24bitTest(CuTest* tc)
 
 	CuAssertTrue(tc, src != NULL);
 
-	POINT p1, p2;
-
-	p1.x = 10;
-	p1.y = 10;
-	p2.x = 500;
-	p2.y = 800;
-
 	FIARECT rect;
 	rect.left = 0;
 	rect.top = 100;
@@ -131,13 +124,6 @@ TestFreeImageAlgorithms_Rect32bitTest(CuTest* tc)
 
 	CuAssertTrue(tc, src != NULL);
 
-	POINT p1, p2;
-
-	p1.x = 10;
-	p1.y = 10;
-	p2.x = 500;
-	p2.y = 800;
-
 	FIARECT rect;
 	rect.left = 100;
 	rect.top = 100;
@@ -161,13 +147,6 @@ TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
 	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, src != NULL);
-
-	POINT p1, p2;
-
-	p1.x = 10;
-	p1.y = 10;
-	p2.x = 500;
-	p2.y = 800;
 
 	FIARECT rect;
 	rect.left = 100;

@@ -35,10 +35,10 @@ ENDIF (WIN32)
 
 ADD_DEFINITIONS(-DFREEIMAGE_EXPORTS)
 
-ADD_LIBRARY (FreeImageAlgorithms SHARED ${FIA_SRCS})
+ADD_LIBRARY (freeimagealgorithms SHARED ${FIA_SRCS})
 
 # Link the executable to the FreeImage library.
-TARGET_LINK_LIBRARIES (FreeImageAlgorithms FreeImage)
+TARGET_LINK_LIBRARIES (freeimagealgorithms freeimage)
 
-COPY_TARGET(FreeImageAlgorithms)
-COPY_LIB(FreeImageAlgorithms)
+COPY_TARGET(freeimagealgorithms)
+COPY_LIB(freeimagealgorithms)

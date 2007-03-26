@@ -11,7 +11,7 @@
 #ifndef _PROFILE_H_
 #define _PROFILE_H_
 
-#include "FreeImage.h"
+#include "FreeImageAlgorithms.h"
 
 #include <stdio.h>
 #include <stdlib.h>
