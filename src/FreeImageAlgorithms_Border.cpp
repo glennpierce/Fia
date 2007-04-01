@@ -2,6 +2,18 @@
 #include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
+template<class Tsrc>
+class BORDER
+{
+public:
+	
+    inline void SetImageRowToConstant(FIBITMAP *src, int row_start, int count, Tsrc val);
+    inline void SetImageColToConstant(FIBITMAP *src, int col_start, int count, Tsrc val);	
+
+    FIABITMAP* SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, Tsrc constant);
+};
+
+
 static inline void CopyImageRow(FIBITMAP *src, int src_row,
                          int row_start, int count)
 {
@@ -36,39 +48,42 @@ static inline void CopyImageCol(FIBITMAP *src, int src_col,
     }
 }
 
-static inline void SetImageRowToConstant(FIBITMAP *src, int row_start, int count, double val)
+template <typename Tsrc>
+inline void BORDER<Tsrc>::SetImageRowToConstant(FIBITMAP *src, int row_start, int count, Tsrc val)
 {
     int pitch = FreeImage_GetPitch(src);
+    int width = FreeImage_GetWidth(src);
 
-    BYTE *dst_bits;
+    Tsrc *dst_bits = NULL;
 
-    for(int y = row_start; y < (row_start + count); y++) {
+    for(register int y = row_start; y < (row_start + count); y++) {
 
-        dst_bits = FreeImage_GetScanLine(src, y);
+        dst_bits = (Tsrc*) FreeImage_GetScanLine(src, y);
 
-        memset(dst_bits, val, pitch);
+        for(register int x = 0; x < width; x++)
+           dst_bits[x] = (Tsrc) val;
     }
 }
 
-static inline void SetImageColToConstant(FIBITMAP *src, int col_start, int count, double val)
+template <typename Tsrc>
+inline void BORDER<Tsrc>::SetImageColToConstant(FIBITMAP *src, int col_start, int count, Tsrc val)
 {
     int height = FreeImage_GetHeight(src);
     int pitch = FreeImage_GetPitch(src);
 
-    BYTE* bits = FreeImage_GetBits(src);
+    Tsrc* bits = (Tsrc*) FreeImage_GetBits(src);
 
     for(int y = 0; y < height; y++) {
 
         for(int x = col_start; x < (col_start + count); x++)
-            bits[x] = val;
+            bits[x] = (Tsrc) val;
 
         bits += pitch;
     }
 }
 
-
-FIABITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant)
+template <typename Tsrc> FIABITMAP*
+BORDER<Tsrc>::SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, Tsrc constant)
 {
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -86,31 +101,19 @@ FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderTyp
 
 	FreeImageAlgorithms_SimplePaste(dst->fib, src, xborder, yborder);
 
-    BYTE *dst_bits, *src_bits;
-    int src_pitch = FreeImage_GetPitch(src);
-    int dst_pitch = FreeImage_GetPitch(dst->fib);
-
     if(type == BorderType_Constant && constant != 0.0) {
    
-        double val = constant, max_possible;
-        
-        FreeImageAlgorithms_GetMaxPosibleValueForFib(src, &max_possible);
-
-        if(val > max_possible);
-            val = max_possible;
-
         // Set the bottom line of the image to constant value
-        SetImageRowToConstant(dst->fib, 0, yborder, val);
+        this->SetImageRowToConstant(dst->fib, 0, yborder, constant);
 
         // Set the top line of the image to constant value
-        SetImageRowToConstant(dst->fib, dst_height - yborder, yborder, val);
+        this->SetImageRowToConstant(dst->fib, dst_height - yborder, yborder, constant);
 
         // Set the left pixels of the image
-        SetImageColToConstant(dst->fib, 0, xborder, val);
+        this->SetImageColToConstant(dst->fib, 0, xborder, constant);
 
         // Set the right pixels of the image
-        SetImageColToConstant(dst->fib, dst_width - xborder, xborder, val);
-
+        this->SetImageColToConstant(dst->fib, dst_width - xborder, xborder, constant);
     }
     else if (type == BorderType_Copy) {
 
@@ -189,6 +192,61 @@ FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderTyp
         }
 
     }
+
+	return dst;
+}
+
+
+static BORDER<unsigned char>		borderUCharImage;
+static BORDER<unsigned short>		borderUShortImage;
+static BORDER<short>				borderShortImage;
+static BORDER<unsigned long>		borderULongImage;
+static BORDER<long>				    borderLongImage;
+static BORDER<float>				borderFloatImage;
+static BORDER<double>				borderDoubleImage;
+
+
+FIABITMAP* DLL_CALLCONV
+FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant)
+{
+	FIABITMAP *dst = NULL;
+
+	if(!src)
+        return NULL;
+
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				dst = borderUCharImage.SetBorder(src, xborder, yborder, type, (unsigned char) constant);
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			dst = borderUShortImage.SetBorder(src, xborder, yborder, type, (unsigned short) constant);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			dst = borderShortImage.SetBorder(src, xborder, yborder, type, (short) constant);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			dst = borderULongImage.SetBorder(src, xborder, yborder, type, (unsigned long) constant);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			dst = borderLongImage.SetBorder(src, xborder, yborder, type, (long) constant);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = borderFloatImage.SetBorder(src, xborder, yborder, type, (float) constant);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			dst = borderDoubleImage.SetBorder(src, xborder, yborder, type, constant);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN,
+            "FREE_IMAGE_TYPE: Unable to set border for type %d.", type);
+	}
 
 	return dst;
 }

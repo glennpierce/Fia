@@ -197,6 +197,7 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 
 	PROFILE_STOP("MedianFilter");
 
+    /*
 	for(int y=0; y < FreeImage_GetHeight(dib5); y++) {
 	
 		float *bits = (float*) FreeImage_GetScanLine(dib5, y);
@@ -206,6 +207,7 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 
 		std::cout << std::endl;
 	}
+    */
 
 	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\salt_and_pepper_median.jpg", BIT8);
 
