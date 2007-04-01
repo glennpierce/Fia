@@ -24,6 +24,23 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 	CuAssertTrue(tc, max_found == 240.0);
 }
 
+static void
+TestFreeImageAlgorithms_LinearScaleRangeTest(CuTest* tc)
+{
+	double min_found, max_found;
+
+	char *file = IMAGE_DIR "\\8bit_test.png";
+
+	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *scaled_dib = FreeImageAlgorithms_StretchImageAcrossRange(dib, 200, 255); 
+
+    FreeImageAlgorithms_SaveFIBToFile(scaled_dib,
+        TEMP_DIR "\\scaled_range.bmp", BIT8);
+
+	FreeImage_Unload(dib);
+	FreeImage_Unload(scaled_dib);
+}
+
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsLinearScaleSuite(void)
@@ -31,6 +48,7 @@ CuGetFreeImageAlgorithmsLinearScaleSuite(void)
 	CuSuite* suite = CuSuiteNew();
 
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LinearScaleTest);
+    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LinearScaleRangeTest);
 
 	return suite;
 }

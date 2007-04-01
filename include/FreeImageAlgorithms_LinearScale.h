@@ -37,6 +37,10 @@ FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double 
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max);
 
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_StretchImageAcrossRange(FIBITMAP *src, double min, double max);
+
 #ifdef __cplusplus
 }
 #endif

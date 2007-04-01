@@ -690,7 +690,7 @@ FreeImageAlgorithms_BinaryOpening(FIABITMAP* src, FilterKernel kernel)
 	FIBITMAP* tmp = FreeImageAlgorithms_BinaryErosion(src, kernel);
 
 	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(tmp,
-								kernel.x_radius, kernel.y_radius);
+								kernel.x_radius, kernel.y_radius, BorderType_Constant, 0.0);
 
 	FreeImage_Unload(tmp);
 	
@@ -709,7 +709,7 @@ FreeImageAlgorithms_BinaryClosing(FIABITMAP* src, FilterKernel kernel)
 	FIBITMAP* tmp = FreeImageAlgorithms_BinaryDilation(src, kernel);
 
 	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(tmp,
-								kernel.x_radius, kernel.y_radius);
+								kernel.x_radius, kernel.y_radius, BorderType_Constant, 0.0);
 
 	FreeImage_Unload(tmp);
 	

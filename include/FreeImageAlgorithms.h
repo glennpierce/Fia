@@ -47,6 +47,15 @@ typedef struct
 
 } FIAPOINT;
 
+typedef enum
+{
+    BorderType_Constant,
+    BorderType_Copy,
+    BorderTypeMirror
+
+} BorderType;
+
+
 #define FREEIMAGE_ALGORITHMS_SUCCESS 1
 #define FREEIMAGE_ALGORITHMS_ERROR 0
 
@@ -81,11 +90,26 @@ FreeImageAlgorithms_Unload(FIABITMAP* src);
  *  This function returns an image with a black (zero) border added to an image.
  *
  *  \param src FIBITMAP bitmap to add a border to.
+ *  \param xborder Size of the border.
+ *  \param yborder Size of the border.
+ *  \param type BorderType type of the border can be BorderType_Constant,
+ *              BorderType_Copy or BorderType_Mirror.
+ *  \param constant double the value to use for the border.
+ *  \return A FIABITMAP structure containing a FIBITMAP and a border size.
+*/
+DLL_API FIABITMAP* DLL_CALLCONV
+FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant);
+
+/** \brief Adds a zero border to an image.
+ *
+ *  This function returns an image with a black (zero) border added to an image.
+ *
+ *  \param src FIBITMAP bitmap to add a border to.
  *  \param border Size of the border.
  *  \return A FIABITMAP structure containing a FIBITMAP and a border size.
 */
 DLL_API FIABITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder);
+FreeImageAlgorithms_SetZeroBorder(FIBITMAP *src, int xborder, int yborder);
 
 #ifdef __cplusplus
 }

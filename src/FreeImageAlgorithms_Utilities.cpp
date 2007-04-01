@@ -93,6 +93,32 @@ FreeImageAlgorithms_SSEFindFloatMinMax(const float *data, long n, float *min, fl
     *max = max(x.f[0], max(x.f[1], max(x.f[2], x.f[3])));
 }
 
+
+/*******************************************************************************
+ Rounding from a float to the nearest integer can be done several ways.
+ Calling the ANSI C floor() routine then casting to an int is very slow.
+ Manually adding 0.5 then casting to an int is also somewhat slow because
+ truncation of the float is slow on Intel FPUs. The fastest choice is to
+ use the FPU 'fistp' instruction which does the round and conversion
+ in one instruction (not sure how many clocks). This function is almost
+ 10x faster than adding and casting.
+
+ Caller is expected to range check 'v' before attempting to round.
+ Valid range is INT_MIN to INT_MAX inclusive.
+*******************************************************************************/
+__forceinline int Round( double v )
+{
+    assert( v >= INT_MIN && v <= INT_MAX );
+    int result;
+    __asm
+    {
+        fld    v      ; Push 'v' into st(0) of FPU stack
+        fistp  result ; Convert and store st(0) to integer and pop
+    }
+
+    return result;
+}
+
 #endif //  _MSC_VER
 
 
@@ -894,19 +920,20 @@ FreeImageAlgorithms_GetDistanceMap (int width, int height, int *distance_map)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top)
+FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom)
 {
-	int src_height = FreeImage_GetHeight(src);
+
+    int src_height = FreeImage_GetHeight(src);
 	int dst_height = FreeImage_GetHeight(dst);
 	int dst_pitch =  FreeImage_GetPitch(dst);
-
+ 
 	int src_line_bytes = FreeImage_GetLine(src);
 
 	// calculate the number of bytes per pixel
 	int bytespp = FreeImage_GetLine(dst) / FreeImage_GetWidth(dst);
 
-	int dst_scan_line = dst_height - src_height - top;
-	BYTE *dst_bits = FreeImage_GetScanLine(dst, dst_scan_line);
+	//int dst_scan_line = dst_height - src_height - top;
+	BYTE *dst_bits = FreeImage_GetScanLine(dst, bottom);
 	dst_bits += (left * bytespp);
 
 	BYTE *src_bits;
@@ -985,22 +1012,95 @@ FreeImageAlgorithms_Unload(FIABITMAP* src)
 	free(src);
 }
 
+static inline void CopyImageRow(FIBITMAP *src, int src_row,
+                         int dst_row_start, int count)
+{
+    int pitch = FreeImage_GetPitch(src);
+
+    BYTE* src_bits, *dst_bits;
+
+    src_bits = FreeImage_GetScanLine(src, src_row);
+
+    for(int y = 0; y < count; y++) {
+
+        dst_bits = FreeImage_GetScanLine(src, dst_row_start);
+
+        memcpy(dst_bits, src_bits, pitch);
+    }
+
+}
+
+static inline void CopyImageCol(FIBITMAP *src, int src_col,
+                         int dst_col_start, int count)
+{
+    int width = FreeImage_GetWidth(src);
+    int height = FreeImage_GetHeight(src);
+    int pitch = FreeImage_GetPitch(src);
+    int bytespp = FreeImage_GetLine(src) / width; 
+
+    BYTE* src_bits = FreeImage_GetBits(src) + (src_col * bytespp);
+    BYTE* dst_bits = FreeImage_GetBits(src) + (dst_col_start * bytespp);
+
+    for(int y = 0; y < height; y++) {
+
+        for(int x = 0; x < count; x++)
+            dst_bits[x] = src_bits[0];
+
+        dst_bits += pitch;
+        src_bits += pitch;
+    }
+}
+
 FIABITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder)
+FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant)
 {
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
+    int dst_width = width + (2 *xborder);
+    int dst_height = height + (2 * yborder);
 
 	FIABITMAP* dst = (FIABITMAP*) malloc(sizeof(FIABITMAP));
 	
-	dst->fib = FreeImageAlgorithms_CloneImageType(src, width + (2 *xborder), height + (2 * yborder));
+	dst->fib = FreeImageAlgorithms_CloneImageType(src, dst_width, dst_height);
 
 	dst->xborder = xborder;
 	dst->yborder = yborder;
 
 	FreeImageAlgorithms_SimplePaste(dst->fib, src, xborder, yborder);
 
+    BYTE *dst_bits, *src_bits;
+    int src_pitch = FreeImage_GetPitch(src);
+    int dst_pitch = FreeImage_GetPitch(dst->fib);
+
+    if(type == BorderType_Constant && constant != 0.0) {
+    
+        // Get the top line of the original image and copy into top border
+
+
+    }
+    else if (type == BorderType_Copy) {
+
+        // Get the bottom line of the original image and copy into bottom border
+        CopyImageRow(dst->fib, yborder, 0, yborder);
+
+        // Get the top line of the original image and copy into top border
+        CopyImageRow(dst->fib, dst_height - yborder - 1,
+            dst_height - yborder, yborder);
+
+        // Get the left pixels of the image and copy into left border
+        CopyImageCol(dst->fib, xborder, 0, xborder);
+
+        // Get the right pixels of the image and copy into right border
+        CopyImageCol(dst->fib, dst_width - xborder - 1, dst_width - xborder, xborder);
+    }
+
 	return dst;
+}
+
+FIABITMAP* DLL_CALLCONV
+FreeImageAlgorithms_SetZeroBorder(FIBITMAP *src, int xborder, int yborder)
+{
+    return FreeImageAlgorithms_SetBorder(src, xborder, yborder, BorderType_Constant, 0.0);
 }
 
 FIBITMAP* DLL_CALLCONV

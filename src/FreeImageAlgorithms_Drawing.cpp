@@ -24,6 +24,7 @@ static void draw_line(agg::rasterizer& ras,
     ras.line_to_d(x1 + dx,  y1 - dy);
 }
 
+
 // Draws a orthogonal no aa line of width one pixel
 // This is for drawing rectangles fast
 static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, int y2, RGBQUAD colour)
@@ -116,6 +117,84 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
 	return FREEIMAGE_ALGORITHMS_ERROR;
 }
 
+
+// Draws a orthogonal no aa line of width one pixel
+// This is for drawing rectangles fast and with subpixel position as with agg.
+template <typename valType>
+static int orthogonal_draw_gs_line(FIBITMAP *src, int x1, int y1, int x2, int y2, valType colour)
+{
+	if(!src)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+ 
+	// Draw from the left
+	if(x2 < x1)
+		SWAP(x1, x2);
+
+	// Draw from the top
+	if(y2 < y1)
+		SWAP(y1, y2);
+
+	if(x2 < 0 || y2 < 0)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	if(x1 < 0)
+		x1 = 0;
+		
+	if(x2 >= width)
+		x2 = width - 1;
+
+	if(y1 < 0)
+		y1 = 0;
+		
+	if(y2 >= height)
+		y2 = height - 1;
+
+	int bytespp = FreeImage_GetLine(src) / FreeImage_GetWidth(src); 
+	int pitch = FreeImage_GetPitch(src);
+
+	if(x1 != x2) {
+
+	    // We have a horizontal line
+	    // Make sure y's are the same
+	    if(y1 != y2)
+		    return FREEIMAGE_ALGORITHMS_ERROR;
+
+		BYTE *bits = (BYTE *) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
+
+        memset(bits, colour, (bytespp * (x2 - x1 + 1)));
+
+		return FREEIMAGE_ALGORITHMS_SUCCESS;
+	}
+
+	if(y1 != y2) {
+
+		// We have a verticle line
+		// Make sure x's are the same
+		if(x1 != x2)
+			return FREEIMAGE_ALGORITHMS_ERROR;	
+
+		// Get starting point
+		BYTE *bits = (BYTE*) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
+
+		while(y1 <= y2) {
+
+			*bits = colour;
+
+			bits += pitch;
+
+			y1++;
+		}
+
+		return FREEIMAGE_ALGORITHMS_SUCCESS;
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+}
+
+
 static int 
 DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width) 
 {  
@@ -145,6 +224,42 @@ DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width)
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
+
+
+template <typename valType> static int 
+DrawGSRect (FIBITMAP *src, FIARECT rect, valType colour, int line_width) 
+{  
+	int err;
+
+	for(int i=0; i < line_width; i++) {
+	
+		// Top
+		err =  orthogonal_draw_gs_line(src, rect.left - line_width + 1, rect.top + i,
+            rect.right + line_width - 1, rect.top + i, colour);
+	
+		// Bottom
+		err =  orthogonal_draw_gs_line(src, rect.left - line_width + 1, rect.bottom - i,
+            rect.right + line_width - 1, rect.bottom - i, colour);
+
+		// Left
+		err =  orthogonal_draw_gs_line(src, rect.left - i, rect.top, rect.left - i,
+            rect.bottom, colour);
+
+		// Right
+		err =  orthogonal_draw_gs_line(src, rect.right + i, rect.top, rect.right + i,
+            rect.bottom, colour);
+	}
+
+	if(err == FREEIMAGE_ALGORITHMS_ERROR)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+} 
+
+
+
+
+
 
 static int 
 Draw24BitSolidColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour) 
@@ -369,9 +484,10 @@ Draw8BitGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char va
 	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
 
     if(antialiased)
-        ras.render_aliased(ren, agg::rgba8(value, value, value));
+        ras.render(ren, agg::rgba8(value, value, value));  
     else
-        ras.render(ren, agg::rgba8(value, value, value));
+        ras.render_aliased(ren, agg::rgba8(value, value, value));
+        
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
@@ -397,6 +513,37 @@ FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, 
                                       line_width, antialiased); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
+} 
+
+
+static int 
+DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width) 
+{  
+	int err;
+
+	for(int i=0; i < line_width; i++) {
+	
+		// Top
+		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.top + i,
+            rect.right + line_width - 1, rect.top + i, colour);
+	
+		// Bottom
+		err = orthogonal_draw_colour_line(src, rect.left - line_width + 1, rect.bottom - i,
+            rect.right + line_width - 1, rect.bottom - i, colour);
+
+		// Left
+		err = orthogonal_draw_colour_line(src, rect.left - i, rect.top, rect.left - i,
+            rect.bottom, colour);
+
+		// Right
+		err = orthogonal_draw_colour_line(src, rect.right + i, rect.top, rect.right + i,
+            rect.bottom, colour);
+	}
+
+	if(err == FREEIMAGE_ALGORITHMS_ERROR)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
 
 int DLL_CALLCONV
@@ -485,6 +632,51 @@ FreeImageAlgorithms_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
 	if(type == FIT_BITMAP && bpp == 8)
 		return Draw8BitGreyscalePolygon (src, points, number_of_points, value,
                                          antialiased); 
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+} 
+
+
+int DLL_CALLCONV
+FreeImageAlgorithms_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_width) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	FIARECT tmp_rect = rect;
+
+	// FreeImages are flipped
+	tmp_rect.top = height - rect.top - 1;
+	tmp_rect.bottom = height - rect.bottom - 1;
+
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+    switch(type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+                 return DrawGSRect (src, tmp_rect, (unsigned char) colour, line_width); 
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			return DrawGSRect (src, tmp_rect, (unsigned short) colour, line_width); 
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			return DrawGSRect (src, tmp_rect, (short) colour, line_width); 
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			return DrawGSRect (src, tmp_rect, (unsigned long) colour, line_width); 
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			return DrawGSRect (src, tmp_rect, (long) colour, line_width); 
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			return DrawGSRect (src, tmp_rect, (float) colour, line_width); 
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			return DrawGSRect (src, tmp_rect, (double) colour, line_width); 
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 

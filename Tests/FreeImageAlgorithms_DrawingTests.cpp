@@ -47,7 +47,7 @@ TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
 	p3.x = 500;
 	p3.y = 10;
 
-	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 1, 1);
+	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 1, 0);
 
 	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
 
@@ -76,9 +76,13 @@ TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
     p3.x = 500;
 	p3.y = 600;
 
+    
 	FreeImageAlgorithms_DrawColourLine (src32, p1, p2, FIA_RGBQUAD(255, 0, 0), 5, 0);
 
     FreeImageAlgorithms_DrawColourLine (src32, p1, p3, FIA_RGBQUAD(255, 0, 0), 5, 1);
+
+
+    
 
 	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_line32.bmp", BIT24);
 
@@ -138,6 +142,34 @@ TestFreeImageAlgorithms_Rect32bitTest(CuTest* tc)
 	FreeImage_Unload(src32);
 }
 
+static void
+TestFreeImageAlgorithms_GsRectTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
+
+	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+
+	CuAssertTrue(tc, src != NULL);
+
+	POINT p1, p2;
+
+	p1.x = 10;
+	p1.y = 10;
+	p2.x = 500;
+	p2.y = 800;
+
+	FIARECT rect;
+	rect.left = 100;
+	rect.top = 100;
+	rect.bottom = 500;
+	rect.right = 500;
+	
+	FreeImageAlgorithms_DrawGreyscaleRect (src, rect, 200, 5);
+
+	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_gsrect.bmp", BIT8);
+
+	FreeImage_Unload(src);
+}
 
 static void
 TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
@@ -179,11 +211,11 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 	rect.top = 10;
 	rect.bottom = 500;
 	rect.right = 500;
-	
+
 	FreeImageAlgorithms_DrawSolidGreyscaleRect (gs_src, rect, 100);
 
-	FreeImageAlgorithms_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.bmp", BIT24);
-
+	FreeImageAlgorithms_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.bmp", BIT8);
+  
 	FreeImage_Unload(src);
 	FreeImage_Unload(gs_src);
 }
@@ -224,6 +256,7 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_GSLineTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ColourLineTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Rect24bitTest);
+    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_GsRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidGSRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);

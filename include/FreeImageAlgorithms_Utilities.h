@@ -451,7 +451,7 @@ FreeImageAlgorithms_GetDistanceMap (int width, int height, float *distance_map);
 // above 8bits.
 // This function is very limited.
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int top);
+FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom);
 
 /** \brief Performs a bitwise compare between two images.
  *		   Returns 1 for images that are the same.

@@ -347,7 +347,7 @@ FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char thresho
 	this->threshold = threshold;
 	this->min_separation;
 
-	this->original_image = FreeImage_ConvertToStandardType(src, 1);
+	this->original_image = src;
 
 	this->width = FreeImage_GetWidth(this->original_image);
 	this->height = FreeImage_GetHeight(this->original_image);
@@ -382,6 +382,10 @@ FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found)
 {
 	FindMaxima maxima;
+
+    // Make sure we have the 8bit greyscale image.
+	if(FreeImage_GetBPP(src) != 8 && FreeImage_GetImageType(src) != FIT_BITMAP)
+		return NULL;
 
 	return maxima.FindImageMaxima(src, mask, threshold, min_separation, peaks, number, peaks_found);
 }

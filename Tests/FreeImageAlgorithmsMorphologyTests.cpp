@@ -35,7 +35,8 @@ TestFreeImageAlgorithms_DilationTest(CuTest* tc)
 
 	CuAssertTrue(tc, threshold_8bit_dib != NULL);
 
-	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
+	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2
+        , BorderType_Constant, 0.0);
 
 	PROFILE_START("DilationFilter");
 
@@ -73,7 +74,8 @@ TestFreeImageAlgorithms_ErosionTest(CuTest* tc)
 
 	CuAssertTrue(tc, threshold_8bit_dib != NULL);
 
-	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
+	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2
+        , BorderType_Constant, 0.0);
 
 	PROFILE_START("ErosionFilter");
 
@@ -111,7 +113,8 @@ TestFreeImageAlgorithms_OpeningTest(CuTest* tc)
 
 	CuAssertTrue(tc, threshold_8bit_dib != NULL);
 
-	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
+	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2
+        , BorderType_Constant, 0.0);
 
 	FilterKernel kernel = FreeImageAlgorithms_NewKernel(2, 2, kernel_values, 1.0);
 
@@ -145,7 +148,8 @@ TestFreeImageAlgorithms_ClosingTest(CuTest* tc)
 
 	CuAssertTrue(tc, threshold_8bit_dib != NULL);
 
-	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2);
+	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(threshold_8bit_dib, 2, 2
+        , BorderType_Constant, 0.0);
 
 	FilterKernel kernel = FreeImageAlgorithms_NewKernel(2, 2, kernel_values, 1.0);
 

@@ -49,10 +49,9 @@ TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 {
-	//char *file = IMAGE_DIR "\\fillhole_test.bmp";
+	char *file = IMAGE_DIR "\\fillhole_test.bmp";
 	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
 	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe_no_region_grow.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
@@ -117,7 +116,8 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 {
-    char *file = IMAGE_DIR "\\CHT.bmp";
+    //char *file = IMAGE_DIR "\\CHT.bmp";
+    char *file = IMAGE_DIR "\\finmax_in.bmp";
 	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
 	//char *shouldbefile = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
 	
@@ -134,7 +134,8 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 	FIAPeak *peaks = NULL;
 	int number_of_peaks;
-	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 50, 2, &peaks, 0, &number_of_peaks);
+	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 2.80612,
+        0, &peaks, 0, &number_of_peaks);
 
 	PROFILE_STOP("FindImageMaxima");
 

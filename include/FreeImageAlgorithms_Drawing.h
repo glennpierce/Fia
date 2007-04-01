@@ -118,6 +118,9 @@ FreeImageAlgorithms_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int n
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImage_ConvexHull(FIBITMAP *src);
 
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_width);
+
 #ifdef __cplusplus
 }
 #endif

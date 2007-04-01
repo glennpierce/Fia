@@ -5,6 +5,7 @@
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Filters.h"
 #include "FreeImageAlgorithms_Testing.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
 
@@ -45,7 +46,8 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 
     CuAssertTrue(tc, dib1 != NULL);
 
-	FIABITMAP *dib2 = FreeImageAlgorithms_SetBorder(dib1, 300, 300);
+	FIABITMAP *dib2 = FreeImageAlgorithms_SetBorder(dib1, 300, 300
+        , BorderType_Constant, 0.0);
 
 	CuAssertTrue(tc, dib2->fib != NULL);
 
@@ -70,7 +72,7 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_SobelTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+	char *file = IMAGE_DIR "\\cells.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -82,7 +84,14 @@ TestFreeImageAlgorithms_SobelTest(CuTest* tc)
 
 	PROFILE_STOP("FreeImageAlgorithms_Sobel");
 
-	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\wallpaper_river_sobel.bmp", BIT24);
+  //  images->processingImage = FreeImageAlgorithms_Threshold(images->magnitude_sobel_image, params.sobel_threshold, 255, 1.0);  
+
+//	FreeImageAlgorithms_InPlaceConvertToStandardType(&(images->processingImage), 0);
+		
+	FreeImageAlgorithms_SetTernaryPalettePalette(dib2, FIA_RGBQUAD(0,0,0), 
+			1, FIA_RGBQUAD(255,0,0), 2, FIA_RGBQUAD(0,255,0));
+
+	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\cells_sobel.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -173,7 +182,8 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FIABITMAP* dib4 = FreeImageAlgorithms_SetBorder(dib3, 1, 1);
+	FIABITMAP* dib4 = FreeImageAlgorithms_SetBorder(dib3, 1, 1
+        ,BorderType_Constant, 0.0);
 
 	PROFILE_START("MedianFilter");
 

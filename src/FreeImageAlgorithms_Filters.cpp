@@ -30,7 +30,7 @@ FreeImageAlgorithms_SobelAdvanced(FIBITMAP *src,
 	double sobel_horizontal_kernel[] = { 1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0};
     double sobel_vertical_kernel[] = {-1.0, 0.0, 1.0, -2.0, 0.0, 2.0, -1.0, 0.0, 1.0};
 
-    FIABITMAP *src_bordered = FreeImageAlgorithms_SetBorder(src, 1, 1);
+    FIABITMAP *src_bordered = FreeImageAlgorithms_SetBorder(src, 1, 1, BorderType_Copy, 0.0);
 
     FIBITMAP *vertical_tmp = NULL, *horizontal_tmp = NULL;
 

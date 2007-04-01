@@ -12,7 +12,8 @@ template<class Tsrc>
 class LINEAR_SCALE
 {
 public:
-	FIBITMAP* convert(FIBITMAP *src, double min, double max, double *min_with_image, double *max_within_image);
+	FIBITMAP* convert(FIBITMAP *src, double min, double max, double *min_with_image,
+        double *max_within_image);
 	
 };
 
@@ -22,6 +23,7 @@ class STRETCH
 {
 public:
 	FIBITMAP* StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max);
+    FIBITMAP* StretchImageAcrossRange(FIBITMAP *src, Tdst dst_min, Tdst dst_max);
 };
 
 template<class Tdst> FIBITMAP* 
@@ -63,6 +65,51 @@ STRETCH<Tdst>::StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double ma
 }
 
 
+template<class Tdst> FIBITMAP* 
+STRETCH<Tdst>::StretchImageAcrossRange(FIBITMAP *src, Tdst dst_min, Tdst dst_max)
+{
+	FIBITMAP *dst = NULL;
+
+    if(src == NULL)
+        return NULL;
+
+    if(dst_min >= dst_max)
+        return NULL;
+
+    unsigned x, y;
+	
+	unsigned width	= FreeImage_GetWidth(src);
+	unsigned height = FreeImage_GetHeight(src);
+
+    double min_found, max_found, max_value;
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+    FreeImageAlgorithms_FindMinMax(src, &min_found, &max_found);
+
+    // compute the scaling factor
+	float scale = (float) (dst_max - dst_min) /  (max_found - min_found);
+
+    dst = FreeImageAlgorithms_CloneImageType(src, width, height);
+
+	BYTE *src_bits;
+	Tdst *dst_bits;
+
+	// scale to 8-bit
+	for(y = 0; y < height; y++) {
+
+		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src, y));
+		dst_bits = reinterpret_cast<Tdst *>(FreeImage_GetScanLine(dst, y));
+
+		for(x = 0; x < width; x++) {
+			dst_bits[x] = static_cast<Tdst>((src_bits[x] - min_found) * scale + dst_min);
+		}
+	}
+
+	return dst;
+}
+
+
 template<class Tsrc> FIBITMAP* 
 LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)
 {
@@ -80,15 +127,23 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_w
 
 	double scale;
 
-	FreeImageAlgorithms_FindMinMax(src, min_within_image, max_within_image);
+    double min_found, max_found;
+
+    FreeImageAlgorithms_FindMinMax(src, &min_found, &max_found);
 
 	// If the user has not specifed min & max use the min and max pixels in the image.
 	if(max == 0.0 && min == 0.0) {
-		min = *min_within_image;
-		max = *max_within_image;
+		min = min_found;
+		max = max_found;
 	}
 	
-	if(*min_within_image == *max_within_image) {
+    if(min_within_image != NULL)
+        *min_within_image = min_found;
+
+    if(max_within_image != NULL)
+        *max_within_image = max_found;
+
+	if(min_found == max_found) {
 
 		FreeImage_Unload(dst);
 		return FreeImage_ConvertToStandardType(src, 1);
@@ -230,6 +285,53 @@ FreeImageAlgorithms_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, doub
 
 	if(NULL == dst) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", type, FIT_BITMAP);
+	}
+
+	return dst;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_StretchImageAcrossRange(FIBITMAP *src, double min, double max)
+{
+	FIBITMAP *dst = NULL;
+
+	if(!src)
+        return NULL;
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+	switch(type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				dst = stretchUCharImage.StretchImageAcrossRange(src, (unsigned char) min, (unsigned char) max);
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			dst = stretchUShortImage.StretchImageAcrossRange(src, (unsigned short) min, (unsigned short) max);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			dst = stretchShortImage.StretchImageAcrossRange(src, (short) min, (short) max);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			dst = stretchULongImage.StretchImageAcrossRange(src, (unsigned long) min, (unsigned long) max);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			dst = stretchLongImage.StretchImageAcrossRange(src, (long) min, (long) max);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			dst = stretchFloatImage.StretchImageAcrossRange(src, (float) min, (float) max);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			dst = stretchDoubleImage.StretchImageAcrossRange(src, type, max);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN,
+            "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.",
+            type, FIT_BITMAP);
 	}
 
 	return dst;

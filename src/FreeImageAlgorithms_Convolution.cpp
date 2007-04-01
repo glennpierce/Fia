@@ -105,7 +105,8 @@ FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel kernel1, Filt
 
 	tmp_dst = kern1->Convolve();
 		
-	tmp_border = FreeImageAlgorithms_SetBorder(tmp_dst, kernel2.x_radius, kernel2.y_radius);
+	tmp_border = FreeImageAlgorithms_SetBorder(tmp_dst,
+        kernel2.x_radius, kernel2.y_radius, BorderType_Constant, 0.0);
 
 	Kernel<double> *kern2 = new Kernel<double>(tmp_border, kernel2.x_radius,
 				kernel2.y_radius, kernel2.values, kernel2.divider);

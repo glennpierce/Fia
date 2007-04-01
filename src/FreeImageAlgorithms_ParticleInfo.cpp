@@ -138,6 +138,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 	if(src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
+    // Make sure we have the 8bit greyscale image.
 	if(FreeImage_GetBPP(src) != 8 && FreeImage_GetImageType(src) != FIT_BITMAP)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
