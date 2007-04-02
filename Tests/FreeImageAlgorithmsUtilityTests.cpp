@@ -13,27 +13,27 @@
 
 #include "profile.h"
 
-/*
+
 static void BorderTest(CuTest* tc)
 {
-	char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\wallpaper_river.jpg";
+	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
 
 	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
 
 	ProfileStart("FreeImageAlgorithms_AddBorder");
 
-	FIABITMAP dst = FreeImageAlgorithms_AddBorder(src, 20);
+	FIABITMAP *dst = FreeImageAlgorithms_SetBorder(src, 10, 10, BorderType_Copy, 255);
 
 	ProfileStop("FreeImageAlgorithms_AddBorder");
 
 	ProfilePrint();
 
-	FreeImageAlgorithms_SaveFIBToFile(dst.fib, "C:\\Documents and Settings\\Pierce\\Desktop\\testy.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dst->fib, TEMP_DIR "\\border_test.bmp", BIT8);
 	
 	FreeImage_Unload(src);
-	FreeImage_Unload(dst.fib);
+	FreeImageAlgorithms_Unload(dst);
 }
-*/
+
 
 /*
 static void
@@ -128,6 +128,7 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
+    SUITE_ADD_TEST(suite, BorderTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_UtilityCompareTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DistanceTransformTest);
