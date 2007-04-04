@@ -99,8 +99,12 @@ FreeImageAlgorithms_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int
 	int dst_width = (right - left);
 	int dst_height = (bottom - top);
 
-	BITMAPINFO *info = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) + (FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD)));
-	BITMAPINFOHEADER *bih = (BITMAPINFOHEADER *)info;
+	BITMAPINFO *info = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) + 
+        (FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD)));
+	
+    CheckMemory(info);
+
+    BITMAPINFOHEADER *bih = (BITMAPINFOHEADER *)info;
 
 	bih->biSize = sizeof(BITMAPINFOHEADER);
 	bih->biWidth = dst_width;
@@ -222,6 +226,9 @@ FreeImageAlgorithms_CreateDibSection(HDC hdc, int width, int height, int bpp, in
 		colours_used = 0;	
 
 	info = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) + (colours_used * sizeof(RGBQUAD)));
+
+    CheckMemory(info);
+
 	bih = (BITMAPINFOHEADER *)info;
 
 	bih->biSize = sizeof(BITMAPINFOHEADER);

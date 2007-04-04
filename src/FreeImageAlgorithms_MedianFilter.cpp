@@ -257,6 +257,8 @@ FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP* src, int kernel_x_radius, int ke
 	
 	this->kernel_tmp_array = (Tsrc*) malloc(sizeof(Tsrc) * this->kernel_width * this->kernel_height);
 	
+    CheckMemory(this->kernel_tmp_array);
+
 	register Tsrc *dst_ptr;
 	register Tsrc *src_row_ptr;
 
@@ -332,7 +334,8 @@ FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel
 	}
 
 	if(NULL == dst) {
-		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform filter on type.", src_type);
+		FreeImage_OutputMessageProc(FIF_UNKNOWN,
+            "FREE_IMAGE_TYPE: Unable to perform filter on type.", src_type);
 	}
 
 	return dst;

@@ -1,3 +1,4 @@
+#include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_FFT.h"
 
 #include "kiss_fftnd.h"
@@ -92,6 +93,9 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 	fftbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) );
 	fftoutbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) ); 
 	
+    CheckMemory(fftbuf);
+    CheckMemory(fftoutbuf);
+
 	st = kiss_fftnd_alloc (dims, ndims, inverse, 0, 0);
 
 	
@@ -181,6 +185,9 @@ TransformComplexToComplexImage(FIBITMAP *src, int inverse, int shift)
 	fftbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) );
 	fftoutbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) ); 
 	
+    CheckMemory(fftbuf);
+    CheckMemory(fftoutbuf);
+
 	st = kiss_fftnd_alloc (dims, ndims, inverse, 0, 0);
 
 	for(y = 0; y < height; y++) { 

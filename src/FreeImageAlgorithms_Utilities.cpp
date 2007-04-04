@@ -901,6 +901,8 @@ FreeImageAlgorithms_GetDistanceMap (int width, int height, int *distance_map)
 
 	distance_map = (int *) malloc(width * height * sizeof(float));
 
+    CheckMemory(distance_map);
+
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++)
@@ -1061,6 +1063,8 @@ FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderTyp
 
 	FIABITMAP* dst = (FIABITMAP*) malloc(sizeof(FIABITMAP));
 	
+    CheckMemory(dst);
+
 	dst->fib = FreeImageAlgorithms_CloneImageType(src, dst_width, dst_height);
 
 	dst->xborder = xborder;
@@ -1144,7 +1148,8 @@ void CheckMemory(void *ptr)
 	if(ptr == NULL) {
 
 		#ifdef _WIN32
-		MessageBox(NULL, "Memory allocation failed this is most likely a freeimagealgorithms bug.", NULL, NULL);
+		MessageBox(NULL, "Memory allocation failed this is most likely a freeimagealgorithms bug.",
+            NULL, NULL);
 		#else
 		printf("Memory allocation failed this is most likely a freeimagealgorithms bug.");
 		#endif

@@ -72,8 +72,9 @@ TestFreeImageAlgorithms_ConvolutionTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_SobelTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\cells.bmp";
+	char *file = IMAGE_DIR "\\input.bmp";
 
+    FIBITMAP *bit8_dib = NULL;
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
 	CuAssertTrue(tc, dib1 != NULL);
@@ -84,23 +85,22 @@ TestFreeImageAlgorithms_SobelTest(CuTest* tc)
 
 	PROFILE_STOP("FreeImageAlgorithms_Sobel");
 
-  //  images->processingImage = FreeImageAlgorithms_Threshold(images->magnitude_sobel_image, params.sobel_threshold, 255, 1.0);  
+    bit8_dib = FreeImage_ConvertToStandardType(dib2, 0);
 
-//	FreeImageAlgorithms_InPlaceConvertToStandardType(&(images->processingImage), 0);
-		
-	FreeImageAlgorithms_SetTernaryPalettePalette(dib2, FIA_RGBQUAD(0,0,0), 
-			1, FIA_RGBQUAD(255,0,0), 2, FIA_RGBQUAD(0,255,0));
+	//FreeImageAlgorithms_SetTernaryPalettePalette(dib2, FIA_RGBQUAD(0,0,0), 
+	//		1, FIA_RGBQUAD(255,0,0), 2, FIA_RGBQUAD(0,255,0));
 
-	FreeImageAlgorithms_SaveFIBToFile(dib2, TEMP_DIR "\\cells_sobel.bmp", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(bit8_dib, TEMP_DIR "\\cells_sobel.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
+    FreeImage_Unload(bit8_dib);
 }
 
 static void
 TestFreeImageAlgorithms_SobelAdvancedTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+	char *file = IMAGE_DIR "\\input.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -110,24 +110,28 @@ TestFreeImageAlgorithms_SobelAdvancedTest(CuTest* tc)
 
 	FIBITMAP *vertical_dib = NULL, *horizontal_dib = NULL, *mag_dib = NULL;
 
-    int err = FreeImageAlgorithms_SobelAdvanced(dib1, NULL,
+    int err = FreeImageAlgorithms_SobelAdvanced(dib1, &vertical_dib,
         &horizontal_dib, NULL);
      
     CuAssertTrue(tc, err == FREEIMAGE_ALGORITHMS_SUCCESS); 
 
 	PROFILE_STOP("FreeImageAlgorithms_SobelAdvanced");
 
+    FIBITMAP* bit8_dib = FreeImage_ConvertToStandardType(horizontal_dib, 0);
+
     if(vertical_dib != NULL)
 	    FreeImageAlgorithms_SaveFIBToFile(vertical_dib,
-            TEMP_DIR "\\wallpaper_river_sobel_vertical.bmp", BIT24);
+            TEMP_DIR "\\sobel_vertical.bmp", BIT8);
+
+    
 
     if(horizontal_dib != NULL)
-        FreeImageAlgorithms_SaveFIBToFile(horizontal_dib,
-            TEMP_DIR "\\wallpaper_river_sobel_horizontal_dib.bmp", BIT24);
+        FreeImageAlgorithms_SaveFIBToFile(bit8_dib,
+            TEMP_DIR "\\sobel_horizontal_dib.bmp", BIT8);
 
     if(mag_dib != NULL)
         FreeImageAlgorithms_SaveFIBToFile(mag_dib,
-            TEMP_DIR "\\wallpaper_river_sobel_magnitude_dib.bmp", BIT24);
+            TEMP_DIR "\\sobel_magnitude_dib.bmp", BIT8);
 
     if(vertical_dib != NULL)
 	    FreeImage_Unload(vertical_dib);
@@ -166,9 +170,9 @@ TestFreeImageAlgorithms_SeparableSobelTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river-gs-salted.jpg";
+	//char *file = IMAGE_DIR "\\wallpaper_river-gs-salted.jpg";
 	//char *file = IMAGE_DIR "\\med.bmp";
-	//char *file = IMAGE_DIR "\\test_image_5sq.bmp";
+	char *file = IMAGE_DIR "\\test_image_5sq.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -193,7 +197,6 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 
 	PROFILE_STOP("MedianFilter");
 
-	/*
 	for(int y=0; y < FreeImage_GetHeight(dib5); y++) {
 	
 		float *bits = (float*) FreeImage_GetScanLine(dib5, y);
@@ -203,9 +206,8 @@ TestFreeImageAlgorithms_MedianFilterTest(CuTest* tc)
 
 		std::cout << std::endl;
 	}
-	*/
 
-	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\salt_and_pepper_median.jpg", BIT24);
+	FreeImageAlgorithms_SaveFIBToFile(dib5, TEMP_DIR "\\salt_and_pepper_median.jpg", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
