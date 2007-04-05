@@ -16,19 +16,19 @@
 
 static void BorderTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
+	char *file = IMAGE_DIR "\\border_test.bmp";
 
 	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
 
 	ProfileStart("FreeImageAlgorithms_AddBorder");
 
-	FIABITMAP *dst = FreeImageAlgorithms_SetBorder(src, 10, 10, BorderType_Copy, 255);
+	FIABITMAP *dst = FreeImageAlgorithms_SetBorder(src, 10, 10, BorderType_Mirror, 255);
 
 	ProfileStop("FreeImageAlgorithms_AddBorder");
 
 	ProfilePrint();
 
-	FreeImageAlgorithms_SaveFIBToFile(dst->fib, TEMP_DIR "\\border_test.bmp", BIT8);
+	FreeImageAlgorithms_SaveFIBToFile(dst->fib, TEMP_DIR "\\border_test_result.bmp", BIT8);
 	
 	FreeImage_Unload(src);
 	FreeImageAlgorithms_Unload(dst);

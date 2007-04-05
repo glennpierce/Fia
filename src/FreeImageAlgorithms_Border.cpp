@@ -126,6 +126,69 @@ FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderTyp
         // Get the right pixels of the image and copy into right border
         CopyImageCol(dst->fib, dst_width - xborder - 1, dst_width - xborder, xborder);
     }
+    else if (type == BorderType_Mirror) {
+
+        int pitch = FreeImage_GetPitch(dst->fib);
+        BYTE* src_bits, *dst_bits;
+
+        // Get the bottom line of the original image and copy into bottom border
+
+        int border_row_start = yborder - 1; // First row on border for bottom
+        int image_row_start = yborder;
+
+        for(int i = 0; i < yborder; i++) {
+
+            dst_bits = FreeImage_GetScanLine(dst->fib, border_row_start);
+            src_bits = FreeImage_GetScanLine(dst->fib, image_row_start);
+
+            memcpy(dst_bits, src_bits, pitch);
+
+            border_row_start--;
+            image_row_start++;
+        }
+
+        // Top 
+
+        border_row_start = dst_height - yborder; // First row on border fort bottom
+        image_row_start = border_row_start - 1;
+
+        for(int i = 0; i < yborder; i++) {
+
+            dst_bits = FreeImage_GetScanLine(dst->fib, border_row_start);
+            src_bits = FreeImage_GetScanLine(dst->fib, image_row_start);
+
+            memcpy(dst_bits, src_bits, pitch);
+
+            border_row_start++;
+            image_row_start--;
+        }
+
+        // Left
+        dst_bits = FreeImage_GetBits(dst->fib);
+
+        for(int y = 0; y < dst_height; y++) {
+
+            for(int x = 0; x < xborder; x++) {
+                dst_bits[x] = dst_bits[2 * xborder - 1 - x];
+            }
+
+            dst_bits += pitch;  
+        }
+      
+        // Right
+        dst_bits = FreeImage_GetBits(dst->fib);
+        border_row_start = dst_width - xborder;
+
+        for(int y = 0; y < dst_height; y++) {
+
+            for(int x = 0; x < xborder; x++) {
+                dst_bits[border_row_start + x] = dst_bits[border_row_start - 1 - x];
+            }
+
+            dst_bits += pitch;  
+        }
+
+    }
 
 	return dst;
 }

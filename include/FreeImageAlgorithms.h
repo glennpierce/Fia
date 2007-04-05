@@ -51,7 +51,7 @@ typedef enum
 {
     BorderType_Constant,
     BorderType_Copy,
-    BorderTypeMirror
+    BorderType_Mirror
 
 } BorderType;
 
