@@ -134,24 +134,10 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 	FIAPeak *peaks = NULL;
 	int number_of_peaks;
-	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 2.80612,
+	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 2,
         0, &peaks, 0, &number_of_peaks);
 
 	PROFILE_STOP("FindImageMaxima");
-
-	FILE *fp;
-
-	fp = fopen("C:\\Documents and Settings\\Pierce\\Desktop\\mine.txt", "w");
-	
-	for(int i=0; i < number_of_peaks; i++)
-	{
-		fprintf(fp, "center x %d  centre y %d  value %f\n", peaks[i].centre.x, peaks[i].centre.y, peaks[i].value);		
-	}
-	
-	fprintf(fp, "number of blobs %d\n", number_of_peaks);	
-	
-	
-	fclose(fp);
 
 	FreeImageAlgorithms_SetGreyLevelPalette(dib3);
 
@@ -166,6 +152,37 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 }
 
 
+static void
+TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
+{
+    char *file = IMAGE_DIR "\\cells.bmp";
+
+	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+
+	CuAssertTrue(tc, dib1 != NULL);
+
+	FIBITMAP *dib2 = FreeImage_ConvertTo8Bits(dib1);
+	
+	CuAssertTrue(tc, dib2 != NULL);
+ 
+	PROFILE_START("FindImageMaxima2");
+
+	FIAPeak *peaks = NULL;
+	int number_of_peaks;
+	FreeImageAlgorithms_FindImageMaxima2(dib2, 10, &number_of_peaks);
+
+	PROFILE_STOP("FindImageMaxima2");
+
+	//FIBITMAP *dst = FreeImage_ConvertToStandardType(dib3, 1);
+
+	//FreeImageAlgorithms_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima2.bmp", BIT8); 
+
+	FreeImage_Unload(dib1);
+	FreeImage_Unload(dib2);
+//	FreeImage_Unload(dib3);
+	//FreeImage_Unload(dst);
+}
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsParticleSuite(void)
 {
@@ -174,6 +191,7 @@ CuGetFreeImageAlgorithmsParticleSuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
+    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest2);
 
 	return suite;
 }

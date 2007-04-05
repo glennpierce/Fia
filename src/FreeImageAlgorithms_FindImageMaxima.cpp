@@ -6,6 +6,9 @@
 #include "FreeImageAlgorithms_Particle.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
+#include "FreeImageAlgorithms_Convolution.h"
+
+#include <math.h>
 
 #define MAX_REGIONGROW_CALLS 5000
 
@@ -397,4 +400,54 @@ void DLL_CALLCONV
 FreeImageAlgorithms_FreePeaks(FIAPeak *peaks)
 {
 	free(peaks);
+}
+
+
+
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, unsigned char threshold, int *peaks_found)
+{
+    const int number_of_resolutions = 3;
+    int border_size;
+    FIABITMAP *bordered_image;
+    FIBITMAP *resolution_images[number_of_resolutions];
+    FilterKernel kern1, kern2;
+
+    double* kernels[3];
+
+    double kernel1[5] =  {1.0/16, 1.0/4, 3.0/8, 1.0/4, 1.0/6};
+    double kernel2[9] =  {1.0/16, 0.0, 1.0/4, 0.0, 3.0/8, 0.0, 1.0/4, 0.0, 1.0/6};                      
+    double kernel3[17] = {1.0/16, 0.0, 0.0, 0.0, 1.0/4, 0.0, 0.0, 0.0, 3.0/8,
+                              0.0, 0.0, 0.0, 1.0/4, 0.0, 0.0, 0.0, 1.0/6};
+
+    int borders[3] = {2, 4, 8};
+    kernels[0] = kernel1;
+    kernels[1] = kernel2;
+    kernels[2] = kernel3;
+
+    char name[1000];
+
+    for(int i=0; i < number_of_resolutions; i++) {
+
+        border_size = borders[i];
+
+        bordered_image = FreeImageAlgorithms_SetBorder(src, border_size, border_size, BorderType_Mirror, 0.0);
+
+        kern1 = FreeImageAlgorithms_NewKernel(border_size, 0, kernels[i], 1.0);
+        kern2 = FreeImageAlgorithms_NewKernel(0, border_size, kernels[i], 1.0);
+
+        resolution_images[i] = FreeImageAlgorithms_SeparableConvolve(bordered_image, kern1, kern2);
+
+        FreeImageAlgorithms_InPlaceConvertToStandardType(&(resolution_images[i]), 1);
+
+        sprintf(name, "%s\\find_image_maxima2_resolution_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i+1);
+	    FreeImageAlgorithms_SaveFIBToFile(resolution_images[i], name, BIT8); 
+
+        FreeImageAlgorithms_Unload(bordered_image);
+    }
+
+	return NULL;
+
 }

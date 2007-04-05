@@ -99,6 +99,10 @@ FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask,
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FreePeaks(FIAPeak *peaks);
 
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, unsigned char threshold, int *peaks_found);
+
 #ifdef __cplusplus
 }
 #endif

@@ -41,8 +41,8 @@ FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_Convolve(FIABITMAP *src, const FilterKernel kernel);
 
-//DLL_API FIBITMAP* DLL_CALLCONV
-//FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel kernel1, FilterKernel kernel2);
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel);
 
 
 #ifdef __cplusplus
