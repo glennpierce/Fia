@@ -15,14 +15,41 @@ static void draw_line(agg::rasterizer& ras,
     double dy = y2 - y1;
     double d = sqrt(dx*dx + dy*dy);
     
-    dx = width * (y2 - y1) / d;
-    dy = width * (x2 - x1) / d;
+    dx = 0.5 * width * (y2 - y1) / d;
+    dy = 0.5 * width * (x2 - x1) / d;
 
     ras.move_to_d(x1 - dx,  y1 + dy);
     ras.line_to_d(x2 - dx,  y2 + dy);
     ras.line_to_d(x2 + dx,  y2 - dy);
     ras.line_to_d(x1 + dx,  y1 - dy);
 }
+
+
+/*
+static void draw_line(agg::rasterizer& ras,
+               double x1, double y1, 
+               double x2, double y2,
+               double width)
+{
+    ras.move_to_d(10.199,  1014.0);
+    ras.line_to_d(10.199,  990.0);
+    ras.line_to_d(10.5,  990.0);
+    ras.line_to_d(10.5,  1014.0);
+}
+*/
+
+/*
+static void draw_line(agg::rasterizer& ras,
+               double x1, double y1, 
+               double x2, double y2,
+               double width)
+{
+    ras.move_to_d(10.199,  1014.0);
+    ras.line_to_d(10.199,  990.0);
+    ras.line_to_d(9.9,  990.0);
+    ras.line_to_d(9.9,  1014.0);
+}
+*/
 
 
 // Draws a orthogonal no aa line of width one pixel
@@ -254,12 +281,7 @@ DrawGSRect (FIBITMAP *src, FIARECT rect, valType colour, int line_width)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
-} 
-
-
-
-
-
+}
 
 static int 
 Draw24BitSolidColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour) 
@@ -345,11 +367,15 @@ FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double 
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
-    if(rect.left < 0)
+    if(rect.left < 0) {
         rect.left = 0;
+        rect.right += rect.left;
+    }
 
-    if(rect.top < 0)
+    if(rect.top < 0) {
         rect.top = 0;
+        rect.bottom += rect.top;
+    }
 
     if(rect.right >= width)
         rect.right = width - 1;
@@ -477,9 +503,6 @@ Draw8BitGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char va
     // Create the rendering buffer 
     agg::renderer<agg::span_mono8> ren(rbuf);
     agg::rasterizer ras;
-
-    // Setup the rasterizer
-    ras.filling_rule(agg::fill_non_zero);
 
 	draw_line(ras, p1.x, p1.y, p2.x, p2.y, line_width);
 

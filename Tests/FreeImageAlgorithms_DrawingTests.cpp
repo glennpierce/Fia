@@ -38,7 +38,7 @@ TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
 	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
-	FIAPOINT p1, p2, p3;
+	FIAPOINT p1, p2, p3, p4;
 
 	p1.x = 10;
 	p1.y = 10;
@@ -46,11 +46,15 @@ TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
 	p2.y = 800;
 	p3.x = 500;
 	p3.y = 10;
+    p4.x = p1.x;
+    p4.y = 30;
 
-	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 1, 0);
+	//FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 2, 0);
 
-	FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
+	//FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
 
+    FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p4, 150, 1, 0);
+ 
 	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_line8bit.bmp", BIT8);
 
 	FreeImage_Unload(src);
