@@ -99,9 +99,11 @@ FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask,
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_FreePeaks(FIAPeak *peaks);
 
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP** W);
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char threshold);
+FreeImageAlgorithms_MultiscaleProducts(FIBITMAP* src, int start_level, int levels);
 
 #ifdef __cplusplus
 }

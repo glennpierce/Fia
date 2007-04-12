@@ -24,6 +24,7 @@ void RunAllTests(void)
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
+    /*
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
@@ -35,7 +36,9 @@ void RunAllTests(void)
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsMorphologySuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
-	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
+	*/
+
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

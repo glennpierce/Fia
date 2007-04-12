@@ -155,7 +155,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
 {
-    char *file = IMAGE_DIR "\\find_max_test.bmp";
+    char *file = IMAGE_DIR "\\timeLapse041.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
@@ -165,11 +165,14 @@ TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
 	
 	CuAssertTrue(tc, dib2 != NULL);
  
-	PROFILE_START("FindImageMaxima2");
+	PROFILE_START("MultiscaleProducts");
 
-	FIBITMAP *dst = FreeImageAlgorithms_FindImageMaxima2(dib2, 2, 5);
+	FIBITMAP *dst = FreeImageAlgorithms_MultiscaleProducts(dib2, 2, 3);
 
-	PROFILE_STOP("FindImageMaxima2");
+    FreeImageAlgorithms_InPlaceThreshold(dst, 0, 5, 0);
+    FreeImageAlgorithms_InPlaceThreshold(dst, 1, 255, 255);
+
+	PROFILE_STOP("MultiscaleProducts");
 
 	FreeImageAlgorithms_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima2.bmp", BIT8); 
 

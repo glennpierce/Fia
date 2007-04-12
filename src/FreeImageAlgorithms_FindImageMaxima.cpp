@@ -9,6 +9,8 @@
 #include "FreeImageAlgorithms_Arithmetic.h"
 #include "FreeImageAlgorithms_Convolution.h"
 
+#include <sstream>
+#include <iostream>
 #include <math.h>
 
 #define MAX_REGIONGROW_CALLS 5000
@@ -467,20 +469,19 @@ static double GetMADValue(FIBITMAP *src)
 }
 
 
-FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char threshold)
+int DLL_CALLCONV
+FreeImageAlgorithms_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP** W)
 {
     const int max_resolutions = 4;
-    const int number_of_resolutions = levels, k = 3;
+    const int number_of_resolutions = levels  , k = 3;
     double image_thresholds[max_resolutions];
 
     if(number_of_resolutions < 1 || number_of_resolutions > max_resolutions)
-        return NULL;
+        return FREEIMAGE_ALGORITHMS_ERROR;
 
     double* kernels[max_resolutions];
 
     FIBITMAP** A = new FIBITMAP*[number_of_resolutions + 1];
-    FIBITMAP** W = new FIBITMAP*[number_of_resolutions];
 
     double kernel1[5] =  {1.0/16, 1.0/4, 3.0/8, 1.0/4, 1.0/6};
     double kernel2[9] =  {1.0/16, 0.0, 1.0/4, 0.0, 3.0/8, 0.0, 1.0/4, 0.0, 1.0/6};                      
@@ -499,27 +500,26 @@ FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char th
     kernels[2] = kernel3;
     kernels[3] = kernel4;
 
-    char name[1000];
     double min, max;
 
     A[0] = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
 
-    FIBITMAP *test;
+    std::ostringstream ss;
 
     for(int i=1; i <= number_of_resolutions; i++) {
 
         A[i] = GetApproximationImage(A[i-1], kernels[i-1], borders[i-1]);
 
-        sprintf(name, "%s\\A_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i);
-	    test = FreeImage_ConvertToStandardType(A[i], 0);
-        FreeImageAlgorithms_SaveFIBToFile(test, name, BIT8); 
-
-
         W[i-1] = FreeImage_Clone(A[i-1]);       
         FreeImageAlgorithms_SubtractGreyLevelImages(W[i-1], A[i]);
 
-        sprintf(name, "%s\\W_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i);
-	    FreeImageAlgorithms_SaveFIBToFile(W[i-1], name, BIT8); 
+        #ifdef VERBOSE_DEBUG
+        ss << "C:\\Temp\\FreeImageAlgorithms_Tests\\A_" << i << ".bmp";  
+        FreeImageAlgorithms_SaveFIBToFile(A[i-1], ss.c_str(), BIT8); 
+  
+        ss << "C:\\Temp\\FreeImageAlgorithms_Tests\\W_" << i << ".bmp";   
+        FreeImageAlgorithms_SaveFIBToFile(W[i-1], ss.c_str(), BIT8); 
+        #endif
 
         image_thresholds[i-1] = GetMADValue(W[i-1]) * k / 0.67;
 
@@ -527,13 +527,10 @@ FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char th
 
         FreeImageAlgorithms_InPlaceThreshold(W[i-1], min, image_thresholds[i-1], 0);
     
-        FreeImageAlgorithms_FindMinMax(W[i-1], &min, &max);
-
-        test = FreeImage_ConvertToStandardType(W[i-1], 1);
-
-        sprintf(name, "%s\\Wthresold_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i);
-	    FreeImageAlgorithms_SaveFIBToFile(test, name, BIT8); 
-
+        #ifdef VERBOSE_DEBUG
+        ss << "C:\\Temp\\FreeImageAlgorithms_Tests\\WThreshold_" << i << ".bmp";   
+	    FreeImageAlgorithms_SaveFIBToFile(test, ss.c_str(), BIT8); 
+        #endif
     }
 
     // Clean up approximation images
@@ -542,26 +539,37 @@ FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char th
         A[i] = NULL;
     }
 
-    FIBITMAP *product_image = FreeImage_Clone(W[0]);
+    delete [] A;
 
-    for(int i=1; i < number_of_resolutions; i++)
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_MultiscaleProducts(FIBITMAP* src, int start_level, int levels)
+{
+    // Start level has to be within the number of levels.
+    if(start_level > levels)
+        return NULL;
+
+    FIBITMAP **W =  (FIBITMAP**) malloc(sizeof(FIBITMAP*) * levels); 
+
+    if(FreeImageAlgorithms_ATrousWaveletTransform(src, levels, W) == FREEIMAGE_ALGORITHMS_ERROR)
+        return NULL;
+
+    FIBITMAP *product_image = FreeImage_Clone(W[start_level-1]);
+
+    for(int i=start_level; i < levels; i++)
         FreeImageAlgorithms_MultiplyGreyLevelImages(product_image, W[i]);
 
     // Clean up resolution images
-    for(int i=0; i < number_of_resolutions; i++) {
+    for(int i=0; i < levels; i++) {
         FreeImage_Unload(W[i]);
         W[i] = NULL;
     }
 
-    FIBITMAP *ret = FreeImage_ConvertToStandardType(product_image, 1);
-    FreeImageAlgorithms_InPlaceThreshold(ret, 0, threshold, 0);
-    FreeImageAlgorithms_InPlaceThreshold(ret, 1, 255, 255);
+    free(W);
+    W = NULL;
 
-    FreeImage_Unload(product_image);
-    product_image = NULL;
-
-    delete [] A;
-    delete [] W;
-
-	return ret;
+    return product_image;
 }
