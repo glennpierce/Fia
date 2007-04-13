@@ -37,8 +37,6 @@ THRESHOLD<Tsrc>::Threshold(FIBITMAP *src, Tsrc min, Tsrc max, Tsrc new_value)
 
 			if(src_ptr[x] >= min && src_ptr[x] <= max)
 				src_ptr[x] = new_value;
-			else
-				src_ptr[x] = 0;
 		}
 	}
 

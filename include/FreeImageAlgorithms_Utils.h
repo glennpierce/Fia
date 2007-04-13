@@ -121,4 +121,77 @@ ArrayReverse(T *array, long size)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+
+/*
+* This Quickselect routine is based on the algorithm described in
+* "Numerical recipes in C", Second Edition,
+* Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
+* This code by Nicolas Devillard - 1998. Public domain.
+*/
+template<typename Tsrc>
+Tsrc quick_select_median(Tsrc arr[], int n)
+{
+	int low, high;
+	int median;
+	int middle, ll, hh;
+
+	low = 0 ; high = n-1 ; median = (low + high) / 2;
+
+	for (;;) {
+
+		if (high <= low) /* One element only */
+			return arr[median] ;
+
+		if (high == low + 1) { /* Two elements only */
+		
+			if (arr[low] > arr[high])
+				SWAP(arr[low], arr[high]) ;
+	
+
+			return arr[median] ;
+		}
+
+		/* Find median of low, middle and high items; swap into position low */
+		middle = (low + high) / 2;
+		
+		if (arr[middle] > arr[high])
+			SWAP(arr[middle], arr[high]) ;
+
+		if (arr[low] > arr[high])
+			SWAP(arr[low], arr[high]) ;
+
+		if (arr[middle] > arr[low])
+			SWAP(arr[middle], arr[low]) ;
+
+		/* Swap low item (now in position middle) into position (low+1) */
+		SWAP(arr[middle], arr[low+1]) ;
+
+		/* Nibble from each end towards middle, swapping items when stuck */
+		ll = low + 1;
+		hh = high;
+
+		for (;;) {
+
+			do ll++; while (arr[low] > arr[ll]) ;
+
+			do hh--; while (arr[hh] > arr[low]) ;
+
+			if (hh < ll)
+				break;
+
+			SWAP(arr[ll], arr[hh]) ;
+		}
+
+		/* Swap middle item (in position low) back into correct position */
+		SWAP(arr[low], arr[hh]) ;
+
+		/* Re-set active partition */
+		if (hh <= median)
+			low = ll;
+
+		if (hh >= median)
+			high = hh - 1;
+	}
+}
+
 #endif

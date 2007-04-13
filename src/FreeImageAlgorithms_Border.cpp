@@ -132,7 +132,7 @@ BORDER<Tsrc>::SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type
     else if (type == BorderType_Mirror) {
 
         int pitch = FreeImage_GetPitch(dst->fib);
-        BYTE* src_bits, *dst_bits;
+        Tsrc* src_bits, *dst_bits;
 
         // Get the bottom line of the original image and copy into bottom border
 
@@ -141,8 +141,8 @@ BORDER<Tsrc>::SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type
 
         for(int i = 0; i < yborder; i++) {
 
-            dst_bits = FreeImage_GetScanLine(dst->fib, border_row_start);
-            src_bits = FreeImage_GetScanLine(dst->fib, image_row_start);
+            dst_bits = (Tsrc*) FreeImage_GetScanLine(dst->fib, border_row_start);
+            src_bits = (Tsrc*) FreeImage_GetScanLine(dst->fib, image_row_start);
 
             memcpy(dst_bits, src_bits, pitch);
 
@@ -157,8 +157,8 @@ BORDER<Tsrc>::SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type
 
         for(int i = 0; i < yborder; i++) {
 
-            dst_bits = FreeImage_GetScanLine(dst->fib, border_row_start);
-            src_bits = FreeImage_GetScanLine(dst->fib, image_row_start);
+            dst_bits = (Tsrc*) FreeImage_GetScanLine(dst->fib, border_row_start);
+            src_bits = (Tsrc*) FreeImage_GetScanLine(dst->fib, image_row_start);
 
             memcpy(dst_bits, src_bits, pitch);
 
@@ -166,29 +166,30 @@ BORDER<Tsrc>::SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type
             image_row_start--;
         }
 
+    
         // Left
-        dst_bits = FreeImage_GetBits(dst->fib);
+        dst_bits = (Tsrc*) FreeImage_GetBits(dst->fib);
 
         for(int y = 0; y < dst_height; y++) {
+
+            dst_bits = (Tsrc*) FreeImage_GetScanLine(dst->fib, y);
 
             for(int x = 0; x < xborder; x++) {
                 dst_bits[x] = dst_bits[2 * xborder - 1 - x];
             }
-
-            dst_bits += pitch;  
         }
       
         // Right
-        dst_bits = FreeImage_GetBits(dst->fib);
+        dst_bits = (Tsrc*) FreeImage_GetBits(dst->fib);
         border_row_start = dst_width - xborder;
 
         for(int y = 0; y < dst_height; y++) {
 
+            dst_bits = (Tsrc*) FreeImage_GetScanLine(dst->fib, y);
+
             for(int x = 0; x < xborder; x++) {
                 dst_bits[border_row_start + x] = dst_bits[border_row_start - 1 - x];
             }
-
-            dst_bits += pitch;  
         }
 
     }

@@ -9,6 +9,7 @@ class FILTER
 {
 public:
 	FIBITMAP* MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius);
+    Tsrc GetMedianFromImage(FIBITMAP* src);
 
 private:
 	
@@ -27,77 +28,31 @@ private:
 };
 
 
-/*
-* This Quickselect routine is based on the algorithm described in
-* "Numerical recipes in C", Second Edition,
-* Cambridge University Press, 1992, Section 8.5, ISBN 0-521-43108-5
-* This code by Nicolas Devillard - 1998. Public domain.
-*/
 template<typename Tsrc>
-inline Tsrc FILTER<Tsrc>::quick_select(Tsrc arr[], int n)
+inline Tsrc FILTER<Tsrc>::GetMedianFromImage(FIBITMAP* src)
 {
-	int low, high;
-	int median;
-	int middle, ll, hh;
+    int width = FreeImage_GetWidth(src);
+    int height = FreeImage_GetHeight(src);
+    int total = width * height;
 
-	low = 0 ; high = n-1 ; median = (low + high) / 2;
+    Tsrc *data = new Tsrc[total];
 
-	for (;;) {
+    register Tsrc *src_ptr;
 
-		if (high <= low) /* One element only */
-			return arr[median] ;
+    for(register int y = 0; y < height; y++) {
 
-		if (high == low + 1) { /* Two elements only */
-		
-			if (arr[low] > arr[high])
-				SWAP(arr[low], arr[high]) ;
-	
+        src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
 
-			return arr[median] ;
-		}
+        memcpy(data, src_ptr, sizeof(Tsrc) * width);
+    }
 
-		/* Find median of low, middle and high items; swap into position low */
-		middle = (low + high) / 2;
-		
-		if (arr[middle] > arr[high])
-			SWAP(arr[middle], arr[high]) ;
+    Tsrc ret = quick_select_median(data, total);
 
-		if (arr[low] > arr[high])
-			SWAP(arr[low], arr[high]) ;
+    delete [] data;
 
-		if (arr[middle] > arr[low])
-			SWAP(arr[middle], arr[low]) ;
-
-		/* Swap low item (now in position middle) into position (low+1) */
-		SWAP(arr[middle], arr[low+1]) ;
-
-		/* Nibble from each end towards middle, swapping items when stuck */
-		ll = low + 1;
-		hh = high;
-
-		for (;;) {
-
-			do ll++; while (arr[low] > arr[ll]) ;
-
-			do hh--; while (arr[hh] > arr[low]) ;
-
-			if (hh < ll)
-				break;
-
-			SWAP(arr[ll], arr[hh]) ;
-		}
-
-		/* Swap middle item (in position low) back into correct position */
-		SWAP(arr[low], arr[hh]) ;
-
-		/* Re-set active partition */
-		if (hh <= median)
-			low = ll;
-
-		if (hh >= median)
-			high = hh - 1;
-	}
+    return ret;
 }
+
 
 template<typename Tsrc>
 inline void FILTER<Tsrc>::GetRow(Tsrc *ptr, Tsrc *kernel_data)
@@ -224,7 +179,7 @@ inline Tsrc FILTER<Tsrc>::KernelMedian(Tsrc *src_row_ptr)
 	int kernel_length = this->kernel_width * this->kernel_height;
 
 	// We must now find and return the median value.
-	return quick_select(this->kernel_tmp_array, kernel_length);
+	return quick_select_median(this->kernel_tmp_array, kernel_length);
 }
 
 template<typename Tsrc>
@@ -339,4 +294,45 @@ FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel
 	}
 
 	return dst;
+}
+
+
+double DLL_CALLCONV
+FreeImageAlgorithms_GetMedianFromImage(FIBITMAP* src)
+{
+	if(!src)
+		return NULL;
+
+	// convert from src_type to FIT_BITMAP
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				return filterUCharImage.GetMedianFromImage(src);
+			break;
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			return filterUShortImage.GetMedianFromImage(src);
+			break;
+		case FIT_INT16:		// array of short: signed 16-bit
+			return filterShortImage.GetMedianFromImage(src);
+			break;
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			return filterULongImage.GetMedianFromImage(src);
+			break;
+		case FIT_INT32:		// array of long: signed 32-bit
+			return filterLongImage.GetMedianFromImage(src);
+			break;
+		case FIT_FLOAT:		// array of float: 32-bit
+			return filterFloatImage.GetMedianFromImage(src);
+			break;
+		case FIT_DOUBLE:	// array of double: 64-bit
+			return filterDoubleImage.GetMedianFromImage(src);
+			break;
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	return 0.0;
 }

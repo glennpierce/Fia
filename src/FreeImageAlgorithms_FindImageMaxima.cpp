@@ -6,6 +6,7 @@
 #include "FreeImageAlgorithms_Particle.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
+#include "FreeImageAlgorithms_Arithmetic.h"
 #include "FreeImageAlgorithms_Convolution.h"
 
 #include <math.h>
@@ -403,50 +404,145 @@ FreeImageAlgorithms_FreePeaks(FIAPeak *peaks)
 }
 
 
+static FIBITMAP* GetApproximationImage(FIBITMAP *src, double *kernel, int border_size)
+{
+    FilterKernel kern1, kern2;
 
+    kern1 = FreeImageAlgorithms_NewKernel(border_size, 0, kernel, 1.0);
+    kern2 = FreeImageAlgorithms_NewKernel(0, border_size, kernel, 1.0);
+
+    FIABITMAP* bordered_image = FreeImageAlgorithms_SetBorder(src, border_size, border_size,
+                                    BorderType_Mirror, 0.0);
+        
+    FIBITMAP *approxImage = FreeImageAlgorithms_SeparableConvolve(bordered_image, kern1, kern2);
+
+    FreeImageAlgorithms_Unload(bordered_image);
+
+    //FreeImageAlgorithms_InPlaceConvertToStandardType(&(approxImage), 1);
+
+    return approxImage;
+}
+
+// Median Absolute Deviation
+static double GetMADValue(FIBITMAP *src)
+{
+    int width = FreeImage_GetWidth(src);
+    int height = FreeImage_GetHeight(src);
+    int total = width * height;
+    int line_in_bytes = FreeImage_GetLine(src);
+    register int x, y;
+
+    assert(FreeImage_GetImageType(src) == FIT_DOUBLE);
+
+    double* data = new double[total];
+    BYTE *data_ptr = (BYTE*) data;
+
+    register double *src_ptr;
+
+    for(y = 0; y < height; y++) {
+
+        src_ptr = (double *)FreeImage_GetScanLine(src, y);
+
+        memcpy(data_ptr + (y * line_in_bytes), src_ptr, line_in_bytes);
+    }
+
+    double median = quick_select_median(data, total);
+
+    for(y = 0; y < height; y++) {
+
+        src_ptr = (double *)FreeImage_GetScanLine(src, y);
+
+         for(x = 0; x < width; x++) {
+
+            data[y*width+x] = abs(src_ptr[x] - median);
+         }
+       
+    }
+
+   double ret = quick_select_median(data, total);
+
+    delete [] data;
+
+    return ret;
+}
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, unsigned char threshold, int *peaks_found)
+FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char threshold, int *peaks_found)
 {
-    const int number_of_resolutions = 3;
-    int border_size;
-    FIABITMAP *bordered_image;
-    FIBITMAP *resolution_images[number_of_resolutions];
-    FilterKernel kern1, kern2;
+    const int number_of_resolutions = 4, k = 3;
+    FIBITMAP *A[number_of_resolutions + 1], *W[number_of_resolutions];
+    double image_thresholds[number_of_resolutions];
 
-    double* kernels[3];
+   // double* kernels = new double*[levels];
+    double* kernels[number_of_resolutions];
+
+   // FIBITMAP* A = new FIBITMAP*[levels + 1];
+   // FIBITMAP* W = new FIBITMAP*[levels];
 
     double kernel1[5] =  {1.0/16, 1.0/4, 3.0/8, 1.0/4, 1.0/6};
     double kernel2[9] =  {1.0/16, 0.0, 1.0/4, 0.0, 3.0/8, 0.0, 1.0/4, 0.0, 1.0/6};                      
     double kernel3[17] = {1.0/16, 0.0, 0.0, 0.0, 1.0/4, 0.0, 0.0, 0.0, 3.0/8,
                               0.0, 0.0, 0.0, 1.0/4, 0.0, 0.0, 0.0, 1.0/6};
 
-    int borders[3] = {2, 4, 8};
+    double kernel4[33] = {1.0/16, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0/4,
+                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3.0/8,
+                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0/4,
+                          0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0/6};
+
+
+    int borders[number_of_resolutions] = {2, 4, 8, 16};
     kernels[0] = kernel1;
     kernels[1] = kernel2;
     kernels[2] = kernel3;
+    kernels[3] = kernel4;
 
     char name[1000];
+    double min, max;
 
-    for(int i=0; i < number_of_resolutions; i++) {
+    A[0] = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
 
-        border_size = borders[i];
+    FIBITMAP *test;
 
-        bordered_image = FreeImageAlgorithms_SetBorder(src, border_size, border_size, BorderType_Mirror, 0.0);
+    for(int i=1; i <= number_of_resolutions; i++) {
 
-        kern1 = FreeImageAlgorithms_NewKernel(border_size, 0, kernels[i], 1.0);
-        kern2 = FreeImageAlgorithms_NewKernel(0, border_size, kernels[i], 1.0);
+        A[i] = GetApproximationImage(A[i-1], kernels[i-1], borders[i-1]);
 
-        resolution_images[i] = FreeImageAlgorithms_SeparableConvolve(bordered_image, kern1, kern2);
+        sprintf(name, "%s\\A_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i);
+	    test = FreeImage_ConvertToStandardType(A[i], 0);
+        FreeImageAlgorithms_SaveFIBToFile(test, name, BIT8); 
 
-        FreeImageAlgorithms_InPlaceConvertToStandardType(&(resolution_images[i]), 1);
 
-        sprintf(name, "%s\\find_image_maxima2_resolution_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i+1);
-	    FreeImageAlgorithms_SaveFIBToFile(resolution_images[i], name, BIT8); 
+        W[i-1] = FreeImage_Clone(A[i-1]);       
+        FreeImageAlgorithms_SubtractGreyLevelImages(W[i-1], A[i]);
 
-        FreeImageAlgorithms_Unload(bordered_image);
+        sprintf(name, "%s\\W_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i);
+	    FreeImageAlgorithms_SaveFIBToFile(W[i-1], name, BIT8); 
+
+        image_thresholds[i-1] = GetMADValue(W[i-1]) * k / 0.67;
+
+        FreeImageAlgorithms_FindMinMax(W[i-1], &min, &max);
+
+        FreeImageAlgorithms_InPlaceThreshold(W[i-1], min, image_thresholds[i-1], 0);
+    
+        FreeImageAlgorithms_FindMinMax(W[i-1], &min, &max);
+
+        test = FreeImage_ConvertToStandardType(W[i-1], 1);
+
+        sprintf(name, "%s\\Wthresold_%d.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests", i);
+	    FreeImageAlgorithms_SaveFIBToFile(test, name, BIT8); 
+
     }
+
+    FIBITMAP *product_image = FreeImage_Clone(W[0]);
+
+    for(int i=1; i < number_of_resolutions; i++) {
+ 
+        FreeImageAlgorithms_MultiplyGreyLevelImages(product_image, W[i]);
+    }
+
+    sprintf(name, "%s\\find_image_maxima2_final.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests");
+	FreeImageAlgorithms_SaveFIBToFile(product_image, name, BIT8); 
 
 	return NULL;
 

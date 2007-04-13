@@ -136,6 +136,14 @@ DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid);
 
 
+/** \brief This function determines the median value of all the pixels.
+ *
+ *  \param src FIBITMAP bitmap to perform the computation on.
+ *  \return double The median of all the pixels in the image.
+ */
+DLL_API double DLL_CALLCONV
+FreeImageAlgorithms_GetMedianFromImage(FIBITMAP* src);
+
 #ifdef __cplusplus
 }
 #endif

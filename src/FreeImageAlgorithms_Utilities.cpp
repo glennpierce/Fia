@@ -1118,4 +1118,3 @@ FreeImageAlgorithms_InPlaceConvertToStandardType(FIBITMAP **src, int scale)
 
     return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
-

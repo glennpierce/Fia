@@ -76,7 +76,11 @@ FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, 
     if(src_type == FIT_COMPLEX)
         return NULL;
 
-    border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+    if(src_type == FIT_DOUBLE)
+        border_tmp.fib = FreeImage_Clone(src->fib);
+    else
+        border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+    
     border_tmp.xborder = src->xborder;
 	border_tmp.yborder = src->yborder;
 
@@ -97,7 +101,8 @@ FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, 
     FreeImage_Unload(border_tmp.fib);
 
 	if(NULL == dst) {
-		FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+		FreeImage_OutputMessageProc(FIF_UNKNOWN,
+            "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
 	}
 
 	return dst;

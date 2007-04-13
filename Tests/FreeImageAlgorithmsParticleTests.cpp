@@ -155,7 +155,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
 {
-    char *file = IMAGE_DIR "\\cells.bmp";
+    char *file = IMAGE_DIR "\\find_max_test.bmp";
 
 	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
 
@@ -169,7 +169,7 @@ TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
 
 	FIAPeak *peaks = NULL;
 	int number_of_peaks;
-	FreeImageAlgorithms_FindImageMaxima2(dib2, 10, &number_of_peaks);
+	FreeImageAlgorithms_FindImageMaxima2(dib2, 4, 10, &number_of_peaks);
 
 	PROFILE_STOP("FindImageMaxima2");
 
