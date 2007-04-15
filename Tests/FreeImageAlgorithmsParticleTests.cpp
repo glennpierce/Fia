@@ -167,20 +167,15 @@ TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
  
 	PROFILE_START("FindImageMaxima2");
 
-	FIAPeak *peaks = NULL;
-	int number_of_peaks;
-	FreeImageAlgorithms_FindImageMaxima2(dib2, 4, 10, &number_of_peaks);
+	FIBITMAP *dst = FreeImageAlgorithms_FindImageMaxima2(dib2, 2, 5);
 
 	PROFILE_STOP("FindImageMaxima2");
 
-	//FIBITMAP *dst = FreeImage_ConvertToStandardType(dib3, 1);
-
-	//FreeImageAlgorithms_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima2.bmp", BIT8); 
+	FreeImageAlgorithms_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima2.bmp", BIT8); 
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
-//	FreeImage_Unload(dib3);
-	//FreeImage_Unload(dst);
+	FreeImage_Unload(dst);
 }
 
 CuSuite* DLL_CALLCONV

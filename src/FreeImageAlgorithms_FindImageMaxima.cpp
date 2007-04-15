@@ -468,17 +468,19 @@ static double GetMADValue(FIBITMAP *src)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char threshold, int *peaks_found)
+FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char threshold)
 {
-    const int number_of_resolutions = 4, k = 3;
-    FIBITMAP *A[number_of_resolutions + 1], *W[number_of_resolutions];
-    double image_thresholds[number_of_resolutions];
+    const int max_resolutions = 4;
+    const int number_of_resolutions = levels, k = 3;
+    double image_thresholds[max_resolutions];
 
-   // double* kernels = new double*[levels];
-    double* kernels[number_of_resolutions];
+    if(number_of_resolutions < 1 || number_of_resolutions > max_resolutions)
+        return NULL;
 
-   // FIBITMAP* A = new FIBITMAP*[levels + 1];
-   // FIBITMAP* W = new FIBITMAP*[levels];
+    double* kernels[max_resolutions];
+
+    FIBITMAP** A = new FIBITMAP*[number_of_resolutions + 1];
+    FIBITMAP** W = new FIBITMAP*[number_of_resolutions];
 
     double kernel1[5] =  {1.0/16, 1.0/4, 3.0/8, 1.0/4, 1.0/6};
     double kernel2[9] =  {1.0/16, 0.0, 1.0/4, 0.0, 3.0/8, 0.0, 1.0/4, 0.0, 1.0/6};                      
@@ -491,7 +493,7 @@ FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char th
                           0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0/6};
 
 
-    int borders[number_of_resolutions] = {2, 4, 8, 16};
+    int borders[max_resolutions] = {2, 4, 8, 16};
     kernels[0] = kernel1;
     kernels[1] = kernel2;
     kernels[2] = kernel3;
@@ -534,16 +536,32 @@ FreeImageAlgorithms_FindImageMaxima2(FIBITMAP* src, int levels, unsigned char th
 
     }
 
-    FIBITMAP *product_image = FreeImage_Clone(W[0]);
-
-    for(int i=1; i < number_of_resolutions; i++) {
- 
-        FreeImageAlgorithms_MultiplyGreyLevelImages(product_image, W[i]);
+    // Clean up approximation images
+    for(int i=0; i < number_of_resolutions; i++) {
+        FreeImage_Unload(A[i]);
+        A[i] = NULL;
     }
 
-    sprintf(name, "%s\\find_image_maxima2_final.bmp", "C:\\Temp\\FreeImageAlgorithms_Tests");
-	FreeImageAlgorithms_SaveFIBToFile(product_image, name, BIT8); 
+    FIBITMAP *product_image = FreeImage_Clone(W[0]);
 
-	return NULL;
+    for(int i=1; i < number_of_resolutions; i++)
+        FreeImageAlgorithms_MultiplyGreyLevelImages(product_image, W[i]);
 
+    // Clean up resolution images
+    for(int i=0; i < number_of_resolutions; i++) {
+        FreeImage_Unload(W[i]);
+        W[i] = NULL;
+    }
+
+    FIBITMAP *ret = FreeImage_ConvertToStandardType(product_image, 1);
+    FreeImageAlgorithms_InPlaceThreshold(ret, 0, threshold, 0);
+    FreeImageAlgorithms_InPlaceThreshold(ret, 1, 255, 255);
+
+    FreeImage_Unload(product_image);
+    product_image = NULL;
+
+    delete [] A;
+    delete [] W;
+
+	return ret;
 }
