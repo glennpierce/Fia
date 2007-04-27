@@ -1,4 +1,5 @@
 SET(FIA_SRCS FreeImageAlgorithms_Arithmetic.cpp
+	     FreeImageAlgorithms_Border.cpp
 	     FreeImageAlgorithms_Colour.cpp
 	     FreeImageAlgorithms_Convolution.cpp
 	     FreeImageAlgorithms_DistanceTransform.cpp
