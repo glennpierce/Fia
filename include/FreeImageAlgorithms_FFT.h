@@ -29,6 +29,14 @@ FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift);
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(FIBITMAP *src);
 
+/** \brief Creates a FIT_DOUBLE absolute image from a complex image.
+ *	
+ *  \param src FIBITMAP complex image.
+ *  \return FIBITMAP* on success and NULL on error.
+*/
+DLL_API FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src);
+
 #ifdef __cplusplus
 }
 #endif

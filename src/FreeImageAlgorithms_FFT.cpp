@@ -297,9 +297,8 @@ FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift)
 }
 
 
-
-FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(FIBITMAP *src)
+static FIBITMAP*
+ConvertComplexImageToAbsoluteValued(FIBITMAP *src, bool squared)
 {
 	FIBITMAP *dst = NULL;
 	unsigned x, y;
@@ -316,19 +315,48 @@ FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(FIBITMAP *src)
 	FICOMPLEX *src_bits; 	
 	double	  *dst_bits; 
 
-	for(y = 0; y < height; y++) { 
-		
-		src_bits = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
-		dst_bits = (double *) FreeImage_GetScanLine(dst, y);
+	if(squared) {
 
-		for(x=0; x < width; x++) {
+		for(y = 0; y < height; y++) { 
+		
+			src_bits = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
+			dst_bits = (double *) FreeImage_GetScanLine(dst, y);
+
+			for(x=0; x < width; x++) {
 				
-			*(dst_bits + x) = (double) sqrt(pow( (double)((src_bits + x)->r), (double) 2.0) + 
+				*(dst_bits + x) = (double) (pow( (double)((src_bits + x)->r), (double) 2.0) + 
+							    pow( (double)((src_bits + x)->i), (double) 2.0));
+		
+			}
+		}
+	}
+	else {
+
+		for(y = 0; y < height; y++) { 
+		
+			src_bits = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
+			dst_bits = (double *) FreeImage_GetScanLine(dst, y);
+
+			for(x=0; x < width; x++) {
+				
+				*(dst_bits + x) = (double) sqrt(pow( (double)((src_bits + x)->r), (double) 2.0) + 
 										pow( (double)((src_bits + x)->i), (double) 2.0));
 		
+			}
 		}
 	}
 
 	return dst;
 }
 
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src)
+{
+	return ConvertComplexImageToAbsoluteValued(src, true);
+}
+
+FIBITMAP* DLL_CALLCONV
+FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(FIBITMAP *src)
+{
+	return ConvertComplexImageToAbsoluteValued(src, false);
+}

@@ -81,14 +81,14 @@ STRETCH<Tdst>::StretchImageAcrossRange(FIBITMAP *src, Tdst dst_min, Tdst dst_max
 	unsigned width	= FreeImage_GetWidth(src);
 	unsigned height = FreeImage_GetHeight(src);
 
-    double min_found, max_found, max_value;
+    double min_found, max_found;
 
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
     FreeImageAlgorithms_FindMinMax(src, &min_found, &max_found);
 
     // compute the scaling factor
-	float scale = (float) (dst_max - dst_min) /  (max_found - min_found);
+	double scale = (double) (dst_max - dst_min) /  (max_found - min_found);
 
     dst = FreeImageAlgorithms_CloneImageType(src, width, height);
 
