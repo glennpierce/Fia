@@ -703,3 +703,105 @@ FreeImageAlgorithms_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colou
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+static void draw_ellipse(agg::rasterizer& ras,
+                  double x,  double y,
+                  double rx, double ry)
+{
+    int i;
+    ras.move_to_d(x + rx, y);
+
+    // Here we have a fixed number of approximation steps, namely 360
+    // while in reality it's supposed to be smarter.
+    for(i = 1; i < 360; i++)
+    {
+        double a = double(i) * 3.1415926 / 180.0;
+        ras.line_to_d(x + cos(a) * rx, y + sin(a) * ry);
+    }
+}
+
+
+static int DLL_CALLCONV
+Draw8BitSolidElipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	// Allocate the framebuffer
+	unsigned char* buf = FreeImage_GetBits(src);
+
+    // Create the rendering buffer 
+    agg::rendering_buffer rbuf(buf, width, height, FreeImage_GetPitch(src));
+
+    // Create the rendering buffer 
+    agg::renderer<agg::span_mono8> ren(rbuf);
+    agg::rasterizer ras;
+
+    int x_radius = (rect.right - rect.left) / 2;
+    int y_radius = (rect.bottom - rect.top) / 2;
+    int centre_x = rect.left + x_radius;
+    int centre_y = rect.top + y_radius;
+
+    draw_ellipse(ras, centre_x, centre_y, x_radius, y_radius);
+
+    if(antialiased)
+        ras.render(ren, agg::rgba8(value, value, value));
+    else
+        ras.render_aliased(ren, agg::rgba8(value, value, value));
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+} 
+
+int DLL_CALLCONV
+FreeImageAlgorithms_DrawSolidGreyscaleElipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
+{  
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+    if(rect.left < 0) {
+        rect.left = 0;
+        rect.right += rect.left;
+    }
+
+    if(rect.top < 0) {
+        rect.top = 0;
+        rect.bottom += rect.top;
+    }
+
+    if(rect.right >= width)
+        rect.right = width - 1;
+
+    if(rect.bottom >= height)
+        rect.bottom = height - 1;
+
+	// Allocate the framebuffer
+	unsigned char* buf = NULL; 
+	FIARECT tmp_rect = rect;
+
+	// FreeImages are flipped
+	tmp_rect.top = height - rect.top - 1;
+	tmp_rect.bottom = height - rect.bottom - 1;
+
+	int bpp = FreeImage_GetBPP(src);
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
+
+	if(type == FIT_BITMAP && bpp == 8)
+		return Draw8BitSolidElipse  (src, tmp_rect, (unsigned char) value, antialiased); 
+
+	return FREEIMAGE_ALGORITHMS_ERROR;
+} 

@@ -9,6 +9,29 @@
 #include "FreeImageAlgorithms_Testing.h"
 
 static void
+TestFreeImageAlgorithms_GreyscaleElipseTest(CuTest* tc)
+{
+	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
+
+	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	CuAssertTrue(tc, src != NULL);
+
+    FIARECT rect;
+	rect.left = 50;
+	rect.top = 100;
+	rect.bottom = 500;
+	rect.right = 500;
+
+    FreeImageAlgorithms_DrawSolidGreyscaleElipse (src, rect, 200, 1);
+
+    FreeImageAlgorithms_DrawGreyscaleRect (src, rect, 200, 2);
+
+	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_river-gs-elipse.bmp", BIT8);
+
+	FreeImage_Unload(src);
+}
+
+static void
 TestFreeImageAlgorithms_ConvexHullTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\particle-test.bmp";
@@ -265,6 +288,7 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidGSRectTest);
 	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
     SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvexHullTest);
+    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_GreyscaleElipseTest);
 
 	return suite;
 }

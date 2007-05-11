@@ -49,7 +49,7 @@ ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
 
 		for(register int x=0; x < width; x++) {
 			if(!mask_ptr[x])
-				sum += (double) src_ptr[x];
+				*sum += (double) src_ptr[x];
 		}
 	}
 
@@ -704,7 +704,7 @@ FreeImageAlgorithms_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
 
 	switch(src_type) {
 		case FIT_BITMAP:	
-			if(FreeImage_GetBPP(dst) == 8)
+			if(FreeImage_GetBPP(src) == 8)
 				return arithmaticUCharImage.SumOfAllPixels(src, mask, sum);
 		case FIT_UINT16:	
 			return arithmaticUShortImage.SumOfAllPixels(src, mask, sum);

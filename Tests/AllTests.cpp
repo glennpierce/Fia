@@ -35,10 +35,10 @@ void RunAllTests(void)
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsMorphologySuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
-	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
-	*/
-
     CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
+    */
+
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
