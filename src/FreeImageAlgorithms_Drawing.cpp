@@ -737,7 +737,7 @@ static void draw_ellipse(agg::rasterizer& ras,
 
 
 static int DLL_CALLCONV
-Draw8BitSolidElipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
+Draw8BitSolidEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -768,7 +768,7 @@ Draw8BitSolidElipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antia
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawSolidGreyscaleElipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
+FreeImageAlgorithms_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -801,7 +801,7 @@ FreeImageAlgorithms_DrawSolidGreyscaleElipse (FIBITMAP *src, FIARECT rect, unsig
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
 	if(type == FIT_BITMAP && bpp == 8)
-		return Draw8BitSolidElipse  (src, tmp_rect, (unsigned char) value, antialiased); 
+		return Draw8BitSolidEllipse  (src, tmp_rect, (unsigned char) value, antialiased); 
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 

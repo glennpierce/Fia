@@ -122,7 +122,7 @@ DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_width);
 
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_DrawSolidGreyscaleElipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased);
+FreeImageAlgorithms_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased);
 
 #ifdef __cplusplus
 }

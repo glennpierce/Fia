@@ -22,7 +22,7 @@ TestFreeImageAlgorithms_GreyscaleElipseTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 
-    FreeImageAlgorithms_DrawSolidGreyscaleElipse (src, rect, 200, 1);
+    FreeImageAlgorithms_DrawSolidGreyscaleEllipse (src, rect, 200, 1);
 
     FreeImageAlgorithms_DrawGreyscaleRect (src, rect, 200, 2);
 
