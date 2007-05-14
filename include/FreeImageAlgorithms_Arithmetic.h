@@ -118,6 +118,15 @@ FreeImageAlgorithms_ComplexConjugate(FIBITMAP* src);
 DLL_API int DLL_CALLCONV 
 FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src);
 
+/** \brief Returns the sum of all the pixels in an image where the mask allows.
+ *
+ *  \param dst FIBITMAP bitmap containing pixels to sum.
+ *  \param src FIBITMAP mask bitmap to specify with pixels to sum.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV 
+FreeImageAlgorithms_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum);
+
 #ifdef __cplusplus
 }
 #endif

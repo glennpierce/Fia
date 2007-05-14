@@ -16,11 +16,45 @@ public:
     int DivideGreyLevelImageConstant(FIBITMAP* dst, double constant);
     int AddGreyLevelImageConstant(FIBITMAP* dst, double constant);
     int SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant);
+    int SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum);
 
 	FIBITMAP* Transpose(FIBITMAP *src);
 	FIBITMAP* Log(FIBITMAP *src);
 };
 
+
+template<typename Tsrc> int 
+ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
+{
+	if(mask == NULL || src == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Have to be the same size
+	if(CheckDimensions(src, mask) ==  FREEIMAGE_ALGORITHMS_ERROR)
+		return  FREEIMAGE_ALGORITHMS_ERROR;
+
+	// Mask has to be 8 bit 
+	if(FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+    *sum = 0.0;
+
+	for(register int y = 0; y < height; y++) { 
+		
+		Tsrc *src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
+		unsigned char *mask_ptr = (unsigned char *)FreeImage_GetScanLine(mask, y);
+
+		for(register int x=0; x < width; x++) {
+			if(!mask_ptr[x])
+				sum += (double) src_ptr[x];
+		}
+	}
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
 
 template<class Tsrc> FIBITMAP* 
 ARITHMATIC<Tsrc>::Transpose(FIBITMAP *src) {
@@ -663,3 +697,28 @@ FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 }
 
 
+int DLL_CALLCONV 
+FreeImageAlgorithms_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	
+			if(FreeImage_GetBPP(dst) == 8)
+				return arithmaticUCharImage.SumOfAllPixels(src, mask, sum);
+		case FIT_UINT16:	
+			return arithmaticUShortImage.SumOfAllPixels(src, mask, sum);
+		case FIT_INT16:		
+			return arithmaticShortImage.SumOfAllPixels(src, mask, sum);
+		case FIT_UINT32:	
+			return arithmaticULongImage.SumOfAllPixels(src, mask, sum);
+		case FIT_INT32:		
+			return arithmaticLongImage.SumOfAllPixels(src, mask, sum);
+		case FIT_FLOAT:	
+			return arithmaticFloatImage.SumOfAllPixels(src, mask, sum);
+		case FIT_DOUBLE:	
+			return arithmaticDoubleImage.SumOfAllPixels(src, mask, sum);
+	}
+
+	return FREEIMAGE_ALGORITHMS_ERROR; 
+}
