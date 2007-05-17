@@ -191,7 +191,11 @@ static int orthogonal_draw_gs_line(FIBITMAP *src, int x1, int y1, int x2, int y2
 
 		valType *bits = (valType *) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
 
-        memset((BYTE*)bits, colour, (bytespp * (x2 - x1 + 1)));
+		while(x1 <= x2) {
+
+			*bits++ = colour;
+			x1++;
+		}
 
 		return FREEIMAGE_ALGORITHMS_SUCCESS;
 	}
@@ -204,7 +208,7 @@ static int orthogonal_draw_gs_line(FIBITMAP *src, int x1, int y1, int x2, int y2
 			return FREEIMAGE_ALGORITHMS_ERROR;	
 
 		// Get starting point
-		valType *bits = (valType*) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
+		valType *bits = (valType*) (FreeImage_GetScanLine(src, y1) + (x1 * bytespp));
 
 		while(y1 <= y2) {
 

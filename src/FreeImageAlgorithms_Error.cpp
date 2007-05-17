@@ -23,7 +23,7 @@ FreeImageAlgorithms_SendOutputMessage(const char *fmt, ...)
 	
 	va_start(ap, fmt);
 
-	vsprintf(message, fmt, ap);
+	vsnprintf(message, 500, fmt, ap);
 
 	va_end(ap);
 
