@@ -17,6 +17,8 @@ public:
 	int CalculateStatisticReport(FIBITMAP *src, StatisticReport *report);
 
 	int Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid);
+
+    double CalculateGreyLevelAverage(FIBITMAP *src);
 };
 
 
@@ -141,6 +143,28 @@ Statistic<Tsrc>::Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
 	*y_centroid = (float) (sum_y / sum_i);
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+template<class Tsrc> double
+Statistic<Tsrc>::CalculateGreyLevelAverage(FIBITMAP *src)
+{
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);   
+    int total = width * height;
+
+	Tsrc *bits;
+	double sum = 0.0;
+
+	for(register int y=0; y < height ; y++) {
+		
+		bits = (Tsrc*) FreeImage_GetScanLine(src, y);
+		
+		for(register int x=0; x < width ; x++) {	
+			sum += (double) bits[x];
+		}
+	}
+
+	return sum / total;
 }
 
 
@@ -272,6 +296,46 @@ FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR;
+}
+
+
+double DLL_CALLCONV
+FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
+{
+	if(!src)
+		return 0.0;
+
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				return statisticUCharImage.CalculateGreyLevelAverage(src);
+
+		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
+			return statisticUShortImage.CalculateGreyLevelAverage(src);
+
+		case FIT_INT16:		// array of short: signed 16-bit
+			return statisticShortImage.CalculateGreyLevelAverage(src);
+
+		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
+			return statisticULongImage.CalculateGreyLevelAverage(src);
+
+		case FIT_INT32:		// array of long: signed 32-bit
+			return statisticLongImage.CalculateGreyLevelAverage(src);
+
+		case FIT_FLOAT:		// array of float: 32-bit
+			return statisticFloatImage.CalculateGreyLevelAverage(src);
+
+		case FIT_DOUBLE:	// array of double: 64-bit
+			return statisticDoubleImage.CalculateGreyLevelAverage(src);
+
+		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+			break;
+	}
+
+	return 0.0;
 }
 
 int DLL_CALLCONV
@@ -505,50 +569,6 @@ FreeImageAlgorithms_HistEq(FIBITMAP *src)
 	free(histogram);
 	
 	return dst;
-}
-
-
-double DLL_CALLCONV
-FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
-{
-	int bpp = FreeImage_GetBPP(src);
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
-	long size = width * height;  	
-   	
-	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src); 
-
-	switch(type)
-	{
-		case FIT_BITMAP:
-		{
-			if(bpp == 8)
-			{
-				unsigned char *bits = (unsigned char *) FreeImage_GetBits(src);
-				return MeanAverage(bits, size);
-			}
-		}
-
-		case FIT_INT16:
-		{
-			short *bits = (short *) FreeImage_GetBits(src);
-			return MeanAverage(bits, size);
-		}
-		
-		case FIT_UINT16:
-		{
-			unsigned short *bits = (unsigned short *) FreeImage_GetBits(src);
-			return MeanAverage(bits, size);
-		}
-
-		case FIT_FLOAT:
-		{
-			float *bits = (float *) FreeImage_GetBits(src);
-			return MeanAverage(bits, size);
-		}
-	}
-
-	return 0.0;
 }
 
 
