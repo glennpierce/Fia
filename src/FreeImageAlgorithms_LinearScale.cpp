@@ -151,7 +151,7 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 		return NULL;
 
 
-	Tsrc *src_bits, tmp_min = (Tsrc) min_found;
+	Tsrc *src_bits, tmp_min = (Tsrc) min_found, tmp_max = (Tsrc) max_found;
 	register Tsrc val;
 	BYTE *dst_bits;
 
@@ -164,13 +164,16 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 		for(register unsigned int x = 0; x < width; x++) {
 
 			val = src_bits[x];
-			if(val < tmp_min) {
+			
+            if(val < tmp_min) {
 
 				dst_bits[x] = 0;
 				continue;
 			}
-
-			dst_bits[x] = (BYTE)(scale * (val - tmp_min));
+            else if(val > tmp_max)
+                dst_bits[x] = 255;
+            else
+			    dst_bits[x] = (BYTE)(scale * (val - tmp_min));
 
 		}
 	}

@@ -12,7 +12,7 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 {
 	double min_found, max_found;
 
-	char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\rjl.jpg";
+	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Working Area\\Test Images\\cells.bmp";
 
 	FIBITMAP *old_dib = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
@@ -24,20 +24,21 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 
     FIBITMAP *scaled_dib;
 
-	for(int i=0; i < 1000; i++) {
+	//for(int i=0; i < 1000; i++) {
 		
-        scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(dib, 0, 0, &min_found, &max_found);  
+        scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(dib, 0, 100, &min_found, &max_found);  
 
        
-        if(i < 999)
-		    FreeImage_Unload(scaled_dib);
-	}
+  //      if(i < 999)
+//		    FreeImage_Unload(scaled_dib);
+//	}
 
     PROFILE_STOP("LinearScale");
 
 
     FreeImageAlgorithms_SaveFIBToFile(scaled_dib, "C:\\Documents and Settings\\Pierce\\Desktop\\output.bmp", BIT8);
 
+    FreeImage_Unload(scaled_dib);
 	FreeImage_Unload(dib);
 	//FreeImage_Unload(scaled_dib);
 
