@@ -3,6 +3,8 @@
 
 #include "FreeImageAlgorithms.h"
 
+
+
 void CheckMemory(void *ptr);
 
 /// Max function
@@ -18,6 +20,7 @@ MIN(T a, T b)
 {
 	return (a < b) ? a: b;
 }
+
   
 /** This procedure computes minimum min and maximum max
  of n numbers using only (3n/2) - 2 comparisons.

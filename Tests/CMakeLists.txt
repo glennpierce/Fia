@@ -24,4 +24,4 @@ LINK_DIRECTORIES (${FREEIMAGEALGORITHMS_BINARY_DIR})
 # Link the executable to the Hello library.
 TARGET_LINK_LIBRARIES (FreeImageAlgorithmsTests freeimagealgorithms freeimage)
 
-COPY_TARGET(FreeImageAlgorithmsTests)
+#COPY_TARGET(FreeImageAlgorithmsTests)

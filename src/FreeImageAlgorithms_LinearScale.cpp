@@ -111,72 +111,67 @@ STRETCH<Tdst>::StretchImageAcrossRange(FIBITMAP *src, Tdst dst_min, Tdst dst_max
 
 
 template<class Tsrc> FIBITMAP* 
-LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)
+LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
+                            double *min_within_image, double *max_within_image)
 {
 	FIBITMAP *dst = NULL;
-	unsigned x, y;
-						
-	unsigned width	= FreeImage_GetWidth(src);
-	unsigned height = FreeImage_GetHeight(src);
+			
+	unsigned int width	= FreeImage_GetWidth(src);
+	unsigned int height = FreeImage_GetHeight(src);
 
-	// allocate a 8-bit dib
-	dst = FreeImage_AllocateT(FIT_BITMAP, width, height, 8, 0, 0, 0);
-	
-	if(!dst)
-		return NULL;
+    double min_found = min, max_found = max;
 
-	double scale;
+    const double small_number = 0.0001;
 
-    double min_found, max_found;
-
-    FreeImageAlgorithms_FindMinMax(src, &min_found, &max_found);
+    *min_within_image = 0.0;
+    *max_within_image = 0.0;
 
 	// If the user has not specifed min & max use the min and max pixels in the image.
-	if(max == 0.0 && min == 0.0) {
-		min = min_found;
-		max = max_found;
-	}
-	
+    // Ie convert to standard type while scaling the range
+	if(max_found < small_number && min_found < small_number)
+        FreeImageAlgorithms_FindMinMax(src, &min_found, &max_found);
+   
+    // We can scale as only one value present - return a clone
+    if(min_found == max_found)
+        return FreeImage_Clone(src);
+
     if(min_within_image != NULL)
         *min_within_image = min_found;
 
     if(max_within_image != NULL)
         *max_within_image = max_found;
 
-	if(min_found == max_found) {
+	// We can scale as only one value present - return a clone
+    if(min == max)
+        return FreeImage_ConvertToStandardType(src, 1);
 
-		FreeImage_Unload(dst);
-		return FreeImage_ConvertToStandardType(src, 1);
-	}
-	
+    // allocate a 8-bit dib
+	if((dst = FreeImage_AllocateT(FIT_BITMAP, width, height, 8, 0, 0, 0)) == NULL)
+		return NULL;
+
 	// compute the scaling factor
-	scale = 255.0 / (double)(max - min);
+	double scale = 255.0 / (double)(max_found - min_found);
 
-	Tsrc *src_bits;
+	Tsrc *src_bits, tmp_min = (Tsrc) min_found;
+	register Tsrc val;
 	BYTE *dst_bits;
-	long tmp;
 
 	// scale to 8-bit
-	for(y = 0; y < height; y++) {
+	for(register unsigned int y = 0; y < height; y++) {
 
-		src_bits = reinterpret_cast<Tsrc*>(FreeImage_GetScanLine(src, y));
+		src_bits = (Tsrc*)(FreeImage_GetScanLine(src, y));
 		dst_bits = FreeImage_GetScanLine(dst, y);
 
-		for(x = 0; x < width; x++) {
+		for(register unsigned int x = 0; x < width; x++) {
 
-			if(src_bits[x] < min) {
+			val = src_bits[x];
+			if(val < tmp_min) {
 
 				dst_bits[x] = 0;
 				continue;
 			}
 
-			tmp = static_cast<long>(scale * (src_bits[x] - min));
-
-			if(tmp >= 255) {
-				tmp = 255;
-			}
-
-			dst_bits[x] = (BYTE) tmp;	
+			dst_bits[x] = (BYTE)(scale * (val - tmp_min));
 		}
 	}
 	

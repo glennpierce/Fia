@@ -139,7 +139,8 @@ FreeImageAlgorithms_LoadFIBFromFile(const char *pathname)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height, FREE_IMAGE_TYPE data_type, int padded, int vertical_flip)
+FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
+                                                   FREE_IMAGE_TYPE data_type, int padded, int vertical_flip)
 {
 	FIBITMAP 	*dib;
 	BYTE 		*data_ptr;
@@ -255,7 +256,7 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
 	// check that the plugin has writing capabilities ... 
 	if((fif != FIF_UNKNOWN) && FreeImage_FIFSupportsWriting(fif)) { 
 	
-		standard_dib = FreeImage_ConvertToStandardType(dib, 1);
+		standard_dib = FreeImage_ConvertToStandardType(dib, 0);
 
 		if(bit_depth == BIT24)
 			converted_dib = FreeImage_ConvertTo24Bits(standard_dib);

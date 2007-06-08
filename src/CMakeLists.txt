@@ -30,8 +30,6 @@ SET(FIA_SRCS FreeImageAlgorithms_Arithmetic.cpp
 
 IF (WIN32)
   SET(FIA_SRCS ${FIA_SRCS} FreeImageAlgorithms_HBitmap.cpp)
-#ELSE (WIN32)
-#  SET(FIA_SRCS ${FIA_SRCS} UnixSupport.c)
 ENDIF (WIN32)
 
 ADD_DEFINITIONS(-DFREEIMAGE_EXPORTS)
@@ -41,5 +39,5 @@ ADD_LIBRARY (freeimagealgorithms SHARED ${FIA_SRCS})
 # Link the executable to the FreeImage library.
 TARGET_LINK_LIBRARIES (freeimagealgorithms freeimage)
 
-COPY_TARGET(freeimagealgorithms)
-COPY_LIB(freeimagealgorithms)
+#COPY_TARGET(freeimagealgorithms)
+#COPY_LIB(freeimagealgorithms)
