@@ -18,6 +18,14 @@ RGBQUAD DLL_CALLCONV FIA_RGBQUAD(unsigned char red, unsigned char green,
 	return quad;
 }
 
+static bool IsRGBQuadZero(RGBQUAD quad)
+{
+    if(quad.rgbRed != 0 || quad.rgbGreen != 0 || quad.rgbBlue != 0)
+        return false;
+
+    return true;
+}
+
 int DLL_CALLCONV
 FreeImageAlgorithms_CopyPaletteToRGBQUAD(FIBITMAP *src, RGBQUAD *palette)
 {
@@ -162,6 +170,20 @@ FreeImageAlgorithms_SetFalseColourPalette(FIBITMAP *src, double wavelength)
   	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+int DLL_CALLCONV
+FreeImageAlgorithms_SetPileUpPalette(FIBITMAP *src, RGBQUAD colour1, RGBQUAD colour2,
+                                     RGBQUAD colour3, BYTE size)
+{
+	RGBQUAD *palette;
+
+	if((palette = FreeImage_GetPalette(src)) == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+	
+	FreeImageAlgorithms_GetPileUpPalette(palette, colour1, colour2, colour3, size);
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
 
 int DLL_CALLCONV
 FreeImageAlgorithms_SetRainBowPalette(FIBITMAP *src)
@@ -290,6 +312,49 @@ FreeImageAlgorithms_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colou
   	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+
+int DLL_CALLCONV
+FreeImageAlgorithms_GetPileUpPalette(RGBQUAD *palette, RGBQUAD colour1, RGBQUAD colour2, RGBQUAD colour3, BYTE size)
+{
+	if(palette == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	FreeImageAlgorithms_GetGreyLevelPalette(palette);
+  			
+    // Set default to red blue green
+    if(IsRGBQuadZero(colour1) && IsRGBQuadZero(colour2) && IsRGBQuadZero(colour3)) {
+
+        colour1 = FIA_RGBQUAD(255, 0, 0);
+        colour2 = FIA_RGBQUAD(0, 255, 0);
+        colour3 = FIA_RGBQUAD(0, 0, 255);
+    }
+
+    if(size == 0)
+        size = 10;
+
+    int top = 255;
+
+    // Do first pileup
+    for(int i=0; i < size; i++) {
+        palette[top - i] = colour1;
+    }
+
+    top -= size;
+
+    // Do second pileup
+    for(int i=0; i < size; i++) {
+        palette[top - i] = colour2;
+    }
+
+    top -= size;
+
+    // Do third pileup
+    for(int i=0; i < size; i++) {
+        palette[top - i] = colour3;
+    }
+
+  	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
 
 int DLL_CALLCONV
 FreeImageAlgorithms_GetRainBowPalette(RGBQUAD *palette)
