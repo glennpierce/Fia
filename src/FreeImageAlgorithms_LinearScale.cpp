@@ -14,7 +14,6 @@ class LINEAR_SCALE
 public:
 	FIBITMAP* convert(FIBITMAP *src, double min, double max, double *min_with_image,
         double *max_within_image);
-	
 };
 
 
@@ -109,7 +108,6 @@ STRETCH<Tdst>::StretchImageAcrossRange(FIBITMAP *src, Tdst dst_min, Tdst dst_max
 	return dst;
 }
 
-
 template<class Tsrc> FIBITMAP* 
 LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
                             double *min_within_image, double *max_within_image)
@@ -141,16 +139,17 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
     if(max_within_image != NULL)
         *max_within_image = max_found;
 
-	// We can scale as only one value present - return a clone
-    if(min == max)
-        return FreeImage_ConvertToStandardType(src, 1);
+	// compute the scaling factor
+	double scale = 255.0 / (double)(max_found - min_found);
+
+    // Scale is 1.0
+    if(scale == 1.0)
+        return FreeImage_ConvertToStandardType(src, 0);
 
     // allocate a 8-bit dib
 	if((dst = FreeImage_AllocateT(FIT_BITMAP, width, height, 8, 0, 0, 0)) == NULL)
 		return NULL;
 
-	// compute the scaling factor
-	double scale = 255.0 / (double)(max_found - min_found);
 
 	Tsrc *src_bits, tmp_min = (Tsrc) min_found;
 	register Tsrc val;
@@ -161,7 +160,7 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 
 		src_bits = (Tsrc*)(FreeImage_GetScanLine(src, y));
 		dst_bits = FreeImage_GetScanLine(dst, y);
-
+       
 		for(register unsigned int x = 0; x < width; x++) {
 
 			val = src_bits[x];
@@ -172,12 +171,12 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 			}
 
 			dst_bits[x] = (BYTE)(scale * (val - tmp_min));
+
 		}
 	}
 	
 	return dst;
 }
-
 
 // Convert from type X to type BYTE
 static LINEAR_SCALE<unsigned char>	scaleUCharImage;

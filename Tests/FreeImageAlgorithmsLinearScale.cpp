@@ -12,14 +12,32 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 {
 	double min_found, max_found;
 
-	char *file = IMAGE_DIR "\\test.jpg";
+	char *file = "C:\\Documents and Settings\\Pierce\\My Documents\\Test Images\\rjl.jpg";
 
-	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *old_dib = FreeImageAlgorithms_LoadFIBFromFile(file);
 	
+    FIBITMAP *dib = FreeImage_ConvertToType(old_dib, FIT_INT16, 1);
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType(dib);
+
+    PROFILE_START("LinearScale");
+
+    FIBITMAP *scaled_dib;
+
 	for(int i=0; i < 1000; i++) {
-		FIBITMAP *scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(dib, 0, 255, &min_found, &max_found);  
-		FreeImage_Unload(scaled_dib);
+		
+        scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(dib, 0, 0, &min_found, &max_found);  
+
+       
+        if(i < 999)
+		    FreeImage_Unload(scaled_dib);
 	}
+
+    PROFILE_STOP("LinearScale");
+
+
+    FreeImageAlgorithms_SaveFIBToFile(scaled_dib, "C:\\Documents and Settings\\Pierce\\Desktop\\output.bmp", BIT8);
+
 	FreeImage_Unload(dib);
 	//FreeImage_Unload(scaled_dib);
 
