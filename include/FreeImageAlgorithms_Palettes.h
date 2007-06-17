@@ -48,15 +48,13 @@ FreeImageAlgorithms_CopyPaletteFromRGBQUAD(FIBITMAP *dst, RGBQUAD *palette);
 DLL_API int DLL_CALLCONV		   
 FreeImageAlgorithms_CopyPalette(FIBITMAP *src, FIBITMAP *dst);
 
-/** \brief Reverses a section or all of an array of RGBQUAD elements.
+/** \brief Reverses an array of RGBQUAD elements.
  *
  *  \param  palette RGBQUAD* array.
- *  \param  start Point to start from in array.
- *  \param  size Number of elements you wish to reverse.
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_ReversePaletteEntries(RGBQUAD *palette, unsigned char start, unsigned char size);
+FreeImageAlgorithms_ReversePaletteEntries(RGBQUAD *palette);
 
 /** \brief Set the pallete of a FIBITMAP image to a greylevel palette.
  *
@@ -81,6 +79,14 @@ FreeImageAlgorithms_SetLogColourPalette(FIBITMAP *src);
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_SetRainBowPalette(FIBITMAP *src);
+
+/** \brief Set the pallete of a FIBITMAP image to a reverse rainbow palette.
+ *
+ *  \param src Image to set palette to rainbow.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_SetReverseRainBowPalette(FIBITMAP *src);
 
 /** \brief Set the pallete of a FIBITMAP image to a temperature palette.
  *
@@ -173,6 +179,14 @@ FreeImageAlgorithms_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colou
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetRainBowPalette(RGBQUAD *palette);
+
+/** \brief Get a rainbow pallete in reverse into a RGBQUAD array.
+ *
+ *  \param  palette RGBQUAD* array.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FreeImageAlgorithms_GetReverseRainBowPalette(RGBQUAD *palette);
 
 /** \brief Get a log pallete into a RGBQUAD array.
  *

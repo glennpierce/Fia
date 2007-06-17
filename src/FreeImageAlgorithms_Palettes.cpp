@@ -77,21 +77,18 @@ FreeImageAlgorithms_CopyPalette(FIBITMAP *src, FIBITMAP *dst)
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_ReversePaletteEntries(RGBQUAD *palette, unsigned char start, unsigned char size)
+FreeImageAlgorithms_ReversePaletteEntries(RGBQUAD *palette)
 {
-	int i, max_element;
+	int i;
+    RGBQUAD copy_palette[256];
 
-	if(palette == NULL)
+    if(palette == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	max_element = (size / 2) - 1;
+    memcpy(copy_palette, palette, sizeof(RGBQUAD) * 256);
 
-	for (i=start; i < max_element ; i++) {    
-
-		INPLACESWAP(palette[i].rgbRed, palette[size - i].rgbRed);
-		INPLACESWAP(palette[i].rgbGreen, palette[size - i].rgbGreen);
-		INPLACESWAP(palette[i].rgbBlue, palette[size - i].rgbBlue);
-	}
+	for (i=0; i < 256 ; i++)
+		palette[i] = copy_palette[255 - i];
 	
 	return 1;
 }
@@ -179,6 +176,19 @@ FreeImageAlgorithms_SetRainBowPalette(FIBITMAP *src)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+
+int DLL_CALLCONV
+FreeImageAlgorithms_SetReverseRainBowPalette(FIBITMAP *src)
+{
+	RGBQUAD *palette;
+
+	if((palette = FreeImage_GetPalette(src)) == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+	
+	FreeImageAlgorithms_GetReverseRainBowPalette(palette);
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
 
 int DLL_CALLCONV
 FreeImageAlgorithms_SetTemperaturePalette(FIBITMAP *src)
@@ -338,6 +348,15 @@ FreeImageAlgorithms_GetRainBowPalette(RGBQUAD *palette)
 
 
 int DLL_CALLCONV
+FreeImageAlgorithms_GetReverseRainBowPalette(RGBQUAD *palette)
+{
+    FreeImageAlgorithms_GetRainBowPalette(palette);
+
+    return FreeImageAlgorithms_ReversePaletteEntries(palette);  
+} 
+
+
+int DLL_CALLCONV
 FreeImageAlgorithms_GetLogColourPalette(RGBQUAD *palette)
 {	
 	if(palette == NULL)
@@ -477,6 +496,28 @@ FreeImageAlgorithms_GetTemperaturePalette(RGBQUAD *palette)
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+
+static int DLL_CALLCONV
+FreeImageAlgorithms_SeismicReversePaletteEntries(RGBQUAD *palette,
+                                                 unsigned char start, unsigned char size)
+{
+	int i, max_element;
+
+	if(palette == NULL)
+		return FREEIMAGE_ALGORITHMS_ERROR;
+
+	max_element = (size / 2) - 1;
+
+	for (i=start; i < max_element ; i++) {    
+
+		INPLACESWAP(palette[i].rgbRed, palette[size - i].rgbRed);
+		INPLACESWAP(palette[i].rgbGreen, palette[size - i].rgbGreen);
+		INPLACESWAP(palette[i].rgbBlue, palette[size - i].rgbBlue);
+	}
+	
+	return 1;
+}
+
 int DLL_CALLCONV
 FreeImageAlgorithms_GetSeismicColourPalette(RGBQUAD *palette)
 {
@@ -489,7 +530,7 @@ FreeImageAlgorithms_GetSeismicColourPalette(RGBQUAD *palette)
 
 	FreeImageAlgorithms_GetOpticalDensityPalette(palette, 0, 0, 255, contrast, halfway);
 
-	FreeImageAlgorithms_ReversePaletteEntries(palette, 0, halfway);  
+	FreeImageAlgorithms_SeismicReversePaletteEntries(palette, 0, halfway);  
 
 	// Second Half
 	FreeImageAlgorithms_GetOpticalDensityPalette(&(palette[halfway]), 255, 0, 0, contrast, halfway);  
