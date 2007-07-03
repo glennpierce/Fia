@@ -127,6 +127,15 @@ FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src);
 DLL_API int DLL_CALLCONV 
 FreeImageAlgorithms_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum);
 
+/** \brief Returns the image containing the maximum equivilent pixels in the two images.
+ *
+ *  \param dst FIBITMAP bitmap containing the max pixels (serves as output).
+ *  \param src FIBITMAP bitmap Source bitmap.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV 
+FreeImageAlgorithms_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src);
+
 #ifdef __cplusplus
 }
 #endif
