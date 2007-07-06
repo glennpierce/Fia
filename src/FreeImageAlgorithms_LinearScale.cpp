@@ -1,5 +1,6 @@
 #include "FreeImageAlgorithms_LinearScale.h"
 #include "FreeImageAlgorithms_Utilities.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utils.h"
 
 #include <iostream>
@@ -150,6 +151,7 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 	if((dst = FreeImage_AllocateT(FIT_BITMAP, width, height, 8, 0, 0, 0)) == NULL)
 		return NULL;
 
+    FreeImageAlgorithms_CopyPalette(src, dst);
 
 	Tsrc *src_bits, tmp_min = (Tsrc) min_found, tmp_max = (Tsrc) max_found;
 	register Tsrc val;
