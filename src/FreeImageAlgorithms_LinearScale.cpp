@@ -151,7 +151,12 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 	if((dst = FreeImage_AllocateT(FIT_BITMAP, width, height, 8, 0, 0, 0)) == NULL)
 		return NULL;
 
-    FreeImageAlgorithms_CopyPalette(src, dst);
+    if(FreeImage_GetImageType(src) == FIT_BITMAP)
+        FreeImageAlgorithms_CopyPalette(src, dst);
+    else {
+        // Just use a standard Greyscale palette as the input is not an 8bit image
+        FreeImageAlgorithms_SetGreyLevelPalette(dst);
+    }
 
 	Tsrc *src_bits, tmp_min = (Tsrc) min_found, tmp_max = (Tsrc) max_found;
 	register Tsrc val;
