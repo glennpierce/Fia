@@ -786,7 +786,7 @@ FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIA
 
 /* Midpoint Line algorithm */
 int DLL_CALLCONV
-FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *red_values, char *green_values, char *blue_values) 
+FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, BYTE *red_values, BYTE *green_values, BYTE *blue_values) 
 {  
 	RGBQUAD value;
    	int dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0; 

@@ -442,7 +442,7 @@ FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIA
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *red_values, char *green_values, char *blue_values);
+FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, BYTE *red_values, BYTE *green_values, BYTE *blue_values);
 
 DLL_API void DLL_CALLCONV
 FreeImageAlgorithms_GetDistanceMap (int width, int height, float *distance_map);

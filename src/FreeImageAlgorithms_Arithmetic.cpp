@@ -364,7 +364,7 @@ ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
     int width = FreeImage_GetWidth(dst);
     int height = FreeImage_GetHeight(dst);
 
-    Tsrc *src_ptr;
+    Tsrc casted_constant = (Tsrc) constant;
 
     // Can be a float or a double dst image
     if(type == FIT_DOUBLE) {
@@ -376,7 +376,7 @@ ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
             dst_ptr = (double *) FreeImage_GetScanLine(dst, y);
 	
 		    for(register int x=0; x < width; x++)
-                dst_ptr[x] = (double) (dst_ptr[x] * constant);
+                dst_ptr[x] = (double) (dst_ptr[x] * casted_constant);
 	    }
     }
     else {
@@ -388,7 +388,7 @@ ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
             dst_ptr = (float *) FreeImage_GetScanLine(dst, y);
 	
 		    for(register int x=0; x < width; x++)
-                dst_ptr[x] = (float) (dst_ptr[x] * constant);
+                dst_ptr[x] = (float) (dst_ptr[x] * casted_constant);
 	    }
     }
 
@@ -412,8 +412,6 @@ ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
 
     int width = FreeImage_GetWidth(dst);
     int height = FreeImage_GetHeight(dst);
-
-    Tsrc *src_ptr;
 
     // Can be a float or a double dst image
     if(type == FIT_DOUBLE) {
@@ -460,7 +458,7 @@ ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
     int width = FreeImage_GetWidth(dst);
     int height = FreeImage_GetHeight(dst);
 
-    Tsrc *src_ptr;
+    Tsrc casted_constant = (Tsrc) constant;
 
     // Can be a float or a double dst image
     if(type == FIT_DOUBLE) {
@@ -472,7 +470,7 @@ ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
             dst_ptr = (double *) FreeImage_GetScanLine(dst, y);
 	
 		    for(register int x=0; x < width; x++)
-                dst_ptr[x] += constant; 
+                dst_ptr[x] += casted_constant; 
 	    }
     }
     else {
@@ -484,7 +482,7 @@ ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
             dst_ptr = (float *) FreeImage_GetScanLine(dst, y);
 	
 		    for(register int x=0; x < width; x++)
-                dst_ptr[x] += constant; 
+                dst_ptr[x] += casted_constant; 
 	    }
     }
 
@@ -508,7 +506,7 @@ ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
 	int width = FreeImage_GetWidth(dst);
     int height = FreeImage_GetHeight(dst);
 
-    Tsrc *src_ptr;
+    Tsrc casted_constant = (Tsrc) constant;
 
     // Can be a float or a double dst image
     if(type == FIT_DOUBLE) {
@@ -520,7 +518,7 @@ ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
             dst_ptr = (double *) FreeImage_GetScanLine(dst, y);
 	
 		    for(register int x=0; x < width; x++)
-                dst_ptr[x] -= constant; 
+                dst_ptr[x] -= casted_constant; 
 	    }
     }
     else {
@@ -532,7 +530,7 @@ ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
             dst_ptr = (float *) FreeImage_GetScanLine(dst, y);
 	
 		    for(register int x=0; x < width; x++)
-                dst_ptr[x] -= constant; 
+                dst_ptr[x] -= casted_constant; 
 	    }
     }
 
