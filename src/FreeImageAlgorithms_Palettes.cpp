@@ -18,7 +18,7 @@ RGBQUAD DLL_CALLCONV FIA_RGBQUAD(unsigned char red, unsigned char green,
 	return quad;
 }
 
-static bool IsRGBQuadZero(RGBQUAD quad)
+static bool IsRGBQUADZero(RGBQUAD quad)
 {
     if(quad.rgbRed != 0 || quad.rgbGreen != 0 || quad.rgbBlue != 0)
         return false;
@@ -172,7 +172,7 @@ FreeImageAlgorithms_SetFalseColourPalette(FIBITMAP *src, double wavelength)
 
 int DLL_CALLCONV
 FreeImageAlgorithms_SetPileUpPalette(FIBITMAP *src, RGBQUAD colour1, RGBQUAD colour2,
-                                     RGBQUAD colour3, BYTE size)
+                                     RGBQUAD colour3, BYTE *size)
 {
 	RGBQUAD *palette;
 
@@ -314,7 +314,8 @@ FreeImageAlgorithms_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colou
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetPileUpPalette(RGBQUAD *palette, RGBQUAD colour1, RGBQUAD colour2, RGBQUAD colour3, BYTE size)
+FreeImageAlgorithms_GetPileUpPalette(RGBQUAD *palette, RGBQUAD colour1, RGBQUAD colour2,
+                                     RGBQUAD colour3, BYTE *size)
 {
 	if(palette == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -322,34 +323,31 @@ FreeImageAlgorithms_GetPileUpPalette(RGBQUAD *palette, RGBQUAD colour1, RGBQUAD 
 	FreeImageAlgorithms_GetGreyLevelPalette(palette);
   			
     // Set default to red blue green
-    if(IsRGBQuadZero(colour1) && IsRGBQuadZero(colour2) && IsRGBQuadZero(colour3)) {
+    if(IsRGBQUADZero(colour1) && IsRGBQUADZero(colour2) && IsRGBQUADZero(colour3)) {
 
         colour1 = FIA_RGBQUAD(255, 0, 0);
         colour2 = FIA_RGBQUAD(0, 255, 0);
         colour3 = FIA_RGBQUAD(0, 0, 255);
     }
 
-    if(size == 0)
-        size = 10;
-
     int top = 255;
 
     // Do first pileup
-    for(int i=0; i < size; i++) {
+    for(int i=0; i < size[0]; i++) {
         palette[top - i] = colour1;
     }
 
-    top -= size;
+    top -= size[0];
 
     // Do second pileup
-    for(int i=0; i < size; i++) {
+    for(int i=0; i < size[1]; i++) {
         palette[top - i] = colour2;
     }
 
-    top -= size;
+    top -= size[1];
 
     // Do third pileup
-    for(int i=0; i < size; i++) {
+    for(int i=0; i < size[2]; i++) {
         palette[top - i] = colour3;
     }
 

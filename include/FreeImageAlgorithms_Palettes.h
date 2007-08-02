@@ -103,7 +103,7 @@ FreeImageAlgorithms_SetTemperaturePalette(FIBITMAP *src);
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_SetPileUpPalette(FIBITMAP *src, RGBQUAD colour1, RGBQUAD colour2,
-                                     RGBQUAD colour3, BYTE size);
+                                     RGBQUAD colour3, BYTE *size);
 
 /** \brief Set the pallete of a FIBITMAP image to a false colour palette.
  *
@@ -237,7 +237,7 @@ FreeImageAlgorithms_GetSeismicColourPalette(RGBQUAD *palette);
 */
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetPileUpPalette(RGBQUAD *palette,
-                                     RGBQUAD colour1, RGBQUAD colour2, RGBQUAD colour3, BYTE size);
+                                     RGBQUAD colour1, RGBQUAD colour2, RGBQUAD colour3, BYTE *size);
 
 DLL_API int DLL_CALLCONV
 FreeImageAlgorithms_GetOpticalDensityPalette(RGBQUAD *palette, unsigned char red,
