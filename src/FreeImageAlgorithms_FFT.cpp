@@ -78,6 +78,7 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 	int i=0, x, y;
 	int dims[2];
 	int ndims = 2;
+    size_t bufsize;
 	Tsrc *bits; 
 	FICOMPLEX *outbits;
 	FIBITMAP *dst = NULL;
@@ -85,20 +86,21 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 	kiss_fftnd_cfg st;
 	kiss_fft_cpx* fftbuf;
 	kiss_fft_cpx* fftoutbuf;
+    kiss_fft_cpx* tmp_fftoutbuf;
 
 	// dims needs to be {rows, cols}, if you have contiguous rows.
 	dims[0] = height = FreeImage_GetHeight(src);
 	dims[1] = width = FreeImage_GetWidth(src);
 	
-	fftbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) );
-	fftoutbuf = (kiss_fft_cpx*) malloc( width * height * sizeof(kiss_fft_cpx) ); 
+    bufsize = width * height * sizeof(kiss_fft_cpx);
+	fftbuf = (kiss_fft_cpx*) malloc(bufsize);
+	tmp_fftoutbuf = fftoutbuf = (kiss_fft_cpx*) malloc(bufsize); 
 	
     CheckMemory(fftbuf);
     CheckMemory(fftoutbuf);
 
 	st = kiss_fftnd_alloc (dims, ndims, inverse, 0, 0);
 
-	
 	for(y = height - 1; y >= 0; y--) { 
 		
 		bits = (Tsrc *) FreeImage_GetScanLine(src, y);
@@ -112,10 +114,10 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 		}
 	}
 
-	kiss_fftnd(st, fftbuf, fftoutbuf);
+	kiss_fftnd(st, fftbuf, tmp_fftoutbuf);
 
 	if ( (dst = FreeImage_AllocateT(FIT_COMPLEX, width, height, 32, 0, 0, 0)) == NULL )
-		return NULL;
+		goto Error;
 
 	if(shift >= 1) {
 
@@ -125,18 +127,18 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 		
 			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
 
-			GetShiftedComplexXValues(fftoutbuf, outbits, width);
+			GetShiftedComplexXValues(tmp_fftoutbuf, outbits, width);
 	
-			fftoutbuf += width;
+			tmp_fftoutbuf += width;
 		}
 
 		for(y = height -1; y >= yhalf; y--) { 
 		
 			outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
 
-			GetShiftedComplexXValues(fftoutbuf, outbits, width);
+			GetShiftedComplexXValues(tmp_fftoutbuf, outbits, width);
 	
-			fftoutbuf += width;
+			tmp_fftoutbuf += width;
 		}
 	}
 	else {
@@ -147,16 +149,21 @@ FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shi
 
 			for(x=0; x < width; x++) {
 				
-				(outbits + x)->r = (double)((fftoutbuf + x)->r);
-				(outbits + x)->i = (double)((fftoutbuf + x)->i);	  
+				(outbits + x)->r = (double)((tmp_fftoutbuf + x)->r);
+				(outbits + x)->i = (double)((tmp_fftoutbuf + x)->i);	  
 			}
 
-			fftoutbuf += width;
+			tmp_fftoutbuf += width;
 		}
 
 	}
 
-	free(st);
+Error:
+ 
+    free(fftbuf);
+    free(fftoutbuf);
+    free(st);
+
 
 	return dst;
 }

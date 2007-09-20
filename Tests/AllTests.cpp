@@ -28,7 +28,7 @@ void RunAllTests(void)
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
-	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
+	
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
 	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
@@ -39,7 +39,8 @@ void RunAllTests(void)
     CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
     */
 
-    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
+    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
     
 
 	CuSuiteRun(suite);

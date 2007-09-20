@@ -91,45 +91,16 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 */
 
 static void
-TestFreeImageAlgorithms_KissTest(CuTest* tc)
+TestFreeImageAlgorithms_FFTTest(CuTest* tc)
 {
-	BYTE* bits;
-	FICOMPLEX *complex_bits;
-	int x, y;
-
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(IMAGE_DIR "\\FFTTest.bmp");
-	FIBITMAP *float_dib = FreeImage_ConvertToType(dib, FIT_FLOAT, 0);
+	
+    FIBITMAP* complex_fft = FreeImageAlgorithms_FFT(dib, 0, 1); 
+    
+    CuAssertTrue(tc, complex_fft != NULL);
 
-	int width = FreeImage_GetWidth(float_dib);
-	int height = FreeImage_GetWidth(float_dib);
-
-	for(y = height - 1; y >= 0; y--) { 
-		
-		bits = FreeImage_GetScanLine(float_dib, y);
-		
-		for(x=0; x < width; x++)
-			printf ("%d, ", bits[x]);
-
-		printf ("\n");
-	}
-
-	printf("\n");
-
-	FIBITMAP *fft = FreeImageAlgorithms_FFT(float_dib, 0, 0);  
-
-	for(y = 0; y < height; y++) { 
-		
-		complex_bits = (FICOMPLEX *) FreeImage_GetScanLine(fft, y);
-		
-		for(x=0; x < width; x++)
-			printf ("%0.1f %0.1fi, ", (float) complex_bits[x].r, (float) complex_bits[x].i);
-
-		printf ("\n");
-	}
-
-	FreeImage_Unload(float_dib);
 	FreeImage_Unload(dib);
-	FreeImage_Unload(fft);
+	FreeImage_Unload(complex_fft);
 }
 
 
@@ -138,7 +109,7 @@ DLL_CALLCONV CuGetFreeImageAlgorithmsFFTSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_KissTest);
+	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FFTTest);
 	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DisplayFFT);
 
 	return suite;

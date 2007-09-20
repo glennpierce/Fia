@@ -27,32 +27,45 @@ public:
 template<typename Tsrc> int 
 ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
 {
-	if(mask == NULL || src == NULL)
+	if(src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	// Have to be the same size
-	if(CheckDimensions(src, mask) ==  FREEIMAGE_ALGORITHMS_ERROR)
-		return  FREEIMAGE_ALGORITHMS_ERROR;
+    if(mask != NULL) {
+	    // Mask has to be the same size
+	    if(CheckDimensions(src, mask) ==  FREEIMAGE_ALGORITHMS_ERROR)
+		    return  FREEIMAGE_ALGORITHMS_ERROR;
 
-	// Mask has to be 8 bit 
-	if(FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP)
-		return FREEIMAGE_ALGORITHMS_ERROR;
+	    // Mask has to be 8 bit 
+	    if(FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP)
+		    return FREEIMAGE_ALGORITHMS_ERROR;
+    }
 
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
     *sum = 0.0;
 
-	for(register int y = 0; y < height; y++) { 
+    if(mask != NULL) {
+	    for(register int y = 0; y < height; y++) { 
 		
-		Tsrc *src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
-		unsigned char *mask_ptr = (unsigned char *)FreeImage_GetScanLine(mask, y);
+		    Tsrc *src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
+		    unsigned char *mask_ptr = (unsigned char *)FreeImage_GetScanLine(mask, y);
 
-		for(register int x=0; x < width; x++) {
-			if(!mask_ptr[x])
-				*sum += (double) src_ptr[x];
-		}
-	}
+		    for(register int x=0; x < width; x++) {
+			    if(mask_ptr[x])
+				    *sum += (double) src_ptr[x];
+		    }
+	    }
+    }
+    else {
+        for(register int y = 0; y < height; y++) { 
+		
+		    Tsrc *src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
+
+		    for(register int x=0; x < width; x++)
+			    *sum += (double) src_ptr[x];
+	    }
+    }
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
