@@ -11,7 +11,7 @@ SET(CMAKE_DEBUG_POSTFIX "_d")
 INCLUDE_DIRECTORIES(include Anti-Grain-Lite Tests)
 
 # Look for the FreeImage library
-FIND_LIBRARY(freeimage NAMES freeimage PATHS ${LIBRARY_OUTPUT_PATH})
+FIND_LIBRARY(freeimage NAMES freeimage PATHS /usr/lib ${LIBRARY_OUTPUT_PATH})
 
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 
