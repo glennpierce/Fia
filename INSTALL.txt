@@ -1,5 +1,7 @@
 Change to toplevel directory
 
-ccmake .
+mkdir build
+cd build
+ccmake ..
 make
-make install
+
