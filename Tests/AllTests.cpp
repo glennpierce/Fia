@@ -58,13 +58,9 @@ static void OnError(const char *msg)
 
 int __cdecl main(void)
 {
-	char string[10];
-
-    FreeImageAlgorithms_SetOutputMessage(OnError);
+    FIA_SetOutputMessage(OnError);
 
 	RunAllTests();
-
-	gets(string);
 
 	return 0;
 }

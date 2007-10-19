@@ -38,7 +38,7 @@ extern "C" {
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift);
+FIA_FFT(FIBITMAP *src, int inverse, int shift);
 
 /** \brief Creates a FIT_DOUBLE absolute image from a complex image.
  *	
@@ -46,7 +46,7 @@ FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift);
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(FIBITMAP *src);
+FIA_ConvertComplexImageToAbsoluteValued(FIBITMAP *src);
 
 /** \brief Creates a FIT_DOUBLE absolute image from a complex image.
  *	
@@ -54,7 +54,7 @@ FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(FIBITMAP *src);
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src);
+FIA_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src);
 
 #ifdef __cplusplus
 }

@@ -34,9 +34,9 @@
 extern "C" {
 #endif
 
-//#ifndef _WIN32
-//#define __cdecl
-//#endif
+#ifndef WIN32
+#define __cdecl
+#endif
 
 /** Data structure for FIABITMAP type (FIBITMAP with a border)
 */
@@ -107,7 +107,7 @@ typedef enum {BIT8, BIT24} FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH;
  *  \param src FIABITMAP bitmap.
 */
 DLL_API void DLL_CALLCONV
-FreeImageAlgorithms_Unload(FIABITMAP* src);
+FIA_Unload(FIABITMAP* src);
 
 
 /** \brief Adds a border to an image.
@@ -123,7 +123,7 @@ FreeImageAlgorithms_Unload(FIABITMAP* src);
  *  \return A FIABITMAP structure containing a FIBITMAP and a border size.
 */
 DLL_API FIABITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant);
+FIA_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant);
 
 /** \brief Adds a zero border to an image.
  *
@@ -134,7 +134,7 @@ FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderTyp
  *  \return A FIABITMAP structure containing a FIBITMAP and a border size.
 */
 DLL_API FIABITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SetZeroBorder(FIBITMAP *src, int xborder, int yborder);
+FIA_SetZeroBorder(FIBITMAP *src, int xborder, int yborder);
 
 #ifdef __cplusplus
 }

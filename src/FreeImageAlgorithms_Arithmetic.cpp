@@ -44,6 +44,20 @@ public:
 };
 
 
+static int CheckDimensions(FIBITMAP* dst, FIBITMAP* src)
+{
+        // Check src is the same size as dst
+        int src_width = FreeImage_GetWidth(src);
+        int src_height = FreeImage_GetHeight(src);
+        int dst_width = FreeImage_GetWidth(dst);
+        int dst_height = FreeImage_GetHeight(dst);
+
+        if(src_width != dst_width || src_height != dst_height)
+                return FREEIMAGE_ALGORITHMS_ERROR;
+
+        return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
 template<typename Tsrc> int 
 ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
 {
@@ -147,21 +161,6 @@ ARITHMATIC<Tsrc>::Log(FIBITMAP *src) {
 	
 	return dst;
 }
-
-static int CheckDimensions(FIBITMAP* dst, FIBITMAP* src)
-{
-	// Check src is the same size as dst
-	int src_width = FreeImage_GetWidth(src);
-	int src_height = FreeImage_GetHeight(src);
-	int dst_width = FreeImage_GetWidth(dst);
-	int dst_height = FreeImage_GetHeight(dst);
-
-	if(src_width != dst_width || src_height != dst_height)
-		return FREEIMAGE_ALGORITHMS_ERROR;
-
-	return FREEIMAGE_ALGORITHMS_SUCCESS;
-}
-
 
 // This function sets dst to have the max pixel value of src and dst
 template<class Tsrc> int 
@@ -580,7 +579,7 @@ ARITHMATIC<double>				arithmaticDoubleImage;
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Transpose(FIBITMAP *src)
+FIA_Transpose(FIBITMAP *src)
 {
 	FIBITMAP *dst = NULL;
 
@@ -625,7 +624,7 @@ FreeImageAlgorithms_Transpose(FIBITMAP *src)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Log(FIBITMAP *src)
+FIA_Log(FIBITMAP *src)
 {
 	FIBITMAP *dst = NULL;
 
@@ -669,7 +668,7 @@ FreeImageAlgorithms_Log(FIBITMAP *src)
 }
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
+FIA_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -696,7 +695,7 @@ FreeImageAlgorithms_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_DivideGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
+FIA_DivideGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -722,7 +721,7 @@ FreeImageAlgorithms_DivideGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 }
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src)
+FIA_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -748,7 +747,7 @@ FreeImageAlgorithms_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src)
 }
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_AddGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
+FIA_AddGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -775,7 +774,7 @@ FreeImageAlgorithms_AddGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_SubtractGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
+FIA_SubtractGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -802,7 +801,7 @@ FreeImageAlgorithms_SubtractGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
+FIA_MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
@@ -828,7 +827,7 @@ FreeImageAlgorithms_MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constan
 }
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
+FIA_DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
@@ -854,7 +853,7 @@ FreeImageAlgorithms_DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
 }
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
+FIA_AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
@@ -880,7 +879,7 @@ FreeImageAlgorithms_AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
 }
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
+FIA_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
@@ -907,7 +906,7 @@ FreeImageAlgorithms_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constan
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_ComplexConjugate(FIBITMAP* src)
+FIA_ComplexConjugate(FIBITMAP* src)
 {
 	if(src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -934,7 +933,7 @@ FreeImageAlgorithms_ComplexConjugate(FIBITMAP* src)
 // = ac + ibc + ida - bd
 // = ac - bd + i(bc + da)
 int DLL_CALLCONV 
-FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
+FIA_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 {
 	if(dst == NULL || src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -975,7 +974,7 @@ FreeImageAlgorithms_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
+FIA_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 

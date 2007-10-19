@@ -25,7 +25,7 @@
 #include <iostream>
 
 HBITMAP DLL_CALLCONV
-FreeImageAlgorithms_FibToHBitmap(FIBITMAP *dib)
+FIA_FibToHBitmap(FIBITMAP *dib)
 {
 	DWORD error;
 
@@ -55,14 +55,14 @@ FreeImageAlgorithms_FibToHBitmap(FIBITMAP *dib)
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FreeHBitmap(HBITMAP hbitmap)
+FIA_FreeHBitmap(HBITMAP hbitmap)
 {
 	DeleteObject(hbitmap);
 }
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_HBitmapToFIB(HDC hdc, HBITMAP bitmap)
+FIA_HBitmapToFIB(HDC hdc, HBITMAP bitmap)
 {
 	FIBITMAP *dib = NULL;
 	BITMAP bm;
@@ -89,7 +89,7 @@ FreeImageAlgorithms_HBitmapToFIB(HDC hdc, HBITMAP bitmap)
 
 
 HBITMAP DLL_CALLCONV 
-FreeImageAlgorithms_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bottom)
+FIA_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bottom)
 {
 	if(!src) 
 		return NULL;
@@ -170,7 +170,7 @@ FreeImageAlgorithms_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int right, int bottom)
+FIA_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int right, int bottom)
 {
 	BYTE *src_bits;
 	int src_width, src_height, src_pitch;
@@ -233,7 +233,7 @@ FreeImageAlgorithms_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, i
 
 
 HBITMAP DLL_CALLCONV
-FreeImageAlgorithms_CreateDibSection(HDC hdc, int width, int height, int bpp, int colours_used, RGBQUAD* bmiColours)
+FIA_CreateDibSection(HDC hdc, int width, int height, int bpp, int colours_used, RGBQUAD* bmiColours)
 {
 	HBITMAP hbitmap;
 	BITMAPINFO *info;

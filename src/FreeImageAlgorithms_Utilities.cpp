@@ -83,7 +83,7 @@ _os_support(int feature)
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_SSEFindFloatMinMax(const float *data, long n, float *min, float *max)
+FIA_SSEFindFloatMinMax(const float *data, long n, float *min, float *max)
 {
 	__m128 min128 = _mm_set_ps1(FLT_MAX);  // min128[0, 1, 2, 3] = FLT_MAX
     __m128 max128 = _mm_set_ps1(FLT_MIN);  // max128[0, 1, 2, 3] = FLT_MIN
@@ -179,95 +179,95 @@ FIAImageRect(FIBITMAP *src)
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindCharMinMax(const char *data, long n, char *min, char *max)
+FIA_FindCharMinMax(const char *data, long n, char *min, char *max)
 {
 	MAXMIN(data, n, *max, *min);
 }
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindIntMinMax(const int *data, long n, int *min, int *max)
+FIA_FindIntMinMax(const int *data, long n, int *min, int *max)
 {
 	MAXMIN(data, n, *max, *min);
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindShortMinMax(const short *data, long n, short *min, short *max)
+FIA_FindShortMinMax(const short *data, long n, short *min, short *max)
 {
 	MAXMIN(data, n, *max, *min);
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindUShortMinMax(const unsigned short *data, long n, unsigned short *min, unsigned short *max)
-{
-	MAXMIN(data, n, *max, *min);
-}
-
-
-void DLL_CALLCONV
-FreeImageAlgorithms_FindLongMinMax(const long *data, long n, long *min, long *max)
-{
-	MAXMIN(data, n, *max, *min);
-}
-
-void DLL_CALLCONV
-FreeImageAlgorithms_FindULongMinMax(const unsigned long *data, long n, unsigned long *min, unsigned long *max)
+FIA_FindUShortMinMax(const unsigned short *data, long n, unsigned short *min, unsigned short *max)
 {
 	MAXMIN(data, n, *max, *min);
 }
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindFloatMinMax(const float *data, long n, float *min, float *max)
+FIA_FindLongMinMax(const long *data, long n, long *min, long *max)
 {
 	MAXMIN(data, n, *max, *min);
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindDoubleMinMax(const double *data, long n, double *min, double *max)
+FIA_FindULongMinMax(const unsigned long *data, long n, unsigned long *min, unsigned long *max)
+{
+	MAXMIN(data, n, *max, *min);
+}
+
+
+void DLL_CALLCONV
+FIA_FindFloatMinMax(const float *data, long n, float *min, float *max)
+{
+	MAXMIN(data, n, *max, *min);
+}
+
+void DLL_CALLCONV
+FIA_FindDoubleMinMax(const double *data, long n, double *min, double *max)
 {
 	MAXMIN(data, n, *max, *min);
 }
 
 
 char DLL_CALLCONV
-FreeImageAlgorithms_FindCharMax(const char *data, long n, char *max)
+FIA_FindCharMax(const char *data, long n, char *max)
 {
 	return (char) FINDMAX(data, n, *max);
 }
 
 unsigned char DLL_CALLCONV
-FreeImageAlgorithms_FindUCharMax(const unsigned char *data, long n, unsigned char *max)
+FIA_FindUCharMax(const unsigned char *data, long n, unsigned char *max)
 {
 	return (unsigned char) FINDMAX(data, n, *max);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_FindIntMax(const int *data, long n, int *max)
+FIA_FindIntMax(const int *data, long n, int *max)
 {
 	return (int) FINDMAX(data, n, *max);
 }
 
 short DLL_CALLCONV
-FreeImageAlgorithms_FindShortMax(const short *data, long n, short *max)
+FIA_FindShortMax(const short *data, long n, short *max)
 {
 	return (short) FINDMAX(data, n, *max);
 }
 
 unsigned short DLL_CALLCONV
-FreeImageAlgorithms_FindUShortMax(const unsigned short *data, long n, unsigned short *max)
+FIA_FindUShortMax(const unsigned short *data, long n, unsigned short *max)
 {
 	return (unsigned short) FINDMAX(data, n, *max);
 }
 
 float DLL_CALLCONV
-FreeImageAlgorithms_FindFloatMax(const float *data, long n, float *max)
+FIA_FindFloatMax(const float *data, long n, float *max)
 {
 	return (float) FINDMAX(data, n, *max);
 }
 
 double DLL_CALLCONV
-FreeImageAlgorithms_FindDoubleMax(const double *data, long n, double *max)
+FIA_FindDoubleMax(const double *data, long n, double *max)
 {
 	return (double) FINDMAX(data, n, *max);
 }
@@ -320,7 +320,7 @@ FIND_MINMAX_FOR_DIB<float>				minmaxFloatImage;
 FIND_MINMAX_FOR_DIB<double>				minmaxDoubleImage;
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindMinMax(FIBITMAP *src, double *min, double *max)
+FIA_FindMinMax(FIBITMAP *src, double *min, double *max)
 {
 	if(!src)
 		return;
@@ -365,7 +365,7 @@ static int FindMaxChannelValue(unsigned int pixel_value)
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double *max)
+FIA_FindMinMaxForColourImage(FIBITMAP *src, double *min, double *max)
 {
 	if( !src || FreeImage_GetImageType(src) != FIT_BITMAP)
 		return;
@@ -404,68 +404,68 @@ FreeImageAlgorithms_FindMinMaxForColourImage(FIBITMAP *src, double *min, double 
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_CharArrayReverse(char *array, long size)
+FIA_CharArrayReverse(char *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_UCharArrayReverse(unsigned char *array, long size)
+FIA_UCharArrayReverse(unsigned char *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_ShortArrayReverse(short *array, long size)
+FIA_ShortArrayReverse(short *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_UShortArrayReverse(unsigned short *array, long size)
+FIA_UShortArrayReverse(unsigned short *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_IntArrayReverse(int *array, long size)
+FIA_IntArrayReverse(int *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_UIntArrayReverse(unsigned int *array, long size)
+FIA_UIntArrayReverse(unsigned int *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_LongArrayReverse(long *array, long size)
+FIA_LongArrayReverse(long *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_ULongArrayReverse(unsigned long *array, long size)
+FIA_ULongArrayReverse(unsigned long *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_FloatArrayReverse(float *array, long size)
+FIA_FloatArrayReverse(float *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DoubleArrayReverse(double *array, long size)
+FIA_DoubleArrayReverse(double *array, long size)
 {
 	return ArrayReverse(array, size);
 }
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_IsGreyScale(FIBITMAP *src)
+FIA_IsGreyScale(FIBITMAP *src)
 {
 	FREE_IMAGE_TYPE image_type = FreeImage_GetImageType(src);
 
@@ -492,7 +492,7 @@ FreeImageAlgorithms_IsGreyScale(FIBITMAP *src)
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *max)
+FIA_GetMaxPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *max)
 {
 	switch(type) {
 		case FIT_BITMAP:
@@ -522,7 +522,7 @@ FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, dou
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_GetMinPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *min)
+FIA_GetMinPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *min)
 {
 	switch(type) {
 		case FIT_BITMAP:
@@ -552,7 +552,7 @@ FreeImageAlgorithms_GetMinPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, dou
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_GetMaxPosibleValueForFib(FIBITMAP *src, double *max)
+FIA_GetMaxPosibleValueForFib(FIBITMAP *src, double *max)
 {
 	if(!src)
 		return;
@@ -588,7 +588,7 @@ FreeImageAlgorithms_GetMaxPosibleValueForFib(FIBITMAP *src, double *max)
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_GetMinPosibleValueForFib(FIBITMAP *src, double *min)
+FIA_GetMinPosibleValueForFib(FIBITMAP *src, double *min)
 {
 	if(!src)
 		return;
@@ -623,7 +623,7 @@ FreeImageAlgorithms_GetMinPosibleValueForFib(FIBITMAP *src, double *min)
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_Is16BitReally12BitImage(FIBITMAP *src)
+FIA_Is16BitReally12BitImage(FIBITMAP *src)
 {
 	unsigned int x, width, height, *bptr;
 
@@ -767,37 +767,37 @@ GetPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, T *values)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values)
+FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char *values)
+FIA_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *values)
+FIA_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned short *values)
+FIA_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned short *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *values)
+FIA_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double *values)
+FIA_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double *values)
 {
 	return GetPixelValuesForLine (src, p1, p2, values);
 }
@@ -805,7 +805,7 @@ FreeImageAlgorithms_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIA
 
 /* Midpoint Line algorithm */
 int DLL_CALLCONV
-FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, BYTE *red_values, BYTE *green_values, BYTE *blue_values) 
+FIA_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, BYTE *red_values, BYTE *green_values, BYTE *blue_values) 
 {  
 	RGBQUAD value;
    	int dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0; 
@@ -911,7 +911,7 @@ FreeImageAlgorithms_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOI
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_GetDistanceMap (int width, int height, int *distance_map) 
+FIA_GetDistanceMap (int width, int height, int *distance_map) 
 {  
 	int xcentre = (int) (width / 2 + 0.5);
 	int ycentre = (int) (height / 2 + 0.5);
@@ -941,7 +941,7 @@ FreeImageAlgorithms_GetDistanceMap (int width, int height, int *distance_map)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom)
+FIA_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom)
 {
 
     int src_height = FreeImage_GetHeight(src);
@@ -971,7 +971,7 @@ FreeImageAlgorithms_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bott
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2)
+FIA_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2)
 {
 	if(!dib1 || !dib2)
 		return 0;
@@ -1007,7 +1007,7 @@ FreeImageAlgorithms_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height)
+FIA_CloneImageType(FIBITMAP *src, int width, int height)
 {
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 	int bpp = FreeImage_GetBPP(src);
@@ -1020,13 +1020,13 @@ FreeImageAlgorithms_CloneImageType(FIBITMAP *src, int width, int height)
 
 	// If 8bit image we must clone the palette
 	if(bpp <= 8)
-		FreeImageAlgorithms_CopyPalette(src, dst);
+		FIA_CopyPalette(src, dst);
 
 	return dst;
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_Unload(FIABITMAP* src)
+FIA_Unload(FIABITMAP* src)
 {
 	FreeImage_Unload(src->fib);
 	src->fib = NULL;
@@ -1035,7 +1035,7 @@ FreeImageAlgorithms_Unload(FIABITMAP* src)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type)
+FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type)
 {
 	if(src == NULL || (type != FIT_FLOAT && type != FIT_DOUBLE))
 		return NULL;
@@ -1062,7 +1062,7 @@ FreeImageAlgorithms_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE t
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_Is8Bit(FIBITMAP *src)
+FIA_Is8Bit(FIBITMAP *src)
 {
 	if(FreeImage_GetBPP(src) == 8 && FreeImage_GetImageType(src) == FIT_BITMAP)
 		return 1;
@@ -1086,7 +1086,7 @@ void CheckMemory(void *ptr)
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
+FIA_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
 {
 	int bpp = FreeImage_GetBPP(src);
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
@@ -1128,7 +1128,7 @@ FreeImageAlgorithms_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_InPlaceConvertToStandardType(FIBITMAP **src, int scale)
+FIA_InPlaceConvertToStandardType(FIBITMAP **src, int scale)
 {
     FIBITMAP *dst = FreeImage_ConvertToStandardType(*src, scale);
 

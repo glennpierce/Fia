@@ -40,14 +40,14 @@ extern "C" {
  *  \return HBITMAP on success and NULL on error.
 */
 DLL_API HBITMAP DLL_CALLCONV
-FreeImageAlgorithms_FibToHBitmap(FIBITMAP *dib);
+FIA_FibToHBitmap(FIBITMAP *dib);
 
 /** \brief Frees a HBITMAP
  *
  *  \param hbitmap HBITMAP to free.
 */
 DLL_API void DLL_CALLCONV
-FreeImageAlgorithms_FreeHBitmap(HBITMAP hbitmap);
+FIA_FreeHBitmap(HBITMAP hbitmap);
 
 /** \brief Converts a HBITMAP to a FIBITMAP
  *		   This does not produces a dibsection so the image
@@ -58,7 +58,7 @@ FreeImageAlgorithms_FreeHBitmap(HBITMAP hbitmap);
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_HBitmapToFIB(HDC hdc, HBITMAP bitmap);
+FIA_HBitmapToFIB(HDC hdc, HBITMAP bitmap);
 
 /** \brief Converts FIBITMAP to a HBITMAP
  *		   This produces a dibsection so the image
@@ -73,7 +73,7 @@ FreeImageAlgorithms_HBitmapToFIB(HDC hdc, HBITMAP bitmap);
  *  \return HBITMAP on success and NULL on error.
 */
 DLL_API HBITMAP DLL_CALLCONV 
-FreeImageAlgorithms_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bottom);
+FIA_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bottom);
 
 /** \brief Converts FIBITMAP to an existing HBITMAP
  *		   This produces a dibsection so the image
@@ -88,7 +88,7 @@ FreeImageAlgorithms_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int
  *  \return HBITMAP on success and NULL on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int right, int bottom);
+FIA_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int right, int bottom);
 
 /** \brief Creates a HBITMAP
  *	
@@ -101,7 +101,7 @@ FreeImageAlgorithms_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, i
  *  \return HBITMAP on success and NULL on error.
 */
 DLL_API HBITMAP DLL_CALLCONV
-FreeImageAlgorithms_CreateDibSection(HDC hdc, int width, int height, int bpp, int colours_used, RGBQUAD* bmiColours);
+FIA_CreateDibSection(HDC hdc, int width, int height, int bpp, int colours_used, RGBQUAD* bmiColours);
 
 #ifdef __cplusplus
 }

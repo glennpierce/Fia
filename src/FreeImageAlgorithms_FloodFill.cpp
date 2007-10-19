@@ -172,7 +172,7 @@ GS_FLOODFILL<long>				floodfillLongImage;
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
+FIA_FloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
 {
 	if(!src) return
 		NULL;
@@ -215,7 +215,7 @@ FreeImageAlgorithms_FloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_co
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
+FIA_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
 {
 	if(!src)
 		return FREEIMAGE_ALGORITHMS_ERROR;

@@ -43,7 +43,7 @@ extern "C" {
  *  \param max_within_image Maximum value to found in original image.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image);
+FIA_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image);
 
 /** \brief Stretches an image to the full range of an image type.
  *
@@ -54,11 +54,11 @@ FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double 
  *  \param max Max value to stretch to.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max);
+FIA_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max);
 
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_StretchImageAcrossRange(FIBITMAP *src, double min, double max);
+FIA_StretchImageAcrossRange(FIBITMAP *src, double min, double max);
 
 #ifdef __cplusplus
 }

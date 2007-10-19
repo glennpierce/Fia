@@ -8,13 +8,13 @@
 
 
 static void
-TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
+TestFIA_LinearScaleTest(CuTest* tc)
 {
 	double min_found, max_found;
 
 	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Working Area\\Test Images\\cells.bmp";
 
-	FIBITMAP *old_dib = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *old_dib = FIA_LoadFIBFromFile(file);
 	
     FIBITMAP *dib = FreeImage_ConvertToType(old_dib, FIT_INT16, 1);
 
@@ -26,7 +26,7 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 
 	//for(int i=0; i < 1000; i++) {
 		
-        scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(dib, 0, 100, &min_found, &max_found);  
+        scaled_dib = FIA_LinearScaleToStandardType(dib, 0, 100, &min_found, &max_found);  
 
        
   //      if(i < 999)
@@ -36,7 +36,7 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
     PROFILE_STOP("LinearScale");
 
 
-    FreeImageAlgorithms_SaveFIBToFile(scaled_dib, "C:\\Documents and Settings\\Pierce\\Desktop\\output.bmp", BIT8);
+    FIA_SaveFIBToFile(scaled_dib, "C:\\Documents and Settings\\Pierce\\Desktop\\output.bmp", BIT8);
 
     FreeImage_Unload(scaled_dib);
 	FreeImage_Unload(dib);
@@ -47,14 +47,14 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 }
 
 static void
-TestFreeImageAlgorithms_LinearScaleRangeTest(CuTest* tc)
+TestFIA_LinearScaleRangeTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\8bit_test.png";
 
-	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);
-	FIBITMAP *scaled_dib = FreeImageAlgorithms_StretchImageAcrossRange(dib, 200, 255); 
+	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
+	FIBITMAP *scaled_dib = FIA_StretchImageAcrossRange(dib, 200, 255); 
 
-    FreeImageAlgorithms_SaveFIBToFile(scaled_dib,
+    FIA_SaveFIBToFile(scaled_dib,
         TEMP_DIR "\\scaled_range.bmp", BIT8);
 
 	FreeImage_Unload(dib);
@@ -67,8 +67,8 @@ CuGetFreeImageAlgorithmsLinearScaleSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LinearScaleTest);
-    //SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_LinearScaleRangeTest);
+	SUITE_ADD_TEST(suite, TestFIA_LinearScaleTest);
+    //SUITE_ADD_TEST(suite, TestFIA_LinearScaleRangeTest);
 
 	return suite;
 }

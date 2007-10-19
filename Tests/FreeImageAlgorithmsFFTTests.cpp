@@ -15,23 +15,23 @@
 #include "kiss_fftnd.h"
 
 static void
-TestFreeImageAlgorithms_DisplayFFT(CuTest* tc)
+TestFIA_DisplayFFT(CuTest* tc)
 {
 	FIBITMAP *fft_dib, *real_dib, *log_dib;
 	char *file = IMAGE_DIR "\\colour_lines.png";
 		
-	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);	
+	FIBITMAP *dib = FIA_LoadFIBFromFile(file);	
 	FIBITMAP *greyscale_dib = FreeImage_ConvertToGreyscale(dib);
 
 	PROFILE_START("FFT");
 
-	fft_dib = FreeImageAlgorithms_FFT(greyscale_dib, 0, 1);  
+	fft_dib = FIA_FFT(greyscale_dib, 0, 1);  
 
-	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(fft_dib);
+	real_dib = FIA_ConvertComplexImageToAbsoluteValued(fft_dib);
 
-	log_dib = FreeImageAlgorithms_Log(real_dib);
+	log_dib = FIA_Log(real_dib);
 
-	FreeImageAlgorithms_SaveFIBToFile(log_dib, TEMP_DIR "\\fft.bmp", BIT8);
+	FIA_SaveFIBToFile(log_dib, TEMP_DIR "\\fft.bmp", BIT8);
 
 	PROFILE_STOP("FFT");
 
@@ -45,7 +45,7 @@ TestFreeImageAlgorithms_DisplayFFT(CuTest* tc)
 
 /*
 static void
-TestFreeImageAlgorithms_Correlation(CuTest* tc)
+TestFIA_Correlation(CuTest* tc)
 {
 	FIBITMAP *first_dib, *second_dib;
 	FIBITMAP *gs_first_dib, *gs_second_dib;
@@ -55,8 +55,8 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 	char *first_file = IMAGE_DIR "\\correlate1.png";
 	char *second_file = IMAGE_DIR "\\correlate2.png";
 
-	first_dib = FreeImageAlgorithms_LoadFIBFromFile(first_file);
-	second_dib = FreeImageAlgorithms_LoadFIBFromFile(second_file);
+	first_dib = FIA_LoadFIBFromFile(first_file);
+	second_dib = FIA_LoadFIBFromFile(second_file);
 
 	gs_first_dib = FreeImage_ConvertToGreyscale(first_dib);
 	gs_second_dib = FreeImage_ConvertToGreyscale(second_dib);
@@ -64,26 +64,26 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 	FreeImage_Unload(first_dib);
 	FreeImage_Unload(second_dib);
 
-	first_fft = FreeImageAlgorithms_FFT(gs_first_dib, 0, 1);  
-	second_fft = FreeImageAlgorithms_FFT(gs_second_dib, 0, 1);  
+	first_fft = FIA_FFT(gs_first_dib, 0, 1);  
+	second_fft = FIA_FFT(gs_second_dib, 0, 1);  
 
 	FreeImage_Unload(gs_first_dib);
 	FreeImage_Unload(gs_second_dib);
 
 	// Perform conjugate operation
-	FreeImageAlgorithms_ComplexConjugate(second_fft);
-	FreeImageAlgorithms_MultiplyComplexImages(first_fft, second_fft);
+	FIA_ComplexConjugate(second_fft);
+	FIA_MultiplyComplexImages(first_fft, second_fft);
 
-	result_fft = FreeImageAlgorithms_FFT(first_fft, 1, 0);  
+	result_fft = FIA_FFT(first_fft, 1, 0);  
 
-	real_dib = FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(result_fft);
+	real_dib = FIA_ConvertComplexImageToAbsoluteValued(result_fft);
 
 	//CreateLogDisplay(real_dib);
 
 	scaled_dib = FreeImage_ConvertToStandardType(real_dib, 1);
-	//scaled_dib = FreeImageAlgorithms_LinearScaleToStandardType(real_dib, 0, 0, &min_found, &max_found);  
+	//scaled_dib = FIA_LinearScaleToStandardType(real_dib, 0, 0, &min_found, &max_found);  
 
-	FreeImageAlgorithms_SetGreyLevelPalette(scaled_dib);
+	FIA_SetGreyLevelPalette(scaled_dib);
 
 	FreeImage_Unload(real_dib);
 	FreeImage_Unload(scaled_dib);
@@ -91,11 +91,11 @@ TestFreeImageAlgorithms_Correlation(CuTest* tc)
 */
 
 static void
-TestFreeImageAlgorithms_FFTTest(CuTest* tc)
+TestFIA_FFTTest(CuTest* tc)
 {
-	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(IMAGE_DIR "\\FFTTest.bmp");
+	FIBITMAP *dib = FIA_LoadFIBFromFile(IMAGE_DIR "\\FFTTest.bmp");
 	
-    FIBITMAP* complex_fft = FreeImageAlgorithms_FFT(dib, 0, 1); 
+    FIBITMAP* complex_fft = FIA_FFT(dib, 0, 1); 
     
     CuAssertTrue(tc, complex_fft != NULL);
 
@@ -109,8 +109,8 @@ DLL_CALLCONV CuGetFreeImageAlgorithmsFFTSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FFTTest);
-	//SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DisplayFFT);
+	SUITE_ADD_TEST(suite, TestFIA_FFTTest);
+	//SUITE_ADD_TEST(suite, TestFIA_DisplayFFT);
 
 	return suite;
 }

@@ -38,7 +38,7 @@ extern "C" {
  *  \return FIBITMAP* on success NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadFIBFromFile(const char *filepath);
+FIA_LoadFIBFromFile(const char *filepath);
 
 
 /** \brief Save a FIBITMAP to a file.
@@ -50,7 +50,7 @@ FreeImageAlgorithms_LoadFIBFromFile(const char *filepath);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth);
+FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth);
 
 /** \brief Copy an array of bytes to FIBITMAP
  *	
@@ -59,7 +59,7 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
  *  \param padded Is the data padded to 32 bit boundaries.
 */
 DLL_API void DLL_CALLCONV
-FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded);
+FIA_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded);
 
 /** \brief Load a greyscale FIBITMAP from an array of bytes
  *	
@@ -73,7 +73,7 @@ FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded);
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
+FIA_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
 												   FREE_IMAGE_TYPE data_type, int padded, int vertical_flip);
 
 /** \brief Load a rgb FIBITMAP from an array of bytes
@@ -87,7 +87,7 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int widt
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height,
+FIA_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height,
 												int padded, int vertical_flip, COLOUR_ORDER colour_order);
 
 #ifdef __cplusplus

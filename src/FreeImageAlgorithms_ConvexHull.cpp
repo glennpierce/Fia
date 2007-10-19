@@ -149,7 +149,7 @@ static inline int __cdecl ComparePoints (const void *element1, const void *eleme
 FIBITMAP* DLL_CALLCONV
 FreeImage_ConvexHull(FIBITMAP *src)
 {
-    FIBITMAP *tmp = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_FLOAT);
+    FIBITMAP *tmp = FIA_ConvertToGreyscaleFloatType(src, FIT_FLOAT);
    
     int width = FreeImage_GetWidth(tmp);
     int height = FreeImage_GetHeight(tmp);
@@ -186,7 +186,7 @@ FreeImage_ConvexHull(FIBITMAP *src)
 
     delete sort_array;
 
-    FreeImageAlgorithms_DrawGreyscalePolygon (dst, hull_array, number_of_points, 255, 0); 
+    FIA_DrawGreyscalePolygon (dst, hull_array, number_of_points, 255, 0); 
 
     delete hull_array;
 

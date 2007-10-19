@@ -126,7 +126,7 @@ ShowImage(FIBITMAP *src)
 	hwndMain = CreateMainWnd();
 	hdc = GetDC(hwndMain);
 
-	hbitmap = FreeImageAlgorithms_GetDibSection(src, hdc, 0, 0,
+	hbitmap = FIA_GetDibSection(src, hdc, 0, 0,
 						FreeImage_GetWidth(src), FreeImage_GetHeight(src));
 		
 	hbitmap_hdc = CreateCompatibleDC(hdc);
@@ -146,7 +146,7 @@ ShowImage(FIBITMAP *src)
 void
 ShowImageFromFile(char *filepath)
 {
-	FIBITMAP* dib = FreeImageAlgorithms_LoadFIBFromFile(filepath);
+	FIBITMAP* dib = FIA_LoadFIBFromFile(filepath);
 
 	assert(dib != NULL);
 
@@ -155,4 +155,4 @@ ShowImageFromFile(char *filepath)
 	FreeImage_Unload(dib);
 }
 
-#endif // _WINDOWS_ 
+#endif // _WINDOWS_

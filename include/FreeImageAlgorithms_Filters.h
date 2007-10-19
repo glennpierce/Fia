@@ -35,7 +35,7 @@ extern "C" {
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius);
+FIA_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius);
 
 /** \brief Perform a sobel filtering.
  *
@@ -43,7 +43,7 @@ FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Sobel(FIBITMAP *src);
+FIA_Sobel(FIBITMAP *src);
 
 #define SOBEL_HORIZONTAL 1     // (0000 0001)
 #define SOBEL_VERTICAL   2     // (0000 0010) 
@@ -60,7 +60,7 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src);
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_SobelAdvanced(FIBITMAP *src,
+FIA_SobelAdvanced(FIBITMAP *src,
                                   FIBITMAP** vertical,
                                   FIBITMAP** horizontal,
                                   FIBITMAP** magnitude);

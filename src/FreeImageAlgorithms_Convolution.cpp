@@ -26,7 +26,7 @@
 #include <math.h>
 
 FilterKernel DLL_CALLCONV
-FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
+FIA_NewKernel(int x_radius, int y_radius,
 							  const double *values, double divider)
 {
 	FilterKernel kernel;
@@ -40,7 +40,7 @@ FreeImageAlgorithms_NewKernel(int x_radius, int y_radius,
 }
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve(FIABITMAP *src, FilterKernel kernel)
+FIA_Convolve(FIABITMAP *src, FilterKernel kernel)
 {
 	FIBITMAP *dst = NULL;
 	FIABITMAP *tmp = NULL;
@@ -54,7 +54,7 @@ FreeImageAlgorithms_Convolve(FIABITMAP *src, FilterKernel kernel)
     if(src_type == FIT_COMPLEX)
         return NULL;
 
-    border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+    border_tmp.fib = FIA_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
     border_tmp.xborder = src->xborder;
 	border_tmp.yborder = src->yborder;
 
@@ -79,7 +79,7 @@ FreeImageAlgorithms_Convolve(FIABITMAP *src, FilterKernel kernel)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel)
+FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel)
 {
 	FIBITMAP *tmp_dst = NULL, *dst = NULL;
 	FIABITMAP *tmp = NULL, *tmp_border = NULL;
@@ -98,7 +98,7 @@ FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, 
     if(src_type == FIT_DOUBLE)
         border_tmp.fib = FreeImage_Clone(src->fib);
     else
-        border_tmp.fib = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+        border_tmp.fib = FIA_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
     
     border_tmp.xborder = src->xborder;
 	border_tmp.yborder = src->yborder;
@@ -108,14 +108,14 @@ FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, 
 
 	tmp_dst = kern1->Convolve();
 		
-	tmp_border = FreeImageAlgorithms_SetZeroBorder(tmp_dst, xborder, yborder);
+	tmp_border = FIA_SetZeroBorder(tmp_dst, xborder, yborder);
 
 	Kernel<double> *kern2 = new Kernel<double>(tmp_border, vert_kernel.x_radius,
 				vert_kernel.y_radius, vert_kernel.values, vert_kernel.divider);
 
 	dst = kern2->Convolve();
 
-	FreeImageAlgorithms_Unload(tmp_border);
+	FIA_Unload(tmp_border);
 	FreeImage_Unload(tmp_dst);
     FreeImage_Unload(border_tmp.fib);
 

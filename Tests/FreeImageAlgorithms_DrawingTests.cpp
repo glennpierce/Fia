@@ -9,11 +9,11 @@
 #include "FreeImageAlgorithms_Testing.h"
 
 static void
-TestFreeImageAlgorithms_GreyscaleElipseTest(CuTest* tc)
+TestFIA_GreyscaleElipseTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
     FIARECT rect;
@@ -22,21 +22,21 @@ TestFreeImageAlgorithms_GreyscaleElipseTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 
-    FreeImageAlgorithms_DrawSolidGreyscaleEllipse (src, rect, 200, 1);
+    FIA_DrawSolidGreyscaleEllipse (src, rect, 200, 1);
 
-    FreeImageAlgorithms_DrawGreyscaleRect (src, rect, 200, 2);
+    FIA_DrawGreyscaleRect (src, rect, 200, 2);
 
-	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_river-gs-elipse.bmp", BIT8);
+	FIA_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_river-gs-elipse.bmp", BIT8);
 
 	FreeImage_Unload(src);
 }
 
 static void
-TestFreeImageAlgorithms_ConvexHullTest(CuTest* tc)
+TestFIA_ConvexHullTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\particle-test.bmp";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
     PROFILE_START("ConvexHull");
@@ -47,18 +47,18 @@ TestFreeImageAlgorithms_ConvexHullTest(CuTest* tc)
 
     CuAssertTrue(tc, hull_dib != NULL);
 
-	FreeImageAlgorithms_SaveFIBToFile(hull_dib, TEMP_DIR "\\convexhull.bmp", BIT8);
+	FIA_SaveFIBToFile(hull_dib, TEMP_DIR "\\convexhull.bmp", BIT8);
 
 	FreeImage_Unload(src);
     FreeImage_Unload(hull_dib);
 }
 
 static void
-TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
+TestFIA_GSLineTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
 	FIAPOINT p1, p2, p3, p4;
@@ -72,23 +72,23 @@ TestFreeImageAlgorithms_GSLineTest(CuTest* tc)
     p4.x = p1.x;
     p4.y = 30;
 
-	//FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p2, 150, 2, 0);
+	//FIA_DrawGreyscaleLine (src, p1, p2, 150, 2, 0);
 
-	//FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
+	//FIA_DrawGreyscaleLine (src, p1, p3, 150, 1, 1);
 
-    FreeImageAlgorithms_DrawGreyscaleLine (src, p1, p4, 150, 1, 0);
+    FIA_DrawGreyscaleLine (src, p1, p4, 150, 1, 0);
  
-	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_line8bit.bmp", BIT8);
+	FIA_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_line8bit.bmp", BIT8);
 
 	FreeImage_Unload(src);
 }
 
 static void
-TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
+TestFIA_ColourLineTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
 	FIBITMAP *src32 = FreeImage_ConvertTo32Bits(src);
 
@@ -104,14 +104,14 @@ TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
 	p3.y = 600;
 
     
-	FreeImageAlgorithms_DrawColourLine (src32, p1, p2, FIA_RGBQUAD(255, 0, 0), 5, 0);
+	FIA_DrawColourLine (src32, p1, p2, FIA_RGBQUAD(255, 0, 0), 5, 0);
 
-    FreeImageAlgorithms_DrawColourLine (src32, p1, p3, FIA_RGBQUAD(255, 0, 0), 5, 1);
+    FIA_DrawColourLine (src32, p1, p3, FIA_RGBQUAD(255, 0, 0), 5, 1);
 
 
     
 
-	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_line32.bmp", BIT24);
+	FIA_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_line32.bmp", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src32);
@@ -119,11 +119,11 @@ TestFreeImageAlgorithms_ColourLineTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_Rect24bitTest(CuTest* tc)
+TestFIA_Rect24bitTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
 	FIBITMAP *src24 = FreeImage_ConvertTo24Bits(src);
 
@@ -135,9 +135,9 @@ TestFreeImageAlgorithms_Rect24bitTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 7);
+	FIA_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 7);
 
-	FreeImageAlgorithms_SaveFIBToFile(src24, TEMP_DIR "\\wallpaper_rect24bit.bmp", BIT24);
+	FIA_SaveFIBToFile(src24, TEMP_DIR "\\wallpaper_rect24bit.bmp", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src24);
@@ -145,11 +145,11 @@ TestFreeImageAlgorithms_Rect24bitTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_Rect32bitTest(CuTest* tc)
+TestFIA_Rect32bitTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
 	FIBITMAP *src32 = FreeImage_ConvertTo32Bits(src);
 
@@ -161,24 +161,24 @@ TestFreeImageAlgorithms_Rect32bitTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawColourRect (src32, rect, FIA_RGBQUAD(255,0,0), 7);
+	FIA_DrawColourRect (src32, rect, FIA_RGBQUAD(255,0,0), 7);
 
-	FreeImageAlgorithms_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_rect32bit.bmp", BIT24);
+	FIA_SaveFIBToFile(src32, TEMP_DIR "\\wallpaper_rect32bit.bmp", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src32);
 }
 
 static void
-TestFreeImageAlgorithms_GsRectTest(CuTest* tc)
+TestFIA_GsRectTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, src != NULL);
 
-	POINT p1, p2;
+	FIAPOINT p1, p2;
 
 	p1.x = 10;
 	p1.y = 10;
@@ -191,19 +191,19 @@ TestFreeImageAlgorithms_GsRectTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawGreyscaleRect (src, rect, 200, 5);
+	FIA_DrawGreyscaleRect (src, rect, 200, 5);
 
-	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_gsrect.bmp", BIT8);
+	FIA_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_gsrect.bmp", BIT8);
 
 	FreeImage_Unload(src);
 }
 
 static void
-TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
+TestFIA_SolidRectTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, src != NULL);
 
@@ -213,19 +213,19 @@ TestFreeImageAlgorithms_SolidRectTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 	
-	FreeImageAlgorithms_DrawColourSolidRect (src, rect, FIA_RGBQUAD(255,0,0));
+	FIA_DrawColourSolidRect (src, rect, FIA_RGBQUAD(255,0,0));
 
-	FreeImageAlgorithms_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_solidrect24bit.bmp", BIT24);
+	FIA_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_solidrect24bit.bmp", BIT24);
 
 	FreeImage_Unload(src);
 }
 
 static void
-TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
+TestFIA_SolidGSRectTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
-	FIBITMAP *src = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, src != NULL);
 
@@ -239,20 +239,20 @@ TestFreeImageAlgorithms_SolidGSRectTest(CuTest* tc)
 	rect.bottom = 500;
 	rect.right = 500;
 
-	FreeImageAlgorithms_DrawSolidGreyscaleRect (gs_src, rect, 100);
+	FIA_DrawSolidGreyscaleRect (gs_src, rect, 100);
 
-	FreeImageAlgorithms_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.bmp", BIT8);
+	FIA_SaveFIBToFile(gs_src, TEMP_DIR "\\wallpaper_solidrect8bit.bmp", BIT8);
   
 	FreeImage_Unload(src);
 	FreeImage_Unload(gs_src);
 }
 
 static void
-TestFreeImageAlgorithms_FloodFillTest(CuTest* tc)
+TestFIA_FloodFillTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\particle-test.bmp";
 
-	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, dib1 != NULL);
 
@@ -262,13 +262,13 @@ TestFreeImageAlgorithms_FloodFillTest(CuTest* tc)
 
 	PROFILE_START("FloodFillTest");
 
-	FIBITMAP *dib3 = FreeImageAlgorithms_FloodFill(dib2, 20, 0, 2);
+	FIBITMAP *dib3 = FIA_FloodFill(dib2, 20, 0, 2);
 
 	PROFILE_STOP("FloodFillTest");
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FreeImageAlgorithms_SaveFIBToFile(dib3, TEMP_DIR "\\floodfill.jpg", BIT24);
+	FIA_SaveFIBToFile(dib3, TEMP_DIR "\\floodfill.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -280,15 +280,15 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_GSLineTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ColourLineTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_Rect24bitTest);
-    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_GsRectTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidRectTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_SolidGSRectTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FloodFillTest);
-    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ConvexHullTest);
-    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_GreyscaleElipseTest);
+	SUITE_ADD_TEST(suite, TestFIA_GSLineTest);
+	SUITE_ADD_TEST(suite, TestFIA_ColourLineTest);
+	SUITE_ADD_TEST(suite, TestFIA_Rect24bitTest);
+    SUITE_ADD_TEST(suite, TestFIA_GsRectTest);
+	SUITE_ADD_TEST(suite, TestFIA_SolidRectTest);
+	SUITE_ADD_TEST(suite, TestFIA_SolidGSRectTest);
+	SUITE_ADD_TEST(suite, TestFIA_FloodFillTest);
+    SUITE_ADD_TEST(suite, TestFIA_ConvexHullTest);
+    SUITE_ADD_TEST(suite, TestFIA_GreyscaleElipseTest);
 
 	return suite;
 }

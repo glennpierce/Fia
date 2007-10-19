@@ -57,10 +57,10 @@ STRETCH<Tdst>::StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double ma
 	unsigned width	= FreeImage_GetWidth(src);
 	unsigned height = FreeImage_GetHeight(src);
 
-	FreeImageAlgorithms_FindMinMax(src, &src_min_found, &src_max_found);
+	FIA_FindMinMax(src, &src_min_found, &src_max_found);
 
 	if(max == 0.0)
-		FreeImageAlgorithms_GetMaxPosibleValueForGreyScaleType(type, &max);
+		FIA_GetMaxPosibleValueForGreyScaleType(type, &max);
 
 	double factor = max / src_max_found;
 
@@ -104,12 +104,12 @@ STRETCH<Tdst>::StretchImageAcrossRange(FIBITMAP *src, Tdst dst_min, Tdst dst_max
 
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
-    FreeImageAlgorithms_FindMinMax(src, &min_found, &max_found);
+    FIA_FindMinMax(src, &min_found, &max_found);
 
     // compute the scaling factor
 	double scale = (double) (dst_max - dst_min) /  (max_found - min_found);
 
-    dst = FreeImageAlgorithms_CloneImageType(src, width, height);
+    dst = FIA_CloneImageType(src, width, height);
 
 	BYTE *src_bits;
 	Tdst *dst_bits;
@@ -147,7 +147,7 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 	// If the user has not specifed min & max use the min and max pixels in the image.
     // Ie convert to standard type while scaling the range
 	if(max_found < small_number && min_found < small_number)
-        FreeImageAlgorithms_FindMinMax(src, &min_found, &max_found);
+        FIA_FindMinMax(src, &min_found, &max_found);
    
     // We can scale as only one value present - return a clone
     if(min_found == max_found)
@@ -171,10 +171,10 @@ LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double min, double max,
 		return NULL;
 
     if(FreeImage_GetImageType(src) == FIT_BITMAP)
-        FreeImageAlgorithms_CopyPalette(src, dst);
+        FIA_CopyPalette(src, dst);
     else {
         // Just use a standard Greyscale palette as the input is not an 8bit image
-        FreeImageAlgorithms_SetGreyLevelPalette(dst);
+        FIA_SetGreyLevelPalette(dst);
     }
 
 	Tsrc *src_bits, tmp_min = (Tsrc) min_found, tmp_max = (Tsrc) max_found;
@@ -217,7 +217,7 @@ static LINEAR_SCALE<float>		scaleFloatImage;
 static LINEAR_SCALE<double>		scaleDoubleImage;
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)
+FIA_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min_within_image, double *max_within_image)
 {
 	FIBITMAP *dst = NULL;
 
@@ -273,7 +273,7 @@ STRETCH<float>				stretchFloatImage;
 STRETCH<double>				stretchDoubleImage;
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max)
+FIA_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max)
 {
 	FIBITMAP *dst = NULL;
 
@@ -315,7 +315,7 @@ FreeImageAlgorithms_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, doub
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_StretchImageAcrossRange(FIBITMAP *src, double min, double max)
+FIA_StretchImageAcrossRange(FIBITMAP *src, double min, double max)
 {
 	FIBITMAP *dst = NULL;
 

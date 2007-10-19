@@ -25,7 +25,7 @@
 #include "FreeImageAlgorithms_Utilities.h"
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Fillholes(FIBITMAP* src,
+FIA_Fillholes(FIBITMAP* src,
 							 unsigned char white_on_black)
 {
 	const int width = FreeImage_GetWidth(src);
@@ -61,7 +61,7 @@ FreeImageAlgorithms_Fillholes(FIBITMAP* src,
 			break;
 	}
 
-	filled_src = FreeImageAlgorithms_FloodFill(src, 0, y, fg_val);
+	filled_src = FIA_FloodFill(src, 0, y, fg_val);
 
 	FIBITMAP *dst = FreeImage_Clone(src);
 

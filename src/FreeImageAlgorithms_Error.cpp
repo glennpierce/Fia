@@ -23,16 +23,16 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static FreeImageAlgorithms_OutputMessageFunction errorFunction = NULL;
+static FIA_OutputMessageFunction errorFunction = NULL;
 
 void DLL_CALLCONV
-FreeImageAlgorithms_SetOutputMessage(FreeImageAlgorithms_OutputMessageFunction omf)
+FIA_SetOutputMessage(FIA_OutputMessageFunction omf)
 {
 	errorFunction = omf;
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_SendOutputMessage(const char *fmt, ...)
+FIA_SendOutputMessage(const char *fmt, ...)
 {
 	if(errorFunction == NULL)
 		return;

@@ -27,11 +27,11 @@
 #include <math.h>
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Sobel(FIBITMAP *src)
+FIA_Sobel(FIBITMAP *src)
 {
     FIBITMAP *magnitude_dib = NULL;
 
-    int err = FreeImageAlgorithms_SobelAdvanced(src, NULL, NULL,
+    int err = FIA_SobelAdvanced(src, NULL, NULL,
         &magnitude_dib);
      
     if(err != FREEIMAGE_ALGORITHMS_SUCCESS)
@@ -41,7 +41,7 @@ FreeImageAlgorithms_Sobel(FIBITMAP *src)
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_SobelAdvanced(FIBITMAP *src,
+FIA_SobelAdvanced(FIBITMAP *src,
                                   FIBITMAP** vertical,
                                   FIBITMAP** horizontal,
                                   FIBITMAP** magnitude)
@@ -49,27 +49,27 @@ FreeImageAlgorithms_SobelAdvanced(FIBITMAP *src,
 	double sobel_horizontal_kernel[] = {1.0, 2.0, 1.0, 0.0, 0.0, 0.0, -1.0, -2.0, -1.0};
     double sobel_vertical_kernel[] = {-1.0, 0.0, 1.0, -2.0, 0.0, 2.0, -1.0, 0.0, 1.0};
 
-    FIABITMAP *src_bordered = FreeImageAlgorithms_SetBorder(src, 1, 1, BorderType_Copy, 0.0);
+    FIABITMAP *src_bordered = FIA_SetBorder(src, 1, 1, BorderType_Copy, 0.0);
 
     FIBITMAP *vertical_tmp = NULL, *horizontal_tmp = NULL;
 
     if(vertical != NULL || magnitude != NULL) {
   
-        FilterKernel convolve_kernel_left = FreeImageAlgorithms_NewKernel(1, 1,
+        FilterKernel convolve_kernel_left = FIA_NewKernel(1, 1,
 		                                        sobel_vertical_kernel, 1.0);
 
-        vertical_tmp = FreeImageAlgorithms_Convolve(src_bordered, convolve_kernel_left);
+        vertical_tmp = FIA_Convolve(src_bordered, convolve_kernel_left);
     }
 
     if(horizontal != NULL || magnitude != NULL) {
 
-        FilterKernel convolve_kernel_top = FreeImageAlgorithms_NewKernel(1, 1,
+        FilterKernel convolve_kernel_top = FIA_NewKernel(1, 1,
 		                                        sobel_horizontal_kernel, 1.0);
     
-	    horizontal_tmp = FreeImageAlgorithms_Convolve(src_bordered, convolve_kernel_top);
+	    horizontal_tmp = FIA_Convolve(src_bordered, convolve_kernel_top);
     }
 
-    FreeImageAlgorithms_Unload(src_bordered);
+    FIA_Unload(src_bordered);
 
     // We need both vertical_tmp and horizontal_tmp to calculate the magnitude.
     if(magnitude != NULL) { 
@@ -126,19 +126,19 @@ FreeImageAlgorithms_SobelAdvanced(FIBITMAP *src,
 // Seems slow but maybe not for large kernels.
 /*
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SeparableSobel(FIBITMAP *src)
+FIA_SeparableSobel(FIBITMAP *src)
 {
 	double sobel_horz_values[] = {-1.0, 0.0, 1.0};
 
 	double sobel_vert_values[] = {1.0, 2.0, 1.0};
 
-	FilterKernel sobel_horz_kernel = FreeImageAlgorithms_NewKernel(1, 0,
+	FilterKernel sobel_horz_kernel = FIA_NewKernel(1, 0,
 		sobel_horz_values, 1.0);
 
-	FilterKernel sobel_vert_kernel = FreeImageAlgorithms_NewKernel(0, 1,
+	FilterKernel sobel_vert_kernel = FIA_NewKernel(0, 1,
 		sobel_vert_values, 1.0);
 
-	FIBITMAP* dst = FreeImageAlgorithms_SeparableConvolve(src, sobel_horz_kernel, sobel_vert_kernel);
+	FIBITMAP* dst = FIA_SeparableConvolve(src, sobel_horz_kernel, sobel_vert_kernel);
 
 	return dst;
 }

@@ -119,7 +119,7 @@ static void dt2d(FIBITMAP *src)
 
 /* dt of binary image using squared distance */
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_DistanceTransform(FIBITMAP *src)
+FIA_DistanceTransform(FIBITMAP *src)
 {
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -129,7 +129,7 @@ FreeImageAlgorithms_DistanceTransform(FIBITMAP *src)
 	int bpp = FreeImage_GetBPP(src);
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
-	FIBITMAP *out = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_FLOAT);
+	FIBITMAP *out = FIA_ConvertToGreyscaleFloatType(src, FIT_FLOAT);
 
 	for(register int y = 0; y < height; y++) { 
 		

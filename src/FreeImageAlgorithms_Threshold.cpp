@@ -41,7 +41,7 @@ THRESHOLD<Tsrc>::Threshold(FIBITMAP *src, Tsrc min, Tsrc max, Tsrc new_value)
 	if(src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	if(!FreeImageAlgorithms_IsGreyScale(src))
+	if(!FIA_IsGreyScale(src))
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	int width = FreeImage_GetWidth(src);
@@ -74,7 +74,7 @@ THRESHOLD<double>			thresholdDoubleImage;
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Threshold(FIBITMAP *src, double min, double max, double new_value)
+FIA_Threshold(FIBITMAP *src, double min, double max, double new_value)
 {
 	FIBITMAP *dst = NULL;
 
@@ -126,7 +126,7 @@ FreeImageAlgorithms_Threshold(FIBITMAP *src, double min, double max, double new_
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value)
+FIA_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value)
 {
 	FIBITMAP *dst = NULL;
 

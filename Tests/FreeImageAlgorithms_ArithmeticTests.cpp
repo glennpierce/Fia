@@ -7,7 +7,7 @@
 #include "FreeImageAlgorithms_Testing.h"
 
 static void
-TestFreeImageAlgorithms_MultiplyTest(CuTest* tc)
+TestFIA_MultiplyTest(CuTest* tc)
 {
 	int x, y, width = 100, height = 100;
 	FIBITMAP *dib, *dib2;
@@ -25,7 +25,7 @@ TestFreeImageAlgorithms_MultiplyTest(CuTest* tc)
 			bits[x] = 5;
 	}
 
-	FreeImageAlgorithms_MultiplyGreyLevelImageConstant(dib, 2.0);
+	FIA_MultiplyGreyLevelImageConstant(dib, 2.0);
 
 	for(y = 0; y < height; y++) { 
 		
@@ -48,7 +48,7 @@ TestFreeImageAlgorithms_MultiplyTest(CuTest* tc)
 			bits[x] = 6;
 	}
 
-	FreeImageAlgorithms_MultiplyGreyLevelImages(dib, dib2);
+	FIA_MultiplyGreyLevelImages(dib, dib2);
 
 	for(y = 0; y < height; y++) { 
 		
@@ -64,7 +64,7 @@ TestFreeImageAlgorithms_MultiplyTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_DivideTest(CuTest* tc)
+TestFIA_DivideTest(CuTest* tc)
 {
 	int x, y, width = 100, height = 100;
 	FIBITMAP *dib, *dib2;
@@ -82,7 +82,7 @@ TestFreeImageAlgorithms_DivideTest(CuTest* tc)
 			bits[x] = 5;
 	}
 
-	FreeImageAlgorithms_DivideGreyLevelImageConstant(dib, 2.0);
+	FIA_DivideGreyLevelImageConstant(dib, 2.0);
 
 	for(y = 0; y < height; y++) { 
 		
@@ -105,7 +105,7 @@ TestFreeImageAlgorithms_DivideTest(CuTest* tc)
 			bits[x] = 10;
 	}
 
-	FreeImageAlgorithms_DivideGreyLevelImages(dib, dib2);
+	FIA_DivideGreyLevelImages(dib, dib2);
 
 	for(y = 0; y < height; y++) { 
 		
@@ -121,14 +121,14 @@ TestFreeImageAlgorithms_DivideTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_AddTest(CuTest* tc)
+TestFIA_AddTest(CuTest* tc)
 {
 	int width, height, error;
 	FIBITMAP *sum, *dib;
 
     char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Slices\\slice.bmp";
 
-	dib = FreeImageAlgorithms_LoadFIBFromFile(file);
+	dib = FIA_LoadFIBFromFile(file);
 
     width = FreeImage_GetWidth(dib);
     height = FreeImage_GetHeight(dib);
@@ -140,7 +140,7 @@ TestFreeImageAlgorithms_AddTest(CuTest* tc)
 
 	CuAssertTrue(tc, sum != NULL);
 
-    error = FreeImageAlgorithms_AddGreyLevelImages(sum, dib);
+    error = FIA_AddGreyLevelImages(sum, dib);
 
     CuAssertTrue(tc, error == FREEIMAGE_ALGORITHMS_SUCCESS);
 
@@ -157,9 +157,9 @@ CuGetFreeImageAlgorithmsArithmaticSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_AddTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_MultiplyTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_DivideTest);
+    SUITE_ADD_TEST(suite, TestFIA_AddTest);
+	SUITE_ADD_TEST(suite, TestFIA_MultiplyTest);
+	SUITE_ADD_TEST(suite, TestFIA_DivideTest);
 
 	return suite;
 }

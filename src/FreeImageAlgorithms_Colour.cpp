@@ -30,7 +30,7 @@
 // Satuation between 0 and 1
 // Value between 0 and 1
 int DLL_CALLCONV
-FreeImageAlgorithms_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
+FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
 							double *hue, double *satuation, double *value)
 {
 	unsigned char max, min, rgb[3];
@@ -68,7 +68,7 @@ FreeImageAlgorithms_RGBToHSV( unsigned char red, unsigned char green, unsigned c
 // Satuation between 0 and 1
 // Value between 0 and 1
 int DLL_CALLCONV
-FreeImageAlgorithms_HSVToRGB( double hue, double satuation, double value,
+FIA_HSVToRGB( double hue, double satuation, double value,
 							unsigned char *red, unsigned char *green, unsigned char *blue)
 {
 	unsigned int h,p,q,t,v;
@@ -158,7 +158,7 @@ FreeImageAlgorithms_HSVToRGB( double hue, double satuation, double value,
 // Satuation between 0 and 1
 // Value between 0 and 1
 int DLL_CALLCONV
-FreeImageAlgorithms_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
+FIA_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
 							double *hue, double *satuation, double *luminosity)
 {
 	unsigned char max, min, rgb[3];
@@ -215,7 +215,7 @@ static double HSLToRGBColour (double q1, double q2, double hue)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_HSLToRGB( double hue, double satuation, double luminosity,
+FIA_HSLToRGB( double hue, double satuation, double luminosity,
 							unsigned char *red, unsigned char *green, unsigned char *blue)
 {
 	double p1, p2;

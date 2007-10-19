@@ -280,7 +280,7 @@ TransformComplexToComplexImage(FIBITMAP *src, int inverse, int shift)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FFT(FIBITMAP *src, int inverse, int shift)
+FIA_FFT(FIBITMAP *src, int inverse, int shift)
 {
 	if(!src)
 		return NULL;
@@ -376,13 +376,13 @@ ConvertComplexImageToAbsoluteValued(FIBITMAP *src, bool squared)
 }
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src)
+FIA_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src)
 {
 	return ConvertComplexImageToAbsoluteValued(src, true);
 }
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_ConvertComplexImageToAbsoluteValued(FIBITMAP *src)
+FIA_ConvertComplexImageToAbsoluteValued(FIBITMAP *src)
 {
 	return ConvertComplexImageToAbsoluteValued(src, false);
 }

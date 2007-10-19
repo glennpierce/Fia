@@ -90,7 +90,7 @@ LOGIC<float>				logicFloatImage;
 LOGIC<double>				logicDoubleImage;
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_MaskImage(FIBITMAP* src, FIBITMAP* mask)
+FIA_MaskImage(FIBITMAP* src, FIBITMAP* mask)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -117,7 +117,7 @@ FreeImageAlgorithms_MaskImage(FIBITMAP* src, FIBITMAP* mask)
 
 
 int DLL_CALLCONV 
-FreeImageAlgorithms_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val)
+FIA_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val)
 {
     if(mask == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;

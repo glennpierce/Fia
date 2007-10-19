@@ -9,7 +9,7 @@
 #define IMAGE_DIR "C:\\Documents and Settings\\Pierce\\Desktop\\Working Area\\Test Images"
 #endif
 
-#define TEMP_DIR "C:\\Temp\\FreeImageAlgorithms_Tests"
+#define TEMP_DIR "C:\\Temp\\FIA_Tests"
 
 #ifdef __cplusplus
 extern "C" {

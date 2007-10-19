@@ -338,7 +338,7 @@ FIBITMAP* Kernel<Tsrc>::Convolve()
 	const int dst_width = src_image_width - (2 * this->xborder);
 	const int dst_height = src_image_height - (2 * this->yborder);
 
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(this->dib, dst_width, dst_height);
+	FIBITMAP *dst = FIA_CloneImageType(this->dib, dst_width, dst_height);
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
 

@@ -317,12 +317,12 @@ inline void BinaryDilateKernel(Kernel<unsigned char> *kernel, unsigned char *dst
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel)
+FIA_BinaryDilation(FIABITMAP* src, FilterKernel kernel)
 {
 	const int dst_width = FreeImage_GetWidth(src->fib) - (2 * kernel.x_radius);
 	const int dst_height = FreeImage_GetHeight(src->fib) - (2 * kernel.y_radius);
 
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
+	FIBITMAP *dst = FIA_CloneImageType(src->fib, dst_width, dst_height);
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(unsigned char);
 
@@ -655,12 +655,12 @@ static inline void BinaryErodeKernel(Kernel<unsigned char> *kernel, unsigned cha
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryErosion(FIABITMAP* src, FilterKernel kernel)
+FIA_BinaryErosion(FIABITMAP* src, FilterKernel kernel)
 {
 	const int dst_width = FreeImage_GetWidth(src->fib) - (2 * kernel.x_radius);
 	const int dst_height = FreeImage_GetHeight(src->fib) - (2 * kernel.y_radius);
 
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
+	FIBITMAP *dst = FIA_CloneImageType(src->fib, dst_width, dst_height);
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(unsigned char);
 
@@ -702,39 +702,39 @@ FreeImageAlgorithms_BinaryErosion(FIABITMAP* src, FilterKernel kernel)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryOpening(FIABITMAP* src, FilterKernel kernel)
+FIA_BinaryOpening(FIABITMAP* src, FilterKernel kernel)
 {
 	// Erosion followed by a dilation.
 
-	FIBITMAP* tmp = FreeImageAlgorithms_BinaryErosion(src, kernel);
+	FIBITMAP* tmp = FIA_BinaryErosion(src, kernel);
 
-	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(tmp,
+	FIABITMAP *border_dib = FIA_SetBorder(tmp,
 								kernel.x_radius, kernel.y_radius, BorderType_Constant, 0.0);
 
 	FreeImage_Unload(tmp);
 	
-	tmp = FreeImageAlgorithms_BinaryDilation(border_dib, kernel);
+	tmp = FIA_BinaryDilation(border_dib, kernel);
 
-	FreeImageAlgorithms_Unload(border_dib);
+	FIA_Unload(border_dib);
 
 	return tmp;
 };
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryClosing(FIABITMAP* src, FilterKernel kernel)
+FIA_BinaryClosing(FIABITMAP* src, FilterKernel kernel)
 {
 	// Dialation followed by a erosion.
 
-	FIBITMAP* tmp = FreeImageAlgorithms_BinaryDilation(src, kernel);
+	FIBITMAP* tmp = FIA_BinaryDilation(src, kernel);
 
-	FIABITMAP *border_dib = FreeImageAlgorithms_SetBorder(tmp,
+	FIABITMAP *border_dib = FIA_SetBorder(tmp,
 								kernel.x_radius, kernel.y_radius, BorderType_Constant, 0.0);
 
 	FreeImage_Unload(tmp);
 	
-	tmp = FreeImageAlgorithms_BinaryErosion(border_dib, kernel);
+	tmp = FIA_BinaryErosion(border_dib, kernel);
 
-	FreeImageAlgorithms_Unload(border_dib);
+	FIA_Unload(border_dib);
 
 	return tmp;
 };

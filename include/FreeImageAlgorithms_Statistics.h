@@ -46,7 +46,7 @@ typedef struct
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_HistEq_Random_Additions(FIBITMAP *src);
+FIA_HistEq_Random_Additions(FIBITMAP *src);
 
 /** \brief Equalise and image using histogram equalisation.
  *
@@ -54,7 +54,7 @@ FreeImageAlgorithms_HistEq_Random_Additions(FIBITMAP *src);
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_HistEq(FIBITMAP *src);
+FIA_HistEq(FIBITMAP *src);
 
 /** \brief Calculate the greylevel average of all the pixels.
  *
@@ -63,7 +63,7 @@ FreeImageAlgorithms_HistEq(FIBITMAP *src);
  *  \return double Average value on success or 0.0 on error.
 */
 DLL_API double DLL_CALLCONV
-FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src);
+FIA_GetGreyLevelAverage(FIBITMAP *src);
 
 /** \brief Return the histogram for a greylevel image.
  *
@@ -78,7 +78,7 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max,
+FIA_Histogram(FIBITMAP *src, double min, double max,
 							  int number_of_bins, unsigned long *hist);
 
 /** \brief Return the histogram for a rgb image.
@@ -96,7 +96,7 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max,
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_RGBHistogram(FIBITMAP *src,
+FIA_RGBHistogram(FIBITMAP *src,
 			unsigned char  min, unsigned char  max, int number_of_bins,
 			unsigned long *rhist, unsigned long *ghist, unsigned long *bhist);
 
@@ -107,7 +107,7 @@ FreeImageAlgorithms_RGBHistogram(FIBITMAP *src,
  *  \param white_area unsigned int * Counts of pixels above or equal to 1.
  */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area);
+FIA_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area);
 
 /** \brief This function finds the the amount of white ie area in a monochrome image.
  *		   This works with 8 bit images by assuming everything above 1 is white.
@@ -117,7 +117,7 @@ FreeImageAlgorithms_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_ar
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area);
+FIA_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area);
 
 /** \brief This function determines how a detail is present though two images.
  *
@@ -131,7 +131,7 @@ FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
+FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
 													int *tp, int *tn, int *fp, int *fn);
 
 /** \brief This function determines how a detail is present though two images.
@@ -141,7 +141,7 @@ FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *res
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_StatisticReport(FIBITMAP *src, StatisticReport *report);
+FIA_StatisticReport(FIBITMAP *src, StatisticReport *report);
 
 
 /** \brief This function determines the center of pixel energy of an image.
@@ -152,7 +152,7 @@ FreeImageAlgorithms_StatisticReport(FIBITMAP *src, StatisticReport *report);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid);
+FIA_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid);
 
 
 /** \brief This function determines the median value of all the pixels.
@@ -161,7 +161,7 @@ FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid
  *  \return double The median of all the pixels in the image.
  */
 DLL_API double DLL_CALLCONV
-FreeImageAlgorithms_GetMedianFromImage(FIBITMAP* src);
+FIA_GetMedianFromImage(FIBITMAP* src);
 
 #ifdef __cplusplus
 }

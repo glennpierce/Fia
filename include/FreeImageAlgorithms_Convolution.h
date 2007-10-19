@@ -48,20 +48,20 @@ typedef struct
  *  \return FilterKernel.
 */
 DLL_API FilterKernel DLL_CALLCONV
-FreeImageAlgorithms_NewKernel(int x_radius, int y_radius, 
+FIA_NewKernel(int x_radius, int y_radius, 
 							  const double *values, double divider);
 
 /** \brief Convolve and image with a kernel.
  *
  *  \param src FIBITMAP bitmap to perform the convolution on.
- *  \param kernel FilterKernel The kernel created with FreeImageAlgorithms_NewKernel.
+ *  \param kernel FilterKernel The kernel created with FIA_NewKernel.
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_Convolve(FIABITMAP *src, const FilterKernel kernel);
+FIA_Convolve(FIABITMAP *src, const FilterKernel kernel);
 
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel);
+FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel);
 
 
 #ifdef __cplusplus

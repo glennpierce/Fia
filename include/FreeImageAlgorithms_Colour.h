@@ -41,7 +41,7 @@ extern "C" {
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
+FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
 							double *hue, double *satuation, double *value);
 
 /** \brief Convert hue, satuation and value values to red, green and blue.
@@ -55,7 +55,7 @@ FreeImageAlgorithms_RGBToHSV( unsigned char red, unsigned char green, unsigned c
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_HSVToRGB( double hue, double satuation, double value,
+FIA_HSVToRGB( double hue, double satuation, double value,
 							unsigned char *red, unsigned char *green, unsigned char *blue);
 
 /** \brief Convert red, green and blue values to hue, satuation and luminosity.
@@ -69,7 +69,7 @@ FreeImageAlgorithms_HSVToRGB( double hue, double satuation, double value,
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
+FIA_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
 							double *hue, double *satuation, double *luminosity);
 
 /** \brief Convert hue, satuation and luminosity values to red, green and blue.
@@ -83,7 +83,7 @@ FreeImageAlgorithms_RGBToHSL( unsigned char red, unsigned char green, unsigned c
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FreeImageAlgorithms_HSLToRGB( double hue, double satuation, double luminosity,
+FIA_HSLToRGB( double hue, double satuation, double luminosity,
 							unsigned char *red, unsigned char *green, unsigned char *blue);
 
 #ifdef __cplusplus

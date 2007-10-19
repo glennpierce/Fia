@@ -270,7 +270,7 @@ FindMaxima::DrawMaxima (int size)
 
 	this->peek_image = FreeImage_Allocate(width, height , 8, 0, 0, 0);
 
-	FreeImageAlgorithms_SetGreyLevelPalette(this->peek_image);
+	FIA_SetGreyLevelPalette(this->peek_image);
 
 	register unsigned char *src_ptr, *dst_ptr;
 	FIARECT rect;
@@ -289,7 +289,7 @@ FindMaxima::DrawMaxima (int size)
 				rect.right = rect.left + size - 1;
 				rect.top = rect.bottom - size + 1;
 
-				FreeImageAlgorithms_DrawSolidGreyscaleRect (this->peek_image, rect, 255); 
+				FIA_DrawSolidGreyscaleRect (this->peek_image, rect, 255); 
 
 				dst_ptr[x] = 255;
 
@@ -322,7 +322,7 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 	// the actual number of peaks in the centres list is returned
 	PARTICLEINFO* info;
 
-	FreeImageAlgorithms_ParticleInfo(this->peek_image, &info, 1);
+	FIA_ParticleInfo(this->peek_image, &info, 1);
 
 	int total_blobs = info->number_of_blobs;
 
@@ -352,12 +352,12 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 		peaks[i].centre.x = blobinfo.center_x;
 		peaks[i].centre.y = blobinfo.center_y;
 
-		FreeImageAlgorithms_GetPixelValue(
+		FIA_GetPixelValue(
 			this->original_image,peaks[i].centre.x,
 			peaks[i].centre.y, &(peaks[i].value));
 	}
 
-	FreeImageAlgorithms_FreeParticleInfo(info);
+	FIA_FreeParticleInfo(info);
 
 	// Sort the peaks
 	qsort (peaks, number, sizeof(FIAPeak), ComparePeaks);   // sort into assending order
@@ -396,7 +396,7 @@ FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char thresho
 
 	// allow for masking of the image
 	if (mask != NULL)
-		FreeImageAlgorithms_MaskImage(src, mask);
+		FIA_MaskImage(src, mask);
 
 	*peaks_found = StoreBrightestPeaks (number, peaks);      
 
@@ -406,7 +406,7 @@ FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char thresho
 }
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found)
+FIA_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char threshold, int min_separation, FIAPeak **peaks, int number, int *peaks_found)
 {
 	FindMaxima maxima;
 
@@ -419,7 +419,7 @@ FreeImageAlgorithms_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char
 
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FreePeaks(FIAPeak *peaks)
+FIA_FreePeaks(FIAPeak *peaks)
 {
 	free(peaks);
 }
@@ -429,17 +429,17 @@ static FIBITMAP* GetApproximationImage(FIBITMAP *src, double *kernel, int border
 {
     FilterKernel kern1, kern2;
 
-    kern1 = FreeImageAlgorithms_NewKernel(border_size, 0, kernel, 1.0);
-    kern2 = FreeImageAlgorithms_NewKernel(0, border_size, kernel, 1.0);
+    kern1 = FIA_NewKernel(border_size, 0, kernel, 1.0);
+    kern2 = FIA_NewKernel(0, border_size, kernel, 1.0);
 
-    FIABITMAP* bordered_image = FreeImageAlgorithms_SetBorder(src, border_size, border_size,
+    FIABITMAP* bordered_image = FIA_SetBorder(src, border_size, border_size,
                                     BorderType_Mirror, 0.0);
         
-    FIBITMAP *approxImage = FreeImageAlgorithms_SeparableConvolve(bordered_image, kern1, kern2);
+    FIBITMAP *approxImage = FIA_SeparableConvolve(bordered_image, kern1, kern2);
 
-    FreeImageAlgorithms_Unload(bordered_image);
+    FIA_Unload(bordered_image);
 
-    //FreeImageAlgorithms_InPlaceConvertToStandardType(&(approxImage), 1);
+    //FIA_InPlaceConvertToStandardType(&(approxImage), 1);
 
     return approxImage;
 }
@@ -475,7 +475,7 @@ static double GetMADValue(FIBITMAP *src)
 
          for(x = 0; x < width; x++) {
 
-            data[y*width+x] = abs(src_ptr[x] - median);
+            data[y*width+x] = fabs(src_ptr[x] - median);
          }
        
     }
@@ -489,7 +489,7 @@ static double GetMADValue(FIBITMAP *src)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP** W)
+FIA_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP** W)
 {
     const int max_resolutions = 4;
     const int number_of_resolutions = levels  , k = 3;
@@ -521,7 +521,7 @@ FreeImageAlgorithms_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP**
 
     double min, max;
 
-    A[0] = FreeImageAlgorithms_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
+    A[0] = FIA_ConvertToGreyscaleFloatType(src, FIT_DOUBLE);
 
     std::ostringstream ss;
 
@@ -530,25 +530,25 @@ FreeImageAlgorithms_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP**
         A[i] = GetApproximationImage(A[i-1], kernels[i-1], borders[i-1]);
 
         W[i-1] = FreeImage_Clone(A[i-1]);       
-        FreeImageAlgorithms_SubtractGreyLevelImages(W[i-1], A[i]);
+        FIA_SubtractGreyLevelImages(W[i-1], A[i]);
 
         #ifdef VERBOSE_DEBUG
-        ss << "C:\\Temp\\FreeImageAlgorithms_Tests\\A_" << i << ".bmp";  
-        FreeImageAlgorithms_SaveFIBToFile(A[i-1], ss.c_str(), BIT8); 
+        ss << "C:\\Temp\\FIA_Tests\\A_" << i << ".bmp";  
+        FIA_SaveFIBToFile(A[i-1], ss.c_str(), BIT8); 
   
-        ss << "C:\\Temp\\FreeImageAlgorithms_Tests\\W_" << i << ".bmp";   
-        FreeImageAlgorithms_SaveFIBToFile(W[i-1], ss.c_str(), BIT8); 
+        ss << "C:\\Temp\\FIA_Tests\\W_" << i << ".bmp";   
+        FIA_SaveFIBToFile(W[i-1], ss.c_str(), BIT8); 
         #endif
 
         image_thresholds[i-1] = GetMADValue(W[i-1]) * k / 0.67;
 
-        FreeImageAlgorithms_FindMinMax(W[i-1], &min, &max);
+        FIA_FindMinMax(W[i-1], &min, &max);
 
-        FreeImageAlgorithms_InPlaceThreshold(W[i-1], min, image_thresholds[i-1], 0);
+        FIA_InPlaceThreshold(W[i-1], min, image_thresholds[i-1], 0);
     
         #ifdef VERBOSE_DEBUG
-        ss << "C:\\Temp\\FreeImageAlgorithms_Tests\\WThreshold_" << i << ".bmp";   
-	    FreeImageAlgorithms_SaveFIBToFile(test, ss.c_str(), BIT8); 
+        ss << "C:\\Temp\\FIA_Tests\\WThreshold_" << i << ".bmp";   
+	    FIA_SaveFIBToFile(test, ss.c_str(), BIT8); 
         #endif
     }
 
@@ -565,7 +565,7 @@ FreeImageAlgorithms_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP**
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_MultiscaleProducts(FIBITMAP* src, int start_level, int levels)
+FIA_MultiscaleProducts(FIBITMAP* src, int start_level, int levels)
 {
     // Start level has to be within the number of levels.
     if(start_level > levels)
@@ -573,13 +573,13 @@ FreeImageAlgorithms_MultiscaleProducts(FIBITMAP* src, int start_level, int level
 
     FIBITMAP **W =  (FIBITMAP**) malloc(sizeof(FIBITMAP*) * levels); 
 
-    if(FreeImageAlgorithms_ATrousWaveletTransform(src, levels, W) == FREEIMAGE_ALGORITHMS_ERROR)
+    if(FIA_ATrousWaveletTransform(src, levels, W) == FREEIMAGE_ALGORITHMS_ERROR)
         return NULL;
 
     FIBITMAP *product_image = FreeImage_Clone(W[start_level-1]);
 
     for(int i=start_level; i < levels; i++)
-        FreeImageAlgorithms_MultiplyGreyLevelImages(product_image, W[i]);
+        FIA_MultiplyGreyLevelImages(product_image, W[i]);
 
     // Clean up resolution images
     for(int i=0; i < levels; i++) {

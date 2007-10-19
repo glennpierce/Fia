@@ -103,7 +103,7 @@ static void CopyColourBytesToFIBitmap(FIBITMAP *src, BYTE *data, int padded, int
 }
 
 void DLL_CALLCONV
-FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded, int vertical_flip, COLOUR_ORDER order)
+FIA_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded, int vertical_flip, COLOUR_ORDER order)
 {
 	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 	int bpp = FreeImage_GetBPP(src);
@@ -148,7 +148,7 @@ FreeImageAlgorithms_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded, in
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadFIBFromFile(const char *pathname)
+FIA_LoadFIBFromFile(const char *pathname)
 {
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN; 
 
@@ -173,7 +173,7 @@ FreeImageAlgorithms_LoadFIBFromFile(const char *pathname)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
+FIA_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
                                                    FREE_IMAGE_TYPE data_type, int padded, int vertical_flip)
 {
 	FIBITMAP 	*dib;
@@ -193,7 +193,7 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int widt
 			if ( (dib = FreeImage_Allocate (width, height, 8, 0, 0, 0)) == NULL )
 				return NULL;
 	
-			FreeImageAlgorithms_SetGreyLevelPalette(dib);
+			FIA_SetGreyLevelPalette(dib);
 
 			break;
 			
@@ -229,13 +229,13 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int widt
 			break;
 	}
 
-	FreeImageAlgorithms_CopyBytesToFBitmap(dib, data, padded, vertical_flip, COLOUR_ORDER_RGB);
+	FIA_CopyBytesToFBitmap(dib, data, padded, vertical_flip, COLOUR_ORDER_RGB);
 
 	return dib;
 }
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded,
+FIA_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded,
 												int vertical_flip, COLOUR_ORDER colour_order)
 {
 	FIBITMAP 	*dib;
@@ -270,14 +270,14 @@ FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, 
 			break;
 	}
 
-	FreeImageAlgorithms_CopyBytesToFBitmap(dib, data, padded, vertical_flip, colour_order);
+	FIA_CopyBytesToFBitmap(dib, data, padded, vertical_flip, colour_order);
 
 	return dib;
 }
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth)
+FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth)
 {
 	FIBITMAP *standard_dib, *converted_dib;
 	FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
@@ -302,7 +302,7 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
 			return FREEIMAGE_ALGORITHMS_ERROR;
 
 		if(!FreeImage_Save(fif, converted_dib, filepath, 0)) {
-			FreeImageAlgorithms_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");
+			FIA_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");
 			return FREEIMAGE_ALGORITHMS_ERROR;
 		}
 
@@ -311,7 +311,7 @@ FreeImageAlgorithms_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAG
 	}
 	else {
 	
-		FreeImageAlgorithms_SendOutputMessage("Error Saving File! Unsupported Type");
+		FIA_SendOutputMessage("Error Saving File! Unsupported Type");
 		return FREEIMAGE_ALGORITHMS_ERROR;
 	}
 	

@@ -113,12 +113,12 @@ BORDER<Tsrc>::SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type
 	
     CheckMemory(dst);
 
-	dst->fib = FreeImageAlgorithms_CloneImageType(src, dst_width, dst_height);
+	dst->fib = FIA_CloneImageType(src, dst_width, dst_height);
 
 	dst->xborder = xborder;
 	dst->yborder = yborder;
 
-	FreeImageAlgorithms_SimplePaste(dst->fib, src, xborder, yborder);
+	FIA_SimplePaste(dst->fib, src, xborder, yborder);
 
     if(type == BorderType_Constant && constant != 0.0) {
    
@@ -227,7 +227,7 @@ static BORDER<double>				borderDoubleImage;
 
 
 FIABITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant)
+FIA_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double constant)
 {
 	FIABITMAP *dst = NULL;
 
@@ -272,7 +272,7 @@ FreeImageAlgorithms_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderTyp
 }
 
 FIABITMAP* DLL_CALLCONV
-FreeImageAlgorithms_SetZeroBorder(FIBITMAP *src, int xborder, int yborder)
+FIA_SetZeroBorder(FIBITMAP *src, int xborder, int yborder)
 {
-    return FreeImageAlgorithms_SetBorder(src, xborder, yborder, BorderType_Constant, 0.0);
+    return FIA_SetBorder(src, xborder, yborder, BorderType_Constant, 0.0);
 }

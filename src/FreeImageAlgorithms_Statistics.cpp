@@ -50,7 +50,7 @@ Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int n
 
 	// We need to find the min and max in the image.
 	if(min == 0 && max == 0)
-		FreeImageAlgorithms_FindMinMax(src, &min, &max);
+		FIA_FindMinMax(src, &min, &max);
 
 	if(min >= max)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -201,7 +201,7 @@ Statistic<double>				statisticDoubleImage;
  * Does not work with colour images.
 */
 int DLL_CALLCONV
-FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
+FIA_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
 							  unsigned long *hist)
 {
 	if(!src)
@@ -241,7 +241,7 @@ FreeImageAlgorithms_Histogram(FIBITMAP *src, double min, double max, int number_
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_StatisticReport(FIBITMAP *src, StatisticReport *report)
+FIA_StatisticReport(FIBITMAP *src, StatisticReport *report)
 {
 	if(!src)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -280,7 +280,7 @@ FreeImageAlgorithms_StatisticReport(FIBITMAP *src, StatisticReport *report)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
+FIA_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
 {
 	if(!src)
 		return  FREEIMAGE_ALGORITHMS_ERROR;
@@ -319,7 +319,7 @@ FreeImageAlgorithms_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid
 
 
 double DLL_CALLCONV
-FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
+FIA_GetGreyLevelAverage(FIBITMAP *src)
 {
 	if(!src)
 		return 0.0;
@@ -358,7 +358,7 @@ FreeImageAlgorithms_GetGreyLevelAverage(FIBITMAP *src)
 }
 
 int DLL_CALLCONV
-FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char max,
+FIA_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char max,
 			int number_of_bins, unsigned long *rhist, unsigned long *ghist, unsigned long *bhist)
 {
 	if (rhist == NULL || ghist == NULL || bhist == NULL)      
@@ -430,7 +430,7 @@ FreeImageAlgorithms_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_HistEq_Random_Additions(FIBITMAP *src)
+FIA_HistEq_Random_Additions(FIBITMAP *src)
 {
 	FIBITMAP *dib;
 	int i, R;
@@ -451,7 +451,7 @@ FreeImageAlgorithms_HistEq_Random_Additions(FIBITMAP *src)
 
 	// Allocate a 8-bit dib
 	dib = FreeImage_AllocateT(FIT_BITMAP, image_width, image_height, 8, 0, 0, 0);
-	FreeImageAlgorithms_CopyPalette(src, dib);
+	FIA_CopyPalette(src, dib);
 
 	total = (long) image_width * image_height;
 	
@@ -523,7 +523,7 @@ FreeImageAlgorithms_HistEq_Random_Additions(FIBITMAP *src)
 
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_HistEq(FIBITMAP *src)
+FIA_HistEq(FIBITMAP *src)
 {
 	FIBITMAP *dst;
 	int i;
@@ -548,7 +548,7 @@ FreeImageAlgorithms_HistEq(FIBITMAP *src)
 	// Allocate a 8-bit dib
 	dst = FreeImage_AllocateT(FIT_BITMAP, image_width, image_height, 8, 0, 0, 0);
 
-	FreeImageAlgorithms_SetGreyLevelPalette(dst);
+	FIA_SetGreyLevelPalette(dst);
 
 	total = image_width * image_height;
 	
@@ -592,7 +592,7 @@ FreeImageAlgorithms_HistEq(FIBITMAP *src)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area)
+FIA_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area)
 {
 	int bpp = FreeImage_GetBPP(src);
 	int width = FreeImage_GetWidth(src);
@@ -625,7 +625,7 @@ FreeImageAlgorithms_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_ar
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area)
+FIA_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area)
 {
 	int bpp = FreeImage_GetBPP(src);
 	int width = FreeImage_GetWidth(src);
@@ -634,7 +634,7 @@ FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area
    	
 	unsigned int whites = 0;
 
-	if(FreeImageAlgorithms_MonoImageFindWhiteArea(src, &whites) == FREEIMAGE_ALGORITHMS_ERROR)
+	if(FIA_MonoImageFindWhiteArea(src, &whites) == FREEIMAGE_ALGORITHMS_ERROR)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	*white_area = (double) whites / size;
@@ -645,7 +645,7 @@ FreeImageAlgorithms_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
+FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
 													int *tp, int *tn, int *fp, int *fn)
 {
 	*tp = 0; *tn = 0, *fp = 0, *fn = 0;

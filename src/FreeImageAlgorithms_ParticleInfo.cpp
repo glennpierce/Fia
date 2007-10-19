@@ -152,7 +152,7 @@ static inline Blob* MergeBlobs(BLOBPOOL *pool, Blob *blob1, Blob *blob2)
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned char white_on_black)
+FIA_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned char white_on_black)
 {
 	if(src == NULL)
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -345,7 +345,7 @@ FreeImageAlgorithms_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned ch
 };
 
 void DLL_CALLCONV
-FreeImageAlgorithms_FreeParticleInfo(PARTICLEINFO* info)
+FIA_FreeParticleInfo(PARTICLEINFO* info)
 {
 	free(info->blobs);
 	info->blobs = NULL;

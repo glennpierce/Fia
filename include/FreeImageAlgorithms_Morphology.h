@@ -34,7 +34,7 @@ extern "C" {
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel);
+FIA_BinaryDilation(FIABITMAP* src, FilterKernel kernel);
 
 /*! \file 
  *	Erodes the particles in an image.
@@ -43,7 +43,7 @@ FreeImageAlgorithms_BinaryDilation(FIABITMAP* src, FilterKernel kernel);
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryErosion(FIABITMAP* src, FilterKernel kernel);
+FIA_BinaryErosion(FIABITMAP* src, FilterKernel kernel);
 
 /*! \file 
  *	Erodes and then performs dialation.
@@ -52,7 +52,7 @@ FreeImageAlgorithms_BinaryErosion(FIABITMAP* src, FilterKernel kernel);
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryOpening(FIABITMAP* src, FilterKernel kernel);
+FIA_BinaryOpening(FIABITMAP* src, FilterKernel kernel);
 
 /*! \file 
  *	Diates then performs an erosion.
@@ -61,7 +61,7 @@ FreeImageAlgorithms_BinaryOpening(FIABITMAP* src, FilterKernel kernel);
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_BinaryClosing(FIABITMAP* src, FilterKernel kernel);
+FIA_BinaryClosing(FIABITMAP* src, FilterKernel kernel);
 
 #ifdef __cplusplus
 }

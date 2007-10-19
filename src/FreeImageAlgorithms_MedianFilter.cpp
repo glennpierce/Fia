@@ -214,7 +214,7 @@ FIBITMAP* FILTER<Tsrc>::MedianFilter(FIABITMAP* src, int kernel_x_radius, int ke
 	const int dst_width = src_image_width - (2 * src->xborder);
 	const int dst_height = src_image_height - (2 * src->yborder);
 
-	FIBITMAP *dst = FreeImageAlgorithms_CloneImageType(src->fib, dst_width, dst_height);
+	FIBITMAP *dst = FIA_CloneImageType(src->fib, dst_width, dst_height);
 
 	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
 
@@ -269,7 +269,7 @@ FILTER<float>				filterFloatImage;
 FILTER<double>				filterDoubleImage;
 
 FIBITMAP* DLL_CALLCONV
-FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius)
+FIA_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius)
 {
 	FIBITMAP *dst = NULL;
 
@@ -317,10 +317,10 @@ FreeImageAlgorithms_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel
 
 
 double DLL_CALLCONV
-FreeImageAlgorithms_GetMedianFromImage(FIBITMAP* src)
+FIA_GetMedianFromImage(FIBITMAP* src)
 {
 	if(!src)
-		return NULL;
+		return 0.0;
 
 	// convert from src_type to FIT_BITMAP
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);

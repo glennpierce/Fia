@@ -38,7 +38,7 @@ extern "C" {
  *  \param mask FIBITMAP bitmap used as mask. Must be an 8bit image.
 */
 DLL_API int DLL_CALLCONV 
-FreeImageAlgorithms_MaskImage(FIBITMAP* src, FIBITMAP* mask);
+FIA_MaskImage(FIBITMAP* src, FIBITMAP* mask);
 
 /** \brief Masks an image.
  *
@@ -49,7 +49,7 @@ FreeImageAlgorithms_MaskImage(FIBITMAP* src, FIBITMAP* mask);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV 
-FreeImageAlgorithms_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val);
+FIA_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val);
 
 #ifdef __cplusplus
 }

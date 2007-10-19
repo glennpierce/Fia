@@ -13,11 +13,11 @@
 #include <fstream>
 
 static void
-TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
+TestFIA_FillholeTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\fillhole_test.bmp";
 
-	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
 	CuAssertTrue(tc, dib1 != NULL);
 	
@@ -31,13 +31,13 @@ TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 
 	PROFILE_START("FillholeTest");
 
-	FIBITMAP* result_dib = FreeImageAlgorithms_Fillholes(threshold_8bit_dib, 1);
+	FIBITMAP* result_dib = FIA_Fillholes(threshold_8bit_dib, 1);
 
 	CuAssertTrue(tc, result_dib != NULL);
 
 	PROFILE_STOP("FillholeTest");
 	
-	FreeImageAlgorithms_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT8);
+	FIA_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -47,13 +47,13 @@ TestFreeImageAlgorithms_FillholeTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
+TestFIA_ParticleInfoTest(CuTest* tc)
 {
 	char *file = IMAGE_DIR "\\fillhole_test.bmp";
 	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
 	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
 
-	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, dib1 != NULL);
 
@@ -65,7 +65,7 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 
 	PARTICLEINFO *info;
 
-	FreeImageAlgorithms_ParticleInfo(dib2, &info, 1);
+	FIA_ParticleInfo(dib2, &info, 1);
 
 	PROFILE_STOP("ParticleInfo");
 
@@ -81,14 +81,14 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 	{
 		BLOBINFO blobinfo = info->blobs[i];
 
-		FreeImageAlgorithms_DrawColourRect (dst, blobinfo.rect, FIA_RGBQUAD(255,0,0), 2);
+		FIA_DrawColourRect (dst, blobinfo.rect, FIA_RGBQUAD(255,0,0), 2);
 
 		centre.left = blobinfo.center_x - 2;
 		centre.right = blobinfo.center_x + 2;
 		centre.top = blobinfo.center_y - 2;
 		centre.bottom = blobinfo.center_y + 2;
 
-		FreeImageAlgorithms_DrawColourSolidRect(dst, centre, FIA_RGBQUAD(0,255,0));
+		FIA_DrawColourSolidRect(dst, centre, FIA_RGBQUAD(0,255,0));
 
 		myfile << "left  "
 			<< blobinfo.rect.left << "  top  "  << blobinfo.rect.top
@@ -103,9 +103,9 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 
 	myfile.close();
 
-	FreeImageAlgorithms_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.bmp", BIT24);
+	FIA_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.bmp", BIT24);
 
-	FreeImageAlgorithms_FreeParticleInfo(info);
+	FIA_FreeParticleInfo(info);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -114,15 +114,15 @@ TestFreeImageAlgorithms_ParticleInfoTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
+TestFIA_FindImageMaximaTest(CuTest* tc)
 {
     //char *file = IMAGE_DIR "\\CHT.bmp";
     char *file = IMAGE_DIR "\\finmax_in.bmp";
 	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
 	//char *shouldbefile = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
 	
-	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
-	//FIBITMAP *shouldbe_dib = FreeImageAlgorithms_LoadFIBFromFile(shouldbefile);
+	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
+	//FIBITMAP *shouldbe_dib = FIA_LoadFIBFromFile(shouldbefile);
 
 	CuAssertTrue(tc, dib1 != NULL);
 
@@ -134,16 +134,16 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 	FIAPeak *peaks = NULL;
 	int number_of_peaks;
-	FIBITMAP *dib3 = FreeImageAlgorithms_FindImageMaxima(dib2, NULL, 2,
+	FIBITMAP *dib3 = FIA_FindImageMaxima(dib2, NULL, 2,
         0, &peaks, 0, &number_of_peaks);
 
 	PROFILE_STOP("FindImageMaxima");
 
-	FreeImageAlgorithms_SetGreyLevelPalette(dib3);
+	FIA_SetGreyLevelPalette(dib3);
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib3);
 
-	FreeImageAlgorithms_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima.bmp", BIT8); 
+	FIA_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima.bmp", BIT8); 
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -153,11 +153,11 @@ TestFreeImageAlgorithms_FindImageMaximaTest(CuTest* tc)
 
 
 static void
-TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
+TestFIA_FindImageMaximaTest2(CuTest* tc)
 {
     char *file = IMAGE_DIR "\\timeLapse041.bmp";
 
-	FIBITMAP *dib1 = FreeImageAlgorithms_LoadFIBFromFile(file);
+	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, dib1 != NULL);
 
@@ -167,14 +167,14 @@ TestFreeImageAlgorithms_FindImageMaximaTest2(CuTest* tc)
  
 	PROFILE_START("MultiscaleProducts");
 
-	FIBITMAP *dst = FreeImageAlgorithms_MultiscaleProducts(dib2, 2, 3);
+	FIBITMAP *dst = FIA_MultiscaleProducts(dib2, 2, 3);
 
-    FreeImageAlgorithms_InPlaceThreshold(dst, 0, 5, 0);
-    FreeImageAlgorithms_InPlaceThreshold(dst, 1, 255, 255);
+    FIA_InPlaceThreshold(dst, 0, 5, 0);
+    FIA_InPlaceThreshold(dst, 1, 255, 255);
 
 	PROFILE_STOP("MultiscaleProducts");
 
-	FreeImageAlgorithms_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima2.bmp", BIT8); 
+	FIA_SaveFIBToFile(dst, TEMP_DIR "\\find_image_maxima2.bmp", BIT8); 
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -186,10 +186,10 @@ CuGetFreeImageAlgorithmsParticleSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FillholeTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_ParticleInfoTest);
-	SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest);
-    SUITE_ADD_TEST(suite, TestFreeImageAlgorithms_FindImageMaximaTest2);
+	SUITE_ADD_TEST(suite, TestFIA_FillholeTest);
+	SUITE_ADD_TEST(suite, TestFIA_ParticleInfoTest);
+	SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest);
+    SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest2);
 
 	return suite;
 }

@@ -385,7 +385,7 @@ Draw8BitSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, unsigned char value)
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double value) 
+FIA_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double value) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -485,7 +485,7 @@ Draw32BitColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
+FIA_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
                                     int line_width, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
@@ -539,7 +539,7 @@ Draw8BitGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char va
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value,
+FIA_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value,
                                        int line_width, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
@@ -593,7 +593,7 @@ DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width)
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width) 
+FIA_DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -611,7 +611,7 @@ FreeImageAlgorithms_DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour,
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour) 
+FIA_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -668,7 +668,7 @@ Draw8BitGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
+FIA_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
                                           int number_of_points, unsigned char value, 
                                           int antialiased) 
 {  
@@ -684,7 +684,7 @@ FreeImageAlgorithms_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_width) 
+FIA_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_width) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
@@ -791,7 +791,7 @@ Draw8BitSolidEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int anti
 } 
 
 int DLL_CALLCONV
-FreeImageAlgorithms_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
+FIA_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased) 
 {  
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
