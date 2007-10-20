@@ -18,6 +18,7 @@
 */
 
 #include "FreeImageAlgorithms_Drawing.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
 // Copyright 2001, softSurfer (www.softsurfer.com)
@@ -156,6 +157,8 @@ FreeImage_ConvexHull(FIBITMAP *src)
 
     FIBITMAP *dst = FreeImage_Allocate(width, height, 8, 0, 0, 0);
 
+    FIA_SetGreyLevelPalette(dst);
+    
     FIAPOINT *sort_array = new FIAPOINT[width * height];
     FIAPOINT *hull_array = new FIAPOINT[width * height];
 

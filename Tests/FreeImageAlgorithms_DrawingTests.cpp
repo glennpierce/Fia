@@ -25,7 +25,6 @@ TestFIA_GreyscaleElipseTest(CuTest* tc)
 	rect.right = 200;
 
     FIA_DrawSolidGreyscaleEllipse (src, rect, 200, 1);
-
     FIA_DrawGreyscaleRect (src, rect, 200, 2);
 
 	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "TestFIA_GreyscaleElipseTest.jpg", BIT8);
@@ -40,16 +39,12 @@ TestFIA_ConvexHullTest(CuTest* tc)
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
-
-    PROFILE_START("ConvexHull");
-
-	FIBITMAP *hull_dib = FreeImage_ConvexHull (src);
-
-    PROFILE_STOP("ConvexHull");
+	
+    FIBITMAP *hull_dib = FreeImage_ConvexHull (src);
 
     CuAssertTrue(tc, hull_dib != NULL);
 
-	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "TestFIA_ConvexHullTest.jpg", BIT8);
+	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "TestFIA_ConvexHullTest.bmp", BIT8);
 
 	FreeImage_Unload(src);
     FreeImage_Unload(hull_dib);
@@ -68,9 +63,9 @@ TestFIA_GSLineTest(CuTest* tc)
 	p1.x = 10;
 	p1.y = 10;
     p2.x = p1.x;
-    p2.y = 30;
+    p2.y = 200;
 
-    FIA_DrawGreyscaleLine (src, p1, p2, 150, 1, 0);
+    FIA_DrawGreyscaleLine (src, p1, p2, 150, 3, 0);
  
 	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "TestFIA_GSLineTest.jpg", BIT8);
 
@@ -119,7 +114,7 @@ TestFIA_Rect24bitTest(CuTest* tc)
 	CuAssertTrue(tc, src != NULL);
 
 	FIARECT rect;
-	rect.left = 0;
+	rect.left = 10;
 	rect.top = 100;
 	rect.bottom = 200;
 	rect.right = 200;
@@ -147,8 +142,8 @@ TestFIA_Rect32bitTest(CuTest* tc)
 	FIARECT rect;
 	rect.left = 100;
 	rect.top = 100;
-	rect.bottom = 500;
-	rect.right = 500;
+	rect.bottom = 200;
+	rect.right = 200;
 	
 	FIA_DrawColourRect (src32, rect, FIA_RGBQUAD(255,0,0), 7);
 
@@ -170,8 +165,8 @@ TestFIA_GsRectTest(CuTest* tc)
 	FIARECT rect;
 	rect.left = 100;
 	rect.top = 100;
-	rect.bottom = 500;
-	rect.right = 500;
+	rect.bottom = 200;
+	rect.right = 200;
 	
 	FIA_DrawGreyscaleRect (src, rect, 200, 5);
 
@@ -218,8 +213,8 @@ TestFIA_SolidGSRectTest(CuTest* tc)
 	FIARECT rect;
 	rect.left = 10;
 	rect.top = 10;
-	rect.bottom = 500;
-	rect.right = 500;
+	rect.bottom = 200;
+	rect.right = 200;
 
 	FIA_DrawSolidGreyscaleRect (gs_src, rect, 100);
 
