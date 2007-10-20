@@ -19,7 +19,7 @@
 static void
 Test_FFT(CuTest* tc)
 {
-	FIBITMAP *fft_dib, *real_dib, *log_dib;
+	FIBITMAP *fft_dib, *real_dib, *log_dib, *scaled_dib;
 	char *file = TEST_DATA_DIR "bumblebee.jpg";
 	
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);	
@@ -37,13 +37,18 @@ Test_FFT(CuTest* tc)
 	log_dib = FIA_Log(real_dib);
     CuAssertTrue(tc, log_dib != NULL);
 
-	FIA_SaveFIBToFile(log_dib, TEST_DATA_OUTPUT_DIR "fft.bmp", BIT8);
+    scaled_dib = FreeImage_ConvertToStandardType(log_dib, 1);
+
+    FIA_SetRainBowPalette(scaled_dib);
+    
+	FIA_SaveFIBToFile(scaled_dib, TEST_DATA_OUTPUT_DIR "fft.jpg", BIT8);
 
 	FreeImage_Unload(dib);
 	FreeImage_Unload(greyscale_dib);
 	FreeImage_Unload(real_dib);
 	FreeImage_Unload(fft_dib);
 	FreeImage_Unload(log_dib);
+	FreeImage_Unload(scaled_dib);
 }
 
 CuSuite* 

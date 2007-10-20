@@ -44,7 +44,7 @@ TestFIA_ConvexHullTest(CuTest* tc)
 
     CuAssertTrue(tc, hull_dib != NULL);
 
-	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "TestFIA_ConvexHullTest.bmp", BIT8);
+	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "TestFIA_ConvexHullTest.jpg", BIT8);
 
 	FreeImage_Unload(src);
     FreeImage_Unload(hull_dib);
@@ -237,8 +237,10 @@ TestFIA_FloodFillTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib2 != NULL);
 
-	FIBITMAP *dib3 = FIA_FloodFill(dib2, 20, 0, 2);
+	FIBITMAP *dib3 = FIA_FloodFill(dib2, 20, 1, 255);
 
+    FIA_SetGreyLevelPalette(dib3);
+    
 	CuAssertTrue(tc, dib3 != NULL);
 
 	FIA_SaveFIBToFile(dib3, TEST_DATA_OUTPUT_DIR "TestFIA_FloodFillTest.jpg", BIT24);

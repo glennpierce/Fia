@@ -332,7 +332,7 @@ ConvertComplexImageToAbsoluteValued(FIBITMAP *src, bool squared)
 	unsigned width	= FreeImage_GetWidth(src);
 	unsigned height = FreeImage_GetHeight(src);
 
-	// allocate a 8-bit dib
+	// allocate a floating point dib
 	dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, 32, 0, 0, 0);
 	
 	if(!dst)
@@ -364,10 +364,9 @@ ConvertComplexImageToAbsoluteValued(FIBITMAP *src, bool squared)
 			dst_bits = (double *) FreeImage_GetScanLine(dst, y);
 
 			for(x=0; x < width; x++) {
-				
+		
 				*(dst_bits + x) = (double) sqrt(pow( (double)((src_bits + x)->r), (double) 2.0) + 
 										pow( (double)((src_bits + x)->i), (double) 2.0));
-		
 			}
 		}
 	}
