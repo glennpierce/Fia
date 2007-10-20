@@ -16,6 +16,8 @@ FIND_LIBRARY(freeimage NAMES freeimage PATHS /usr/lib ${LIBRARY_OUTPUT_PATH})
 SET (LIBRARY_OUTPUT_PATH ${FreeImageAlgorithms_BINARY_DIR}/bin)
 SET (EXECUTABLE_OUTPUT_PATH ${FreeImageAlgorithms_BINARY_DIR}/bin)
 
+CONFIGURE_FILE(${FreeImageAlgorithms_SOURCE_DIR}/Tests/Constants.h.template ${FreeImageAlgorithms_SOURCE_DIR}/Tests/Constants.h)
+
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 
 MESSAGE( STATUS "EXECUTABLE_OUTPUT_PATH: " ${EXECUTABLE_OUTPUT_PATH} )

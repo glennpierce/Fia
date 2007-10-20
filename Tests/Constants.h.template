@@ -1,0 +1,7 @@
+#ifndef __FIA_TEST_CONSTANTS__
+#define __FIA_TEST_CONSTANTS__
+
+#define TEST_DATA_DIR "${FreeImageAlgorithms_SOURCE_DIR}/Tests/Data/"
+#define TEST_DATA_OUTPUT_DIR "${FreeImageAlgorithms_BINARY_DIR}/"
+
+#endif
