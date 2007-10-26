@@ -18,10 +18,11 @@
 */
 
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Utils.h"
+#include "FreeImageAlgorithms_Error.h"
+#include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_Convolution_Private.h"
-#include "FreeImageAlgorithms_Utilities.h"
-#include "FreeImageAlgorithms_Utils.h"
 
 #include <math.h>
 
@@ -51,8 +52,10 @@ FIA_Convolve(FIABITMAP *src, FilterKernel kernel)
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
-    if(src_type == FIT_COMPLEX)
+    if(src_type == FIT_COMPLEX) {
+        FIA_SendOutputMessage("Error can not perform convolution on a complex image");
         return NULL;
+    }
 
     border_tmp.fib = FIA_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
     border_tmp.xborder = src->xborder;
@@ -92,8 +95,10 @@ FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel ver
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
 
-    if(src_type == FIT_COMPLEX)
+    if(src_type == FIT_COMPLEX) {
+        FIA_SendOutputMessage("Error can not perform convolution on a complex image");
         return NULL;
+    }
 
     if(src_type == FIT_DOUBLE)
         border_tmp.fib = FreeImage_Clone(src->fib);

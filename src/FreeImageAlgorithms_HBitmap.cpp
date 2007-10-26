@@ -17,10 +17,11 @@
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include "FreeImageAlgorithms_Error.h"
+#include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_HBitmap.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Palettes.h"
-#include "FreeImageAlgorithms_Utils.h"
 
 #include <iostream>
 
@@ -32,7 +33,7 @@ FIA_FibToHBitmap(FIBITMAP *dib)
 	HDC dc = GetDC(NULL);
 
 	if(dc == NULL) {
-		std::cout <<"NULL DC" << std::endl;
+		FIA_SendOutputMessage("Error NULL DC");
 		return NULL;
 	}
 
@@ -42,7 +43,7 @@ FIA_FibToHBitmap(FIBITMAP *dib)
 	if(bitmap == NULL) {
 
 		error = GetLastError();
-		std::cout << error << std::endl;
+		FIA_SendOutputMessage("Error can not create HBITMAP: Error: %d", error);
  
 		return NULL;
 	}
@@ -96,8 +97,10 @@ FIA_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bott
 
 	unsigned bpp = FreeImage_GetBPP(src);
 
-	if(bpp <=4)
+	if(bpp <= 4) {
+	    FIA_SendOutputMessage("Error can not create dib section for images less than 4 bpp");
 		return NULL;
+	}
 
 	// normalize the rectangle
 	if(right < left)
@@ -111,8 +114,10 @@ FIA_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bott
 	int src_height = FreeImage_GetHeight(src);
 	int src_pitch = FreeImage_GetPitch(src);
 
-	if((left < 0) || (right > src_width) || (top < 0) || (bottom > src_height))
+	if((left < 0) || (right > src_width) || (top < 0) || (bottom > src_height)) {
+	    FIA_SendOutputMessage("Invalid Parameters");
 		return NULL;
+	}
 
 	// allocate the sub image
 	int dst_width = (right - left);

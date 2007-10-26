@@ -298,8 +298,10 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
 		else
 			converted_dib = FreeImage_ConvertTo8Bits(standard_dib);
 
-		if(converted_dib == NULL)
+		if(converted_dib == NULL) {
+		    FIA_SendOutputMessage("Error Saving File! Failed converting to 8 or 24 bit");
 			return FREEIMAGE_ALGORITHMS_ERROR;
+        }
 
 		if(!FreeImage_Save(fif, converted_dib, filepath, 0)) {
 			FIA_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");

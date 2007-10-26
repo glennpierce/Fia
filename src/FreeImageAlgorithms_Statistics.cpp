@@ -18,6 +18,7 @@
 */
 
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Statistics.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
@@ -52,8 +53,10 @@ Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int n
 	if(min == 0 && max == 0)
 		FIA_FindMinMax(src, &min, &max);
 
-	if(min >= max)
+	if(min >= max) {
+	    FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
 		return FREEIMAGE_ALGORITHMS_ERROR;
+    }
  
 	// Clear histogram array
 	memset(hist, 0, number_of_bins * sizeof(unsigned long) );
