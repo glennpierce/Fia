@@ -49,8 +49,6 @@ TestFreeImageAlgorithms_LinearScaleTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_LinearScaleRangeTest(CuTest* tc)
 {
-	double min_found, max_found;
-
 	char *file = IMAGE_DIR "\\8bit_test.png";
 
 	FIBITMAP *dib = FreeImageAlgorithms_LoadFIBFromFile(file);

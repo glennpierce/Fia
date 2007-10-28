@@ -55,6 +55,12 @@ typedef enum
 
 } BorderType;
 
+typedef enum
+{
+	COLOUR_ORDER_RGB,
+	COLOUR_ORDER_BGR
+
+} COLOUR_ORDER;
 
 #define FREEIMAGE_ALGORITHMS_SUCCESS 1
 #define FREEIMAGE_ALGORITHMS_ERROR 0

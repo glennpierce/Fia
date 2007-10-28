@@ -123,9 +123,8 @@ TestFreeImageAlgorithms_DivideTest(CuTest* tc)
 static void
 TestFreeImageAlgorithms_AddTest(CuTest* tc)
 {
-	int x, y, width, height, error;
+	int width, height, error;
 	FIBITMAP *sum, *dib;
-	double *bits;
 
     char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Slices\\slice.bmp";
 

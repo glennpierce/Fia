@@ -69,7 +69,7 @@ FreeImageAlgorithms_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int widt
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FreeImageAlgorithms_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height,
-												int padded, int vertical_flip);
+												int padded, int vertical_flip, COLOUR_ORDER colour_order);
 
 #ifdef __cplusplus
 }
