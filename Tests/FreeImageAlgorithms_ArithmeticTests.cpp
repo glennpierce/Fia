@@ -126,7 +126,7 @@ TestFIA_AddTest(CuTest* tc)
 	int width, height, error;
 	FIBITMAP *sum, *dib;
 
-    char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Slices\\slice.bmp";
+    const char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Slices\\slice.bmp";
 
 	dib = FIA_LoadFIBFromFile(file);
 

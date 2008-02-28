@@ -13,7 +13,7 @@
 static void
 TestFIA_GreyscaleElipseTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
@@ -35,7 +35,7 @@ TestFIA_GreyscaleElipseTest(CuTest* tc)
 static void
 TestFIA_ConvexHullTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "particle.bmp";
+	const char *file = TEST_DATA_DIR "particle.bmp";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
@@ -53,7 +53,7 @@ TestFIA_ConvexHullTest(CuTest* tc)
 static void
 TestFIA_GSLineTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
@@ -75,7 +75,7 @@ TestFIA_GSLineTest(CuTest* tc)
 static void
 TestFIA_ColourLineTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "bumblebee.jpg";
+	const char *file = TEST_DATA_DIR "bumblebee.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -105,7 +105,7 @@ TestFIA_ColourLineTest(CuTest* tc)
 static void
 TestFIA_Rect24bitTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "bumblebee.jpg";
+	const char *file = TEST_DATA_DIR "bumblebee.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -131,7 +131,7 @@ TestFIA_Rect24bitTest(CuTest* tc)
 static void
 TestFIA_Rect32bitTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "bumblebee.jpg";
+	const char *file = TEST_DATA_DIR "bumblebee.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -156,7 +156,7 @@ TestFIA_Rect32bitTest(CuTest* tc)
 static void
 TestFIA_GsRectTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -178,7 +178,7 @@ TestFIA_GsRectTest(CuTest* tc)
 static void
 TestFIA_SolidRectTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "bumblebee.jpg";
+	const char *file = TEST_DATA_DIR "bumblebee.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -200,7 +200,7 @@ TestFIA_SolidRectTest(CuTest* tc)
 static void
 TestFIA_SolidGSRectTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -227,7 +227,7 @@ TestFIA_SolidGSRectTest(CuTest* tc)
 static void
 TestFIA_FloodFillTest(CuTest* tc)
 {
-	char *file = TEST_DATA_DIR "particle.bmp";
+	const char *file = TEST_DATA_DIR "particle.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 

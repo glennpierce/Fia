@@ -20,7 +20,7 @@ static void
 Test_FFT(CuTest* tc)
 {
 	FIBITMAP *fft_dib, *real_dib, *log_dib, *scaled_dib;
-	char *file = TEST_DATA_DIR "bumblebee.jpg";
+	const char *file = TEST_DATA_DIR "bumblebee.jpg";
 	
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);	
     CuAssertTrue(tc, dib != NULL);

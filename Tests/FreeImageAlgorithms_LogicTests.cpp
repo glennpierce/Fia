@@ -11,8 +11,8 @@
 static void
 TestFIA_MaskTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
-	char *mask_file = IMAGE_DIR "\\river-mask.jpg";
+	const char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
+	const char *mask_file = IMAGE_DIR "\\river-mask.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	FIBITMAP *mask = FIA_LoadFIBFromFile(mask_file);

@@ -12,7 +12,7 @@ TestFIA_LinearScaleTest(CuTest* tc)
 {
 	double min_found, max_found;
 
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Working Area\\Test Images\\cells.bmp";
+	const char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Working Area\\Test Images\\cells.bmp";
 
 	FIBITMAP *old_dib = FIA_LoadFIBFromFile(file);
 	
@@ -24,14 +24,7 @@ TestFIA_LinearScaleTest(CuTest* tc)
 
     FIBITMAP *scaled_dib;
 
-	//for(int i=0; i < 1000; i++) {
-		
-        scaled_dib = FIA_LinearScaleToStandardType(dib, 0, 100, &min_found, &max_found);  
-
-       
-  //      if(i < 999)
-//		    FreeImage_Unload(scaled_dib);
-//	}
+    scaled_dib = FIA_LinearScaleToStandardType(dib, 0, 100, &min_found, &max_found);  
 
     PROFILE_STOP("LinearScale");
 
@@ -40,16 +33,12 @@ TestFIA_LinearScaleTest(CuTest* tc)
 
     FreeImage_Unload(scaled_dib);
 	FreeImage_Unload(dib);
-	//FreeImage_Unload(scaled_dib);
-
-	//CuAssertTrue(tc, min_found == 152.0);
-	//CuAssertTrue(tc, max_found == 240.0);
 }
 
 static void
 TestFIA_LinearScaleRangeTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\8bit_test.png";
+	const char *file = IMAGE_DIR "\\8bit_test.png";
 
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
 	FIBITMAP *scaled_dib = FIA_StretchImageAcrossRange(dib, 200, 255); 

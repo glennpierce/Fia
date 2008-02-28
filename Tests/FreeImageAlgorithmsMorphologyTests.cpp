@@ -21,7 +21,7 @@ static double kernel_values[] = {1.0, 1.0, 1.0, 1.0, 1.0,
 static void
 TestFIA_DilationTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -60,7 +60,7 @@ TestFIA_DilationTest(CuTest* tc)
 static void
 TestFIA_ErosionTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -99,7 +99,7 @@ TestFIA_ErosionTest(CuTest* tc)
 static void
 TestFIA_OpeningTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -134,7 +134,7 @@ TestFIA_OpeningTest(CuTest* tc)
 static void
 TestFIA_ClosingTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	

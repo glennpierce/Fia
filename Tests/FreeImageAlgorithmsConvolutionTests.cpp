@@ -36,7 +36,7 @@ static const double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
 static void
 TestFIA_ConvolutionTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
+	const char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
 
 	FIBITMAP *dib_src = FIA_LoadFIBFromFile(file);
 
@@ -72,7 +72,7 @@ TestFIA_ConvolutionTest(CuTest* tc)
 static void
 TestFIA_SobelTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\input.bmp";
+	const char *file = IMAGE_DIR "\\input.bmp";
 
     FIBITMAP *bit8_dib = NULL;
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
@@ -100,7 +100,7 @@ TestFIA_SobelTest(CuTest* tc)
 static void
 TestFIA_SobelAdvancedTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\input.bmp";
+	const char *file = IMAGE_DIR "\\input.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -147,7 +147,7 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
 static void
 TestFIA_SeparableSobelTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\wallpaper_river.jpg";
+	const char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -170,9 +170,7 @@ TestFIA_SeparableSobelTest(CuTest* tc)
 static void
 TestFIA_MedianFilterTest(CuTest* tc)
 {
-	//char *file = IMAGE_DIR "\\wallpaper_river-gs-salted.jpg";
-	//char *file = IMAGE_DIR "\\med.bmp";
-	char *file = IMAGE_DIR "\\test_image_5sq.bmp";
+	const char *file = IMAGE_DIR "\\test_image_5sq.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -196,18 +194,6 @@ TestFIA_MedianFilterTest(CuTest* tc)
 	CuAssertTrue(tc, dib5 != NULL);
 
 	PROFILE_STOP("MedianFilter");
-
-    /*
-	for(int y=0; y < FreeImage_GetHeight(dib5); y++) {
-	
-		float *bits = (float*) FreeImage_GetScanLine(dib5, y);
-
-		for(int x=0; x < FreeImage_GetWidth(dib5); x++)
-			std::cout << bits[x] << ", ";
-
-		std::cout << std::endl;
-	}
-    */
 
 	FIA_SaveFIBToFile(dib5, TEMP_DIR "\\salt_and_pepper_median.jpg", BIT8);
 

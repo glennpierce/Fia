@@ -49,9 +49,9 @@ extern "C" {
 #endif /* __cplusplus */
 
 /* Start timer for given tag */
-DLL_API void DLL_CALLCONV ProfileStart (char* str_tag) ;
+DLL_API void DLL_CALLCONV ProfileStart (const char* str_tag) ;
 /* Stops timer for given tag and add time to total time for this tag */
-DLL_API void DLL_CALLCONV ProfileStop (char* str_tag) ;
+DLL_API void DLL_CALLCONV ProfileStop (const char* str_tag) ;
 /* Prints result to stdout */
 DLL_API void DLL_CALLCONV ProfilePrint (void) ;
 /* Resets the profiler. */

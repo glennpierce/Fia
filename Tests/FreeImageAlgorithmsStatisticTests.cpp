@@ -12,8 +12,7 @@
 static void
 TestFIA_HistogramTest(CuTest* tc)
 {
-	//char *file = IMAGE_DIR "\\mask.bmp";
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+	const char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
 
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
 	
@@ -34,8 +33,7 @@ TestFIA_HistogramTest(CuTest* tc)
 static void
 TestFIA_StatisticsTest(CuTest* tc)
 {
-	//char *file = IMAGE_DIR "\\mask.bmp";
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+	const char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
 
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
 	
@@ -57,8 +55,7 @@ TestFIA_StatisticsTest(CuTest* tc)
 static void
 TestFIA_CentroidTest(CuTest* tc)
 {
-	//char *file = IMAGE_DIR "\\mask.bmp";
-	char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
+	const char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
 
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
 	
@@ -82,7 +79,7 @@ TestFIA_MonoAreaTest(CuTest* tc)
 {
 	double white_area, black_area;
 
-	char *file = IMAGE_DIR "\\mask.bmp";
+	const char *file = IMAGE_DIR "\\mask.bmp";
 
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
 	
@@ -105,8 +102,8 @@ TestFIA_MonoAreaTest(CuTest* tc)
 static void
 TestFIA_MonoComparisonTest(CuTest* tc)
 {
-	char *file1 = IMAGE_DIR "\\texture.bmp";
-	char *file2 = IMAGE_DIR "\\mask.bmp";
+	const char *file1 = IMAGE_DIR "\\texture.bmp";
+	const char *file2 = IMAGE_DIR "\\mask.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file1);
 	FIBITMAP *dib2 = FIA_LoadFIBFromFile(file2);

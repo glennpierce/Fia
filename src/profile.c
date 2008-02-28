@@ -23,7 +23,7 @@ int g_init = 0 ;
 
 /* Looks up given tag and returns the name,
  of 0 if not found. */
-static entry_t* LookupTag (char* str_tag) {
+static entry_t* LookupTag (const char* str_tag) {
   int i ;
   for (i = 0; i < g_i_hwm; ++i) {
     if (strcmp (g_tag [i].str_name, str_tag) == 0) {
@@ -36,7 +36,7 @@ static entry_t* LookupTag (char* str_tag) {
 /* Checks whether the given tag is already started (nesting).
    This is true when an entry with the given name is found,
    for which the start_time_t is not 0. */
-static int Nested (char* str_tag) {
+static int Nested (const char* str_tag) {
   int i ;
   for (i = 0; i < g_i_hwm; ++i) {
     if (strcmp (g_tag [i].str_name, str_tag) == 0 && g_tag [i].start_time > -1) {
@@ -49,7 +49,7 @@ static int Nested (char* str_tag) {
 }
 
 /* Adds the given tag and return the entry it is stored into */
-static entry_t* AddTag (char* str_tag) {
+static entry_t* AddTag (const char* str_tag) {
   if (g_i_hwm + 1 == NUM_TAGS) {
     /* Full */
     return 0 ;
@@ -124,7 +124,7 @@ ProfilePrint (void)
 
   Note: 1. The tag may not be nested with the same name
         2. The tag may not equal "" */
-void DLL_CALLCONV ProfileStart (char* str_tag)
+void DLL_CALLCONV ProfileStart (const char* str_tag)
 {
   entry_t* p_entry ;
   /* One the first call, we must initialize the profiler. */
@@ -161,7 +161,7 @@ void DLL_CALLCONV ProfileStart (char* str_tag)
 /* Stops timer for given tag. Checks for existence.
  Adds the time between now and the Start call to the
  total time.*/
-void DLL_CALLCONV ProfileStop (char* str_tag)
+void DLL_CALLCONV ProfileStop (const char* str_tag)
 {
   clock_t end_time ;
   entry_t* p_entry ;

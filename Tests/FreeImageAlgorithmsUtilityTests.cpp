@@ -16,17 +16,17 @@
 
 static void BorderTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\border_test.bmp";
+	const char *file = IMAGE_DIR "\\border_test.bmp";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
-	ProfileStart("FreeImageAlgorithms_AddBorder");
+	PROFILE_START("FreeImageAlgorithms_AddBorder");
 
 	FIABITMAP *dst = FIA_SetBorder(src, 10, 10, BorderType_Mirror, 255);
 
-	ProfileStop("FreeImageAlgorithms_AddBorder");
+	PROFILE_STOP("FreeImageAlgorithms_AddBorder");
 
-	ProfilePrint();
+	PROFILE_PRINT();
 
 	FIA_SaveFIBToFile(dst->fib, TEMP_DIR "\\border_test_result.bmp", BIT8);
 	
@@ -64,7 +64,7 @@ TestFIA_UtilityTest(CuTest* tc)
 {
 	double min, max;
 
-	char *file = IMAGE_DIR "\\24bit_colour.jpg";
+	const char *file = IMAGE_DIR "\\24bit_colour.jpg";
 
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
 	
@@ -79,7 +79,7 @@ TestFIA_UtilityTest(CuTest* tc)
 static void
 TestFIA_UtilityCompareTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\24bit_colour.jpg";
+	const char *file = IMAGE_DIR "\\24bit_colour.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	FIBITMAP *dib2 = FIA_LoadFIBFromFile(file);
@@ -102,7 +102,7 @@ TestFIA_UtilityCompareTest(CuTest* tc)
 static void
 TestFIA_DistanceTransformTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\distance-transform-test.gif";
+	const char *file = IMAGE_DIR "\\distance-transform-test.gif";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
@@ -128,7 +128,7 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-    SUITE_ADD_TEST(suite, BorderTest);
+    	SUITE_ADD_TEST(suite, BorderTest);
 	SUITE_ADD_TEST(suite, TestFIA_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFIA_UtilityCompareTest);
 	SUITE_ADD_TEST(suite, TestFIA_DistanceTransformTest);

@@ -15,7 +15,7 @@
 static void
 TestFIA_FillholeTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\fillhole_test.bmp";
+	const char *file = IMAGE_DIR "\\fillhole_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -49,9 +49,7 @@ TestFIA_FillholeTest(CuTest* tc)
 static void
 TestFIA_ParticleInfoTest(CuTest* tc)
 {
-	char *file = IMAGE_DIR "\\fillhole_test.bmp";
-	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\particle-test.bmp";
-	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
+	const char *file = IMAGE_DIR "\\fillhole_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
@@ -116,13 +114,9 @@ TestFIA_ParticleInfoTest(CuTest* tc)
 static void
 TestFIA_FindImageMaximaTest(CuTest* tc)
 {
-    //char *file = IMAGE_DIR "\\CHT.bmp";
-    char *file = IMAGE_DIR "\\finmax_in.bmp";
-	//char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\test.bmp";
-	//char *shouldbefile = "C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.bmp";
+    const char *file = IMAGE_DIR "\\finmax_in.bmp";
 	
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
-	//FIBITMAP *shouldbe_dib = FIA_LoadFIBFromFile(shouldbefile);
 
 	CuAssertTrue(tc, dib1 != NULL);
 
@@ -155,7 +149,7 @@ TestFIA_FindImageMaximaTest(CuTest* tc)
 static void
 TestFIA_FindImageMaximaTest2(CuTest* tc)
 {
-    char *file = IMAGE_DIR "\\timeLapse041.bmp";
+    const char *file = IMAGE_DIR "\\timeLapse041.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
