@@ -154,7 +154,7 @@ FIA_FindDoubleMinMax(const double *data, long n, double *min, double *max);
  *  \param max Maximum value to found in the data.
  *  \return char the max value found.
 */
-DLL_API char DLL_CALLCONV
+DLL_API long DLL_CALLCONV
 FIA_FindCharMax(const char *data, long n, char *max);
 
 /** \brief Find the maximum values in a unsigned char array.
@@ -164,7 +164,7 @@ FIA_FindCharMax(const char *data, long n, char *max);
  *  \param max Maximum value to found in the data.
  *  \return unsigned char the max value found.
 */
-DLL_API unsigned char DLL_CALLCONV
+DLL_API long DLL_CALLCONV
 FIA_FindUCharMax(const unsigned char *data, long n, unsigned char *max);
 
 /** \brief Find the maximum values in a int array.
@@ -174,7 +174,7 @@ FIA_FindUCharMax(const unsigned char *data, long n, unsigned char *max);
  *  \param max Maximum value to found in the data.
  *  \return int the max value found.
 */
-DLL_API int DLL_CALLCONV
+DLL_API long DLL_CALLCONV
 FIA_FindIntMax(const int *data, long n, int *max);
 
 /** \brief Find the maximum values in a short int array.
@@ -184,7 +184,7 @@ FIA_FindIntMax(const int *data, long n, int *max);
  *  \param max Maximum value to found in the data.
  *  \return short the max value found.
 */
-DLL_API short DLL_CALLCONV
+DLL_API long DLL_CALLCONV
 FIA_FindShortMax(const short *data, long n, short *max);
 
 /** \brief Find the maximum values in a unsigned short array.
@@ -194,7 +194,7 @@ FIA_FindShortMax(const short *data, long n, short *max);
  *  \param max Maximum value to found in the data.
  *  \return unsigned short the max value found.
 */
-DLL_API unsigned short DLL_CALLCONV
+DLL_API long DLL_CALLCONV
 FIA_FindUShortMax(const unsigned short *data, long n, unsigned short *max);
 
 /** \brief Find the maximum values in a float array.
@@ -204,7 +204,7 @@ FIA_FindUShortMax(const unsigned short *data, long n, unsigned short *max);
  *  \param max Maximum value to found in the data.
  *  \return float the max value found.
 */
-DLL_API float DLL_CALLCONV
+DLL_API long DLL_CALLCONV
 FIA_FindFloatMax(const float *data, long n, float *max);
 
 /** \brief Find the maximum values in a double array.
@@ -214,7 +214,7 @@ FIA_FindFloatMax(const float *data, long n, float *max);
  *  \param max Maximum value to found in the data.
  *  \return double the max value found.
 */
-DLL_API double DLL_CALLCONV
+DLL_API long DLL_CALLCONV
 FIA_FindDoubleMax(const double *data, long n, double *max);
 
 /** \brief Find the mininum and maximum values in a greyscale FIBITMAP.

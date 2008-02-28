@@ -230,46 +230,46 @@ FIA_FindDoubleMinMax(const double *data, long n, double *min, double *max)
 }
 
 
-char DLL_CALLCONV
+long DLL_CALLCONV
 FIA_FindCharMax(const char *data, long n, char *max)
 {
-	return (char) FINDMAX(data, n, *max);
+	return FINDMAX(data, n, *max);
 }
 
-unsigned char DLL_CALLCONV
+long DLL_CALLCONV
 FIA_FindUCharMax(const unsigned char *data, long n, unsigned char *max)
 {
-	return (unsigned char) FINDMAX(data, n, *max);
+	return FINDMAX(data, n, *max);
 }
 
-int DLL_CALLCONV
+long DLL_CALLCONV
 FIA_FindIntMax(const int *data, long n, int *max)
 {
-	return (int) FINDMAX(data, n, *max);
+	return FINDMAX(data, n, *max);
 }
 
-short DLL_CALLCONV
+long DLL_CALLCONV
 FIA_FindShortMax(const short *data, long n, short *max)
 {
-	return (short) FINDMAX(data, n, *max);
+	return FINDMAX(data, n, *max);
 }
 
-unsigned short DLL_CALLCONV
+long DLL_CALLCONV
 FIA_FindUShortMax(const unsigned short *data, long n, unsigned short *max)
 {
-	return (unsigned short) FINDMAX(data, n, *max);
+	return FINDMAX(data, n, *max);
 }
 
-float DLL_CALLCONV
+long DLL_CALLCONV
 FIA_FindFloatMax(const float *data, long n, float *max)
 {
-	return (float) FINDMAX(data, n, *max);
+	return FINDMAX(data, n, *max);
 }
 
-double DLL_CALLCONV
+long DLL_CALLCONV
 FIA_FindDoubleMax(const double *data, long n, double *max)
 {
-	return (double) FINDMAX(data, n, *max);
+	return FINDMAX(data, n, *max);
 }
 
 
