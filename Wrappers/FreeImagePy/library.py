@@ -65,6 +65,7 @@ class internlLibrary(object):
         else:
             functionName = getattr(self.lib, name)
         
+        #print nameToBind, functionName       
         setattr( self, nameToBind, functionName )
         
         if restype: functionName.restype = restype

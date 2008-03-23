@@ -28,60 +28,23 @@ try:
     import gtk.glade
 except:
     sys.exit(1)
-
-    
-# A class that provides only gui objects that plugins should access
-class CyrinicOutput:
-    
-    def __init__(self, gui):
-        self.__gui = gui
-        self.__outputboxes = gui.getWidgetTree().get_widget("outputboxes")
-        
-    def setOutputText(self, text):
-        self.__gui.setOutputText(text)
-        
-    def getMenubar(self):
-        return self.__gui.getWidgetTree().get_widget("menubar")
-        
-    def displayGraph(self, xaxis, yaxis, hist):
-         
-        if(hist == None):
-            return
-         
-        try:
-            self.figure = Figure(figsize=(6,4), dpi=72)
-            self.axis = self.figure.add_subplot(111)
-
-            self.canvas = FigureCanvasGTK(self.figure) # a gtk.DrawingArea
-            self.canvas.show()
-            self.__outputboxes.pack_end(self.canvas, True, True)   
-            
-            # empty axis if neccesary, and reset title and stuff
-            self.axis.clear()
-            self.axis.set_xlabel(xaxis)
-            self.axis.set_ylabel(yaxis)
-            
-            self.axis.plot(hist, 'r')
- 
-        except ValueError:
-            sys.exit(1)   
         
 class Gui:  
 
     def buildUI(self):
+        self.F = None
         gladefile = "Cyrinic.glade"  
         self.windowname = "Cyrinic"  
         self.wTree = gtk.glade.XML(gladefile, self.windowname)  
         self.win = self.wTree.get_widget(self.windowname)
         self.imagescrolledwin = self.wTree.get_widget("imagescrolledwindow")
         self.imagelabel = self.wTree.get_widget("imagelabel")
-        self.__outputboxes = self.wTree.get_widget("outputboxes")
-        self.__output = CyrinicOutput(self)
         dic = {"on_quit" : gtk.main_quit,
                "show_about" : self.showAbout,
-               "on_openmenuitem_clicked" : self.onImageOpen} 
+               "on_openmenuitem_clicked" : self.onImageOpen,
+               "on_histogram" : self.onHistogram
+               } 
         self.wTree.signal_autoconnect(dic) 
-        self.__output.displayGraph("Intensity", "Count", None)
         self.imageviewer = imageviewer.ImageViewer(None)
         self.imagescrolledwin.add(self.imageviewer)
         self.win.show_all()
@@ -130,23 +93,59 @@ class Gui:
         self.win.set_title("Cyrinic - " + filepath)
         self.imagelabel.set_text(os.path.split(filepath)[1])
         
+    def displayGraph(self, xaxis, yaxis, hist):
+         
+        if(hist == None):
+            return
+         
+        try:
+            dialog = gtk.Window()
+            figure = Figure(figsize=(6,4), dpi=72)
+            axis = figure.add_subplot(111)
+            canvas = FigureCanvasGTK(figure) # a gtk.DrawingArea
+            canvas.show()
+            dialog.add(canvas)   
+            
+            # empty axis if neccesary, and reset title and stuff
+            axis.clear()
+            axis.set_xlabel(xaxis)
+            axis.set_ylabel(yaxis)
+            
+            if len(hist) > 1:
+                axis.plot(hist[0], 'r')
+                axis.plot(hist[1], 'g')
+                axis.plot(hist[2], 'b')
+            else:
+                axis.plot(hist[0], 'r')
+            
+            dialog.show()
+ 
+        except ValueError:
+            sys.exit(1)   
+            
     def onImageOpen(self, widget):
         
         dialog = self.OpenImageDialog()
         response = dialog.run()
         
         if response == gtk.RESPONSE_OK:
+        
+            if self.F == None:
+                del self.F
+                self.F = None
             
-            F = FIA.FIAImage()
-            F.load(dialog.get_filename())
-            pixbuf = FI.utils.convertToGdkPixbuf(F)
+            self.F = FIA.FIAImage()
+            self.F.load(dialog.get_filename())
+            pixbuf = FI.utils.convertToGdkPixbuf(self.F)
                   
             if pixbuf:
-                self.setImage(dialog.get_filename(), pixbuf)
-             
-            del F
+                self.setImage(dialog.get_filename(), pixbuf)            
               
         dialog.destroy()
+        
+    def onHistogram(self, widget):
+        hist= self.F.getHistogram(0, 255, 255)
+        self.displayGraph("Intensity", "Count", hist)
         
     def showAbout(self, widget):
         dialog = gtk.AboutDialog()

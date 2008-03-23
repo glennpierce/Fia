@@ -63,12 +63,14 @@
                     <property name="visible">True</property>
                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                     <child>
-                      <widget class="GtkImageMenuItem" id="test">
+                      <widget class="GtkImageMenuItem" id="histogram_menuitem">
                         <property name="visible">True</property>
-                        <property name="label">gtk-delete</property>
+                        <property name="label">Histogram</property>
                         <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_histogram"/>
                         <child internal-child="image">
                           <widget class="GtkImage" id="menu-item-image1">
+                            <property name="stock">gtk-missing-image</property>
                           </widget>
                         </child>
                       </widget>
@@ -123,7 +125,6 @@
             <child>
               <widget class="GtkLabel" id="imagelabel">
                 <property name="visible">True</property>
-                <property name="label" translatable="yes">label</property>
               </widget>
               <packing>
                 <property name="type">tab</property>

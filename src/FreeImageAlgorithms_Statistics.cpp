@@ -373,11 +373,15 @@ int DLL_CALLCONV
 FIA_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char max,
 			int number_of_bins, unsigned long *rhist, unsigned long *ghist, unsigned long *bhist)
 {
-	if (rhist == NULL || ghist == NULL || bhist == NULL)      
+	if (rhist == NULL || ghist == NULL || bhist == NULL)  {
+        FIA_SendOutputMessage("Error null passed for arrays");    
 		return FREEIMAGE_ALGORITHMS_ERROR;
+    }
 
-	if(min >= max)
+	if(min >= max) {
+        FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
 		return FREEIMAGE_ALGORITHMS_ERROR;
+    }
 
 	// clear histogram arrays
 	memset(rhist, 0, number_of_bins * sizeof(unsigned long) );

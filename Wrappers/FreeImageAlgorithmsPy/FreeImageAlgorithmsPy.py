@@ -34,7 +34,14 @@ def LoadLibrary(libraryName):
         raise FreeImagePy_LibraryNotFound, \
         "I cannot find the library at %s. Did you pass me a vaid path?" % libraryName
         
-    return libName
+    try:
+        lib = getattr(functForLoad, libName)
+        if sys.platform != "win32":
+            lib.FreeImage_Initialise(False)
+    except Exception, ex:
+        print "Exception on load dll %s :%s"  % (libraryName, ex)
+            
+    return lib
             
             
 class FIAImage(FI.Image):
@@ -50,12 +57,12 @@ class FIAImage(FI.Image):
     
     # Enable the message output
     if sys.platform == 'win32':
-        MessageOutput = C.WINFUNCTYPE(VOID, C.c_int, C.c_char_p)
+        MessageOutput = C.WINFUNCTYPE(VOID, C.c_char_p)
     else:
-        MessageOutput = C.CFUNCTYPE(VOID, C.c_int, C.c_char_p)
+        MessageOutput = C.CFUNCTYPE(VOID, C.c_char_p)
     
-    def printErrors(self, imageFormat, message):
-        print 'Error returned. ', FIFTotype[imageFormat], message
+    def printErrors(self, message):
+        print 'Error returned. ', message
     
     
     
@@ -72,31 +79,8 @@ class FIAImage(FI.Image):
         
         self.initCalled = 0
         self.__lib = LoadLibrary("freeimagealgorithms")
-     
-        
-        #Functions list that now acutally wrap. The third value are the return
-        #type, if it exists, or if I'm able to translate from C code :)
-#        self.__lstFunction = ( 
-#        
-#            #General funtions
-#            ('FreeImageAlgorithms_SetOutputMessage',    '@4'),
-#			('FreeImageAlgorithms_SetRainBowPalette',	'@4'),
-#            ('FreeImageAlgorithms_Histogram',           '@28'),
-#         
-#        )
-        
-#        for function in self.__lstFunction:
-#            try:
-#                self.__lib.setBind(function)
-#            except AttributeError, ex:
-#                warn("Error on bind %s." % function[0], FunctionNotFound)
-
-#        self.funct_printErrors = self.MessageOutput(self.printErrors)
-#        self.__lib.SetOutputMessage(self.funct_printErrors)
-    
-    # ------------------ #
-    #  General funtions  #
-    # ------------------ #
+        self.funct_printErrors = self.MessageOutput(self.printErrors)
+        self.__lib.FIA_SetOutputMessage(self.funct_printErrors)
     
 #    def setRainBowPalette(self):
 #        """ Set a rainbow palette for the bitmap.
@@ -104,14 +88,25 @@ class FIAImage(FI.Image):
 #        return self.__lib.SetRainBowPalette(self.getBitmap())
 
 
-#    def getHistogram(self, min, max, bins):
-#        "Get the histogram of a greylevel image"
-#        DW_array = DWORD * bins # type
-#        histo = DW_array()
+    def getHistogram(self, min, max, bins):
+        "Get the histogram of a greylevel image"
+        DW_array = DWORD * bins # type
+        red_histo = DW_array()
+        green_histo = DW_array()
+        blue_histo = DW_array()
+                
+        bitmap = self.getBitmap()
             
-#        self.__lib.Histogram(self.getBitmap(), C.c_double(min), C.c_double(max), bins, C.byref(histo))
- 
-#        return [int(x) for x in histo]
+        if self.getBPP() >= 24 and self.GetImageType(bitmap) == FIT_BITMAP:
+            self.__lib.FIA_RGBHistogram(bitmap, C.c_byte(min),
+                C.c_byte(max), bins, C.byref(red_histo),  C.byref(green_histo),
+                C.byref(blue_histo))
+            return ([int(x) for x in red_histo], [int(x) for x in green_histo], [int(x) for x in blue_histo])    
+        else: 
+            self.__lib.FIA_Histogram(bitmap, C.c_double(min), C.c_double(max), bins, C.byref(red_histo))
+            return ([int(x) for x in red_histo])
+    
+        return None
     
     
     
