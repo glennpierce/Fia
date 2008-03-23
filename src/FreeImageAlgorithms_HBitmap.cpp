@@ -17,6 +17,8 @@
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef _WINDOWS
+
 #include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_HBitmap.h"
@@ -280,3 +282,5 @@ FIA_CreateDibSection(HDC hdc, int width, int height, int bpp, int colours_used, 
 
 	return hbitmap;
 }
+
+#endif // Windows

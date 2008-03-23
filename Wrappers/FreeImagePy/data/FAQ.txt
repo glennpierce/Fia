@@ -1,0 +1,85 @@
+################################################################
+#                                                              #
+#    Project       FreeImagePy                                 #
+#    Version:      1.2.4                                       #
+#                                                              #
+#    DESCRIPTION                                               #
+#    FreeImage python wrapper                                  #
+#                                                              #
+#    Developer:                                                #
+#    Michele Petrazzo <michele.petrazzo@unipex.it>             #
+#                                                              #
+#    License:                                                  #
+#         GNU General Public License (GPL)                     #
+#         FreeImage Public License (FIPL)                      #
+#         For more info see LICENSE.txt                        #
+#                                                              #
+#                                                              #
+#    Copyright (C) 2005  Unipex s.r.l.,  All Rights Reserved.  #
+#    Via Vittorio Veneto 83/A                                  #
+#    33050 Gonars (UD) - Italy                                 #
+#    tel. +39 0432 931511 - fax +39 0432 931378                #
+#    www.unipex.it - michele.petrazzo@unipex.it                #
+#                                                              #
+################################################################
+
+F.A.Q.
+
+Q: Why?
+A: I start this project when I needed a simple python library for manipulate
+   some images/fax into my python fax client (sf.net/projects/hylapex)
+   All the projects present on the net have problems on TIFF G3/G4 compression
+   or are too slow, so I create the bind to this fantastic library...
+
+Q: How use it?
+A: Simple load the FreeImagePy modules, instance the freeimage class and use it!
+   FreeImagePy search for the library on your system, an if not find it, I raise
+   an exception.
+
+Q: What are the naming convension?
+A: I wrap a lot of most used FreeImage functions with its internal name,
+   without the "FreeImage_" prefix, so you can call any function with:
+   FreeImage_Load -> instance.Load (All the library functions are uppercase)
+
+Q: I receive the FreeImagePy.constants.FreeImagePy_LibraryNotFound exception
+A: This happen because the FreeImagePy library cannot find the FreeImage library
+   (.so, .dll) on the standards paths: 
+   windows: python_dir/lib/site-packages/FreeImagePy/FreeImage.dll
+   linux:   /usr/lib/libfreeimage.so.3
+   So, can you have in that path the library? If not, please call the freeimage
+   python class and pass it the correct path:
+   
+   import FreeImagePy
+   myLibIstance = FreeImagePy.freeimage('c:\\mylibs\\freeimage.dll')
+
+Q: Have you added some functions?
+A: Yes, I add some functions like: genericLoaded, loadAndSave, convertToMultipage
+   and convertToSinglePage, etc... (All the internal functions are lowercase)
+
+Q: There are some examples:
+A: Execute the test.py file into test subdirectory from terminal and see it's 
+   image output!
+
+Q: Is it complete?
+A: No. Some functions are not wrapped because are too complicate (for me)
+   or I don't need that functions into my projects and I have no more time to work on.
+
+Q: What are the functions not wrapped?
+A: List:
+   -- Too complicate (from me)
+   all Handle
+   all Memory I/O streams
+   -- Not used
+   all Tone mapping
+   all ICC Profile
+   all Compression
+   some Helper
+   some Metadata
+   some Tags
+   some Toolkit
+   some Channel processing
+   
+Q: Can I help you?
+A: Yes, of course... :). See into the the tools directory
+   If you want to modify, add some bind, add some "internal" helper functions and/or
+   find some bugs, please do it and send my your code!

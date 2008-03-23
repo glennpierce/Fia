@@ -1,0 +1,3 @@
+LIBRARY imageviewer.pyd
+EXPORTS
+initimageviewer

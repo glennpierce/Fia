@@ -8,7 +8,7 @@ SUBDIRS(src Tests)
 SET(CMAKE_DEBUG_POSTFIX "_d")
 
 # Make sure the compiler can find include files from our library.
-INCLUDE_DIRECTORIES(include Anti-Grain-Lite Tests)
+INCLUDE_DIRECTORIES(include Tests)
 
 # Look for the FreeImage library
 FIND_LIBRARY(freeimage NAMES freeimage PATHS /usr/lib ${LIBRARY_OUTPUT_PATH})

@@ -1,0 +1,46 @@
+/* -*- Mode: C; c-basic-offset: 4 -*- */
+%%
+headers
+#include <Python.h>
+               
+#include "pygobject.h"
+#include "gtk_image_viewer.h"
+%%
+modulename imageviewer                     
+%%
+import gtk.Widget as PyGtkWidget_Type       
+import gtk.gdk.Pixbuf as PyGdkPixbuf_Type
+import gtk.Adjustment as PyGtkAdjustment_Type
+%%
+ignore-glob
+  *_get_type                            
+%%
+override gtk_image_viewer_new kwargs
+static int
+_wrap_gtk_image_viewer_new(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "pixbuf", NULL };
+    PyGObject *pixbuf = NULL;
+    char *filepath = NULL;
+
+    if(PyArg_ParseTuple(args, "z", &filepath)) {
+	if(filepath != NULL)
+	    self->obj = (GObject *)gtk_image_viewer_new_from_file(filepath);
+	else
+	    self->obj = (GObject *)gtk_image_viewer_new(NULL);
+    }
+    else if(PyArg_ParseTupleAndKeywords(args, kwargs,"O!:GtkImageViewer.__init__", kwlist, &PyGdkPixbuf_Type, &pixbuf)) {
+
+	self->obj = (GObject *)gtk_image_viewer_new(GDK_PIXBUF(pixbuf->obj));
+    }
+    else {
+        return -1;
+    }
+
+    if (!self->obj) {
+        PyErr_SetString(PyExc_RuntimeError, "could not create GtkImageViewer object");
+        return -1;
+    }
+    pygobject_register_wrapper((PyObject *)self);
+    return 0;
+}

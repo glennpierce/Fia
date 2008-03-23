@@ -1,0 +1,89 @@
+###############################
+#                                                                   
+#    Project       FreeImagePy                                 
+#                                                              
+#    DESCRIPTION                                               
+#    FreeImage python wrapper                                  
+#                                                              
+#    Developer:                                                
+#    Michele Petrazzo <michele.petrazzo@unipex.it>             
+#                                                              
+#    License:                                                  
+#         GNU General Public License (GPL)                     
+#         FreeImage Public License (FIPL)                      
+#         For more info see LICENSE.txt                        
+#                                                              
+#    Copyright (C) 2005  Unipex s.r.l.,  All Rights Reserved.  
+#    Via Vittorio Veneto 83/A                                  
+#    33050 Gonars (UD) - Italy                                 
+#    tel. +39 0432 931511 - fax +39 0432 931378                
+#    www.unipex.it - michele.petrazzo@unipex.it                
+#                                                              
+################################
+
+
+
+Version history:
+Last version 1.3.0
+
+* : fixed
+- : removed
+! : changed
++ : added
+
+1.3.0 - 05/2006
+! New FreeImage 3.9.0 support
++ Singleton for library istance
++ Metadata support (read only) via metadata property of Image class
++ Unicode support
++ bpp propriety to Image class
+! convertToMultiPage now use getParametersFromExt for try to understang what
+  the developer want.
+! switch to ctypes 0.9.9.6. Now I use the more-cross platform ctypes.util.find_library and
+  raise FreeImagePy_LibraryNotFound if I can't find it.
+* test that not work correctly if PIL aren't found
+* GetPixelIndex bug
+
+1.2.4 - 02/2006
+ * getParametersFromExt now return the filename, useful on save methods
+
+1.2.3 - 02/2006
+ ! ctypes 0.9.9.3 are required
+ ! ctypes.(windll/cdll).LoadLibrary -> ctypes.windll/cdll.find
+
+1.2.2 - 02/2006
+ * bug in convertToPil resolved
+ + add convertToPil on Image class
+
+1.2.1 - 02/2006
+ + convertToPil method that return, if PIL is present, a PIL image from FreeImagePy
+ * page (pageNum) variable aren't present on setCurrentPage, so an exception was raised
+ * DeInitalize library now see if the module need to unload the library.
+   Before now, I call always the DeInitialise functions, and this isn't good!
+ * Bug in save method into Image class (typ -> type)
+ - atexit don't work like I aspcet. No more use it
+
+1.2.0 - 01/2006
+ + Start the port to a more pythonic interface. See Image class documentation
+ + Into Image class add some useful functions like __repr__ or status and format
+   property
+ + Some class for standardize the data: FISize, FIPoint
+ ! Some functions that now remember and set it to the bitmap resolution.
+   This is a work that freeimage library not do, so I make it for it.
+ * A bug in *nix mode that cause a problem when getStatus are called
+ * GetPageCount now work
+
+1.1.0 - 10/2005
+ ! Upgrade to freeimage 3.8.0
+ + Handle functions that make those functions work:
+ + loadFromFile, saveToFile functions that work with opened file ojects
+   (thanks to Lenard Lindstrom)
+ + loadFromBuffer, getBuffer that get and return a string. Use the above
+ + ConvertToGreyscale
+ + Unit test (thanks to Lenard Lindstrom)
+ ! support for 48-bit to ConvertTo24Bits
+ ! print a UserWarning if I don't found a function into library
+ ! Some code into constants.py
+
+1.0.0 - 08/2005
+ + First public release

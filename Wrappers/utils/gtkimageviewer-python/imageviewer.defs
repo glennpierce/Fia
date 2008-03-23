@@ -1,0 +1,331 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object ImageViewer
+  (in-module "Gtk")
+  (parent "GtkWidget")
+  (c-name "GtkImageViewer")
+  (gtype-id "GTK_TYPE_IMAGE_VIEWER")
+)
+
+;; Enumerations and flags ...
+
+
+;; From gtk_image_viewer.h
+
+(define-function gtk_image_viewer_new
+  (c-name "gtk_image_viewer_new")
+  (is-constructor-of "GtkImageViewer")
+  (return-type "GtkWidget*")
+  (parameters
+    '("GdkPixbuf*" "pixbuf")
+  )
+)
+
+(define-function gtk_image_viewer_new_from_file
+  (c-name "gtk_image_viewer_new_from_file")
+  (return-type "GtkWidget*")
+  (parameters
+    '("const-gchar*" "filename")
+  )
+)
+
+(define-function gtk_image_viewer_get_type
+  (c-name "gtk_image_viewer_get_type")
+  (return-type "guint")
+)
+
+(define-method set_image
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_image")
+  (return-type "guint")
+  (parameters
+    '("GdkPixbuf*" "_img")
+  )
+)
+
+(define-method set_file
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_file")
+  (return-type "guint")
+  (parameters
+    '("const-gchar*" "filename")
+  )
+)
+
+(define-method get_image
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_image")
+  (return-type "GdkPixbuf*")
+)
+
+(define-method get_image_width
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_image_width")
+  (return-type "guint")
+)
+
+(define-method get_image_height
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_image_height")
+  (return-type "guint")
+)
+
+(define-method get_is_panning
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_is_panning")
+  (return-type "gboolean")
+)
+
+(define-method get_canvas_width
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_canvas_width")
+  (return-type "guint")
+)
+
+(define-method get_canvas_height
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_canvas_height")
+  (return-type "guint")
+)
+
+(define-method get_scale
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_scale")
+  (return-type "none")
+  (parameters
+    '("double*" "scale_x")
+    '("double*" "scale_y")
+  )
+)
+
+(define-method get_transform
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_transform")
+  (return-type "none")
+  (parameters
+    '("double*" "x")
+    '("double*" "y")
+    '("double*" "scale_x")
+    '("double*" "scale_y")
+  )
+)
+
+(define-method set_transform
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_transform")
+  (return-type "none")
+  (parameters
+    '("double" "x")
+    '("double" "y")
+    '("double" "scale_x")
+    '("double" "scale_y")
+  )
+)
+
+(define-method set_min_zoom
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_min_zoom")
+  (return-type "none")
+  (parameters
+    '("double" "min_zoom")
+  )
+)
+
+(define-method set_max_zoom
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_max_zoom")
+  (return-type "none")
+  (parameters
+    '("double" "min_zoom")
+  )
+)
+
+(define-method get_min_zoom
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_min_zoom")
+  (return-type "double")
+)
+
+(define-method get_max_zoom
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_max_zoom")
+  (return-type "double")
+)
+
+(define-method img_coord_to_canv_coord
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_img_coord_to_canv_coord")
+  (return-type "none")
+  (parameters
+    '("double" "imgx")
+    '("double" "imgy")
+    '("double*" "cx")
+    '("double*" "cy")
+  )
+)
+
+(define-method canv_coord_to_img_coord
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_canv_coord_to_img_coord")
+  (return-type "none")
+  (parameters
+    '("double" "cx")
+    '("double" "cy")
+    '("double*" "imgx")
+    '("double*" "imgy")
+  )
+)
+
+(define-method set_transfer_map
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_transfer_map")
+  (return-type "none")
+  (parameters
+    '("guint8*" "rmap")
+    '("guint8*" "gmap")
+    '("guint8*" "bmap")
+  )
+)
+
+(define-method redraw
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_redraw")
+  (return-type "gint")
+)
+
+(define-method zoom_around_fixed_point
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_zoom_around_fixed_point")
+  (return-type "gint")
+  (parameters
+    '("double" "new_scale_x")
+    '("double" "new_scale_y")
+    '("double" "old_x")
+    '("double" "old_y")
+    '("double" "new_x")
+    '("double" "new_y")
+  )
+)
+
+(define-method expose_area
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_expose_area")
+  (return-type "none")
+  (parameters
+    '("int" "x0")
+    '("int" "y0")
+    '("int" "w")
+    '("int" "h")
+  )
+)
+
+(define-method get_scroll_width
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_scroll_width")
+  (return-type "int")
+)
+
+(define-method get_scroll_height
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_scroll_height")
+  (return-type "int")
+)
+
+(define-method set_scroll_height
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_scroll_height")
+  (return-type "none")
+  (parameters
+    '("int" "scroll_height")
+  )
+)
+
+(define-method set_scroll_region
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_scroll_region")
+  (return-type "int")
+  (parameters
+    '("double" "x0")
+    '("double" "y0")
+    '("double" "x1")
+    '("double" "y1")
+  )
+)
+
+(define-method set_scroll_width
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_scroll_width")
+  (return-type "none")
+  (parameters
+    '("int" "scroll_width")
+  )
+)
+
+(define-method get_use_linear_zoom_steps
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_get_use_linear_zoom_steps")
+  (return-type "gboolean")
+)
+
+(define-method set_use_linear_zoom_steps
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_use_linear_zoom_steps")
+  (return-type "none")
+  (parameters
+    '("gboolean" "do_use_linear_steps")
+  )
+)
+
+(define-method zoom_rel
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_zoom_rel")
+  (return-type "none")
+  (parameters
+    '("double" "rel_zoomfactor")
+  )
+)
+
+(define-method zoom_fit
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_zoom_fit")
+  (return-type "none")
+  (parameters
+    '("gboolean" "do_keep_aspect_ratio")
+  )
+)
+
+(define-method zoom_100
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_zoom_100")
+  (return-type "none")
+)
+
+(define-method set_hadjustment
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_hadjustment")
+  (return-type "none")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+  )
+)
+
+(define-method set_vadjustment
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_vadjustment")
+  (return-type "none")
+  (parameters
+    '("GtkAdjustment*" "adjustment")
+  )
+)
+
+(define-method set_flip
+  (of-object "GtkImageViewer")
+  (c-name "gtk_image_viewer_set_flip")
+  (return-type "none")
+  (parameters
+    '("gboolean" "do_vflip")
+    '("gboolean" "do_hflip")
+  )
+)
+
+
