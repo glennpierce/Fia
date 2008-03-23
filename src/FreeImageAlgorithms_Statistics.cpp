@@ -54,22 +54,27 @@ Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, double min, double max, int n
 		FIA_FindMinMax(src, &min, &max);
 
 	if(min >= max) {
-	    FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
+		FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
 		return FREEIMAGE_ALGORITHMS_ERROR;
-    }
+	}
+
+	if(number_of_bins<1) {
+		FIA_SendOutputMessage("Error number of bins less than 1");
+		return FREEIMAGE_ALGORITHMS_ERROR;
+	}
  
 	// Clear histogram array
 	memset(hist, 0, number_of_bins * sizeof(unsigned long) );
 
 	Tsrc tmp_min = (Tsrc) min;
 	Tsrc tmp_max = (Tsrc) max;
-	Tsrc range = tmp_max - tmp_min; 
-	Tsrc range_per_bin = range / (number_of_bins - 1);     
+	Tsrc range = tmp_max - tmp_min;     
+	double range_per_bin = (double)range / (double)(number_of_bins-1);     // bins-1 as we need the histogram range to exceed the image range by one extra bin to accomodate the pixels with max intensity
 
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);   
 
-	Tsrc *bits = (Tsrc *) FreeImage_GetBits(src);
+	Tsrc *bits = NULL;
 	Tsrc pixel;
 	unsigned int bin;
 
@@ -216,7 +221,7 @@ FIA_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
 				return statisticUCharImage.CalculateHistogram(src, min, max, number_of_bins, hist);
-            break;
+			break;
 
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
 			return statisticUShortImage.CalculateHistogram(src, min, max, number_of_bins, hist);
@@ -256,7 +261,7 @@ FIA_StatisticReport(FIBITMAP *src, StatisticReport *report)
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
 				return statisticUCharImage.CalculateStatisticReport(src, report);
-            break;
+			break;
 
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
 			return statisticUShortImage.CalculateStatisticReport(src, report);
@@ -296,7 +301,7 @@ FIA_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
 				return statisticUCharImage.Centroid(src, x_centroid, y_centroid);
-                break;
+			break;
 
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
 			return statisticUShortImage.Centroid(src, x_centroid, y_centroid);
@@ -337,7 +342,7 @@ FIA_GetGreyLevelAverage(FIBITMAP *src)
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
 			if(FreeImage_GetBPP(src) == 8)
 				return statisticUCharImage.CalculateGreyLevelAverage(src);
-                break;
+			break;
 
 		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
 			return statisticUShortImage.CalculateGreyLevelAverage(src);
