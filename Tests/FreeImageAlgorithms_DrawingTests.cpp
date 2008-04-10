@@ -105,7 +105,7 @@ TestFIA_ColourLineTest(CuTest* tc)
 static void
 TestFIA_Rect24bitTest(CuTest* tc)
 {
-	const char *file = TEST_DATA_DIR "bumblebee.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -114,12 +114,12 @@ TestFIA_Rect24bitTest(CuTest* tc)
 	CuAssertTrue(tc, src != NULL);
 
 	FIARECT rect;
-	rect.left = 10;
-	rect.top = 100;
-	rect.bottom = 200;
+	rect.left = 165;
+	rect.top = 118;
+	rect.bottom = 156;
 	rect.right = 200;
 	
-	FIA_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 7);
+	FIA_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 1);
 
 	FIA_SaveFIBToFile(src24, TEST_DATA_OUTPUT_DIR "TestFIA_Rect24bitTest.jpg", BIT24);
 

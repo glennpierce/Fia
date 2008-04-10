@@ -63,6 +63,8 @@ FIA_Convolve(FIABITMAP *src, const FilterKernel kernel);
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel);
 
+DLL_API FIAPOINT DLL_CALLCONV
+FIA_CorrelateImages(FIBITMAP *src1, FIARECT rect, FIBITMAP *src2);
 
 #ifdef __cplusplus
 }

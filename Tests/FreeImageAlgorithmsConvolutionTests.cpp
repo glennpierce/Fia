@@ -1,5 +1,7 @@
 #include "CuTest.h"
 
+#include "Constants.h"
+
 #include "FreeImage.h"
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
@@ -123,8 +125,6 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
 	    FIA_SaveFIBToFile(vertical_dib,
             TEMP_DIR "\\sobel_vertical.bmp", BIT8);
 
-    
-
     if(horizontal_dib != NULL)
         FIA_SaveFIBToFile(bit8_dib,
             TEMP_DIR "\\sobel_horizontal_dib.bmp", BIT8);
@@ -195,7 +195,7 @@ TestFIA_MedianFilterTest(CuTest* tc)
 
 	PROFILE_STOP("MedianFilter");
 
-	FIA_SaveFIBToFile(dib5, TEMP_DIR "\\salt_and_pepper_median.jpg", BIT8);
+	FIA_SaveFIBToFile(dib5, TEST_DATA_OUTPUT_DIR  "salt_and_pepper_median.jpg", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -204,15 +204,60 @@ TestFIA_MedianFilterTest(CuTest* tc)
 	FreeImage_Unload(dib5);
 }
 
+static void
+TestFIA_CorrelateFilterTest(CuTest* tc)
+{
+    const char *colour_file = TEST_DATA_DIR "drone-bee.jpg";
+    const char *gs_file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale-section.jpg";
+
+
+    FIBITMAP *colour_src = FIA_LoadFIBFromFile(colour_file);
+    FIBITMAP *gs_src = FIA_LoadFIBFromFile(gs_file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
+    FIBITMAP *colour_section = FreeImage_ConvertTo24Bits(src);
+	
+	CuAssertTrue(tc, src != NULL);
+	CuAssertTrue(tc, gs_src != NULL);
+	CuAssertTrue(tc, colour_src != NULL);
+
+    FIARECT rect;
+	rect.left = 0;
+	rect.top = 0;
+	rect.bottom = FreeImage_GetHeight(colour_src);
+	rect.right = FreeImage_GetWidth(colour_src);
+
+	PROFILE_START("FIA_CorrelateImages");
+
+	FIAPOINT pt = FIA_CorrelateImages(gs_src, rect, src);
+    printf("position x %d position y %d\n", pt.x, pt.y);
+
+	PROFILE_STOP("FIA_CorrelateImages");
+
+    if(FreeImage_Paste(colour_src, colour_section, pt.x, pt.y, 255) == 0)
+        printf("paste failed\n");
+
+	FIA_SaveFIBToFile(colour_src, TEST_DATA_OUTPUT_DIR  "correlated.jpg", BIT24);
+
+	FreeImage_Unload(src);
+	FreeImage_Unload(colour_src);
+	FreeImage_Unload(gs_src);
+    FreeImage_Unload(colour_section);
+
+    //178, 138
+}
+
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	SUITE_ADD_TEST(suite, TestFIA_ConvolutionTest);
-	SUITE_ADD_TEST(suite, TestFIA_SobelTest);
-    SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
-	SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
-   
+	//SUITE_ADD_TEST(suite, TestFIA_ConvolutionTest);
+	//SUITE_ADD_TEST(suite, TestFIA_SobelTest);
+    //SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
+	//SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
+    
 	return suite;
 }

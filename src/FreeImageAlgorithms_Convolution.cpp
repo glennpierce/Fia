@@ -24,6 +24,8 @@
 #include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_Convolution_Private.h"
 
+#include "FreeImageAlgorithms_IO.h"
+
 #include <math.h>
 
 FilterKernel DLL_CALLCONV
@@ -65,6 +67,46 @@ FIA_Convolve(FIABITMAP *src, FilterKernel kernel)
 					kernel.y_radius, kernel.values, kernel.divider);
 
 	dst = kern->Convolve();
+
+	FreeImage_Unload(border_tmp.fib);
+
+	if(NULL == dst) {
+		FreeImage_OutputMessageProc(
+            FIF_UNKNOWN,
+            "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.",
+            src_type, FIT_BITMAP);
+	}
+
+	delete kern;
+
+	return dst;
+}
+
+static FIBITMAP* DLL_CALLCONV
+FIA_Correlate(FIABITMAP *src, FilterKernel kernel)
+{
+	FIBITMAP *dst = NULL;
+	FIABITMAP *tmp = NULL;
+	FIABITMAP border_tmp;
+
+	if(!src)
+		return NULL;
+
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
+
+    if(src_type == FIT_COMPLEX) {
+        FIA_SendOutputMessage("Error can not perform convolution on a complex image");
+        return NULL;
+    }
+
+    border_tmp.fib = FIA_ConvertToGreyscaleFloatType(src->fib, FIT_DOUBLE);
+    border_tmp.xborder = src->xborder;
+	border_tmp.yborder = src->yborder;
+
+	Kernel<double> *kern = new Kernel<double>(&border_tmp, kernel.x_radius,
+					kernel.y_radius, kernel.values, kernel.divider);
+
+	dst = kern->Correlate();
 
 	FreeImage_Unload(border_tmp.fib);
 
@@ -122,7 +164,7 @@ FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel ver
 
 	FIA_Unload(tmp_border);
 	FreeImage_Unload(tmp_dst);
-    FreeImage_Unload(border_tmp.fib);
+    	FreeImage_Unload(border_tmp.fib);
 
 	if(NULL == dst) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN,
@@ -131,3 +173,85 @@ FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel ver
 
 	return dst;
 }
+
+
+static int DLL_CALLCONV
+FIA_NewKernelFromImage(FIBITMAP *src, FilterKernel *kernel)
+{
+    int width = FreeImage_GetWidth(src);
+    int height = FreeImage_GetHeight(src);
+    
+    if(width % 2 == 0) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image width must be an odd value");
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
+    
+    if(height % 2 == 0) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image height must be an odd value");
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
+
+	kernel->x_radius = width / 2;
+	kernel->y_radius = height / 2;
+	
+	double *values = (double*) malloc(sizeof(double) * width * height);
+	kernel->divider = 1.0;
+    FIBITMAP *double_dib = FreeImage_ConvertToType(src, FIT_DOUBLE, 0);
+    double *ptr = NULL;
+    int i=0;
+
+    for(register int y=0; y < height; y++) { 
+
+	    ptr = (double *)FreeImage_GetScanLine(double_dib, y);
+
+	    for(register int x=0; x < width; x++) {
+            values[i++] = (double) ptr[x];
+        }
+	}
+
+    FreeImage_Unload(double_dib);
+
+    kernel->values = values;
+
+	return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
+
+
+FIAPOINT DLL_CALLCONV
+FIA_CorrelateImages(FIBITMAP *src1, FIARECT rect, FIBITMAP *src2)
+{
+    FilterKernel kernel;
+    FIABITMAP *tmp = NULL;
+    FIAPOINT pt;
+    double max;
+    pt.x = 0;
+    pt.y = 0;
+    
+	FIA_NewKernelFromImage(src2, &kernel);
+	
+	printf("radius x: %d radius y: %d\n", kernel.x_radius, kernel.y_radius);
+	
+    tmp = FIA_SetZeroBorder(src1, kernel.x_radius, kernel.y_radius);
+
+    FIBITMAP *dib = FIA_Correlate(tmp, kernel);
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType(dib);
+    printf("Type %d\n", type);
+    FIBITMAP *t = FreeImage_ConvertToStandardType(dib, 1);
+
+    FIA_SaveFIBToFile(t, "/home/glenn/correlated.jpg", BIT8);
+    
+    FIA_FindMaxXY(dib, &max, &pt);
+
+    pt.x -= kernel.x_radius;
+    pt.y += kernel.y_radius;
+
+    int height = FreeImage_GetHeight(src1);
+    pt.y = height - pt.y - 1;
+
+    FreeImage_Unload(dib);
+    FIA_Unload(tmp);
+    free((void*)kernel.values);
+
+	return pt;
+}

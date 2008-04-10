@@ -278,6 +278,7 @@ class FIND_MINMAX_FOR_DIB
 {
 public:
 	void find(FIBITMAP *src, double *min, double *max);
+	void find_max_xy(FIBITMAP *src, double *max, FIAPOINT *pt);
 };
 
 template<class Tsrc> void 
@@ -349,6 +350,75 @@ FIA_FindMinMax(FIBITMAP *src, double *min, double *max)
 			break;	
 		case FIT_DOUBLE:		
 			minmaxDoubleImage.find(src, min, max);
+			break;	
+	}
+}
+
+
+template<class Tsrc> void 
+FIND_MINMAX_FOR_DIB<Tsrc>::find_max_xy(FIBITMAP *src, double *max, FIAPOINT *pt)
+{
+	if(!src)
+		return;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	double temp_max;
+	Tsrc l_max;
+
+	// Get the first two pixel values for initialisation
+	Tsrc *bits = reinterpret_cast<Tsrc*>(FreeImage_GetScanLine(src, 0));
+	temp_max = bits[0];
+
+    int x;
+
+	for(int y = 0; y < height; y++) {
+
+		bits = reinterpret_cast<Tsrc*>(FreeImage_GetScanLine(src, y));
+
+        x = FINDMAX(bits, width, l_max);
+		
+		if(l_max > temp_max) {
+		    temp_max = l_max;
+		    pt->x = x;
+		    pt->y = y;
+		}	
+	}
+
+	*max = temp_max;
+}
+
+void DLL_CALLCONV
+FIA_FindMaxXY(FIBITMAP *src, double *max, FIAPOINT *pt)
+{
+	if(!src)
+		return;
+
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+	switch(src_type) {
+		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+			if(FreeImage_GetBPP(src) == 8)
+				minmaxUCharImage.find_max_xy(src, max, pt);
+			break;
+		case FIT_UINT16:	
+			minmaxUShortImage.find_max_xy(src, max, pt);
+			break;
+		case FIT_INT16:		
+			minmaxShortImage.find_max_xy(src, max, pt);
+			break;
+		case FIT_UINT32:	
+			minmaxULongImage.find_max_xy(src, max, pt);
+			break;
+		case FIT_INT32:		
+			minmaxLongImage.find_max_xy(src, max, pt);
+			break;
+		case FIT_FLOAT:		
+			minmaxFloatImage.find_max_xy(src, max, pt);
+			break;	
+		case FIT_DOUBLE:		
+			minmaxDoubleImage.find_max_xy(src, max, pt);
 			break;	
 	}
 }

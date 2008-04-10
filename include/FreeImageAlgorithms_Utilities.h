@@ -226,6 +226,15 @@ FIA_FindDoubleMax(const double *data, long n, double *max);
 DLL_API void DLL_CALLCONV
 FIA_FindMinMax(FIBITMAP *src, double *min, double *max);
 
+/** \brief Find the maximum value and the given x y point in a greyscale FIBITMAP.
+ *
+ *  \param src FIBITMAP bitmap.
+ *  \param max Maximum value to found in the data.
+ *  \param FIAPOINT* the position that the maximum value is found at.
+*/
+DLL_API void DLL_CALLCONV
+FIA_FindMaxXY(FIBITMAP *src, double *max, FIAPOINT *pt);
+
 /** \brief Find the mininum and maximum values in a colour FIBITMAP.
  *
  *  \param src FIBITMAP bitmap.

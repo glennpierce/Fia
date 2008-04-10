@@ -124,12 +124,17 @@ class Kernel
 		inline KernelIterator<Tsrc> Begin() { return KernelIterator<Tsrc>(this); }
 
 		FIBITMAP* Convolve();	
-
+        FIBITMAP* Correlate();
+        
 	private:
 
 		inline void ConvolveKernel();
+		inline void CorrelateKernel();
 		inline void ConvolveKernelRow(KernelIterator<Tsrc> &iterator);
-
+        inline double AddKernelRow(KernelIterator<Tsrc> &iterator);
+        inline double ImageAverageAtKernel(void);
+        inline void CorrelateKernelRow(KernelIterator<Tsrc> &iterator, double average);
+        
 		FIBITMAP *dib;
 		const int xborder;
 		const int yborder;
@@ -150,10 +155,12 @@ class Kernel
 		const Tsrc *values;	
 		int x_amount_to_image;
 		int y_amount_to_image;
-
+        double kernel_average;
+        
 		Tsrc *src_first_pixel_address_ptr;
 
 		double sum;
+		double correlation_sum_squared;
 		
 		Tsrc *current_src_center_ptr;
 		Tsrc *current_src_ptr;	
@@ -355,6 +362,387 @@ FIBITMAP* Kernel<Tsrc>::Convolve()
 		{
 			this->ConvolveKernel();
 			*dst_ptr++ =  this->sum / this->divider;
+			this->Increment();
+		}
+	}
+
+	return dst;
+};
+
+// Adds the pixel values of the original image pixels
+// that are covered by the kernel row.
+template<typename Tsrc>
+inline double Kernel<Tsrc>::AddKernelRow(KernelIterator<Tsrc> &iterator)
+{
+	register double *tmp, *kernel_ptr;
+
+	int x_max_block_size = this->x_max_block_size;
+	int x_reminder = this->x_reminder;
+    double sum = 0.0;
+        
+	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
+		 
+		tmp = iterator.GetImagePtrValue() + col;
+
+		sum += tmp[0] + tmp[1] + tmp[2] + tmp[3] + tmp[4] + tmp[5] + tmp[6] + tmp[7];
+	}
+
+	if(x_reminder)
+		tmp = iterator.GetImagePtrValue() + x_max_block_size;
+
+	switch(x_reminder) {
+
+		case 7: 
+			sum += tmp[6] + tmp[5] + tmp[4] + tmp[3] + tmp[2] + tmp[1] + tmp[0] ; 
+			break;
+		
+		case 6:
+			sum += tmp[5] + tmp[4] + tmp[3] + tmp[2] + tmp[1] + tmp[0];
+			break;
+		
+		case 5:
+			sum += tmp[4] + tmp[3] + tmp[2] + tmp[1] + tmp[0] ;
+			break;
+
+		case 4:
+			sum += tmp[3] + tmp[2] + tmp[1] + tmp[0];
+			break;
+		
+		case 3:
+			sum += tmp[2] + tmp[1] + tmp[0];
+			break;
+
+		case 2:
+			sum += tmp[1] + tmp[0];
+			break; 
+
+		case 1:
+			sum += tmp[0]; 
+	}
+	
+	return sum;
+}
+
+template<typename Tsrc>
+inline void Kernel<Tsrc>::CorrelateKernelRow(KernelIterator<Tsrc> &iterator, double avg)
+{
+	register double *tmp, *kernel_ptr;
+
+	int x_max_block_size = this->x_max_block_size;
+	int x_reminder = this->x_reminder;
+    double kavg = this->kernel_average;
+    double var0, var1, var2, var3, var4, var5, var6, var7;
+    
+	for(register int col=0; col < x_max_block_size; col+=BLOCKSIZE){
+		 
+		tmp = iterator.GetImagePtrValue() + col;
+		kernel_ptr = iterator.GetKernelPtrValue() + col;   
+        var0 = tmp[0] - avg;
+        var1 = tmp[1] - avg;
+        var2 = tmp[2] - avg;
+        var3 = tmp[3] - avg;
+        var4 = tmp[4] - avg;
+        var5 = tmp[5] - avg;
+        var6 = tmp[6] - avg;
+        var7 = tmp[7] - avg;
+   
+		this->sum += (var0 * (kernel_ptr[0] - kavg) +
+		       var1 * (kernel_ptr[1] - kavg) + 
+			   var2 * (kernel_ptr[2] - kavg) + 
+			   var3 * (kernel_ptr[3] - kavg) + 
+			   var4 * (kernel_ptr[4] - kavg) +
+			   var5 * (kernel_ptr[5] - kavg) + 
+			   var6 * (kernel_ptr[6] - kavg) +
+			   var7 * (kernel_ptr[7] - kavg));
+			  		   
+	    this->correlation_sum_squared += 
+	           ((var0 * var0) +
+		       (var1 * var1) +
+			   (var2 * var2) +
+			   (var3 * var3) +
+			   (var4 * var4) +
+			   (var5 * var5) +
+			   (var6 * var6) +
+			   (var7 * var7));
+	}
+
+	if(x_reminder) {
+		tmp = iterator.GetImagePtrValue() + x_max_block_size;
+		kernel_ptr = iterator.GetKernelPtrValue() + x_max_block_size;
+	
+	    var0 = tmp[0] - avg;
+        var1 = tmp[1] - avg;
+        var2 = tmp[2] - avg;
+        var3 = tmp[3] - avg;
+        var4 = tmp[4] - avg;
+        var5 = tmp[5] - avg;
+        var6 = tmp[6] - avg;
+        var7 = tmp[7] - avg;
+	}
+
+	switch(x_reminder) {
+
+		case 7: 
+			this->sum += ((tmp[6] - avg) * (kernel_ptr[6] - kavg) +
+		           (tmp[5] - avg) * (kernel_ptr[5] - kavg) + 
+			       (tmp[4] - avg) * (kernel_ptr[4] - kavg) + 
+			       (tmp[3] - avg) * (kernel_ptr[3] - kavg) + 
+			       (tmp[2] - avg) * (kernel_ptr[2] - kavg) +
+			       (tmp[1] - avg) * (kernel_ptr[1] - kavg) + 
+			       (tmp[0] - avg) * (kernel_ptr[0] - kavg));
+			       
+			this->correlation_sum_squared += 
+	               ((var6 * var6) +
+		           (var5 * var5) +
+			       (var4 * var4) +
+			       (var3 * var3) +
+			       (var2 * var2) +
+			       (var1 * var1) +
+			       (var0 * var0));
+			   
+			break;
+		
+		case 6:
+			this->sum += ((tmp[5] - avg) * (kernel_ptr[5] - kavg) + 
+			       (tmp[4] - avg) * (kernel_ptr[4] - kavg) + 
+			       (tmp[3] - avg) * (kernel_ptr[3] - kavg) + 
+			       (tmp[2] - avg) * (kernel_ptr[2] - kavg) +
+			       (tmp[1] - avg) * (kernel_ptr[1] - kavg) + 
+			       (tmp[0] - avg) * (kernel_ptr[0] - kavg));
+			       
+			this->correlation_sum_squared += 
+		           ((var5 * var5) +
+			       (var4 * var4) +
+			       (var3 * var3) +
+			       (var2 * var2) +
+			       (var1 * var1) +
+			       (var0 * var0));
+			       
+			break;
+		
+		case 5:
+			this->sum += ((tmp[4] - avg) * (kernel_ptr[4] - kavg) + 
+			       (tmp[3] - avg) * (kernel_ptr[3] - kavg) + 
+			       (tmp[2] - avg) * (kernel_ptr[2] - kavg) +
+			       (tmp[1] - avg) * (kernel_ptr[1] - kavg) + 
+			       (tmp[0] - avg) * (kernel_ptr[0] - kavg));
+			       
+			this->correlation_sum_squared += 
+			       ((var4 * var4) +
+			       (var3 * var3) +
+			       (var2 * var2) +
+			       (var1 * var1) +
+			       (var0 * var0));
+			       
+			break;
+
+		case 4:
+			this->sum += ((tmp[3] - avg) * (kernel_ptr[3] - kavg) + 
+			       (tmp[2] - avg) * (kernel_ptr[2] - kavg) +
+			       (tmp[1] - avg) * (kernel_ptr[1] - kavg) + 
+			       (tmp[0] - avg) * (kernel_ptr[0] - kavg));
+			       
+			this->correlation_sum_squared += 
+			       ((var3 * var3) +
+			       (var2 * var2) +
+			       (var1 * var1) +
+			       (var0 * var0));
+			       
+			break;
+		
+		case 3:
+			this->sum += ((tmp[2] - avg) * (kernel_ptr[2] - kavg) +
+			       (tmp[1] - avg) * (kernel_ptr[1] - kavg) + 
+			       (tmp[0] - avg) * (kernel_ptr[0] - kavg));
+			       
+			this->correlation_sum_squared += 
+			       ((var2 * var2) +
+			       (var1 * var1) +
+			       (var0 * var0));
+			       
+			break;
+
+		case 2:
+			this->sum += ((tmp[1] - avg) * (kernel_ptr[1] - kavg) + 
+			       (tmp[0] - avg) * (kernel_ptr[0] - kavg));
+			       
+			this->correlation_sum_squared +=  ((var1 * var1) + (var0 * var0));
+			       
+			break; 
+
+		case 1:
+			this->sum += (tmp[0] - avg) * (kernel_ptr[0] - kavg);
+			
+			this->correlation_sum_squared += (var0 * var0);
+	}
+}
+
+
+// Calculates the average value of the pixels in the original image
+// of the pixels covered by the kernel.
+template<typename Tsrc>
+inline double Kernel<Tsrc>::ImageAverageAtKernel(void)
+{
+	double sum = 0.0f;
+    int kernel_size = kernel_width * kernel_height;
+    
+	KernelIterator<Tsrc> iterator = this->Begin();
+
+	for(register int row=0; row < this->y_max_block_size; row+=BLOCKSIZE)
+	{  
+	    sum += AddKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		sum += AddKernelRow(iterator);
+		iterator.IncrementByRow();
+
+		sum += AddKernelRow(iterator);
+		iterator.IncrementByRow();
+
+		sum += AddKernelRow(iterator);
+		iterator.IncrementByRow();
+			
+		sum += AddKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		sum += AddKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		sum += AddKernelRow(iterator);
+		iterator.IncrementByRow();
+		
+		sum += AddKernelRow(iterator);
+		iterator.IncrementByRow(); 
+	} 
+		
+	switch(this->y_reminder)
+	{
+		case 7:
+			sum += AddKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 6:
+			sum += AddKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 5:
+			sum += AddKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 4:
+			sum += AddKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 3:
+			sum += AddKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 2:
+			sum += AddKernelRow(iterator);
+			iterator.IncrementByRow();
+		case 1:
+			sum += AddKernelRow(iterator);
+	}
+	
+	return sum / kernel_size;
+}
+
+
+template<typename Tsrc>
+inline void Kernel<Tsrc>::CorrelateKernel()
+{
+	this->sum = 0.0f;
+	this->correlation_sum_squared = 0.0f;
+    double average = ImageAverageAtKernel();
+
+	KernelIterator<Tsrc> iterator = this->Begin();
+
+	for(register int row=0; row < this->y_max_block_size; row+=BLOCKSIZE)
+	{  
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow();
+		
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow();
+
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow();
+
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow();
+			
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow();
+		
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow();
+		
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow();
+		
+		CorrelateKernelRow(iterator, average);
+		iterator.IncrementByRow(); 
+	} 
+		
+	switch(this->y_reminder)
+	{
+		case 7:
+			CorrelateKernelRow(iterator, average);
+			iterator.IncrementByRow();
+		case 6:
+			CorrelateKernelRow(iterator, average);
+			iterator.IncrementByRow();
+		case 5:
+			CorrelateKernelRow(iterator, average);
+			iterator.IncrementByRow();
+		case 4:
+			CorrelateKernelRow(iterator, average);
+			iterator.IncrementByRow();
+		case 3:
+			CorrelateKernelRow(iterator, average);
+			iterator.IncrementByRow();
+		case 2:
+			CorrelateKernelRow(iterator, average);
+			iterator.IncrementByRow();
+		case 1:
+			CorrelateKernelRow(iterator, average);
+	}
+}
+
+template<typename Tsrc>
+FIBITMAP* Kernel<Tsrc>::Correlate()
+{
+	const int dst_width = src_image_width - (2 * this->xborder);
+	const int dst_height = src_image_height - (2 * this->yborder);
+
+	FIBITMAP *dst = FIA_CloneImageType(this->dib, dst_width, dst_height);
+
+	const int dst_pitch_in_pixels = FreeImage_GetPitch(dst) / sizeof(Tsrc);
+
+	register double *dst_ptr;
+
+	double *dst_first_pixel_address_ptr = (Tsrc*) FreeImage_GetBits(dst);
+	
+	this->kernel_average = 0.0;
+	int kernel_size = kernel_width * kernel_height;
+	
+	for(int i=0; i < kernel_size; i++)
+	    this->kernel_average += this->values[i];
+	
+	this->kernel_average /= kernel_size;
+	
+	double kernel_normalise_sum = 0.0;
+	
+	for(int i=0; i < kernel_size; i++) {
+	    kernel_normalise_sum += ((this->values[i] - this->kernel_average) * 
+	                             (this->values[i] - this->kernel_average));
+	}
+	
+	for (register int y=0; y < dst_height; y++)
+	{		
+		this->Move(0,y);
+		dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
+
+		for (register int x=0; x < dst_width; x++) 
+		{
+			this->CorrelateKernel();
+			double dominator = sqrt(this->correlation_sum_squared * kernel_normalise_sum);
+			*dst_ptr++ =  this->sum / dominator;
 			this->Increment();
 		}
 	}
