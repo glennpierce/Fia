@@ -15,7 +15,7 @@
  * 
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #ifdef _WINDOWS
 
@@ -30,257 +30,267 @@
 HBITMAP DLL_CALLCONV
 FIA_FibToHBitmap(FIBITMAP *dib)
 {
-	DWORD error;
+    DWORD error;
 
-	HDC dc = GetDC(NULL);
+    HDC dc = GetDC(NULL);
 
-	if(dc == NULL) {
-		FIA_SendOutputMessage("Error NULL DC");
-		return NULL;
-	}
+    if(dc == NULL) {
+        FIA_SendOutputMessage("Error NULL DC");
+        return NULL;
+    }
 
-	HBITMAP bitmap = CreateDIBitmap(dc, FreeImage_GetInfoHeader(dib),
-		CBM_INIT, FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS); 
+    HBITMAP bitmap = CreateDIBitmap(dc, FreeImage_GetInfoHeader(dib),
+            CBM_INIT, FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS);
 
-	if(bitmap == NULL) {
+    if(bitmap == NULL) {
 
-		error = GetLastError();
-		FIA_SendOutputMessage("Error can not create HBITMAP: Error: %d", error);
- 
-		return NULL;
-	}
+        error = GetLastError();
+        FIA_SendOutputMessage("Error can not create HBITMAP: Error: %d", error);
 
-	ReleaseDC(NULL, dc);		
-	DeleteDC (dc);
+        return NULL;
+    }
 
-	return bitmap;
+    ReleaseDC(NULL, dc);
+    DeleteDC (dc);
+
+    return bitmap;
 }
-
 
 void DLL_CALLCONV
 FIA_FreeHBitmap(HBITMAP hbitmap)
 {
-	DeleteObject(hbitmap);
+    DeleteObject(hbitmap);
 }
-
 
 FIBITMAP* DLL_CALLCONV
 FIA_HBitmapToFIB(HDC hdc, HBITMAP bitmap)
 {
-	FIBITMAP *dib = NULL;
-	BITMAP bm;
-	int nColors;
+    FIBITMAP *dib = NULL;
+    BITMAP bm;
+    int nColors;
 
-	if(bitmap) { 
+    if(bitmap) {
 
-  		GetObject(bitmap, sizeof(BITMAP), (LPSTR) &bm);
- 
-  		dib = FreeImage_Allocate(bm.bmWidth, bm.bmHeight, bm.bmBitsPixel, 0, 0, 0);
-  
-		nColors = FreeImage_GetColorsUsed(dib);
+        GetObject(bitmap, sizeof(BITMAP), (LPSTR) &bm);
 
-		GetDIBits(hdc, bitmap, 0, FreeImage_GetHeight(dib), 
-			FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS);
-  
-		// restore BITMAPINFO members
-		FreeImage_GetInfoHeader(dib)->biClrUsed = nColors;
-		FreeImage_GetInfoHeader(dib)->biClrImportant = nColors;
-	}
+        dib = FreeImage_Allocate(bm.bmWidth, bm.bmHeight, bm.bmBitsPixel, 0, 0, 0);
 
-	return dib;
+        nColors = FreeImage_GetColorsUsed(dib);
+
+        GetDIBits(hdc, bitmap, 0, FreeImage_GetHeight(dib),
+                FreeImage_GetBits(dib), FreeImage_GetInfo(dib), DIB_RGB_COLORS);
+
+        // restore BITMAPINFO members
+        FreeImage_GetInfoHeader(dib)->biClrUsed = nColors;
+        FreeImage_GetInfoHeader(dib)->biClrImportant = nColors;
+    }
+
+    return dib;
 }
 
-
-HBITMAP DLL_CALLCONV 
+HBITMAP DLL_CALLCONV
 FIA_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bottom)
 {
-	if(!src) 
-		return NULL;
+    if(!src) {
+        return NULL;
+    }
 
-	unsigned bpp = FreeImage_GetBPP(src);
+    unsigned bpp = FreeImage_GetBPP(src);
 
-	if(bpp <= 4) {
-	    FIA_SendOutputMessage("Error can not create dib section for images less than 4 bpp");
-		return NULL;
-	}
+    if(bpp <= 4) {
+        FIA_SendOutputMessage("Error can not create dib section for images less than 4 bpp");
+        return NULL;
+    }
 
-	// normalize the rectangle
-	if(right < left)
-		INPLACESWAP(left, right);
+    // normalize the rectangle
+    if(right < left) {
+        INPLACESWAP(left, right);
+    }
 
-	if(bottom < top)
-		INPLACESWAP(top, bottom);
+    if(bottom < top) {
+        INPLACESWAP(top, bottom);
+    }
 
-	// check the size of the sub image
-	int src_width  = FreeImage_GetWidth(src);
-	int src_height = FreeImage_GetHeight(src);
-	int src_pitch = FreeImage_GetPitch(src);
+    // check the size of the sub image
+    int src_width = FreeImage_GetWidth(src);
+    int src_height = FreeImage_GetHeight(src);
+    int src_pitch = FreeImage_GetPitch(src);
 
-	if((left < 0) || (right > src_width) || (top < 0) || (bottom > src_height)) {
-	    FIA_SendOutputMessage("Invalid Parameters");
-		return NULL;
-	}
+    if((left < 0) || (right> src_width) || (top < 0) || (bottom> src_height)) {
+        FIA_SendOutputMessage("Invalid Parameters");
+        return NULL;
+    }
 
-	// allocate the sub image
-	int dst_width = (right - left);
-	int dst_height = (bottom - top);
+    // allocate the sub image
+    int dst_width = (right - left);
+    int dst_height = (bottom - top);
 
-	BITMAPINFO *info = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) + 
-        (FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD)));
-	
+    BITMAPINFO *info = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) +
+            (FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD)));
+
     CheckMemory(info);
 
     BITMAPINFOHEADER *bih = (BITMAPINFOHEADER *)info;
 
-	bih->biSize = sizeof(BITMAPINFOHEADER);
-	bih->biWidth = dst_width;
-	bih->biHeight = dst_height;
-	bih->biPlanes = 1;
-	bih->biBitCount = bpp;
-	bih->biCompression = BI_RGB;
-	bih->biSizeImage = 0;
+    bih->biSize = sizeof(BITMAPINFOHEADER);
+    bih->biWidth = dst_width;
+    bih->biHeight = dst_height;
+    bih->biPlanes = 1;
+    bih->biBitCount = bpp;
+    bih->biCompression = BI_RGB;
+    bih->biSizeImage = 0;
     bih->biXPelsPerMeter = 0;
     bih->biYPelsPerMeter = 0;
-   	bih->biClrUsed = 0;           // Always use the whole palette.
+    bih->biClrUsed = 0; // Always use the whole palette.
     bih->biClrImportant = 0;
 
-	// copy the palette
-	if(bpp < 16)
-		memcpy(info->bmiColors, FreeImage_GetPalette(src), FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD));
+    // copy the palette
+    if(bpp < 16) {
+        memcpy(info->bmiColors, FreeImage_GetPalette(src), FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD));
+    }
 
-	BYTE *dst_bits;
+    BYTE *dst_bits;
 
-	HBITMAP hbitmap = CreateDIBSection(hdc, info, DIB_RGB_COLORS, (void **) &dst_bits, NULL, 0);
+    HBITMAP hbitmap = CreateDIBSection(hdc, info, DIB_RGB_COLORS, (void **) &dst_bits, NULL, 0);
 
-	free(info);
+    free(info);
 
-	if(hbitmap == NULL || dst_bits == NULL)
-		return NULL;
+    if(hbitmap == NULL || dst_bits == NULL) {
+        return NULL;
+    }
 
-	// get the pointers to the bits and such
-	BYTE *src_bits = FreeImage_GetScanLine(src, src_height - top - dst_height);
+    // get the pointers to the bits and such
+    BYTE *src_bits = FreeImage_GetScanLine(src, src_height - top - dst_height);
 
-	// calculate the number of bytes per pixel
-	unsigned bytespp = FreeImage_GetLine(src) / FreeImage_GetWidth(src);
-	
-	// point to x = left
-	src_bits += (left * bytespp);	
+    // calculate the number of bytes per pixel
+    unsigned bytespp = FreeImage_GetLine(src) / FreeImage_GetWidth(src);
 
-	int dst_line = (dst_width * bpp + 7) / 8;
-	int dst_pitch = (dst_line + 3) & ~3;
+    // point to x = left
+    src_bits += (left * bytespp);
 
-	for(int y = 0; y < dst_height; y++)
-		memcpy(dst_bits + (y * dst_pitch), src_bits + (y * src_pitch), dst_line);
+    int dst_line = (dst_width * bpp + 7) / 8;
+    int dst_pitch = (dst_line + 3) & ~3;
 
-	return hbitmap;
+    for(int y = 0; y < dst_height; y++) {
+        memcpy(dst_bits + (y * dst_pitch), src_bits + (y * src_pitch), dst_line);
+    }
+
+    return hbitmap;
 }
-
 
 int DLL_CALLCONV
 FIA_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int right, int bottom)
 {
-	BYTE *src_bits;
-	int src_width, src_height, src_pitch;
-	unsigned bytespp;
-	BYTE *dst_bits;
-	int y, dst_width, dst_height;
-	int dst_line;
-	int bpp;
-	BITMAP bm;
+    BYTE *src_bits;
+    int src_width, src_height, src_pitch;
+    unsigned bytespp;
+    BYTE *dst_bits;
+    int y, dst_width, dst_height;
+    int dst_line;
+    int bpp;
+    BITMAP bm;
 
-	if(!src) 
-		return FREEIMAGE_ALGORITHMS_ERROR;
+    if(!src) {
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
 
-	GetObject(hbitmap, sizeof(BITMAP), &bm);
+    GetObject(hbitmap, sizeof(BITMAP), &bm);
 
-	dst_bits = (BYTE*) bm.bmBits;
+    dst_bits = (BYTE*) bm.bmBits;
 
-	if(dst_bits == NULL)
-		return FREEIMAGE_ALGORITHMS_ERROR;
+    if(dst_bits == NULL) {
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
 
-	// normalize the rectangle
-	if(right < left)
-		INPLACESWAP(left, right);
+    // normalize the rectangle
+    if(right < left) {
+        INPLACESWAP(left, right);
+    }
 
-	if(bottom < top)
-		INPLACESWAP(top, bottom);
+    if(bottom < top) {
+        INPLACESWAP(top, bottom);
+    }
 
-	// check the size of the sub image
-	src_width  = FreeImage_GetWidth(src);
-	src_height = FreeImage_GetHeight(src);
-	src_pitch = FreeImage_GetPitch(src);
+    // check the size of the sub image
+    src_width = FreeImage_GetWidth(src);
+    src_height = FreeImage_GetHeight(src);
+    src_pitch = FreeImage_GetPitch(src);
 
-	if((left < 0) || (right > src_width) || (top < 0) || (bottom > src_height))
-		return FREEIMAGE_ALGORITHMS_ERROR;
+    if((left < 0) || (right> src_width) || (top < 0) || (bottom> src_height)) {
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
 
-	// allocate the sub image
-	dst_width = right - left;
-	dst_height = bottom - top;
+    // allocate the sub image
+    dst_width = right - left;
+    dst_height = bottom - top;
 
-	// get the pointers to the bits and such
-	src_bits = FreeImage_GetScanLine(src, src_height - top - dst_height);
+    // get the pointers to the bits and such
+    src_bits = FreeImage_GetScanLine(src, src_height - top - dst_height);
 
-	// calculate the number of bytes per pixel
-	bytespp = FreeImage_GetLine(src) / src_width;
-	
-	// point to x = left
-	src_bits += (left * bytespp);	
+    // calculate the number of bytes per pixel
+    bytespp = FreeImage_GetLine(src) / src_width;
 
-	bpp = FreeImage_GetBPP(src);
+    // point to x = left
+    src_bits += (left * bytespp);
 
-	dst_line = (dst_width * bpp + 7) / 8;
+    bpp = FreeImage_GetBPP(src);
 
-	dst_bits += ((bm.bmHeight - dst_height) * bm.bmWidthBytes);
+    dst_line = (dst_width * bpp + 7) / 8;
 
-	for(y = 0; y < dst_height; y++)
-		memcpy(dst_bits + (y * bm.bmWidthBytes), src_bits + (y * src_pitch), dst_line);
+    dst_bits += ((bm.bmHeight - dst_height) * bm.bmWidthBytes);
 
-	return FREEIMAGE_ALGORITHMS_SUCCESS;
+    for(y = 0; y < dst_height; y++) {
+        memcpy(dst_bits + (y * bm.bmWidthBytes), src_bits + (y * src_pitch), dst_line);
+    }
+
+    return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
-
 
 HBITMAP DLL_CALLCONV
 FIA_CreateDibSection(HDC hdc, int width, int height, int bpp, int colours_used, RGBQUAD* bmiColours)
 {
-	HBITMAP hbitmap;
-	BITMAPINFO *info;
-	BITMAPINFOHEADER *bih;
+    HBITMAP hbitmap;
+    BITMAPINFO *info;
+    BITMAPINFOHEADER *bih;
 
-	void *bits;
+    void *bits;
 
-	if(bpp > 8)
-		colours_used = 0;	
+    if(bpp> 8) {
+        colours_used = 0;
+    }
 
-	info = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) + (colours_used * sizeof(RGBQUAD)));
+    info = (BITMAPINFO *) malloc(sizeof(BITMAPINFO) + (colours_used * sizeof(RGBQUAD)));
 
     CheckMemory(info);
 
-	bih = (BITMAPINFOHEADER *)info;
+    bih = (BITMAPINFOHEADER *)info;
 
-	bih->biSize = sizeof(BITMAPINFOHEADER);
-	bih->biWidth = width;
-	bih->biHeight = height;
-	bih->biPlanes = 1;
-	bih->biBitCount = bpp;
-	bih->biCompression = BI_RGB;
-	bih->biSizeImage = 0;
+    bih->biSize = sizeof(BITMAPINFOHEADER);
+    bih->biWidth = width;
+    bih->biHeight = height;
+    bih->biPlanes = 1;
+    bih->biBitCount = bpp;
+    bih->biCompression = BI_RGB;
+    bih->biSizeImage = 0;
     bih->biXPelsPerMeter = 0;
     bih->biYPelsPerMeter = 0;
-   	bih->biClrUsed = 0;           // Always use the whole palette.
+    bih->biClrUsed = 0; // Always use the whole palette.
     bih->biClrImportant = 0;
 
-	// copy the palette
-	if(bpp < 16)
-		memcpy(info->bmiColors, bmiColours, colours_used * sizeof(RGBQUAD));
+    // copy the palette
+    if(bpp < 16) {
+        memcpy(info->bmiColors, bmiColours, colours_used * sizeof(RGBQUAD));
+    }
 
-	hbitmap = CreateDIBSection(hdc, info, DIB_RGB_COLORS, &bits, NULL, 0);
+    hbitmap = CreateDIBSection(hdc, info, DIB_RGB_COLORS, &bits, NULL, 0);
 
-	free(info);
+    free(info);
 
-	if(hbitmap == NULL || bits == NULL)
-		return NULL;
+    if(hbitmap == NULL || bits == NULL) {
+        return NULL;
+    }
 
-	return hbitmap;
+    return hbitmap;
 }
 
 #endif // Windows

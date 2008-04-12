@@ -15,7 +15,7 @@
  * 
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ */
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Error.h"
@@ -23,28 +23,29 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-static FIA_OutputMessageFunction errorFunction = NULL;
+static FIA_OutputMessageFunction errorFunction= NULL;
 
 void DLL_CALLCONV
 FIA_SetOutputMessage(FIA_OutputMessageFunction omf)
 {
-	errorFunction = omf;
+    errorFunction = omf;
 }
 
 void DLL_CALLCONV
 FIA_SendOutputMessage(const char *fmt, ...)
 {
-	if(errorFunction == NULL)
-		return;
+    if(errorFunction == NULL) {
+        return;
+    }
 
-	va_list ap;
-	char message[500];
-	
-	va_start(ap, fmt);
+    va_list ap;
+    char message[500];
 
-	vsnprintf(message, 500, fmt, ap);
+    va_start(ap, fmt);
 
-	va_end(ap);
+    vsnprintf(message, 500, fmt, ap);
 
-	errorFunction(message);
+    va_end(ap);
+
+    errorFunction(message);
 }
