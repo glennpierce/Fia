@@ -71,7 +71,7 @@ TestFIA_ParticleInfoTest(CuTest* tc)
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib2);
 	FIARECT centre;
 
-	std::ofstream myfile (TEST_DATA_DIR  "shouldbe.txt");
+	std::ofstream myfile (TEST_DATA_OUTPUT_DIR  "shouldbe.txt");
 
 	for(int i=0; i < info->number_of_blobs; i++)
 	{
