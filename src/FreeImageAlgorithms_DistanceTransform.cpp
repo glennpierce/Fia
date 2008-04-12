@@ -126,9 +126,6 @@ FIA_DistanceTransform(FIBITMAP *src)
 	float *out_ptr;
 	unsigned char *src_ptr;
 
-	int bpp = FreeImage_GetBPP(src);
-	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
-
 	FIBITMAP *out = FIA_ConvertToGreyscaleFloatType(src, FIT_FLOAT);
 
 	for(register int y = 0; y < height; y++) { 

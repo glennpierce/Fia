@@ -374,7 +374,7 @@ FIBITMAP* Kernel<Tsrc>::Convolve()
 template<typename Tsrc>
 inline double Kernel<Tsrc>::AddKernelRow(KernelIterator<Tsrc> &iterator)
 {
-	register double *tmp, *kernel_ptr;
+	register double *tmp;
 
 	int x_max_block_size = this->x_max_block_size;
 	int x_reminder = this->x_reminder;

@@ -1,5 +1,6 @@
 #include "CuTest.h"
 
+#include "Constants.h"
 #include "FreeImage.h"
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
@@ -15,7 +16,7 @@
 static void
 TestFIA_FillholeTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\fillhole_test.bmp";
+	const char *file = TEST_DATA_DIR "fillhole.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -37,7 +38,7 @@ TestFIA_FillholeTest(CuTest* tc)
 
 	PROFILE_STOP("FillholeTest");
 	
-	FIA_SaveFIBToFile(result_dib, TEMP_DIR "\\fillhole_result.bmp", BIT8);
+	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "fillhole_result.bmp", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -49,7 +50,7 @@ TestFIA_FillholeTest(CuTest* tc)
 static void
 TestFIA_ParticleInfoTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\fillhole_test.bmp";
+	const char *file = TEST_DATA_DIR "particle.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
@@ -68,12 +69,9 @@ TestFIA_ParticleInfoTest(CuTest* tc)
 	PROFILE_STOP("ParticleInfo");
 
 	FIBITMAP *dst = FreeImage_ConvertTo24Bits(dib2);
-
 	FIARECT centre;
 
-	int height = FreeImage_GetHeight(dst);
-
-	std::ofstream myfile ("C:\\Documents and Settings\\Pierce\\Desktop\\shouldbe.txt");
+	std::ofstream myfile (TEST_DATA_DIR  "shouldbe.txt");
 
 	for(int i=0; i < info->number_of_blobs; i++)
 	{
@@ -101,7 +99,7 @@ TestFIA_ParticleInfoTest(CuTest* tc)
 
 	myfile.close();
 
-	FIA_SaveFIBToFile(dst, "C:\\Documents and Settings\\Pierce\\Desktop\\particle_rect.bmp", BIT24);
+	FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "particle_found.jpg", BIT24);
 
 	FIA_FreeParticleInfo(info);
 
@@ -110,7 +108,7 @@ TestFIA_ParticleInfoTest(CuTest* tc)
 	FreeImage_Unload(dst);
 }
 
-
+/*
 static void
 TestFIA_FindImageMaximaTest(CuTest* tc)
 {
@@ -174,6 +172,7 @@ TestFIA_FindImageMaximaTest2(CuTest* tc)
 	FreeImage_Unload(dib2);
 	FreeImage_Unload(dst);
 }
+*/
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsParticleSuite(void)
@@ -182,8 +181,8 @@ CuGetFreeImageAlgorithmsParticleSuite(void)
 
 	SUITE_ADD_TEST(suite, TestFIA_FillholeTest);
 	SUITE_ADD_TEST(suite, TestFIA_ParticleInfoTest);
-	SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest);
-    SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest2);
+	//SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest);
+    //SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest2);
 
 	return suite;
 }

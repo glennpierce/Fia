@@ -30,7 +30,6 @@ FIA_Fillholes(FIBITMAP* src,
 {
 	const int width = FreeImage_GetWidth(src);
 	const int height = FreeImage_GetHeight(src);
-	const int number_of_pixels = width * height;
 
 	unsigned char *src_ptr;
 

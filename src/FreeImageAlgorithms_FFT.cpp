@@ -39,6 +39,7 @@ static FFT2D<long>			fftLongImage;
 static FFT2D<float>			fftFloatImage;
 static FFT2D<double>			fftDoubleImage;
 
+/*
 static void GetAbsoluteXValues(kiss_fft_cpx* fftbuf, double *out_values, int size)
 {
 	int x;
@@ -68,7 +69,7 @@ static void GetAbsoluteShiftedXValues(kiss_fft_cpx* fftbuf, double *out_values, 
 										  pow( (double) ((fftbuf + x)->i), (double) 2.0));
 	}
 }
-
+*/
 
 static void GetShiftedComplexXValues(kiss_fft_cpx* fftbuf, FICOMPLEX *out_values, int size)
 {
@@ -90,11 +91,7 @@ static void GetShiftedComplexXValues(kiss_fft_cpx* fftbuf, FICOMPLEX *out_values
 template<class Tsrc> FIBITMAP* 
 FFT2D<Tsrc>::TransformStandardToComplexImage(FIBITMAP *src, int inverse, int shift)
 {
-	int height, width;
-
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
-
-	int i=0, x, y;
+	int height, width, i=0, x, y;
 	int dims[2];
 	int ndims = 2;
     size_t bufsize;
@@ -315,6 +312,9 @@ FIA_FFT(FIBITMAP *src, int inverse, int shift)
 			
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
 			return TransformComplexToComplexImage(src, inverse, shift);
+            
+        default:
+            break;
 	}
 
 	FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform FFT for type %d.", src_type);

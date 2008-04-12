@@ -102,8 +102,6 @@ STRETCH<Tdst>::StretchImageAcrossRange(FIBITMAP *src, Tdst dst_min, Tdst dst_max
 
     double min_found, max_found;
 
-    FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
-
     FIA_FindMinMax(src, &min_found, &max_found);
 
     // compute the scaling factor
@@ -250,7 +248,7 @@ FIA_LinearScaleToStandardType(FIBITMAP *src, double min, double max, double *min
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = scaleDoubleImage.convert(src, min, max, min_within_image, max_within_image);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
@@ -302,7 +300,7 @@ FIA_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = stretchDoubleImage.StretchImageToType(src, type, max);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:	// array of FICOMPLEX: 2 x 64-bit
 			break;
 	}
 
@@ -347,7 +345,7 @@ FIA_StretchImageAcrossRange(FIBITMAP *src, double min, double max)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = stretchDoubleImage.StretchImageAcrossRange(src, type, max);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 

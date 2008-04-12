@@ -88,7 +88,7 @@ FIA_Threshold(FIBITMAP *src, double min, double max, double new_value)
 
 	dst = FreeImage_Clone(src);
 
-	int err;
+	int err = FREEIMAGE_ALGORITHMS_ERROR;
 
 	switch(src_type) {
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
@@ -113,11 +113,11 @@ FIA_Threshold(FIBITMAP *src, double min, double max, double new_value)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			err = thresholdDoubleImage.Threshold(dst, min, max, new_value);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
-	if(err = FREEIMAGE_ALGORITHMS_ERROR) {
+	if(err == FREEIMAGE_ALGORITHMS_ERROR) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN,
 			"FREE_IMAGE_TYPE: Unable to threshold type %d.\n", src_type);
 		return NULL;
@@ -130,15 +130,13 @@ FIA_Threshold(FIBITMAP *src, double min, double max, double new_value)
 int DLL_CALLCONV
 FIA_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value)
 {
-	FIBITMAP *dst = NULL;
-
 	if(!src)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
 	// convert from src_type to FIT_BITMAP
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-	int err;
+	int err = FREEIMAGE_ALGORITHMS_ERROR;
 
 	switch(src_type) {
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
@@ -163,11 +161,11 @@ FIA_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			err = thresholdDoubleImage.Threshold(src, min, max, new_value);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
-	if(err = FREEIMAGE_ALGORITHMS_ERROR) {
+	if(err == FREEIMAGE_ALGORITHMS_ERROR) {
 		FreeImage_OutputMessageProc(FIF_UNKNOWN,
 			"FREE_IMAGE_TYPE: Unable to threshold type %d.\n", src_type);
 		return FREEIMAGE_ALGORITHMS_ERROR;

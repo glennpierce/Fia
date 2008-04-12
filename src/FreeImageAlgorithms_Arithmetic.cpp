@@ -280,8 +280,11 @@ ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
 		return FREEIMAGE_ALGORITHMS_ERROR;
 	}
 
-	double *dst_ptr = (double *) FreeImage_GetBits(dst);
+    double *dst_ptr = (double *) FreeImage_GetBits(dst);
 	Tsrc *src_ptr = (Tsrc *) FreeImage_GetBits(src);
+
+    if(dst_ptr == NULL || src_ptr == NULL)
+        return FREEIMAGE_ALGORITHMS_ERROR;    
 
 	int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
 
@@ -642,7 +645,7 @@ FIA_Transpose(FIBITMAP *src)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = arithmaticDoubleImage.Transpose(src);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
@@ -688,7 +691,7 @@ FIA_Log(FIBITMAP *src)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = arithmaticDoubleImage.Log(src);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
@@ -721,6 +724,8 @@ FIA_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 			return arithmaticFloatImage.MultiplyImages(dst, src);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.MultiplyImages(dst, src);
+        default:
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -748,6 +753,8 @@ FIA_DivideGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 			return arithmaticFloatImage.DivideImages(dst, src);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.DivideImages(dst, src);
+        default:
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -774,6 +781,8 @@ FIA_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src)
 			return arithmaticFloatImage.MaxOfTwoImages(dst, src);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.MaxOfTwoImages(dst, src);
+        default:
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -800,6 +809,8 @@ FIA_AddGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 			return arithmaticFloatImage.AddImages(dst, src);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.AddImages(dst, src);
+        default:    
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -827,6 +838,8 @@ FIA_SubtractGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 			return arithmaticFloatImage.SubtractImages(dst, src);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.SubtractImages(dst, src);
+        default:    
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -854,6 +867,8 @@ FIA_MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
 			return arithmaticFloatImage.MultiplyGreyLevelImageConstant(dst, constant);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.MultiplyGreyLevelImageConstant(dst, constant);
+        default:    
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -880,6 +895,8 @@ FIA_DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
 			return arithmaticFloatImage.DivideGreyLevelImageConstant(dst, constant);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.DivideGreyLevelImageConstant(dst, constant);
+        default:    
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -906,6 +923,8 @@ FIA_AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
 			return arithmaticFloatImage.AddGreyLevelImageConstant(dst, constant);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.AddGreyLevelImageConstant(dst, constant);
+        default:    
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -932,6 +951,8 @@ FIA_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
 			return arithmaticFloatImage.SubtractGreyLevelImageConstant(dst, constant);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.SubtractGreyLevelImageConstant(dst, constant);
+        default:    
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 
@@ -1033,6 +1054,8 @@ FIA_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
 			return arithmaticFloatImage.SumOfAllPixels(src, mask, sum);
 		case FIT_DOUBLE:	
 			return arithmaticDoubleImage.SumOfAllPixels(src, mask, sum);
+        default:
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 

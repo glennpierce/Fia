@@ -351,6 +351,8 @@ FIA_FindMinMax(FIBITMAP *src, double *min, double *max)
 		case FIT_DOUBLE:		
 			minmaxDoubleImage.find(src, min, max);
 			break;	
+        default:
+            break;
 	}
 }
 
@@ -365,7 +367,7 @@ FIND_MINMAX_FOR_DIB<Tsrc>::find_max_xy(FIBITMAP *src, double *max, FIAPOINT *pt)
 	int height = FreeImage_GetHeight(src);
 
 	double temp_max;
-	Tsrc l_max;
+	Tsrc l_max=0;
 
 	// Get the first two pixel values for initialisation
 	Tsrc *bits = reinterpret_cast<Tsrc*>(FreeImage_GetScanLine(src, 0));
@@ -420,6 +422,8 @@ FIA_FindMaxXY(FIBITMAP *src, double *max, FIAPOINT *pt)
 		case FIT_DOUBLE:		
 			minmaxDoubleImage.find_max_xy(src, max, pt);
 			break;	
+        default:
+            break;
 	}
 }
 
@@ -556,6 +560,9 @@ FIA_IsGreyScale(FIBITMAP *src)
 			if(bpp >= 16)
 				return 0;
 		}
+        
+        default:
+            break;
 	}
 
 	return 1;
@@ -588,6 +595,9 @@ FIA_GetMaxPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *max)
 		case FIT_FLOAT:		
 			*max = FLT_MAX;
 			break;	
+            
+        default:
+            break;
 	}
 }
 
@@ -618,6 +628,9 @@ FIA_GetMinPosibleValueForGreyScaleType(FREE_IMAGE_TYPE type, double *min)
 		case FIT_FLOAT:		
 			*min = FLT_MIN;
 			break;	
+            
+        default:
+            break;
 	}
 }
 
@@ -633,26 +646,23 @@ FIA_GetMaxPosibleValueForFib(FIBITMAP *src, double *max)
 		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit		
 			*max = UCHAR_MAX;
 			break;
-
 		case FIT_UINT16:	
 			*max = USHRT_MAX;
 			break;
-
 		case FIT_INT16:		
 			*max = SHRT_MAX;
 			break;
-
 		case FIT_UINT32:	
 			*max = UINT_MAX;
 			break;
-
 		case FIT_INT32:		
 			*max = INT_MAX;
 			break;
-
 		case FIT_FLOAT:		
 			*max = FLT_MAX;
-			break;	
+			break;	        
+        default:
+            break;
 	}
 }
 
@@ -689,6 +699,9 @@ FIA_GetMinPosibleValueForFib(FIBITMAP *src, double *min)
 		case FIT_FLOAT:		
 			*min = FLT_MIN;
 			break;	
+            
+        default:
+            break;
 	}
 }
 
@@ -1015,7 +1028,6 @@ FIA_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom)
 {
 
     int src_height = FreeImage_GetHeight(src);
-	int dst_height = FreeImage_GetHeight(dst);
 	int dst_pitch =  FreeImage_GetPitch(dst);
  
 	int src_line_bytes = FreeImage_GetLine(src);

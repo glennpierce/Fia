@@ -92,7 +92,7 @@ FIA_HSVToRGB( double hue, double satuation, double value,
 	*blue = *red;
 	
 	h = (unsigned int) (temp_hue / 60);  
-	f = (double) (temp_hue / 60) - h;
+	f = (double) (temp_hue / 60.0) - h;
 	p = (unsigned int) floor( (value * (1 - satuation) * 255) + 0.5);
 	q = (unsigned int) floor( (value * (1 - f * satuation) * 255) + 0.5);
 	t = (unsigned int) floor( (value * (1 - (1 - f) * satuation) * 255) + 0.5);

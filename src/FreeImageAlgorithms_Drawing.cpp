@@ -248,7 +248,7 @@ static int orthogonal_draw_gs_line(FIBITMAP *src, int x1, int y1, int x2, int y2
 static int 
 DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width) 
 {  
-	int err;
+	int err = FREEIMAGE_ALGORITHMS_ERROR;
 
 	for(int i=0; i < line_width; i++) {
 	
@@ -279,7 +279,7 @@ DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width)
 template <typename valType> static int 
 DrawGSRect (FIBITMAP *src, FIARECT rect, valType colour, int line_width) 
 {  
-	int err;
+	int err = FREEIMAGE_ALGORITHMS_ERROR;
 
 	for(int i=0; i < line_width; i++) {
 	
@@ -366,10 +366,6 @@ Draw8BitSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, unsigned char value)
 	// Seems that Anti grain method is to slow probably  because it is too advanced
 	// Does accurate drawing etc with anti aliasing.
 	// We just want a simple rectangle.
-
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
-
 	// Allocate the framebuffer
 	unsigned char* buf = NULL; 
 	FIARECT tmp_rect = rect;
@@ -407,7 +403,6 @@ FIA_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double value)
         rect.bottom = height - 1;
 
 	// Allocate the framebuffer
-	unsigned char* buf = NULL; 
 	FIARECT tmp_rect = rect;
 
 	// FreeImages are flipped
@@ -488,7 +483,6 @@ int DLL_CALLCONV
 FIA_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
                                     int line_width, int antialiased) 
 {  
-	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	FIAPOINT p1_tmp = p1, p2_tmp = p2;
@@ -542,7 +536,6 @@ int DLL_CALLCONV
 FIA_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value,
                                        int line_width, int antialiased) 
 {  
-	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	FIAPOINT p1_tmp = p1, p2_tmp = p2;
@@ -561,7 +554,7 @@ FIA_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value,
 	return FREEIMAGE_ALGORITHMS_ERROR;
 } 
 
-
+/*
 static int 
 DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width) 
 {  
@@ -591,11 +584,11 @@ DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width)
 
 	return FREEIMAGE_ALGORITHMS_SUCCESS;
 } 
+*/
 
 int DLL_CALLCONV
 FIA_DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width) 
 {  
-	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	FIARECT tmp_rect = rect;
@@ -604,16 +597,12 @@ FIA_DrawColourRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width)
 	tmp_rect.top = height - rect.top - 1;
 	tmp_rect.bottom = height - rect.bottom - 1;
 
-	int bpp = FreeImage_GetBPP(src);
-	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
-
 	return DrawColourRect (src, tmp_rect, colour, line_width); 
 } 
 
 int DLL_CALLCONV
 FIA_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour) 
 {  
-	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	FIARECT tmp_rect = rect;
@@ -686,7 +675,6 @@ FIA_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
 int DLL_CALLCONV
 FIA_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_width) 
 {  
-	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 
 	FIARECT tmp_rect = rect;
@@ -720,7 +708,7 @@ FIA_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_widt
 		case FIT_DOUBLE:	// array of double: 64-bit
 			return DrawGSRect (src, tmp_rect, (double) colour, line_width); 
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
@@ -813,7 +801,6 @@ FIA_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value,
         rect.bottom = height - 1;
 
 	// Allocate the framebuffer
-	unsigned char* buf = NULL; 
 	FIARECT tmp_rect = rect;
 
 	// FreeImages are flipped

@@ -1,5 +1,6 @@
 #include "CuTest.h"
 
+#include "Constants.h"
 #include "FreeImage.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Logic.h"
@@ -11,8 +12,8 @@
 static void
 TestFIA_MaskTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
-	const char *mask_file = IMAGE_DIR "\\river-mask.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+	const char *mask_file = TEST_DATA_DIR "drone-bee-mask.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	FIBITMAP *mask = FIA_LoadFIBFromFile(mask_file);
@@ -29,7 +30,7 @@ TestFIA_MaskTest(CuTest* tc)
 
 	CuAssertTrue(tc, err != FREEIMAGE_ALGORITHMS_ERROR);
 
-	FIA_SaveFIBToFile(src, TEMP_DIR "\\wallpaper_masked.jpg", BIT24);
+	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "dronebee-masked.jpg", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(mask);

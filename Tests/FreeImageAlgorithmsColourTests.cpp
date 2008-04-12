@@ -19,7 +19,7 @@ TestFIA_ColourFunctions(CuTest* tc)
 	FIA_HSVToRGB(hue, satuation, value, &red, &green, &blue);
 
 	CuAssertTrue(tc, red == 165);
-	CuAssertTrue(tc, green == 202);
+	CuAssertTrue(tc, green == 201);
 	CuAssertTrue(tc, blue == 68);
 }
 

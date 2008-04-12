@@ -70,7 +70,6 @@ static inline void CopyImageCol(FIBITMAP *src, int src_col,
 template <typename Tsrc>
 inline void BORDER<Tsrc>::SetImageRowToConstant(FIBITMAP *src, int row_start, int count, Tsrc val)
 {
-    int pitch = FreeImage_GetPitch(src);
     int width = FreeImage_GetWidth(src);
 
     Tsrc *dst_bits = NULL;
@@ -259,7 +258,7 @@ FIA_SetBorder(FIBITMAP *src, int xborder, int yborder, BorderType type, double c
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = borderDoubleImage.SetBorder(src, xborder, yborder, type, constant);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 

@@ -241,7 +241,7 @@ FIA_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
 		case FIT_DOUBLE:	// array of double: 64-bit
 			return statisticDoubleImage.CalculateHistogram(src, min, max, number_of_bins, hist);
 
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
@@ -281,7 +281,7 @@ FIA_StatisticReport(FIBITMAP *src, StatisticReport *report)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			return statisticDoubleImage.CalculateStatisticReport(src, report);
 
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:	// array of FICOMPLEX: 2 x 64-bit
 			break;
 	}
 
@@ -321,7 +321,7 @@ FIA_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			return statisticDoubleImage.Centroid(src, x_centroid, y_centroid);
 
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
@@ -364,6 +364,9 @@ FIA_GetGreyLevelAverage(FIBITMAP *src)
 
 		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
 			break;
+            
+        default:
+            break;
 	}
 
 	return 0.0;
@@ -643,7 +646,6 @@ FIA_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area)
 int DLL_CALLCONV
 FIA_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area)
 {
-	int bpp = FreeImage_GetBPP(src);
 	int width = FreeImage_GetWidth(src);
 	int height = FreeImage_GetHeight(src);
 	long size = width * height;  	
@@ -677,8 +679,8 @@ FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
 	if(FreeImage_GetImageType(src) != FreeImage_GetImageType(result))
 		return FREEIMAGE_ALGORITHMS_ERROR;
 
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
+	unsigned int width = FreeImage_GetWidth(src);
+	unsigned int height = FreeImage_GetHeight(src);
 
 	if(width != FreeImage_GetWidth(result))
 		return FREEIMAGE_ALGORITHMS_ERROR;
@@ -696,12 +698,12 @@ FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
 	BYTE src_tmp, result_tmp;
 	BYTE *src_bits, *result_bits;
 
-	for(int y = 0; y < height; y++) {
+	for(unsigned int y = 0; y < height; y++) {
 
 		src_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(src_converted, y));
 		result_bits = reinterpret_cast<BYTE *>(FreeImage_GetScanLine(result, y));
 			
-		for(int x = 0; x < width; x++) {
+		for(unsigned int x = 0; x < width; x++) {
 
 			src_tmp = src_bits[x];
 			result_tmp = result_bits[x];

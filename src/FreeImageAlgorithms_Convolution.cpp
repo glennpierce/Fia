@@ -22,7 +22,7 @@
 #include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
-#include "FreeImageAlgorithms_Convolution_Private.h"
+#include "FreeImageAlgorithms_Convolution.txx"
 
 #include "FreeImageAlgorithms_IO.h"
 
@@ -46,7 +46,6 @@ FIBITMAP* DLL_CALLCONV
 FIA_Convolve(FIABITMAP *src, FilterKernel kernel)
 {
 	FIBITMAP *dst = NULL;
-	FIABITMAP *tmp = NULL;
 	FIABITMAP border_tmp;
 
 	if(!src)
@@ -86,7 +85,6 @@ static FIBITMAP* DLL_CALLCONV
 FIA_Correlate(FIABITMAP *src, FilterKernel kernel)
 {
 	FIBITMAP *dst = NULL;
-	FIABITMAP *tmp = NULL;
 	FIABITMAP border_tmp;
 
 	if(!src)
@@ -127,7 +125,7 @@ FIBITMAP* DLL_CALLCONV
 FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel)
 {
 	FIBITMAP *tmp_dst = NULL, *dst = NULL;
-	FIABITMAP *tmp = NULL, *tmp_border = NULL;
+	FIABITMAP *tmp_border = NULL;
 	FIABITMAP border_tmp;
     int xborder = src->xborder;
     int yborder = src->yborder;
@@ -226,6 +224,10 @@ FIA_CorrelateImages(FIBITMAP *src1, FIARECT rect, FIBITMAP *src2)
     double max;
     pt.x = 0;
     pt.y = 0;
+    
+    kernel.x_radius = 0;
+    kernel.y_radius = 0;
+    kernel.values = NULL;
     
 	FIA_NewKernelFromImage(src2, &kernel);
 	

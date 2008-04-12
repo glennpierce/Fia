@@ -199,9 +199,7 @@ FIA_FloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
 		case FIT_INT32:		// array of long: signed 32-bit
 				err = floodfillLongImage.FloodFill(dst, seed_x, seed_y, fill_colour);
 			break;
-		case FIT_FLOAT:
-		case FIT_DOUBLE:
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 
@@ -240,9 +238,7 @@ FIA_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
 		case FIT_INT32:		// array of long: signed 32-bit
 				err = floodfillLongImage.FloodFill(src, seed_x, seed_y, fill_colour);
 			break;
-		case FIT_FLOAT:
-		case FIT_DOUBLE:
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:	// array of FICOMPLEX: 2 x 64-bit
 			break;
 	}
 

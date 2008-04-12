@@ -1,5 +1,6 @@
 #include "CuTest.h"
 
+#include "Constants.h"
 #include "FreeImage.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Arithmetic.h"
@@ -126,7 +127,7 @@ TestFIA_AddTest(CuTest* tc)
 	int width, height, error;
 	FIBITMAP *sum, *dib;
 
-    const char *file = "C:\\Documents and Settings\\Pierce\\Desktop\\Slices\\slice.bmp";
+    const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	dib = FIA_LoadFIBFromFile(file);
 

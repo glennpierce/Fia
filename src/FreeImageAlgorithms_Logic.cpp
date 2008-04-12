@@ -110,6 +110,8 @@ FIA_MaskImage(FIBITMAP* src, FIBITMAP* mask)
 			return logicFloatImage.MaskImage(src, mask);
 		case FIT_DOUBLE:	
 			return logicDoubleImage.MaskImage(src, mask);
+        default:
+            break;
 	}
 
 	return FREEIMAGE_ALGORITHMS_ERROR; 

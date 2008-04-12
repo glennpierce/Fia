@@ -24,17 +24,17 @@ void RunAllTests(void)
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
-	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
-	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
-	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
-	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsMorphologySuite());
-	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
-    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
-    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
     CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
-    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
-    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
     CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
 
 	CuSuiteRun(suite);

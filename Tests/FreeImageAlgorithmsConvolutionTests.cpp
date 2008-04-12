@@ -38,7 +38,7 @@ static const double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
 static void
 TestFIA_ConvolutionTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\wallpaper_river-gs.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *dib_src = FIA_LoadFIBFromFile(file);
 
@@ -58,23 +58,25 @@ TestFIA_ConvolutionTest(CuTest* tc)
 	FilterKernel convolve_kernel = FIA_NewKernel(10, 10, kernel, 48.0);
 
 	FIBITMAP* dib3 = FIA_Convolve(dib2, convolve_kernel);
+    FIBITMAP* dib4 = FreeImage_ConvertToStandardType(dib3, 1);
 
 	CuAssertTrue(tc, dib3 != NULL);
 
 	PROFILE_STOP("FreeImageAlgorithms_Convolve");
 
-	FIA_SaveFIBToFile(dib3, TEMP_DIR "\\wallpaper_river_blured.bmp", BIT24);
+	FIA_SaveFIBToFile(dib4, TEST_DATA_OUTPUT_DIR "drone-bee-convolved.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FIA_Unload(dib2);
 	FreeImage_Unload(dib3);
+    FreeImage_Unload(dib4);
 }
 
 
 static void
 TestFIA_SobelTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\input.bmp";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
     FIBITMAP *bit8_dib = NULL;
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
@@ -92,7 +94,7 @@ TestFIA_SobelTest(CuTest* tc)
 	//FIA_SetTernaryPalettePalette(dib2, FIA_RGBQUAD(0,0,0), 
 	//		1, FIA_RGBQUAD(255,0,0), 2, FIA_RGBQUAD(0,255,0));
 
-	FIA_SaveFIBToFile(bit8_dib, TEMP_DIR "\\cells_sobel.bmp", BIT24);
+	FIA_SaveFIBToFile(bit8_dib, TEST_DATA_OUTPUT_DIR "drone-bee_sobel.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -102,7 +104,7 @@ TestFIA_SobelTest(CuTest* tc)
 static void
 TestFIA_SobelAdvancedTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\input.bmp";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -123,15 +125,15 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
 
     if(vertical_dib != NULL)
 	    FIA_SaveFIBToFile(vertical_dib,
-            TEMP_DIR "\\sobel_vertical.bmp", BIT8);
+            TEST_DATA_OUTPUT_DIR "drone-bee_vertical.bmp", BIT8);
 
     if(horizontal_dib != NULL)
         FIA_SaveFIBToFile(bit8_dib,
-            TEMP_DIR "\\sobel_horizontal_dib.bmp", BIT8);
+            TEST_DATA_OUTPUT_DIR "drone-bee_sobel_horizontal_dib.bmp", BIT8);
 
     if(mag_dib != NULL)
         FIA_SaveFIBToFile(mag_dib,
-            TEMP_DIR "\\sobel_magnitude_dib.bmp", BIT8);
+            TEST_DATA_OUTPUT_DIR "drone-bee_sobel_magnitude_dib.bmp", BIT8);
 
     if(vertical_dib != NULL)
 	    FreeImage_Unload(vertical_dib);
@@ -170,7 +172,7 @@ TestFIA_SeparableSobelTest(CuTest* tc)
 static void
 TestFIA_MedianFilterTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\test_image_5sq.bmp";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -195,7 +197,7 @@ TestFIA_MedianFilterTest(CuTest* tc)
 
 	PROFILE_STOP("MedianFilter");
 
-	FIA_SaveFIBToFile(dib5, TEST_DATA_OUTPUT_DIR  "salt_and_pepper_median.jpg", BIT8);
+	FIA_SaveFIBToFile(dib5, TEST_DATA_OUTPUT_DIR  "drone-bee-median_filtered.jpg", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -253,10 +255,10 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-	//SUITE_ADD_TEST(suite, TestFIA_ConvolutionTest);
-	//SUITE_ADD_TEST(suite, TestFIA_SobelTest);
-    //SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
-	//SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
+	SUITE_ADD_TEST(suite, TestFIA_ConvolutionTest);
+	SUITE_ADD_TEST(suite, TestFIA_SobelTest);
+    SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
+	SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
     
 	return suite;

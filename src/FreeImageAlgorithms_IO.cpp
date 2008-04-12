@@ -176,8 +176,8 @@ FIBITMAP* DLL_CALLCONV
 FIA_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
                                                    FREE_IMAGE_TYPE data_type, int padded, int vertical_flip)
 {
-	FIBITMAP 	*dib;
-	BYTE 		*data_ptr;
+	FIBITMAP 	*dib = NULL;
+	BYTE 		*data_ptr = NULL;
 	
 	// Check the data type and convert to bpp
 	if ( bpp < 0 )
@@ -229,7 +229,8 @@ FIA_LoadGreyScaleFIBFromArrayData (BYTE *data, int bpp, int width, int height,
 			break;
 	}
 
-	FIA_CopyBytesToFBitmap(dib, data, padded, vertical_flip, COLOUR_ORDER_RGB);
+    if(dib != NULL)
+	   FIA_CopyBytesToFBitmap(dib, data, padded, vertical_flip, COLOUR_ORDER_RGB);
 
 	return dib;
 }
@@ -238,8 +239,8 @@ FIBITMAP* DLL_CALLCONV
 FIA_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int padded,
 												int vertical_flip, COLOUR_ORDER colour_order)
 {
-	FIBITMAP 	*dib;
-	BYTE 		*data_ptr;
+	FIBITMAP 	*dib = NULL;
+	BYTE 		*data_ptr = NULL;
 	
 	// Check the data type and convert to bpp
 	if ( bpp < 0 )
@@ -270,7 +271,8 @@ FIA_LoadColourFIBFromArrayData (BYTE *data, int bpp, int width, int height, int 
 			break;
 	}
 
-	FIA_CopyBytesToFBitmap(dib, data, padded, vertical_flip, colour_order);
+    if(dib != NULL)
+	   FIA_CopyBytesToFBitmap(dib, data, padded, vertical_flip, colour_order);
 
 	return dib;
 }

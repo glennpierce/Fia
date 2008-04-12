@@ -1,3 +1,5 @@
+#include "Constants.h"
+
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Utils.h"
@@ -16,7 +18,7 @@
 
 static void BorderTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\border_test.bmp";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 
@@ -28,7 +30,7 @@ static void BorderTest(CuTest* tc)
 
 	PROFILE_PRINT();
 
-	FIA_SaveFIBToFile(dst->fib, TEMP_DIR "\\border_test_result.bmp", BIT8);
+	FIA_SaveFIBToFile(dst->fib, TEST_DATA_OUTPUT_DIR "border_test_result.bmp", BIT8);
 	
 	FreeImage_Unload(src);
 	FIA_Unload(dst);
@@ -64,7 +66,7 @@ TestFIA_UtilityTest(CuTest* tc)
 {
 	double min, max;
 
-	const char *file = IMAGE_DIR "\\24bit_colour.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee.jpg";
 
 	FIBITMAP *dib = FIA_LoadFIBFromFile(file);
 	
@@ -76,10 +78,11 @@ TestFIA_UtilityTest(CuTest* tc)
 	CuAssertTrue(tc, max == 255.0);
 }
 
+/*
 static void
 TestFIA_UtilityCompareTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\24bit_colour.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	FIBITMAP *dib2 = FIA_LoadFIBFromFile(file);
@@ -97,12 +100,12 @@ TestFIA_UtilityCompareTest(CuTest* tc)
 	FreeImage_Unload(dib2);
 	FreeImage_Unload(dib3);
 }
-
+*/
 
 static void
 TestFIA_DistanceTransformTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\distance-transform-test.gif";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 
@@ -116,7 +119,7 @@ TestFIA_DistanceTransformTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FIA_SaveFIBToFile(dib3, TEMP_DIR "\\distance-transform.jpg", BIT24);
+	FIA_SaveFIBToFile(dib3, TEST_DATA_OUTPUT_DIR "distance-transform.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -128,12 +131,9 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
-    	SUITE_ADD_TEST(suite, BorderTest);
+    SUITE_ADD_TEST(suite, BorderTest);
 	SUITE_ADD_TEST(suite, TestFIA_UtilityTest);
-	SUITE_ADD_TEST(suite, TestFIA_UtilityCompareTest);
 	SUITE_ADD_TEST(suite, TestFIA_DistanceTransformTest);
-	//SUITE_ADD_TEST(suite, TestFIA_FindMinMaxTest);
-	//SUITE_ADD_TEST(suite, BorderTest);
-	
+
 	return suite;
 }

@@ -58,7 +58,7 @@ TestFIA_GSLineTest(CuTest* tc)
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
-	FIAPOINT p1, p2, p3, p4;
+	FIAPOINT p1, p2;
 
 	p1.x = 10;
 	p1.y = 10;
@@ -258,6 +258,7 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 	SUITE_ADD_TEST(suite, TestFIA_GSLineTest);
 	SUITE_ADD_TEST(suite, TestFIA_ColourLineTest);
 	SUITE_ADD_TEST(suite, TestFIA_Rect24bitTest);
+    SUITE_ADD_TEST(suite, TestFIA_Rect32bitTest);
     SUITE_ADD_TEST(suite, TestFIA_GsRectTest);
 	SUITE_ADD_TEST(suite, TestFIA_SolidRectTest);
 	SUITE_ADD_TEST(suite, TestFIA_SolidGSRectTest);

@@ -303,7 +303,7 @@ FIA_MedianFilter(FIABITMAP* src, int kernel_x_radius, int kernel_y_radius)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			dst = filterDoubleImage.MedianFilter(src, kernel_x_radius, kernel_y_radius);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:	// array of FICOMPLEX: 2 x 64-bit
 			break;
 	}
 
@@ -349,7 +349,7 @@ FIA_GetMedianFromImage(FIBITMAP* src)
 		case FIT_DOUBLE:	// array of double: 64-bit
 			return filterDoubleImage.GetMedianFromImage(src);
 			break;
-		case FIT_COMPLEX:	// array of FICOMPLEX: 2 x 64-bit
+		default:
 			break;
 	}
 

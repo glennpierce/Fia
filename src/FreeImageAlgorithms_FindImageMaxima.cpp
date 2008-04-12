@@ -340,10 +340,6 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak **peaks_ref)
 
 	if (peaks == NULL)
 	    return -1;
-	
-	int bpp = FreeImage_GetBPP(this->original_image);
-
-	FREE_IMAGE_TYPE type = FreeImage_GetImageType(this->original_image);
 
 	for(int i=0; i < number; i++)
 	{
@@ -372,14 +368,14 @@ FindMaxima::FindImageMaxima(FIBITMAP* src, FIBITMAP *mask, unsigned char thresho
 {
 	this->regionGrowCount=0;
 	this->threshold = threshold;
-	this->min_separation;
+	this->min_separation = min_separation;
 
 	this->original_image = src;
 
 	this->width = FreeImage_GetWidth(this->original_image);
 	this->height = FreeImage_GetHeight(this->original_image);
 
-	this->processing_image = FreeImage_Allocate(width, height, 8, 0, 0, 0);
+	this->processing_image = FreeImage_Allocate(this->width, this->height, 8, 0, 0, 0);
 
 	this->pitch_in_pixels = FreeImage_GetPitch(this->processing_image) / sizeof(unsigned char);
 	
