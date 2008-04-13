@@ -236,8 +236,9 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 
 	PROFILE_STOP("FIA_CorrelateImages");
 
-    if(FreeImage_Paste(colour_src, colour_section, pt.x, pt.y, 255) == 0)
+    if(FreeImage_Paste(colour_src, colour_section, pt.x, pt.y, 255) == 0) {
         printf("paste failed\n");
+    }
 
 	FIA_SaveFIBToFile(colour_src, TEST_DATA_OUTPUT_DIR  "correlated.jpg", BIT24);
 
