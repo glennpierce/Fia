@@ -18,7 +18,6 @@
  */
 
 #include "FreeImageAlgorithms.h"
-#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Statistics.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
@@ -53,12 +52,12 @@ template<class Tsrc> int Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, doub
     }
     
     if (min >= max) {
-        FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error minimum specified is greater than the maximum");
         return FIA_ERROR;
     }
     
     if (number_of_bins<1) {
-        FIA_SendOutputMessage("Error number of bins less than 1");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error number of bins less than 1");
         return FIA_ERROR;
     }
     
@@ -396,12 +395,12 @@ FIA_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char max,
         int number_of_bins, unsigned long *rhist, unsigned long *ghist, unsigned long *bhist)
 {
     if (rhist == NULL || ghist == NULL || bhist == NULL) {
-        FIA_SendOutputMessage("Error null passed for arrays");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error null passed for arrays");
         return FIA_ERROR;
     }
 
     if(min >= max) {
-        FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error minimum specified is greater than the maximum");
         return FIA_ERROR;
     }
 

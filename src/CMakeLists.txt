@@ -5,7 +5,6 @@ SET(FIA_SRCS FreeImageAlgorithms_Arithmetic.cpp
 	     FreeImageAlgorithms_Convolution.txx
 	     FreeImageAlgorithms_DistanceTransform.cpp
 	     FreeImageAlgorithms_Drawing.cpp
-	     FreeImageAlgorithms_Error.cpp
 	     FreeImageAlgorithms_FFT.cpp
 	     FreeImageAlgorithms_FillHole.cpp
 	     FreeImageAlgorithms_Filters.cpp

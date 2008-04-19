@@ -17,7 +17,6 @@
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Palettes.h"
@@ -320,12 +319,12 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
         }
 
         if(converted_dib == NULL) {
-            FIA_SendOutputMessage("Error Saving File! Failed converting to 8 or 24 bit");
+            FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error Saving File! Failed converting to 8 or 24 bit");
             return FIA_ERROR;
         }
 
         if(!FreeImage_Save(fif, converted_dib, filepath, 0)) {
-            FIA_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");
+            FreeImage_OutputMessageProc(FIF_UNKNOWN, "Unknown Error Saving File! FreeImage_Save Failed");
             return FIA_ERROR;
         }
 
@@ -334,7 +333,7 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
     }
     else {
 
-        FIA_SendOutputMessage("Error Saving File! Unsupported Type");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error Saving File! Unsupported Type");
         return FIA_ERROR;
     }
 

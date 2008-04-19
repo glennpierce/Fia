@@ -18,7 +18,6 @@
  */
 
 #include "FreeImageAlgorithms.h"
-#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_Filters.h"
 #include "FreeImageAlgorithms_Utilities.h"

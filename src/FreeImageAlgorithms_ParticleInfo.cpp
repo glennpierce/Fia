@@ -19,7 +19,6 @@
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Utils.h"
-#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Particle.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
@@ -160,7 +159,7 @@ FIA_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned char white_on_blac
 
     // Make sure we have the 8bit greyscale image.
     if(FreeImage_GetBPP(src) != 8 && FreeImage_GetImageType(src) != FIT_BITMAP) {
-        FIA_SendOutputMessage("Error performing ParticleInfo. Source image must be an 8bit FIT_BITMAP");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error performing ParticleInfo. Source image must be an 8bit FIT_BITMAP");
         return FIA_ERROR;
     }
 

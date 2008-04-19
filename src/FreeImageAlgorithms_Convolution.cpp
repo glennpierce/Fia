@@ -19,7 +19,6 @@
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Utils.h"
-#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_Convolution.txx"
@@ -54,7 +53,7 @@ FIA_Convolve(FIABITMAP *src, FilterKernel kernel)
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
     
     if (src_type == FIT_COMPLEX) {
-        FIA_SendOutputMessage("Error can not perform convolution on a complex image");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not perform convolution on a complex image");
         return NULL;
     }
     
@@ -94,7 +93,7 @@ FIA_Correlate(FIABITMAP *src, FilterKernel kernel)
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
     
     if (src_type == FIT_COMPLEX) {
-        FIA_SendOutputMessage("Error can not perform convolution on a complex image");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not perform convolution on a complex image");
         return NULL;
     }
     
@@ -137,7 +136,7 @@ FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel ver
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src->fib);
     
     if (src_type == FIT_COMPLEX) {
-        FIA_SendOutputMessage("Error can not perform convolution on a complex image");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not perform convolution on a complex image");
         return NULL;
     }
     
@@ -245,12 +244,12 @@ FIA_CorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt)
     }
     
     if (src1_type == FIT_COMPLEX) {
-        FIA_SendOutputMessage("Error can not perform correlation on a complex image");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not perform correlation on a complex image");
         return NULL;
     }
     
     if (FreeImage_GetBPP(src1) >= 24 && src1_type == FIT_BITMAP) {
-        FIA_SendOutputMessage("Error can not perform correlation on a colour image");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not perform correlation on a colour image");
         return NULL;
     }
     

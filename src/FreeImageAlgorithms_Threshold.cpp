@@ -17,7 +17,6 @@
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 
@@ -41,7 +40,7 @@ template<class Tsrc> int THRESHOLD<Tsrc>::Threshold(FIBITMAP *src, Tsrc min, Tsr
     }
     
     if (!FIA_IsGreyScale(src)) {
-        FIA_SendOutputMessage("Error performing threshold. Not a greyscale image");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error performing threshold. Not a greyscale image");
         return FIA_ERROR;
     }
     

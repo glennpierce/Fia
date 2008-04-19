@@ -1,8 +1,8 @@
 #include <stdio.h>
 
 #include "CuTest.h"
+#include "FreeImage.h"
 #include "FreeImageAlgorithms.h"
-#include "FreeImageAlgorithms_Error.h"
 
 #include <iostream>
 
@@ -45,15 +45,15 @@ void RunAllTests(void)
 	PROFILE_PRINT();
 }
 
-static void OnError(const char *msg)
+static void OnError(FREE_IMAGE_FORMAT fif, const char *msg)
 {
     std::cout << "Error: " << msg << std::endl;
 }
 
 int __cdecl main(void)
 {
-    FIA_SetOutputMessage(OnError);
-
+    FreeImage_SetOutputMessage(OnError);
+    
 	RunAllTests();
 
 	return 0;
