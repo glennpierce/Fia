@@ -231,7 +231,12 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 
 	PROFILE_START("FIA_CorrelateImages");
 
-	FIAPOINT pt = FIA_CorrelateImages(gs_src, rect, src);
+	FIAPOINT pt;
+	
+	if(FIA_CorrelateImages(gs_src, src, &pt) == FREEIMAGE_ALGORITHMS_ERROR) {
+	    goto TEST_ERROR;
+	}
+	
     printf("position x %d position y %d\n", pt.x, pt.y);
 
 	PROFILE_STOP("FIA_CorrelateImages");
@@ -242,12 +247,66 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 
 	FIA_SaveFIBToFile(colour_src, TEST_DATA_OUTPUT_DIR  "correlated.jpg", BIT24);
 
+	TEST_ERROR:
+	
 	FreeImage_Unload(src);
 	FreeImage_Unload(colour_src);
 	FreeImage_Unload(gs_src);
     FreeImage_Unload(colour_section);
 
     //178, 138
+}
+
+
+static void
+TestFIA_CorrelateRegionsTest(CuTest* tc)
+{
+    const char *colour_file = TEST_DATA_DIR "drone-bee.jpg";
+    const char *gs_file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+
+    FIBITMAP *colour_src = FIA_LoadFIBFromFile(colour_file);
+    FIBITMAP *gs_src = FIA_LoadFIBFromFile(gs_file);
+    FIBITMAP *gs_src24 = FreeImage_ConvertTo24Bits(gs_src);
+    FIBITMAP *colour_section = NULL;
+        
+    CuAssertTrue(tc, gs_src != NULL);
+    CuAssertTrue(tc, colour_src != NULL);
+
+    FIARECT rect1, rect2;
+    rect1.left = 0;
+    rect1.top = 0;
+    rect1.bottom = FreeImage_GetHeight(colour_src);
+    rect1.right = FreeImage_GetWidth(colour_src);
+
+    rect2.left = 100;
+    rect2.top = 100;
+    rect2.bottom = 139;
+    rect2.right = 139;
+        
+    PROFILE_START("FIA_CorrelateImages");
+
+    FIAPOINT pt;
+    
+    if(FIA_CorrelateImageRegions(gs_src, rect1, gs_src, rect2, &pt) == FREEIMAGE_ALGORITHMS_ERROR) {
+        goto TEST_ERROR;
+    }
+    
+    colour_section = FreeImage_Copy(colour_src, pt.x, pt.y, pt.x + 39, pt.y + 39);
+    
+    PROFILE_STOP("FIA_CorrelateImages");
+
+    if(FreeImage_Paste(gs_src24, colour_section, pt.x, pt.y, 255) == 0) {
+        printf("paste failed\n");
+    }
+
+    FIA_SaveFIBToFile(gs_src24, TEST_DATA_OUTPUT_DIR  "correlated-region.jpg", BIT24);
+
+    TEST_ERROR:
+    
+    FreeImage_Unload(colour_src);
+    FreeImage_Unload(gs_src);
+    FreeImage_Unload(gs_src24);
+    FreeImage_Unload(colour_section);
 }
 
 
@@ -261,6 +320,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
 	SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
     
 	return suite;
 }

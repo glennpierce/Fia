@@ -217,38 +217,84 @@ FIA_NewKernelFromImage(FIBITMAP *src, FilterKernel *kernel)
     return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
-FIAPOINT DLL_CALLCONV
-FIA_CorrelateImages(FIBITMAP *src1, FIARECT rect, FIBITMAP *src2)
+int DLL_CALLCONV
+FIA_CorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt)
 {
     FilterKernel kernel;
     FIABITMAP *tmp = NULL;
-    FIAPOINT pt;
     double max;
-    pt.x = 0;
-    pt.y = 0;
+    pt->x = 0;
+    pt->y = 0;
 
+    unsigned int src1_width = FreeImage_GetWidth(src1);
+    unsigned int src1_height = FreeImage_GetHeight(src1);
+    unsigned int src2_width = FreeImage_GetWidth(src2);
+    unsigned int src2_height = FreeImage_GetHeight(src2);
+    
+    if(src2_width > src1_width || src2_height > src1_height) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Images must have the same dimensions");
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
+    
+    FREE_IMAGE_TYPE src1_type = FreeImage_GetImageType(src1);
+    FREE_IMAGE_TYPE src2_type = FreeImage_GetImageType(src2);
+    
+    if(src1_type != src2_type) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Images must be of the same type");
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
+    
+    if(src1_type != FIT_FLOAT || src1_type != FIT_DOUBLE) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Images must be of the type FIT_FLOAT or FIT_DOUBLE");
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
+    
     kernel.x_radius = 0;
     kernel.y_radius = 0;
     kernel.values = NULL;
 
-    FIA_NewKernelFromImage(src2, &kernel);
+    if(FIA_NewKernelFromImage(src2, &kernel) == FREEIMAGE_ALGORITHMS_ERROR) {
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
 
     tmp = FIA_SetZeroBorder(src1, kernel.x_radius, kernel.y_radius);
 
     FIBITMAP *dib = FIA_Correlate(tmp, kernel);
 
-    FIA_FindMaxXY(dib, &max, &pt);
+    FIA_FindMaxXY(dib, &max, pt);
 
-    pt.x -= kernel.x_radius;
-    pt.y += kernel.y_radius;
+    pt->x -= kernel.x_radius;
+    pt->y += kernel.y_radius;
 
-    int height = FreeImage_GetHeight(src1);
-    pt.y = height - pt.y - 1;
+    int height = src1_height;
+    pt->y = height - pt->y - 1;
 
     FreeImage_Unload(dib);
     FIA_Unload(tmp);
     free((void*)kernel.values);
 
-    return pt;
+    return FREEIMAGE_ALGORITHMS_SUCCESS;
 }
 
+int DLL_CALLCONV
+FIA_CorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2,  FIARECT rect2, FIAPOINT *pt)
+{
+    FIBITMAP *src1_rgn = FreeImage_Copy(src1, rect1.left, rect1.top, rect1.right, rect1.bottom);
+    FIBITMAP *src2_rgn = FreeImage_Copy(src2, rect2.left, rect2.top, rect2.right, rect2.bottom);
+    
+    if(src1_rgn == NULL || src2_rgn == NULL) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "NULL values passed");
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
+    
+    int err = FIA_CorrelateImages(src1_rgn, src2_rgn, pt);
+    
+    FreeImage_Unload(src1_rgn);
+    FreeImage_Unload(src2_rgn);
+    
+    if(err == FREEIMAGE_ALGORITHMS_ERROR) {
+        return FREEIMAGE_ALGORITHMS_ERROR;
+    }
+    
+    return FREEIMAGE_ALGORITHMS_SUCCESS;
+}
