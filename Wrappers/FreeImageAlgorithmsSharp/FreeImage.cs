@@ -60,15 +60,11 @@ namespace FreeImage
         // We need this to keep a ref so the are not garbage collected.
         // As they are passed to unmanaged code.
         private static FreeImage_OutputMessageFunction errorCallback;
-        private static FreeImageAlgorithmsNativeMethods.FreeImageAlgorithms_OutputMessageFunction freeImageAlgorithmsErrorCallback;
-
+ 
         static FreeImageBitmap()
         {
-            FreeImageBitmap.errorCallback = FreeImageBitmap.FreeImageErrorOccurred;
-            FreeImageBitmap.freeImageAlgorithmsErrorCallback = FreeImageBitmap.FreeImageAlgorithmsErrorOccurred;
-
+            FreeImageBitmap.errorCallback = FreeImageBitmap.FreeImageErrorOccurred;   
             FreeImageNativeMethods.SetOutputMessage(FreeImageBitmap.errorCallback);
-            FreeImageAlgorithmsNativeMethods.SetOutputMessage(FreeImageBitmap.freeImageAlgorithmsErrorCallback);
         }
 
         public FreeImageBitmap() {}
@@ -118,11 +114,6 @@ namespace FreeImage
         }
 
         private static void FreeImageErrorOccurred(FIF format, string msg)
-        {
-            throw new FreeImageException(msg);
-        }
-
-        private static void FreeImageAlgorithmsErrorOccurred(string msg)
         {
             throw new FreeImageException(msg);
         }

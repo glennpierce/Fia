@@ -1,9 +1,9 @@
 ﻿<UserCombinePreferences version="1.0" filename="/home/glenn/Devel/Fia/Wrappers/FreeImageAlgorithmsSharp/FreeImageAlgorithmsSharp.sln">
   <Files>
     <File name="Welcome" />
-    <File name="FreeImageAlgorithmsInterop.cs" line="67" column="1" />
-    <File name="FreeImage.cs" line="14" column="21" />
-    <File name="FreeImageInterop.cs" line="66" column="21" />
+    <File name="FreeImageAlgorithmsInterop.cs" line="20" column="1" />
+    <File name="FreeImage.cs" line="119" column="10" />
+    <File name="FreeImageInterop.cs" line="81" column="22" />
     <File name="AssemblyInfo.cs" line="1" column="1" />
   </Files>
   <Views>
