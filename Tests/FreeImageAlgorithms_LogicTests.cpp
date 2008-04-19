@@ -28,7 +28,7 @@ TestFIA_MaskTest(CuTest* tc)
 
 	int err = FIA_MaskImage(src, mask_8bit);
 
-	CuAssertTrue(tc, err != FREEIMAGE_ALGORITHMS_ERROR);
+	CuAssertTrue(tc, err != FIA_ERROR);
 
 	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "dronebee-masked.jpg", BIT24);
 

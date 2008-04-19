@@ -33,7 +33,7 @@ FIA_Sobel(FIBITMAP *src)
 
     int err = FIA_SobelAdvanced(src, NULL, NULL, &magnitude_dib);
 
-    if(err != FREEIMAGE_ALGORITHMS_SUCCESS) {
+    if(err != FIA_SUCCESS) {
         return NULL;
     }
 
@@ -75,7 +75,7 @@ FIA_SobelAdvanced(FIBITMAP *src,
     if(magnitude != NULL) {
 
         if (vertical_tmp == NULL || horizontal_tmp == NULL) {
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
 
         int dst_width = FreeImage_GetWidth(vertical_tmp);
@@ -122,7 +122,7 @@ FIA_SobelAdvanced(FIBITMAP *src,
         FreeImage_Unload(horizontal_tmp);
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 // Test

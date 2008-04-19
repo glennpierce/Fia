@@ -301,7 +301,7 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
     FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 
     if(dib == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // try to guess the file format from the file extension
@@ -321,12 +321,12 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
 
         if(converted_dib == NULL) {
             FIA_SendOutputMessage("Error Saving File! Failed converting to 8 or 24 bit");
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
 
         if(!FreeImage_Save(fif, converted_dib, filepath, 0)) {
             FIA_SendOutputMessage("Unknown Error Saving File! FreeImage_Save Failed");
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
 
         FreeImage_Unload(standard_dib);
@@ -335,8 +335,8 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
     else {
 
         FIA_SendOutputMessage("Error Saving File! Unsupported Type");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }

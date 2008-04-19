@@ -37,12 +37,12 @@ template<class Tsrc> int THRESHOLD<Tsrc>::Threshold(FIBITMAP *src, Tsrc min, Tsr
         Tsrc new_value)
 {
     if (src == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     if (!FIA_IsGreyScale(src)) {
         FIA_SendOutputMessage("Error performing threshold. Not a greyscale image");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     int width = FreeImage_GetWidth(src);
@@ -61,7 +61,7 @@ template<class Tsrc> int THRESHOLD<Tsrc>::Threshold(FIBITMAP *src, Tsrc min, Tsr
         }
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 // Convert from type X to type BYTE
@@ -87,7 +87,7 @@ FIA_Threshold(FIBITMAP *src, double min, double max, double new_value)
 
     dst = FreeImage_Clone(src);
 
-    int err = FREEIMAGE_ALGORITHMS_ERROR;
+    int err = FIA_ERROR;
 
     switch(src_type) {
         case FIT_BITMAP: { // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
@@ -125,7 +125,7 @@ FIA_Threshold(FIBITMAP *src, double min, double max, double new_value)
         }
     }
 
-    if(err == FREEIMAGE_ALGORITHMS_ERROR) {
+    if(err == FIA_ERROR) {
         FreeImage_OutputMessageProc(FIF_UNKNOWN,
                 "FREE_IMAGE_TYPE: Unable to threshold type %d.\n", src_type);
         return NULL;
@@ -138,13 +138,13 @@ int DLL_CALLCONV
 FIA_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value)
 {
     if(!src) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // convert from src_type to FIT_BITMAP
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    int err = FREEIMAGE_ALGORITHMS_ERROR;
+    int err = FIA_ERROR;
 
     switch(src_type) {
         case FIT_BITMAP: { // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
@@ -182,11 +182,11 @@ FIA_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value)
         }
     }
 
-    if(err == FREEIMAGE_ALGORITHMS_ERROR) {
+    if(err == FIA_ERROR) {
         FreeImage_OutputMessageProc(FIF_UNKNOWN,
                 "FREE_IMAGE_TYPE: Unable to threshold type %d.\n", src_type);
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }

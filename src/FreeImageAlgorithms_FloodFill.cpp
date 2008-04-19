@@ -156,7 +156,7 @@ template <typename IntType> int GS_FLOODFILL<IntType>::FloodFill(FIBITMAP* src, 
         }
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 ;
 
@@ -218,7 +218,7 @@ int DLL_CALLCONV
 FIA_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
 {
     if(!src) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
@@ -254,9 +254,9 @@ FIA_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour)
 
     if(err == 0) {
         FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", type, FIT_BITMAP);
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 };
 

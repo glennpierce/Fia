@@ -27,7 +27,7 @@ TestFIA_IO(CuTest* tc)
 	
 	err = FIA_SaveFIBToFile (dib1, TEST_DATA_OUTPUT_DIR "save-colour-test.bmp", BIT8);
 
-	CuAssertTrue(tc, err == FREEIMAGE_ALGORITHMS_SUCCESS);
+	CuAssertTrue(tc, err == FIA_SUCCESS);
 
 	dib2 = FIA_LoadFIBFromFile(TEST_DATA_OUTPUT_DIR "save-colour-test.bmp");
 

@@ -117,7 +117,7 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
     int err = FIA_SobelAdvanced(dib1, &vertical_dib,
         &horizontal_dib, NULL);
      
-    CuAssertTrue(tc, err == FREEIMAGE_ALGORITHMS_SUCCESS); 
+    CuAssertTrue(tc, err == FIA_SUCCESS); 
 
 	PROFILE_STOP("FreeImageAlgorithms_SobelAdvanced");
 
@@ -233,7 +233,8 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 
 	FIAPOINT pt;
 	
-	if(FIA_CorrelateImages(gs_src, src, &pt) == FREEIMAGE_ALGORITHMS_ERROR) {
+	if(FIA_CorrelateImages(gs_src, src, &pt) == FIA_ERROR) {
+	    PROFILE_STOP("FIA_CorrelateImages");
 	    goto TEST_ERROR;
 	}
 	
@@ -283,18 +284,19 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
     rect2.bottom = 139;
     rect2.right = 139;
         
-    PROFILE_START("FIA_CorrelateImages");
+    PROFILE_START("FIA_CorrelateImageRegions");
 
     FIAPOINT pt;
     
-    if(FIA_CorrelateImageRegions(gs_src, rect1, gs_src, rect2, &pt) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if(FIA_CorrelateImageRegions(gs_src, rect1, gs_src, rect2, &pt) == FIA_ERROR) {
+        PROFILE_STOP("FIA_CorrelateImageRegions");
         goto TEST_ERROR;
     }
     
+    PROFILE_STOP("FIA_CorrelateImageRegions");
+    
     colour_section = FreeImage_Copy(colour_src, pt.x, pt.y, pt.x + 39, pt.y + 39);
     
-    PROFILE_STOP("FIA_CorrelateImages");
-
     if(FreeImage_Paste(gs_src24, colour_section, pt.x, pt.y, 255) == 0) {
         printf("paste failed\n");
     }

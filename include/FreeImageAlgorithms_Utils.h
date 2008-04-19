@@ -133,14 +133,14 @@ template <class T> int
 ArrayReverse(T *array, long size)
 {
 	if(array == NULL)
-		return FREEIMAGE_ALGORITHMS_ERROR;
+		return FIA_ERROR;
 
 	long mid_element = (size / 2) - 1;
 
 	for (int i=0; i <= mid_element ; i++)
 		SWAP(array[i], array[size - 1 - i]);
 
-	return FREEIMAGE_ALGORITHMS_SUCCESS;
+	return FIA_SUCCESS;
 }
 
 

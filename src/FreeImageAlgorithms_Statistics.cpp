@@ -44,7 +44,7 @@ template<class Tsrc> int Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, doub
         int number_of_bins, unsigned long *hist)
 {
     if (hist == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     // We need to find the min and max in the image.
@@ -54,12 +54,12 @@ template<class Tsrc> int Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, doub
     
     if (min >= max) {
         FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     if (number_of_bins<1) {
         FIA_SendOutputMessage("Error number of bins less than 1");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     // Clear histogram array
@@ -99,14 +99,14 @@ template<class Tsrc> int Statistic<Tsrc>::CalculateHistogram(FIBITMAP *src, doub
         }
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int Statistic<Tsrc>::CalculateStatisticReport(FIBITMAP *src,
         StatisticReport *report)
 {
     if (report == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     int width = FreeImage_GetWidth(src);
@@ -138,7 +138,7 @@ template<class Tsrc> int Statistic<Tsrc>::CalculateStatisticReport(FIBITMAP *src
     
     report->stdDeviation = sqrt((float) sd_sum / (report->area - 1));
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int Statistic<Tsrc>::Centroid(FIBITMAP *src, float *x_centroid,
@@ -170,7 +170,7 @@ template<class Tsrc> int Statistic<Tsrc>::Centroid(FIBITMAP *src, float *x_centr
     *x_centroid = (float) (sum_x / sum_i);
     *y_centroid = (float) (sum_y / sum_i);
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> double Statistic<Tsrc>::CalculateGreyLevelAverage(FIBITMAP *src)
@@ -211,7 +211,7 @@ FIA_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
         unsigned long *hist)
 {
     if(!src)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -245,14 +245,14 @@ FIA_Histogram(FIBITMAP *src, double min, double max, int number_of_bins,
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
 FIA_StatisticReport(FIBITMAP *src, StatisticReport *report)
 {
     if(!src)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -293,14 +293,14 @@ FIA_StatisticReport(FIBITMAP *src, StatisticReport *report)
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
 FIA_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
 {
     if(!src)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
@@ -341,7 +341,7 @@ FIA_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid)
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 double DLL_CALLCONV
@@ -397,12 +397,12 @@ FIA_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char max,
 {
     if (rhist == NULL || ghist == NULL || bhist == NULL) {
         FIA_SendOutputMessage("Error null passed for arrays");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     if(min >= max) {
         FIA_SendOutputMessage("Error minimum specified is greater than the maximum");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // clear histogram arrays
@@ -469,7 +469,7 @@ FIA_RGBHistogram(FIBITMAP *src, unsigned char min, unsigned char max,
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 FIBITMAP* DLL_CALLCONV
@@ -646,7 +646,7 @@ FIA_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area)
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(src);
 
     if(type != FIT_BITMAP || bpp> 8)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     BYTE *src_bits;
 
@@ -664,7 +664,7 @@ FIA_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area)
 
     *white_area = whites;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -676,14 +676,14 @@ FIA_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_
 
     unsigned int whites = 0;
 
-    if(FIA_MonoImageFindWhiteArea(src, &whites) == FREEIMAGE_ALGORITHMS_ERROR) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+    if(FIA_MonoImageFindWhiteArea(src, &whites) == FIA_ERROR) {
+        return FIA_ERROR;
     }
 
     *white_area = (double) whites / size;
     *black_area = 1 - *white_area;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -693,28 +693,28 @@ FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
     *tp = 0; *tn = 0, *fp = 0, *fn = 0;
 
     if(!src || !result) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int bpp = FreeImage_GetBPP(src);
 
     if(bpp> 8) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     if(FreeImage_GetImageType(src) != FreeImage_GetImageType(result)) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     unsigned int width = FreeImage_GetWidth(src);
     unsigned int height = FreeImage_GetHeight(src);
 
     if(width != FreeImage_GetWidth(result)) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     if(height != FreeImage_GetHeight(result)) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIBITMAP *src_converted;
@@ -769,5 +769,5 @@ FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }

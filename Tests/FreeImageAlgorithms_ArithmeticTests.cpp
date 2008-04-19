@@ -146,7 +146,7 @@ static void TestFIA_AddTest(CuTest* tc)
     
     error = FIA_AddGreyLevelImages(sum, dib);
     
-    CuAssertTrue(tc, error == FREEIMAGE_ALGORITHMS_SUCCESS);
+    CuAssertTrue(tc, error == FIA_SUCCESS);
     
     FreeImage_Unload(dib);
     FreeImage_Unload(sum);

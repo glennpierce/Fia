@@ -71,7 +71,7 @@ static void draw_line(agg::rasterizer& ras, double x1, double y1, double x2, dou
 static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, int y2, RGBQUAD colour)
 {
     if (!src) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     int width = FreeImage_GetWidth(src);
@@ -88,7 +88,7 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
     }
     
     if (x2 < 0 || y2 < 0) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     if (x1 < 0) {
@@ -115,7 +115,7 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
         // We have a horizontal line
         // Make sure y's are the same
         if (y1 != y2) {
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
         
         BYTE *bits = (BYTE *) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
@@ -134,7 +134,7 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
             bits += bytespp;
         }
         
-        return FREEIMAGE_ALGORITHMS_SUCCESS;
+        return FIA_SUCCESS;
     }
     
     if (y1 != y2) {
@@ -142,7 +142,7 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
         // We have a verticle line
         // Make sure x's are the same
         if (x1 != x2) {
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
         
         // Get starting point
@@ -163,10 +163,10 @@ static int orthogonal_draw_colour_line(FIBITMAP *src, int x1, int y1, int x2, in
             y1++;
         }
         
-        return FREEIMAGE_ALGORITHMS_SUCCESS;
+        return FIA_SUCCESS;
     }
     
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 // Draws a orthogonal no aa line of width one pixel
@@ -175,7 +175,7 @@ template <typename valType> static int orthogonal_draw_gs_line(FIBITMAP *src, in
         int x2, int y2, valType colour)
 {
     if (!src) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     int width = FreeImage_GetWidth(src);
@@ -192,7 +192,7 @@ template <typename valType> static int orthogonal_draw_gs_line(FIBITMAP *src, in
     }
     
     if (x2 < 0 || y2 < 0) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     if (x1 < 0) {
@@ -219,7 +219,7 @@ template <typename valType> static int orthogonal_draw_gs_line(FIBITMAP *src, in
         // We have a horizontal line
         // Make sure y's are the same
         if (y1 != y2) {
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
         
         valType *bits = (valType *) FreeImage_GetScanLine(src, y1) + (x1 * bytespp);
@@ -230,7 +230,7 @@ template <typename valType> static int orthogonal_draw_gs_line(FIBITMAP *src, in
             x1++;
         }
         
-        return FREEIMAGE_ALGORITHMS_SUCCESS;
+        return FIA_SUCCESS;
     }
     
     if (y1 != y2) {
@@ -238,7 +238,7 @@ template <typename valType> static int orthogonal_draw_gs_line(FIBITMAP *src, in
         // We have a verticle line
         // Make sure x's are the same
         if (x1 != x2) {
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
         
         // Get starting point
@@ -253,15 +253,15 @@ template <typename valType> static int orthogonal_draw_gs_line(FIBITMAP *src, in
             y1++;
         }
         
-        return FREEIMAGE_ALGORITHMS_SUCCESS;
+        return FIA_SUCCESS;
     }
     
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 static int DrawColourRect(FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_width)
 {
-    int err = FREEIMAGE_ALGORITHMS_ERROR;
+    int err = FIA_ERROR;
     
     for (int i=0; i < line_width; i++) {
         
@@ -282,17 +282,17 @@ static int DrawColourRect(FIBITMAP *src, FIARECT rect, RGBQUAD colour, int line_
                 rect.bottom, colour);
     }
     
-    if (err == FREEIMAGE_ALGORITHMS_ERROR) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+    if (err == FIA_ERROR) {
+        return FIA_ERROR;
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template <typename valType> static int DrawGSRect(FIBITMAP *src, FIARECT rect, valType colour,
         int line_width)
 {
-    int err = FREEIMAGE_ALGORITHMS_ERROR;
+    int err = FIA_ERROR;
     
     for (int i=0; i < line_width; i++) {
         
@@ -313,11 +313,11 @@ template <typename valType> static int DrawGSRect(FIBITMAP *src, FIARECT rect, v
                 colour);
     }
     
-    if (err == FREEIMAGE_ALGORITHMS_ERROR) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+    if (err == FIA_ERROR) {
+        return FIA_ERROR;
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 static int Draw24BitSolidColourRect(FIBITMAP *src, FIARECT rect, RGBQUAD colour)
@@ -343,7 +343,7 @@ static int Draw24BitSolidColourRect(FIBITMAP *src, FIARECT rect, RGBQUAD colour)
     
     ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 static int Draw32BitSolidColourRect(FIBITMAP *src, FIARECT rect, RGBQUAD colour)
@@ -369,7 +369,7 @@ static int Draw32BitSolidColourRect(FIBITMAP *src, FIARECT rect, RGBQUAD colour)
     
     ras.render(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 static int DLL_CALLCONV
@@ -389,7 +389,7 @@ Draw8BitSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, unsigned char value)
         memset(buf + tmp_rect.left, value, tmp_rect.right - tmp_rect.left + 1);
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -430,7 +430,7 @@ FIA_DrawSolidGreyscaleRect (FIBITMAP *src, FIARECT rect, double value)
         return Draw8BitSolidGreyscaleRect (src, tmp_rect, (unsigned char) value);
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 static int Draw24BitColourLine(FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
@@ -460,7 +460,7 @@ static int Draw24BitColourLine(FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD 
         ras.render_aliased(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 static int Draw32BitColourLine(FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
@@ -490,7 +490,7 @@ static int Draw32BitColourLine(FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD 
         ras.render_aliased(ren, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -516,7 +516,7 @@ FIA_DrawColourLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
         return Draw24BitColourLine (src, p1_tmp, p2_tmp, colour, line_width, antialiased);
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 static int Draw8BitGreyscaleLine(FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char value,
@@ -543,7 +543,7 @@ static int Draw8BitGreyscaleLine(FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsign
         ras.render_aliased(ren, agg::rgba8(value, value, value));
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -566,7 +566,7 @@ FIA_DrawGreyscaleLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double value,
                 line_width, antialiased);
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 
@@ -606,7 +606,7 @@ FIA_DrawColourSolidRect (FIBITMAP *src, FIARECT rect, RGBQUAD colour)
         return Draw24BitSolidColourRect (src, tmp_rect, colour);
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -640,7 +640,7 @@ Draw8BitGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
         ras.render_aliased(ren, agg::rgba8(value, value, value));
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -656,7 +656,7 @@ FIA_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points,
                 antialiased);
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -707,7 +707,7 @@ FIA_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_widt
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 static void draw_ellipse(agg::rasterizer& ras, double x, double y, double rx, double ry)
@@ -753,7 +753,7 @@ Draw8BitSolidEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int anti
         ras.render_aliased(ren, agg::rgba8(value, value, value));
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -794,5 +794,5 @@ FIA_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value,
         return Draw8BitSolidEllipse (src, tmp_rect, (unsigned char) value, antialiased);
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }

@@ -63,7 +63,7 @@ FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
         *satuation = ((double) (max - min) / max);
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 // Red, Green and Blue are between 0 and 255
@@ -78,7 +78,7 @@ FIA_HSVToRGB( double hue, double satuation, double value,
     double temp_hue, f;
 
     if(satuation == 0.0)
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 
     // The if statement is here as the % operator requires integers
     // and thus looses some accuracy.
@@ -149,7 +149,7 @@ FIA_HSVToRGB( double hue, double satuation, double value,
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 // Red, Green and Blue are between 0 and 255
@@ -190,7 +190,7 @@ FIA_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
         *satuation = ((double) (max - min) / (510.0 * (2 - (2 * *luminosity))));
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 static double HSLToRGBColour(double q1, double q2, double hue)
@@ -240,5 +240,5 @@ FIA_HSLToRGB( double hue, double satuation, double luminosity,
         *blue = (unsigned int) ((HSLToRGBColour(p1, p2, hue-120.0) * 255.0) + 0.5);
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }

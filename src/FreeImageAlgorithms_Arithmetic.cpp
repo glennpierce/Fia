@@ -51,28 +51,28 @@ static int CheckDimensions(FIBITMAP* dst, FIBITMAP* src)
     int dst_height = FreeImage_GetHeight(dst);
 
     if (src_width != dst_width || src_height != dst_height)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<typename Tsrc> int ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask,
         double *sum)
 {
     if (src == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
     if (mask != NULL) {
         // Mask has to be the same size
-        if (CheckDimensions(src, mask) == FREEIMAGE_ALGORITHMS_ERROR) {
+        if (CheckDimensions(src, mask) == FIA_ERROR) {
             FIA_SendOutputMessage("Image source and mask have different dimensions");
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
 
         // Mask has to be 8 bit 
         if (FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP) {
             FIA_SendOutputMessage("Mask must be an 8bit FIT_BITMAP");
-            return FREEIMAGE_ALGORITHMS_ERROR;
+            return FIA_ERROR;
         }
     }
 
@@ -102,7 +102,7 @@ template<typename Tsrc> int ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBI
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> FIBITMAP* ARITHMATIC<Tsrc>::Transpose(FIBITMAP *src)
@@ -167,11 +167,11 @@ template<class Tsrc> FIBITMAP* ARITHMATIC<Tsrc>::Log(FIBITMAP *src)
 template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst, FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
-    if (CheckDimensions(dst, src) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (CheckDimensions(dst, src) == FIA_ERROR) {
         FIA_SendOutputMessage("Image destination and source have different dimensions");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // Make sure dst is a double or float so it can hold all the results of
@@ -180,7 +180,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst, FIBITMA
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(src);
@@ -219,17 +219,17 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst, FIBITMA
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
-    if (CheckDimensions(dst, src) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (CheckDimensions(dst, src) == FIA_ERROR) {
         FIA_SendOutputMessage("Image destination and source have different dimensions");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(src);
@@ -239,7 +239,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMA
     // the arithmetic.
     if (FreeImage_GetImageType(dst) != FIT_DOUBLE && FreeImage_GetImageType(dst) != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     for (register int y = 0; y < height; y++) {
@@ -251,48 +251,48 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMA
             dst_ptr[x] *= src_ptr[x];
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
-    if (CheckDimensions(dst, src) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (CheckDimensions(dst, src) == FIA_ERROR) {
         FIA_SendOutputMessage("Image destination and source have different dimensions");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // Make dst a double so it can hold all the results of
     // the arithmetic.
     if (FreeImage_GetImageType(dst) != FIT_DOUBLE && FreeImage_GetImageType(dst) != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     double *dst_ptr = (double *) FreeImage_GetBits(dst);
     Tsrc *src_ptr = (Tsrc *) FreeImage_GetBits(src);
 
     if (dst_ptr == NULL || src_ptr == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
     int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
 
     for (int i=0; i < number_of_pixels; i++)
         *dst_ptr++ = (double) *dst_ptr / *src_ptr++;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
-    if (CheckDimensions(dst, src) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (CheckDimensions(dst, src) == FIA_ERROR) {
         FIA_SendOutputMessage("Image destination and source have different dimensions");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // Make sure dst is a double or float so it can hold all the results of
@@ -301,7 +301,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* sr
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(src);
@@ -336,17 +336,17 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* sr
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
-    if (CheckDimensions(dst, src) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (CheckDimensions(dst, src) == FIA_ERROR) {
         FIA_SendOutputMessage("Image destination and source have different dimensions");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // Make sure dst is a double or float so it can hold all the results of
@@ -355,7 +355,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMA
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(src);
@@ -390,14 +390,14 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMA
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITMAP* dst,
         double constant)
 {
     if (dst == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
     // Make sure dst is a double or float so it can hold all the results of
     // the arithmetic.
@@ -405,7 +405,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITM
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(dst);
@@ -438,14 +438,14 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITM
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP* dst,
         double constant)
 {
     if (dst == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
     // Make sure dst is a double or float so it can hold all the results of
     // the arithmetic.
@@ -453,7 +453,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(dst);
@@ -484,13 +484,13 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     if (dst == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
     // Make sure dst is a double or float so it can hold all the results of
     // the arithmetic.
@@ -498,7 +498,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* d
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(dst);
@@ -531,14 +531,14 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* d
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITMAP* dst,
         double constant)
 {
     if (dst == NULL)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
 
     // Make sure dst is a double or float so it can hold all the results of
     // the arithmetic.
@@ -546,7 +546,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITM
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
         FIA_SendOutputMessage("Image destination was not a FIT_FLOAT or FIT_DOUBLE");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(dst);
@@ -579,7 +579,7 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITM
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 ARITHMATIC<unsigned char> arithmaticUCharImage;
@@ -705,7 +705,7 @@ FIA_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -733,7 +733,7 @@ FIA_DivideGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -761,7 +761,7 @@ FIA_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -789,7 +789,7 @@ FIA_AddGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -817,7 +817,7 @@ FIA_SubtractGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -845,7 +845,7 @@ FIA_MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -873,7 +873,7 @@ FIA_DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -901,7 +901,7 @@ FIA_AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -929,17 +929,17 @@ FIA_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
 FIA_ComplexConjugate(FIBITMAP* src)
 {
     if(src == NULL)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     if(FreeImage_GetImageType(src) != FIT_COMPLEX)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
 
@@ -951,7 +951,7 @@ FIA_ComplexConjugate(FIBITMAP* src)
         src_ptr++;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 // (a + ib) (c + id)
@@ -962,23 +962,23 @@ int DLL_CALLCONV
 FIA_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 {
     if(dst == NULL || src == NULL)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
-    if(CheckDimensions(dst, src) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if(CheckDimensions(dst, src) == FIA_ERROR) {
         FIA_SendOutputMessage("Image destination and source have different dimensions");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // Make dst a double so it can hold all the results of
     // the arithmatic.
     if(FreeImage_GetImageType(dst) != FIT_COMPLEX) {
         FIA_SendOutputMessage("Destination image must be of type FIT_COMPLEX");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     if(FreeImage_GetImageType(src) != FIT_COMPLEX) {
         FIA_SendOutputMessage("Source image must be of type FIT_COMPLEX");
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FICOMPLEX *dst_ptr = (FICOMPLEX *) FreeImage_GetBits(dst);
@@ -1001,7 +1001,7 @@ FIA_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
         src_ptr++;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -1029,5 +1029,5 @@ FIA_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
         break;
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }

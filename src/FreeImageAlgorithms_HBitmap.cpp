@@ -191,7 +191,7 @@ FIA_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int righ
     BITMAP bm;
 
     if(!src) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     GetObject(hbitmap, sizeof(BITMAP), &bm);
@@ -199,7 +199,7 @@ FIA_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int righ
     dst_bits = (BYTE*) bm.bmBits;
 
     if(dst_bits == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // normalize the rectangle
@@ -217,7 +217,7 @@ FIA_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int righ
     src_pitch = FreeImage_GetPitch(src);
 
     if((left < 0) || (right> src_width) || (top < 0) || (bottom> src_height)) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // allocate the sub image
@@ -243,7 +243,7 @@ FIA_CopyToDibSection(FIBITMAP *src, HBITMAP hbitmap, int left, int top, int righ
         memcpy(dst_bits + (y * bm.bmWidthBytes), src_bits + (y * src_pitch), dst_line);
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 HBITMAP DLL_CALLCONV

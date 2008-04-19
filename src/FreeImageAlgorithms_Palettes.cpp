@@ -50,13 +50,13 @@ int DLL_CALLCONV
 FIA_CopyPaletteToRGBQUAD(FIBITMAP *src, RGBQUAD *palette)
 {
     if( src == NULL || palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // copy the palette
     memcpy(palette, FreeImage_GetPalette(src), FreeImage_GetColorsUsed(src) * sizeof(RGBQUAD));
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -65,11 +65,11 @@ FIA_CopyPaletteFromRGBQUAD(FIBITMAP *dst, RGBQUAD *palette)
     RGBQUAD *dst_palette;
 
     if( dst == NULL || palette == NULL || FreeImage_GetBPP(dst)> 8) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     if((dst_palette = FreeImage_GetPalette(dst)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     for (int i = 0; i < 256; i++) {
@@ -78,7 +78,7 @@ FIA_CopyPaletteFromRGBQUAD(FIBITMAP *dst, RGBQUAD *palette)
         dst_palette[i].rgbBlue = palette[i].rgbBlue;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -87,15 +87,15 @@ FIA_CopyPalette(FIBITMAP *src, FIBITMAP *dst)
     RGBQUAD *src_palette, *dst_palette;
 
     if( dst == NULL || src == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     if((src_palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     if((dst_palette = FreeImage_GetPalette(dst)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     for (int i = 0; i < 256; i++) {
@@ -104,7 +104,7 @@ FIA_CopyPalette(FIBITMAP *src, FIBITMAP *dst)
         dst_palette[i].rgbBlue = src_palette[i].rgbBlue;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -114,7 +114,7 @@ FIA_ReversePaletteEntries(RGBQUAD *palette)
     RGBQUAD copy_palette[256];
 
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     memcpy(copy_palette, palette, sizeof(RGBQUAD) * 256);
@@ -132,12 +132,12 @@ FIA_SetGreyLevelPalette(FIBITMAP *src)
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetGreyLevelPalette(palette);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -146,12 +146,12 @@ FIA_SetGreyLevelOverLoadPalette(FIBITMAP *src)
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetGreyLevelOverLoadPalette(palette);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -161,13 +161,13 @@ FIA_SetTernaryPalettePalette(FIBITMAP *src, RGBQUAD background_colour,
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetTernaryPalette(palette, background_colour, pos1, colour1,
             pos2, colour2);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -176,12 +176,12 @@ FIA_SetLogColourPalette(FIBITMAP *src)
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetLogColourPalette(palette);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -190,12 +190,12 @@ FIA_SetFalseColourPalette(FIBITMAP *src, double wavelength)
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetFalseColourPalette(palette, wavelength);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -205,12 +205,12 @@ FIA_SetPileUpPalette(FIBITMAP *src, RGBQUAD colour1, RGBQUAD colour2,
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetPileUpPalette(palette, colour1, colour2, colour3, size);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -219,12 +219,12 @@ FIA_SetRainBowPalette(FIBITMAP *src)
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetRainBowPalette(palette);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -233,12 +233,12 @@ FIA_SetReverseRainBowPalette(FIBITMAP *src)
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetReverseRainBowPalette(palette);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -247,12 +247,12 @@ FIA_SetTemperaturePalette(FIBITMAP *src)
     RGBQUAD *palette;
 
     if((palette = FreeImage_GetPalette(src)) == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetTemperaturePalette(palette);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -266,14 +266,14 @@ FIA_SetSeismicColourPalette(FIBITMAP *src)
 
     FIA_GetSeismicColourPalette(palette);
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
 FIA_GetGreyLevelPalette(RGBQUAD *palette)
 {
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     for (int i = 0; i < 256; i++) {
@@ -282,14 +282,14 @@ FIA_GetGreyLevelPalette(RGBQUAD *palette)
         palette[i].rgbBlue = i;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
 FIA_GetGreyLevelOverLoadPalette(RGBQUAD *palette)
 {
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int i;
@@ -312,7 +312,7 @@ FIA_GetGreyLevelOverLoadPalette(RGBQUAD *palette)
         palette[i].rgbBlue = 0;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -320,7 +320,7 @@ FIA_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colour,
         int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)
 {
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int i;
@@ -340,7 +340,7 @@ FIA_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colour,
     palette[pos2].rgbGreen = colour2.rgbGreen;
     palette[pos2].rgbBlue = colour2.rgbBlue;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -348,7 +348,7 @@ FIA_GetPileUpPalette(RGBQUAD *palette, RGBQUAD colour1, RGBQUAD colour2,
         RGBQUAD colour3, BYTE *size)
 {
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     FIA_GetGreyLevelPalette(palette);
@@ -382,7 +382,7 @@ FIA_GetPileUpPalette(RGBQUAD *palette, RGBQUAD colour1, RGBQUAD colour2,
         palette[top - i] = colour3;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -391,7 +391,7 @@ FIA_GetRainBowPalette(RGBQUAD *palette)
     int i, p1, p2;
 
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     p1 = 256 / 3;
@@ -445,7 +445,7 @@ FIA_GetRainBowPalette(RGBQUAD *palette)
     palette[255].rgbGreen = 255;
     palette[255].rgbBlue = 255;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -460,7 +460,7 @@ int DLL_CALLCONV
 FIA_GetLogColourPalette(RGBQUAD *palette)
 {
     if(palette == NULL)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     for (int i = 1; i < 256; i++) {
 
@@ -471,14 +471,14 @@ FIA_GetLogColourPalette(RGBQUAD *palette)
         palette[i].rgbBlue = (BYTE) level;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
 FIA_GetFalseColourPalette(RGBQUAD *palette, double wavelength)
 {
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     double red, green, blue;
@@ -520,7 +520,7 @@ FIA_GetFalseColourPalette(RGBQUAD *palette, double wavelength)
 
         FIA_GetGreyLevelPalette(palette);
 
-        return FREEIMAGE_ALGORITHMS_SUCCESS;
+        return FIA_SUCCESS;
     }
 
     for (int i = 0; i < 256; i++) {
@@ -529,7 +529,7 @@ FIA_GetFalseColourPalette(RGBQUAD *palette, double wavelength)
         palette[i].rgbBlue = (BYTE) (blue * i);
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -541,7 +541,7 @@ FIA_GetOpticalDensityPalette(RGBQUAD *palette, unsigned char red,
     unsigned char r, g, b;
 
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     slog = log( 1.0 / (8.0 * contrast) ) / 255.0; // to scale the od nicely 0-255
@@ -566,7 +566,7 @@ FIA_GetOpticalDensityPalette(RGBQUAD *palette, unsigned char red,
         palette[i].rgbBlue = b;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -575,7 +575,7 @@ FIA_GetTemperaturePalette(RGBQUAD *palette)
     int i, p1, p2;
 
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     memset(palette, 0, sizeof(RGBQUAD) * 256);
@@ -599,7 +599,7 @@ FIA_GetTemperaturePalette(RGBQUAD *palette)
         palette[i].rgbBlue = ( ((i - p2) * 255) / (256 - p2) );
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 static int DLL_CALLCONV
@@ -609,7 +609,7 @@ FIA_SeismicReversePaletteEntries(RGBQUAD *palette,
     int i, max_element;
 
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     max_element = (size / 2) - 1;
@@ -630,7 +630,7 @@ FIA_GetSeismicColourPalette(RGBQUAD *palette)
     int halfway, contrast = 6;
 
     if(palette == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     halfway = 128;

@@ -42,25 +42,25 @@ static int CheckDimensions(FIBITMAP* src, FIBITMAP* mask)
     int dst_height = FreeImage_GetHeight(mask);
     
     if (src_width != dst_width || src_height != dst_height)
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 template<typename Tsrc> int LOGIC<Tsrc>::MaskImage(FIBITMAP* src, FIBITMAP* mask)
 {
     if (mask == NULL || src == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     // Have to be the same size
-    if (CheckDimensions(src, mask) == FREEIMAGE_ALGORITHMS_ERROR) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+    if (CheckDimensions(src, mask) == FIA_ERROR) {
+        return FIA_ERROR;
     }
     
     // Mask has to be 8 bit 
     if (FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
     
     int width = FreeImage_GetWidth(src);
@@ -77,7 +77,7 @@ template<typename Tsrc> int LOGIC<Tsrc>::MaskImage(FIBITMAP* src, FIBITMAP* mask
         }
     }
     
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 LOGIC<unsigned char> logicUCharImage;
@@ -122,19 +122,19 @@ FIA_MaskImage(FIBITMAP* src, FIBITMAP* mask)
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
 FIA_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val)
 {
     if(mask == NULL) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     // Mask has to be 8 bit 
     if(FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP) {
-        return FREEIMAGE_ALGORITHMS_ERROR;
+        return FIA_ERROR;
     }
 
     int width = FreeImage_GetWidth(mask);
@@ -154,6 +154,6 @@ FIA_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val)
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 

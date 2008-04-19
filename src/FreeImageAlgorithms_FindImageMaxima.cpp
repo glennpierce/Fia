@@ -500,7 +500,7 @@ FIA_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP** W)
     double image_thresholds[max_resolutions];
 
     if(number_of_resolutions < 1 || number_of_resolutions> max_resolutions)
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 
     double* kernels[max_resolutions];
 
@@ -563,7 +563,7 @@ FIA_ATrousWaveletTransform(FIBITMAP* src, int levels, FIBITMAP** W)
 
     delete [] A;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 FIBITMAP* DLL_CALLCONV
@@ -575,7 +575,7 @@ FIA_MultiscaleProducts(FIBITMAP* src, int start_level, int levels)
 
     FIBITMAP **W = (FIBITMAP**) malloc(sizeof(FIBITMAP*) * levels);
 
-    if(FIA_ATrousWaveletTransform(src, levels, W) == FREEIMAGE_ALGORITHMS_ERROR)
+    if(FIA_ATrousWaveletTransform(src, levels, W) == FIA_ERROR)
     return NULL;
 
     FIBITMAP *product_image = FreeImage_Clone(W[start_level-1]);

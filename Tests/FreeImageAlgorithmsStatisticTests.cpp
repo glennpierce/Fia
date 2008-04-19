@@ -22,7 +22,7 @@ static void TestFIA_HistogramTest(CuTest* tc)
     
     PROFILE_START("FreeImageAlgorithms_Histogram");
     
-    if (FIA_Histogram(dib, 0, 255, 2, hist) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (FIA_Histogram(dib, 0, 255, 2, hist) == FIA_ERROR) {
         CuFail(tc, "Failed");
     }
     
@@ -43,7 +43,7 @@ static void TestFIA_StatisticsTest(CuTest* tc)
     
     PROFILE_START("FreeImageAlgorithms_StatisticReport");
     
-    if (FIA_StatisticReport(dib, &report) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (FIA_StatisticReport(dib, &report) == FIA_ERROR) {
         CuFail(tc, "Failed");
     }
     
@@ -64,7 +64,7 @@ static void TestFIA_CentroidTest(CuTest* tc)
     
     float x_centroid, y_centroid;
     
-    if (FIA_Centroid(dib, &x_centroid, &y_centroid) == FREEIMAGE_ALGORITHMS_ERROR) {
+    if (FIA_Centroid(dib, &x_centroid, &y_centroid) == FIA_ERROR) {
         CuFail(tc, "Failed");
     }
     

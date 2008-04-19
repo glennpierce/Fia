@@ -1090,7 +1090,7 @@ FIA_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom)
         dst_bits += dst_pitch;
     }
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -1231,7 +1231,7 @@ FIA_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
         case 8:
         {
             *val = *(line_ptr + x);
-            return FREEIMAGE_ALGORITHMS_SUCCESS;
+            return FIA_SUCCESS;
         }
 
         case 16:
@@ -1241,7 +1241,7 @@ FIA_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
             else if(type == FIT_UINT16)
             *val = *((unsigned short *)line_ptr + x);
 
-            return FREEIMAGE_ALGORITHMS_SUCCESS;
+            return FIA_SUCCESS;
         }
 
         case 32:
@@ -1252,11 +1252,11 @@ FIA_GetPixelValue(FIBITMAP *src, int x, int y, double* val)
             if(type == FIT_DOUBLE)
             *val = *((double *)line_ptr + x);
 
-            return FREEIMAGE_ALGORITHMS_SUCCESS;
+            return FIA_SUCCESS;
         }
     }
 
-    return FREEIMAGE_ALGORITHMS_ERROR;
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
@@ -1267,5 +1267,5 @@ FIA_InPlaceConvertToStandardType(FIBITMAP **src, int scale)
     FreeImage_Unload(*src);
     *src = dst;
 
-    return FREEIMAGE_ALGORITHMS_SUCCESS;
+    return FIA_SUCCESS;
 }
