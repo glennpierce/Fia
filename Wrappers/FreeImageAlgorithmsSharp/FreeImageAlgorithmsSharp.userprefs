@@ -1,0 +1,28 @@
+﻿<UserCombinePreferences version="1.0" filename="/home/glenn/Devel/Fia/Wrappers/FreeImageAlgorithmsSharp/FreeImageAlgorithmsSharp.sln">
+  <Files>
+    <File name="Welcome" />
+    <File name="FreeImageAlgorithmsInterop.cs" line="67" column="1" />
+    <File name="FreeImage.cs" line="14" column="21" />
+    <File name="FreeImageInterop.cs" line="66" column="21" />
+    <File name="AssemblyInfo.cs" line="1" column="1" />
+  </Files>
+  <Views>
+    <ViewMemento id="ProjectPad">
+      <Node expanded="True">
+        <Node name="FreeImageAlgorithmsSharp" expanded="True">
+          <Node name="FreeImage.cs" selected="True" />
+        </Node>
+      </Node>
+    </ViewMemento>
+    <ViewMemento id="ClassPad">
+      <Node expanded="True" />
+    </ViewMemento>
+    <ViewMemento id="MonoDevelop.NUnit.TestPad">
+      <Node />
+    </ViewMemento>
+  </Views>
+  <Properties>
+    <Property key="ActiveWindow" value="/home/glenn/Devel/Fia/Wrappers/FreeImageAlgorithmsSharp/FreeImage.cs" />
+    <Property key="ActiveConfiguration" value="Debug|Any CPU" />
+  </Properties>
+</UserCombinePreferences>

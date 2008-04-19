@@ -1,0 +1,16 @@
+<Combine name="FreeImageAlgorithmsSharp" fileversion="2.0">
+  <Configurations active="Debug|Any CPU">
+    <Configuration name="Debug|Any CPU" ctype="CombineConfiguration">
+      <Entry build="True" name="FreeImageAlgorithmsSharp" configuration="Debug|Any CPU" />
+    </Configuration>
+    <Configuration name="Release|Any CPU" ctype="CombineConfiguration">
+      <Entry build="True" name="FreeImageAlgorithmsSharp" configuration="Release|Any CPU" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="FreeImageAlgorithmsSharp" single="True">
+    <Execute type="None" entry="FreeImageAlgorithmsSharp" />
+  </StartMode>
+  <Entries>
+    <Entry filename="FreeImageAlgorithmsSharp.csproj" />
+  </Entries>
+</Combine>
