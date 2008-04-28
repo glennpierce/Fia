@@ -135,14 +135,12 @@ template<class Tsrc> FIBITMAP* LINEAR_SCALE<Tsrc>::convert(FIBITMAP *src, double
     
     double min_found = min, max_found = max;
     
-    const double small_number = 0.0001;
-    
     *min_within_image = 0.0;
     *max_within_image = 0.0;
     
     // If the user has not specifed min & max use the min and max pixels in the image.
     // Ie convert to standard type while scaling the range
-    if (max_found < small_number && min_found < small_number) {
+    if (max_found == 0.0 && min_found == 0.0) {
         FIA_FindMinMax(src, &min_found, &max_found);
     }
     
