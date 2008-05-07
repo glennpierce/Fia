@@ -1,20 +1,20 @@
 /*
  * Copyright 2007 Glenn Pierce
  *
- * This file is part of FreeImageAlgorithms.
+ * This file is part of FIA.
  *
- * FreeImageAlgorithms is free software: you can redistribute it and/or modify
+ * FIA is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * FreeImageAlgorithms is distributed in the hope that it will be useful,
+ * FIA is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
  * 
  * You should have received a copy of the Lesser GNU General Public License
- * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
+ * along with FIA.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef __FREEIMAGE_ALGORITHMS_UTILITIES__
@@ -576,6 +576,23 @@ FIA_GetPixelValue(FIBITMAP *src, int x, int y, double* val);
 
 DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertToStandardType(FIBITMAP **src, int scale);
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_ConvertFloatTo16Bit(FIBITMAP *src, int sign);
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_ConvertInt16ToUInt16(FIBITMAP *src);
+
+/** \brief Rescales an image to half its size.
+ * 
+ *	This is much much faster than the freeimage rescale function.
+ *  Obviously it is also much more limited.
+ *
+ *  \param src Image to resize.
+ *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
+*/
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_RescaleToHalf(FIBITMAP *src);
 
 #ifdef __cplusplus
 }

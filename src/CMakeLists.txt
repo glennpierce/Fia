@@ -36,11 +36,13 @@ ADD_DEFINITIONS(-DFREEIMAGE_EXPORTS)
 
 ADD_LIBRARY (freeimagealgorithms SHARED ${FIA_SRCS})
 
+IF (UNIX)
 INSTALL(TARGETS freeimagealgorithms
   RUNTIME DESTINATION bin
   LIBRARY DESTINATION lib
   ARCHIVE DESTINATION lib
 )
+ENDIF (UNIX)
 
 # Link the executable to the FreeImage library.
 TARGET_LINK_LIBRARIES (freeimagealgorithms freeimage)

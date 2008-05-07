@@ -55,8 +55,8 @@ static int CheckDimensions(FIBITMAP* dst, FIBITMAP* src)
     return FIA_SUCCESS;
 }
 
-template<typename Tsrc> int ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask,
-        double *sum)
+template<typename Tsrc> int ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src,
+        FIBITMAP* mask, double *sum)
 {
     if (src == NULL)
         return FIA_ERROR;
@@ -64,13 +64,16 @@ template<typename Tsrc> int ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBI
     if (mask != NULL) {
         // Mask has to be the same size
         if (CheckDimensions(src, mask) == FIA_ERROR) {
-            FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image source and mask have different dimensions");
+            FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                    "Image source and mask have different dimensions");
             return FIA_ERROR;
         }
 
         // Mask has to be 8 bit 
-        if (FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask) != FIT_BITMAP) {
-            FreeImage_OutputMessageProc(FIF_UNKNOWN, "Mask must be an 8bit FIT_BITMAP");
+        if (FreeImage_GetBPP(mask) != 8 || FreeImage_GetImageType(mask)
+                != FIT_BITMAP) {
+            FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                    "Mask must be an 8bit FIT_BITMAP");
             return FIA_ERROR;
         }
     }
@@ -84,14 +87,16 @@ template<typename Tsrc> int ARITHMATIC<Tsrc>::SumOfAllPixels(FIBITMAP* src, FIBI
         for (register int y = 0; y < height; y++) {
 
             Tsrc *src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
-            unsigned char *mask_ptr = (unsigned char *)FreeImage_GetScanLine(mask, y);
+            unsigned char *mask_ptr = (unsigned char *)FreeImage_GetScanLine(
+                    mask, y);
 
             for (register int x=0; x < width; x++) {
                 if (mask_ptr[x])
                     *sum += (double) src_ptr[x];
             }
         }
-    } else {
+    }
+    else {
         for (register int y = 0; y < height; y++) {
 
             Tsrc *src_ptr = (Tsrc *)FreeImage_GetScanLine(src, y);
@@ -144,7 +149,8 @@ template<class Tsrc> FIBITMAP* ARITHMATIC<Tsrc>::Log(FIBITMAP *src)
     int height = FreeImage_GetHeight(src);
     int bpp = FreeImage_GetBPP(src);
 
-    if ((dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, bpp, 0, 0, 0)) == NULL)
+    if ((dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, bpp, 0, 0, 0))
+            == NULL)
         return NULL;
 
     Tsrc *in_bits;
@@ -163,13 +169,15 @@ template<class Tsrc> FIBITMAP* ARITHMATIC<Tsrc>::Log(FIBITMAP *src)
 }
 
 // This function sets dst to have the max pixel value of src and dst
-template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst, FIBITMAP* src)
+template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst,
+        FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
     if (CheckDimensions(dst, src) == FIA_ERROR) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination and source have different dimensions");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination and source have different dimensions");
         return FIA_ERROR;
     }
 
@@ -178,7 +186,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst, FIBITMA
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(dst);
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -202,7 +211,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst, FIBITMA
                     dst_ptr[x] = (double) src_ptr[x];
             }
         }
-    } else {
+    }
+    else {
 
         float *dst_ptr;
 
@@ -221,13 +231,15 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MaxOfTwoImages(FIBITMAP* dst, FIBITMA
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMAP* src)
+template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst,
+        FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
     if (CheckDimensions(dst, src) == FIA_ERROR) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination and source have different dimensions");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination and source have different dimensions");
         return FIA_ERROR;
     }
 
@@ -236,8 +248,10 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMA
 
     // Make dst a double so it can hold all the results of
     // the arithmetic.
-    if (FreeImage_GetImageType(dst) != FIT_DOUBLE && FreeImage_GetImageType(dst) != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+    if (FreeImage_GetImageType(dst) != FIT_DOUBLE
+            && FreeImage_GetImageType(dst) != FIT_FLOAT) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -253,20 +267,24 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyImages(FIBITMAP* dst, FIBITMA
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP* src)
+template<class Tsrc> int ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst,
+        FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
     if (CheckDimensions(dst, src) == FIA_ERROR) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination and source have different dimensions");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination and source have different dimensions");
         return FIA_ERROR;
     }
 
     // Make dst a double so it can hold all the results of
     // the arithmetic.
-    if (FreeImage_GetImageType(dst) != FIT_DOUBLE && FreeImage_GetImageType(dst) != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+    if (FreeImage_GetImageType(dst) != FIT_DOUBLE
+            && FreeImage_GetImageType(dst) != FIT_FLOAT) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -284,13 +302,15 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst, FIBITMAP*
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* src)
+template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst,
+        FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
     if (CheckDimensions(dst, src) == FIA_ERROR) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination and source have different dimensions");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination and source have different dimensions");
         return FIA_ERROR;
     }
 
@@ -299,7 +319,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* sr
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(dst);
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -321,7 +342,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* sr
             for (register int x=0; x < width; x++)
                 dst_ptr[x] += src_ptr[x];
         }
-    } else {
+    }
+    else {
 
         float *dst_ptr;
 
@@ -338,13 +360,15 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddImages(FIBITMAP* dst, FIBITMAP* sr
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMAP* src)
+template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst,
+        FIBITMAP* src)
 {
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
     if (CheckDimensions(dst, src) == FIA_ERROR) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination and source have different dimensions");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination and source have different dimensions");
         return FIA_ERROR;
     }
 
@@ -353,7 +377,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMA
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(dst);
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -375,7 +400,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMA
             for (register int x=0; x < width; x++)
                 dst_ptr[x] -= src_ptr[x];
         }
-    } else {
+    }
+    else {
 
         float *dst_ptr;
 
@@ -392,8 +418,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractImages(FIBITMAP* dst, FIBITMA
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITMAP* dst,
-        double constant)
+template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(
+        FIBITMAP* dst, double constant)
 {
     if (dst == NULL)
         return FIA_ERROR;
@@ -403,7 +429,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITM
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(dst);
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -424,7 +451,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITM
             for (register int x=0; x < width; x++)
                 dst_ptr[x] = (double) (dst_ptr[x] * casted_constant);
         }
-    } else {
+    }
+    else {
 
         float *dst_ptr;
 
@@ -440,8 +468,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::MultiplyGreyLevelImageConstant(FIBITM
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP* dst,
-        double constant)
+template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(
+        FIBITMAP* dst, double constant)
 {
     if (dst == NULL)
         return FIA_ERROR;
@@ -451,7 +479,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(dst);
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -470,7 +499,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP
             for (register int x=0; x < width; x++)
                 dst_ptr[x] = (double) (dst_ptr[x] / constant);
         }
-    } else {
+    }
+    else {
 
         float *dst_ptr;
 
@@ -486,7 +516,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::DivideGreyLevelImageConstant(FIBITMAP
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
+template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(
+        FIBITMAP* dst, double constant)
 {
     if (dst == NULL)
         return FIA_ERROR;
@@ -496,7 +527,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* d
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(dst);
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -517,7 +549,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* d
             for (register int x=0; x < width; x++)
                 dst_ptr[x] += casted_constant;
         }
-    } else {
+    }
+    else {
 
         float *dst_ptr;
 
@@ -533,8 +566,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::AddGreyLevelImageConstant(FIBITMAP* d
     return FIA_SUCCESS;
 }
 
-template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITMAP* dst,
-        double constant)
+template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(
+        FIBITMAP* dst, double constant)
 {
     if (dst == NULL)
         return FIA_ERROR;
@@ -544,7 +577,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITM
     FREE_IMAGE_TYPE type = FreeImage_GetImageType(dst);
 
     if (type != FIT_DOUBLE && type != FIT_FLOAT) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
         return FIA_ERROR;
     }
 
@@ -565,7 +599,8 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::SubtractGreyLevelImageConstant(FIBITM
             for (register int x=0; x < width; x++)
                 dst_ptr[x] -= casted_constant;
         }
-    } else {
+    }
+    else {
 
         float *dst_ptr;
 
@@ -592,43 +627,46 @@ ARITHMATIC<double> arithmaticDoubleImage;
 FIBITMAP* DLL_CALLCONV
 FIA_Transpose(FIBITMAP *src)
 {
-    FIBITMAP *dst = NULL;
+    FIBITMAP *dst= NULL;
 
-    if(!src)
-    return NULL;
+    if (!src)
+        return NULL;
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP: // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-        if(FreeImage_GetBPP(src) == 8)
-        dst = arithmaticUCharImage.Transpose(src);
-        break;
+            if (FreeImage_GetBPP(src) == 8)
+                dst = arithmaticUCharImage.Transpose(src);
+            break;
         case FIT_UINT16: // array of unsigned short: unsigned 16-bit
-        dst = arithmaticUShortImage.Transpose(src);
-        break;
+            dst = arithmaticUShortImage.Transpose(src);
+            break;
         case FIT_INT16: // array of short: signed 16-bit
-        dst = arithmaticShortImage.Transpose(src);
-        break;
+            dst = arithmaticShortImage.Transpose(src);
+            break;
         case FIT_UINT32: // array of unsigned long: unsigned 32-bit
-        dst = arithmaticULongImage.Transpose(src);
-        break;
+            dst = arithmaticULongImage.Transpose(src);
+            break;
         case FIT_INT32: // array of long: signed 32-bit
-        dst = arithmaticLongImage.Transpose(src);
-        break;
+            dst = arithmaticLongImage.Transpose(src);
+            break;
         case FIT_FLOAT: // array of float: 32-bit
-        dst = arithmaticFloatImage.Transpose(src);
-        break;
+            dst = arithmaticFloatImage.Transpose(src);
+            break;
         case FIT_DOUBLE: // array of double: 64-bit
-        dst = arithmaticDoubleImage.Transpose(src);
-        break;
+            dst = arithmaticDoubleImage.Transpose(src);
+            break;
         default:
-        break;
+            break;
     }
 
-    if(NULL == dst) {
-        FreeImage_OutputMessageProc(FIF_UNKNOWN,
-                "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+    if (NULL == dst) {
+        FreeImage_OutputMessageProc(
+                FIF_UNKNOWN,
+                "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.",
+                src_type, FIT_BITMAP);
     }
 
     return dst;
@@ -637,43 +675,46 @@ FIA_Transpose(FIBITMAP *src)
 FIBITMAP* DLL_CALLCONV
 FIA_Log(FIBITMAP *src)
 {
-    FIBITMAP *dst = NULL;
+    FIBITMAP *dst= NULL;
 
-    if(!src)
-    return NULL;
+    if (!src)
+        return NULL;
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP: // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-        if(FreeImage_GetBPP(src) == 8)
-        dst = arithmaticUCharImage.Log(src);
-        break;
+            if (FreeImage_GetBPP(src) == 8)
+                dst = arithmaticUCharImage.Log(src);
+            break;
         case FIT_UINT16: // array of unsigned short: unsigned 16-bit
-        dst = arithmaticUShortImage.Log(src);
-        break;
+            dst = arithmaticUShortImage.Log(src);
+            break;
         case FIT_INT16: // array of short: signed 16-bit
-        dst = arithmaticShortImage.Log(src);
-        break;
+            dst = arithmaticShortImage.Log(src);
+            break;
         case FIT_UINT32: // array of unsigned long: unsigned 32-bit
-        dst = arithmaticULongImage.Log(src);
-        break;
+            dst = arithmaticULongImage.Log(src);
+            break;
         case FIT_INT32: // array of long: signed 32-bit
-        dst = arithmaticLongImage.Log(src);
-        break;
+            dst = arithmaticLongImage.Log(src);
+            break;
         case FIT_FLOAT: // array of float: 32-bit
-        dst = arithmaticFloatImage.Log(src);
-        break;
+            dst = arithmaticFloatImage.Log(src);
+            break;
         case FIT_DOUBLE: // array of double: 64-bit
-        dst = arithmaticDoubleImage.Log(src);
-        break;
+            dst = arithmaticDoubleImage.Log(src);
+            break;
         default:
-        break;
+            break;
     }
 
-    if(NULL == dst) {
-        FreeImage_OutputMessageProc(FIF_UNKNOWN,
-                "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.", src_type, FIT_BITMAP);
+    if (NULL == dst) {
+        FreeImage_OutputMessageProc(
+                FIF_UNKNOWN,
+                "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.",
+                src_type, FIT_BITMAP);
     }
 
     return dst;
@@ -684,24 +725,25 @@ FIA_MultiplyGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(src) == 8)
-        return arithmaticUCharImage.MultiplyImages(dst, src);
+            if (FreeImage_GetBPP(src) == 8)
+                return arithmaticUCharImage.MultiplyImages(dst, src);
         case FIT_UINT16:
-        return arithmaticUShortImage.MultiplyImages(dst, src);
+            return arithmaticUShortImage.MultiplyImages(dst, src);
         case FIT_INT16:
-        return arithmaticShortImage.MultiplyImages(dst, src);
+            return arithmaticShortImage.MultiplyImages(dst, src);
         case FIT_UINT32:
-        return arithmaticULongImage.MultiplyImages(dst, src);
+            return arithmaticULongImage.MultiplyImages(dst, src);
         case FIT_INT32:
-        return arithmaticLongImage.MultiplyImages(dst, src);
+            return arithmaticLongImage.MultiplyImages(dst, src);
         case FIT_FLOAT:
-        return arithmaticFloatImage.MultiplyImages(dst, src);
+            return arithmaticFloatImage.MultiplyImages(dst, src);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.MultiplyImages(dst, src);
+            return arithmaticDoubleImage.MultiplyImages(dst, src);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -712,24 +754,25 @@ FIA_DivideGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(src) == 8)
-        return arithmaticUCharImage.DivideImages(dst, src);
+            if (FreeImage_GetBPP(src) == 8)
+                return arithmaticUCharImage.DivideImages(dst, src);
         case FIT_UINT16:
-        return arithmaticUShortImage.DivideImages(dst, src);
+            return arithmaticUShortImage.DivideImages(dst, src);
         case FIT_INT16:
-        return arithmaticShortImage.DivideImages(dst, src);
+            return arithmaticShortImage.DivideImages(dst, src);
         case FIT_UINT32:
-        return arithmaticULongImage.DivideImages(dst, src);
+            return arithmaticULongImage.DivideImages(dst, src);
         case FIT_INT32:
-        return arithmaticLongImage.DivideImages(dst, src);
+            return arithmaticLongImage.DivideImages(dst, src);
         case FIT_FLOAT:
-        return arithmaticFloatImage.DivideImages(dst, src);
+            return arithmaticFloatImage.DivideImages(dst, src);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.DivideImages(dst, src);
+            return arithmaticDoubleImage.DivideImages(dst, src);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -740,24 +783,25 @@ FIA_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(src) == 8)
-        return arithmaticUCharImage.MaxOfTwoImages(dst, src);
+            if (FreeImage_GetBPP(src) == 8)
+                return arithmaticUCharImage.MaxOfTwoImages(dst, src);
         case FIT_UINT16:
-        return arithmaticUShortImage.MaxOfTwoImages(dst, src);
+            return arithmaticUShortImage.MaxOfTwoImages(dst, src);
         case FIT_INT16:
-        return arithmaticShortImage.MaxOfTwoImages(dst, src);
+            return arithmaticShortImage.MaxOfTwoImages(dst, src);
         case FIT_UINT32:
-        return arithmaticULongImage.MaxOfTwoImages(dst, src);
+            return arithmaticULongImage.MaxOfTwoImages(dst, src);
         case FIT_INT32:
-        return arithmaticLongImage.MaxOfTwoImages(dst, src);
+            return arithmaticLongImage.MaxOfTwoImages(dst, src);
         case FIT_FLOAT:
-        return arithmaticFloatImage.MaxOfTwoImages(dst, src);
+            return arithmaticFloatImage.MaxOfTwoImages(dst, src);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.MaxOfTwoImages(dst, src);
+            return arithmaticDoubleImage.MaxOfTwoImages(dst, src);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -768,24 +812,25 @@ FIA_AddGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(src) == 8)
-        return arithmaticUCharImage.AddImages(dst, src);
+            if (FreeImage_GetBPP(src) == 8)
+                return arithmaticUCharImage.AddImages(dst, src);
         case FIT_UINT16:
-        return arithmaticUShortImage.AddImages(dst, src);
+            return arithmaticUShortImage.AddImages(dst, src);
         case FIT_INT16:
-        return arithmaticShortImage.AddImages(dst, src);
+            return arithmaticShortImage.AddImages(dst, src);
         case FIT_UINT32:
-        return arithmaticULongImage.AddImages(dst, src);
+            return arithmaticULongImage.AddImages(dst, src);
         case FIT_INT32:
-        return arithmaticLongImage.AddImages(dst, src);
+            return arithmaticLongImage.AddImages(dst, src);
         case FIT_FLOAT:
-        return arithmaticFloatImage.AddImages(dst, src);
+            return arithmaticFloatImage.AddImages(dst, src);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.AddImages(dst, src);
+            return arithmaticDoubleImage.AddImages(dst, src);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -796,24 +841,25 @@ FIA_SubtractGreyLevelImages(FIBITMAP* dst, FIBITMAP* src)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(src) == 8)
-        return arithmaticUCharImage.SubtractImages(dst, src);
+            if (FreeImage_GetBPP(src) == 8)
+                return arithmaticUCharImage.SubtractImages(dst, src);
         case FIT_UINT16:
-        return arithmaticUShortImage.SubtractImages(dst, src);
+            return arithmaticUShortImage.SubtractImages(dst, src);
         case FIT_INT16:
-        return arithmaticShortImage.SubtractImages(dst, src);
+            return arithmaticShortImage.SubtractImages(dst, src);
         case FIT_UINT32:
-        return arithmaticULongImage.SubtractImages(dst, src);
+            return arithmaticULongImage.SubtractImages(dst, src);
         case FIT_INT32:
-        return arithmaticLongImage.SubtractImages(dst, src);
+            return arithmaticLongImage.SubtractImages(dst, src);
         case FIT_FLOAT:
-        return arithmaticFloatImage.SubtractImages(dst, src);
+            return arithmaticFloatImage.SubtractImages(dst, src);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.SubtractImages(dst, src);
+            return arithmaticDoubleImage.SubtractImages(dst, src);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -824,24 +870,32 @@ FIA_MultiplyGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(dst) == 8)
-        return arithmaticUCharImage.MultiplyGreyLevelImageConstant(dst, constant);
+            if (FreeImage_GetBPP(dst) == 8)
+                return arithmaticUCharImage.MultiplyGreyLevelImageConstant(dst,
+                        constant);
         case FIT_UINT16:
-        return arithmaticUShortImage.MultiplyGreyLevelImageConstant(dst, constant);
+            return arithmaticUShortImage.MultiplyGreyLevelImageConstant(dst,
+                    constant);
         case FIT_INT16:
-        return arithmaticShortImage.MultiplyGreyLevelImageConstant(dst, constant);
+            return arithmaticShortImage.MultiplyGreyLevelImageConstant(dst,
+                    constant);
         case FIT_UINT32:
-        return arithmaticULongImage.MultiplyGreyLevelImageConstant(dst, constant);
+            return arithmaticULongImage.MultiplyGreyLevelImageConstant(dst,
+                    constant);
         case FIT_INT32:
-        return arithmaticLongImage.MultiplyGreyLevelImageConstant(dst, constant);
+            return arithmaticLongImage.MultiplyGreyLevelImageConstant(dst,
+                    constant);
         case FIT_FLOAT:
-        return arithmaticFloatImage.MultiplyGreyLevelImageConstant(dst, constant);
+            return arithmaticFloatImage.MultiplyGreyLevelImageConstant(dst,
+                    constant);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.MultiplyGreyLevelImageConstant(dst, constant);
+            return arithmaticDoubleImage.MultiplyGreyLevelImageConstant(dst,
+                    constant);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -852,24 +906,32 @@ FIA_DivideGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(dst) == 8)
-        return arithmaticUCharImage.DivideGreyLevelImageConstant(dst, constant);
+            if (FreeImage_GetBPP(dst) == 8)
+                return arithmaticUCharImage.DivideGreyLevelImageConstant(dst,
+                        constant);
         case FIT_UINT16:
-        return arithmaticUShortImage.DivideGreyLevelImageConstant(dst, constant);
+            return arithmaticUShortImage.DivideGreyLevelImageConstant(dst,
+                    constant);
         case FIT_INT16:
-        return arithmaticShortImage.DivideGreyLevelImageConstant(dst, constant);
+            return arithmaticShortImage.DivideGreyLevelImageConstant(dst,
+                    constant);
         case FIT_UINT32:
-        return arithmaticULongImage.DivideGreyLevelImageConstant(dst, constant);
+            return arithmaticULongImage.DivideGreyLevelImageConstant(dst,
+                    constant);
         case FIT_INT32:
-        return arithmaticLongImage.DivideGreyLevelImageConstant(dst, constant);
+            return arithmaticLongImage.DivideGreyLevelImageConstant(dst,
+                    constant);
         case FIT_FLOAT:
-        return arithmaticFloatImage.DivideGreyLevelImageConstant(dst, constant);
+            return arithmaticFloatImage.DivideGreyLevelImageConstant(dst,
+                    constant);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.DivideGreyLevelImageConstant(dst, constant);
+            return arithmaticDoubleImage.DivideGreyLevelImageConstant(dst,
+                    constant);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -880,24 +942,28 @@ FIA_AddGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(dst) == 8)
-        return arithmaticUCharImage.AddGreyLevelImageConstant(dst, constant);
+            if (FreeImage_GetBPP(dst) == 8)
+                return arithmaticUCharImage.AddGreyLevelImageConstant(dst,
+                        constant);
         case FIT_UINT16:
-        return arithmaticUShortImage.AddGreyLevelImageConstant(dst, constant);
+            return arithmaticUShortImage.AddGreyLevelImageConstant(dst,
+                    constant);
         case FIT_INT16:
-        return arithmaticShortImage.AddGreyLevelImageConstant(dst, constant);
+            return arithmaticShortImage.AddGreyLevelImageConstant(dst, constant);
         case FIT_UINT32:
-        return arithmaticULongImage.AddGreyLevelImageConstant(dst, constant);
+            return arithmaticULongImage.AddGreyLevelImageConstant(dst, constant);
         case FIT_INT32:
-        return arithmaticLongImage.AddGreyLevelImageConstant(dst, constant);
+            return arithmaticLongImage.AddGreyLevelImageConstant(dst, constant);
         case FIT_FLOAT:
-        return arithmaticFloatImage.AddGreyLevelImageConstant(dst, constant);
+            return arithmaticFloatImage.AddGreyLevelImageConstant(dst, constant);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.AddGreyLevelImageConstant(dst, constant);
+            return arithmaticDoubleImage.AddGreyLevelImageConstant(dst,
+                    constant);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -908,24 +974,32 @@ FIA_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(dst);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(dst) == 8)
-        return arithmaticUCharImage.SubtractGreyLevelImageConstant(dst, constant);
+            if (FreeImage_GetBPP(dst) == 8)
+                return arithmaticUCharImage.SubtractGreyLevelImageConstant(dst,
+                        constant);
         case FIT_UINT16:
-        return arithmaticUShortImage.SubtractGreyLevelImageConstant(dst, constant);
+            return arithmaticUShortImage.SubtractGreyLevelImageConstant(dst,
+                    constant);
         case FIT_INT16:
-        return arithmaticShortImage.SubtractGreyLevelImageConstant(dst, constant);
+            return arithmaticShortImage.SubtractGreyLevelImageConstant(dst,
+                    constant);
         case FIT_UINT32:
-        return arithmaticULongImage.SubtractGreyLevelImageConstant(dst, constant);
+            return arithmaticULongImage.SubtractGreyLevelImageConstant(dst,
+                    constant);
         case FIT_INT32:
-        return arithmaticLongImage.SubtractGreyLevelImageConstant(dst, constant);
+            return arithmaticLongImage.SubtractGreyLevelImageConstant(dst,
+                    constant);
         case FIT_FLOAT:
-        return arithmaticFloatImage.SubtractGreyLevelImageConstant(dst, constant);
+            return arithmaticFloatImage.SubtractGreyLevelImageConstant(dst,
+                    constant);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.SubtractGreyLevelImageConstant(dst, constant);
+            return arithmaticDoubleImage.SubtractGreyLevelImageConstant(dst,
+                    constant);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
@@ -934,17 +1008,17 @@ FIA_SubtractGreyLevelImageConstant(FIBITMAP* dst, double constant)
 int DLL_CALLCONV
 FIA_ComplexConjugate(FIBITMAP* src)
 {
-    if(src == NULL)
-    return FIA_ERROR;
+    if (src == NULL)
+        return FIA_ERROR;
 
-    if(FreeImage_GetImageType(src) != FIT_COMPLEX)
-    return FIA_ERROR;
+    if (FreeImage_GetImageType(src) != FIT_COMPLEX)
+        return FIA_ERROR;
 
     int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
 
     FICOMPLEX *src_ptr = (FICOMPLEX *) FreeImage_GetBits(src);
 
-    for(int i=0; i < number_of_pixels; i++) {
+    for (int i=0; i < number_of_pixels; i++) {
 
         src_ptr->i = -src_ptr->i;
         src_ptr++;
@@ -960,23 +1034,26 @@ FIA_ComplexConjugate(FIBITMAP* src)
 int DLL_CALLCONV
 FIA_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 {
-    if(dst == NULL || src == NULL)
-    return FIA_ERROR;
+    if (dst == NULL || src == NULL)
+        return FIA_ERROR;
 
-    if(CheckDimensions(dst, src) == FIA_ERROR) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image destination and source have different dimensions");
+    if (CheckDimensions(dst, src) == FIA_ERROR) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Image destination and source have different dimensions");
         return FIA_ERROR;
     }
 
     // Make dst a double so it can hold all the results of
     // the arithmatic.
-    if(FreeImage_GetImageType(dst) != FIT_COMPLEX) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Destination image must be of type FIT_COMPLEX");
+    if (FreeImage_GetImageType(dst) != FIT_COMPLEX) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Destination image must be of type FIT_COMPLEX");
         return FIA_ERROR;
     }
 
-    if(FreeImage_GetImageType(src) != FIT_COMPLEX) {
-       FreeImage_OutputMessageProc(FIF_UNKNOWN, "Source image must be of type FIT_COMPLEX");
+    if (FreeImage_GetImageType(src) != FIT_COMPLEX) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Source image must be of type FIT_COMPLEX");
         return FIA_ERROR;
     }
 
@@ -987,7 +1064,7 @@ FIA_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 
     double tmp;
 
-    for(int i=0; i < number_of_pixels; i++) {
+    for (int i=0; i < number_of_pixels; i++) {
 
         // real part = ac - bd
         tmp = (dst_ptr->r * src_ptr->r) - (dst_ptr->i * src_ptr->i);
@@ -1008,24 +1085,25 @@ FIA_SumOfAllPixels(FIBITMAP* src, FIBITMAP* mask, double *sum)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 
-    switch(src_type) {
+    switch (src_type)
+    {
         case FIT_BITMAP:
-        if(FreeImage_GetBPP(src) == 8)
-        return arithmaticUCharImage.SumOfAllPixels(src, mask, sum);
+            if (FreeImage_GetBPP(src) == 8)
+                return arithmaticUCharImage.SumOfAllPixels(src, mask, sum);
         case FIT_UINT16:
-        return arithmaticUShortImage.SumOfAllPixels(src, mask, sum);
+            return arithmaticUShortImage.SumOfAllPixels(src, mask, sum);
         case FIT_INT16:
-        return arithmaticShortImage.SumOfAllPixels(src, mask, sum);
+            return arithmaticShortImage.SumOfAllPixels(src, mask, sum);
         case FIT_UINT32:
-        return arithmaticULongImage.SumOfAllPixels(src, mask, sum);
+            return arithmaticULongImage.SumOfAllPixels(src, mask, sum);
         case FIT_INT32:
-        return arithmaticLongImage.SumOfAllPixels(src, mask, sum);
+            return arithmaticLongImage.SumOfAllPixels(src, mask, sum);
         case FIT_FLOAT:
-        return arithmaticFloatImage.SumOfAllPixels(src, mask, sum);
+            return arithmaticFloatImage.SumOfAllPixels(src, mask, sum);
         case FIT_DOUBLE:
-        return arithmaticDoubleImage.SumOfAllPixels(src, mask, sum);
+            return arithmaticDoubleImage.SumOfAllPixels(src, mask, sum);
         default:
-        break;
+            break;
     }
 
     return FIA_ERROR;
