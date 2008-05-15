@@ -19,7 +19,6 @@
 
 #ifdef _WINDOWS
 
-#include "FreeImageAlgorithms_Error.h"
 #include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_HBitmap.h"
 #include "FreeImageAlgorithms_Utilities.h"
@@ -35,7 +34,7 @@ FIA_FibToHBitmap(FIBITMAP *dib)
     HDC dc = GetDC(NULL);
 
     if(dc == NULL) {
-        FIA_SendOutputMessage("Error NULL DC");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error NULL DC");
         return NULL;
     }
 
@@ -45,7 +44,7 @@ FIA_FibToHBitmap(FIBITMAP *dib)
     if(bitmap == NULL) {
 
         error = GetLastError();
-        FIA_SendOutputMessage("Error can not create HBITMAP: Error: %d", error);
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not create HBITMAP: Error: %d", error);
 
         return NULL;
     }
@@ -98,7 +97,7 @@ FIA_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bott
     unsigned bpp = FreeImage_GetBPP(src);
 
     if(bpp <= 4) {
-        FIA_SendOutputMessage("Error can not create dib section for images less than 4 bpp");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not create dib section for images less than 4 bpp");
         return NULL;
     }
 
@@ -117,7 +116,7 @@ FIA_GetDibSection(FIBITMAP *src, HDC hdc, int left, int top, int right, int bott
     int src_pitch = FreeImage_GetPitch(src);
 
     if((left < 0) || (right> src_width) || (top < 0) || (bottom> src_height)) {
-        FIA_SendOutputMessage("Invalid Parameters");
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Invalid Parameters");
         return NULL;
     }
 

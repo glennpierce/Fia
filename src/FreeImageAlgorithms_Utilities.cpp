@@ -1270,13 +1270,7 @@ void CheckMemory(void *ptr)
 {
     if (ptr == NULL) {
 
-#ifdef _WIN32
-        MessageBox(NULL, "Memory allocation failed this is most likely a freeimagealgorithms bug.",
-                        NULL, NULL);
-#else
-        printf("Memory allocation failed this is most likely a freeimagealgorithms bug.");
-#endif
-
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "Memory allocation failed this is most likely a freeimagealgorithms bug.");
         exit(-1);
     }
 }
@@ -1451,7 +1445,7 @@ template<typename Tsrc> FIBITMAP* FastSimpleResample<Tsrc>::IntegerRescaleToHalf
                             + src_next_line_ptr[startx]
                             + src_next_line_ptr[startxplus1];
 
-            dst_ptr[x] = (average >> 2);
+            dst_ptr[x] = (Tsrc) (average >> 2);
         }
     }
 
@@ -1552,7 +1546,7 @@ template<typename Tsrc> FIBITMAP* FastSimpleResample<Tsrc>::FloatRescaleToHalf(
                             + src_next_line_ptr[startx]
                             + src_next_line_ptr[startxplus1];
 
-            dst_ptr[x] = (average / 4.0);
+            dst_ptr[x] = (Tsrc) (average / 4.0);
         }
     }
 
