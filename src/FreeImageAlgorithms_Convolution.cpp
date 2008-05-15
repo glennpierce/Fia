@@ -22,10 +22,12 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_Convolution.txx"
+#include "FreeImageAlgorithms_Statistics.h"
 
 #include "FreeImageAlgorithms_IO.h"
 
 #include <math.h>
+#include <iostream>
 
 FilterKernel DLL_CALLCONV
 FIA_NewKernel(int x_radius, int y_radius, const double *values, double divider)
@@ -217,11 +219,10 @@ FIA_NewKernelFromImage(FIBITMAP *src, FilterKernel *kernel)
 }
 
 int DLL_CALLCONV
-FIA_CorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt)
+FIA_CorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt, double *max)
 {
     FilterKernel kernel;
     FIABITMAP *tmp= NULL;
-    double max;
     pt->x = 0;
     pt->y = 0;
     
@@ -265,7 +266,7 @@ FIA_CorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt)
     
     FIBITMAP *dib = FIA_Correlate(tmp, kernel);
     
-    FIA_FindMaxXY(dib, &max, pt);
+    FIA_FindMaxXY(dib, max, pt);
     
     pt->x -= kernel.x_radius;
     pt->y += kernel.y_radius;
@@ -282,7 +283,7 @@ FIA_CorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt)
 
 int DLL_CALLCONV
 FIA_CorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2, FIARECT rect2,
-        FIAPOINT *pt)
+        FIAPOINT *pt, double *max)
 {
     FIBITMAP *src1_rgn = FreeImage_Copy(src1, rect1.left, rect1.top, rect1.right, rect1.bottom);
     FIBITMAP *src2_rgn = FreeImage_Copy(src2, rect2.left, rect2.top, rect2.right, rect2.bottom);
@@ -292,7 +293,11 @@ FIA_CorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2, FIARECT
         return FIA_ERROR;
     }
     
-    int err = FIA_CorrelateImages(src1_rgn, src2_rgn, pt);
+    int err = FIA_CorrelateImages(src1_rgn, src2_rgn, pt, max);
+    
+    // Add the point found to the start of the region searched
+    pt->x += rect1.left;
+    pt->y += rect1.top;
     
     FreeImage_Unload(src1_rgn);
     FreeImage_Unload(src2_rgn);

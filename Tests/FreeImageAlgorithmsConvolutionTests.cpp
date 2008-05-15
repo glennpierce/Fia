@@ -209,10 +209,10 @@ TestFIA_MedianFilterTest(CuTest* tc)
 static void
 TestFIA_CorrelateFilterTest(CuTest* tc)
 {
+    double max;
     const char *colour_file = TEST_DATA_DIR "drone-bee.jpg";
     const char *gs_file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 	const char *file = TEST_DATA_DIR "drone-bee-greyscale-section.jpg";
-
 
     FIBITMAP *colour_src = FIA_LoadFIBFromFile(colour_file);
     FIBITMAP *gs_src = FIA_LoadFIBFromFile(gs_file);
@@ -233,7 +233,7 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 
 	FIAPOINT pt;
 	
-	if(FIA_CorrelateImages(gs_src, src, &pt) == FIA_ERROR) {
+	if(FIA_CorrelateImages(gs_src, src, &pt, &max) == FIA_ERROR) {
 	    PROFILE_STOP("FIA_CorrelateImages");
 	    goto TEST_ERROR;
 	}
@@ -262,6 +262,8 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 static void
 TestFIA_CorrelateRegionsTest(CuTest* tc)
 {
+    double max;
+    
     const char *colour_file = TEST_DATA_DIR "drone-bee.jpg";
     const char *gs_file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
@@ -288,7 +290,7 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
 
     FIAPOINT pt;
     
-    if(FIA_CorrelateImageRegions(gs_src, rect1, gs_src, rect2, &pt) == FIA_ERROR) {
+    if(FIA_CorrelateImageRegions(gs_src, rect1, gs_src, rect2, &pt, &max) == FIA_ERROR) {
         PROFILE_STOP("FIA_CorrelateImageRegions");
         goto TEST_ERROR;
     }
@@ -311,6 +313,63 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
     FreeImage_Unload(colour_section);
 }
 
+static void
+TestFIA_CorrelateTissueRegionsTest(CuTest* tc)
+{
+    const char *tissue1_file = TEST_DATA_DIR "d12ob101.bmp";
+    const char *tissue2_file = TEST_DATA_DIR "d12ob102.bmp";
+    double max;
+    
+    FIBITMAP *tissue1_src = FIA_LoadFIBFromFile(tissue1_file);
+    FIBITMAP *tissue2_src = FIA_LoadFIBFromFile(tissue2_file);
+    
+    FIBITMAP *gs_tissue1_src = FreeImage_ConvertToGreyscale(tissue1_src);
+    FIBITMAP *gs_tissue2_src = FreeImage_ConvertToGreyscale(tissue2_src);
+           
+    CuAssertTrue(tc, gs_tissue1_src != NULL);
+    CuAssertTrue(tc, gs_tissue2_src != NULL);
+
+    FIARECT rect1, rect2;
+    rect1.left = 590;
+    rect1.top = 310;
+    rect1.bottom = 310 + 250;
+    rect1.right = 590 + 170;
+
+    rect2.left = 0;
+    rect2.top = 380;
+    rect2.bottom = 380 + 37;
+    rect2.right = 0 + 37;
+        
+    PROFILE_START("FIA_CorrelateImageRegions");
+
+    FIAPOINT pt;
+    
+    if(FIA_CorrelateImageRegions(gs_tissue1_src, rect1, gs_tissue2_src, rect2, &pt, &max) == FIA_ERROR) {
+        PROFILE_STOP("FIA_CorrelateImageRegions");
+        goto TEST_ERROR;
+    }
+    
+    PROFILE_STOP("FIA_CorrelateImageRegions");
+    
+    std::cout << "pt.x " << pt.x << " pt.y " << pt.y << "Max " << max << std::endl;
+    
+    //colour_section = FreeImage_Copy(colour_src, pt.x, pt.y, pt.x + 39, pt.y + 39);
+    
+    //if(FreeImage_Paste(gs_src24, colour_section, pt.x, pt.y, 255) == 0) {
+    //    printf("paste failed\n");
+    //}
+
+    //FIA_SaveFIBToFile(gs_src24, TEST_DATA_OUTPUT_DIR  "correlated-region.jpg", BIT24);
+
+    TEST_ERROR:
+        
+    return;
+        
+    //FreeImage_Unload(colour_src);
+    //FreeImage_Unload(gs_src);
+    //FreeImage_Unload(gs_src24);
+    //FreeImage_Unload(colour_section);
+}
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
@@ -323,6 +382,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateTissueRegionsTest);
     
 	return suite;
 }
