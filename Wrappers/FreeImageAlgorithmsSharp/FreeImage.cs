@@ -52,6 +52,36 @@ namespace FreeImage
         }
     }
 
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FIARECT
+    {
+        public int left;
+        public int top;
+        public int right;
+        public int bottom;
+
+        public FIARECT(int left, int top, int right, int bottom)
+        {
+            this.left = left;
+            this.top = top;
+            this.right = right;
+            this.bottom = bottom;
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct FIAPOINT
+    {
+        public int x;
+        public int y;
+
+        public FIAPOINT(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }    
+    }
+
     public class FreeImageBitmap : IDisposable
     {
         private uint dib;
@@ -420,6 +450,17 @@ namespace FreeImage
             }
         }
 
+        public bool Is12Bit
+        {
+            get
+            {
+                if (this.BitsPerPixel != 16)
+                    return false;
+
+                return FreeImageAlgorithmsNativeMethods.Is16BitReally12BitImage(this.dib);
+            }
+        }
+
         public FreeImageType FreeImageType
         {
             get
@@ -497,6 +538,16 @@ namespace FreeImage
             FreeImageNativeMethods.Unload(this.dib);
 
             this.dib = tmp_dib;
+        }
+
+        public FIAPOINT Correlate(FIARECT rect1, FreeImageBitmap src2, FIARECT rect2, out double max)
+        {
+            FIAPOINT pt = new FIAPOINT();
+
+            FreeImageAlgorithmsNativeMethods.CorrelateImageRegions(this.dib, rect1,
+                src2.dib, rect2, out pt, out max);
+
+            return pt;
         }
     }
 }

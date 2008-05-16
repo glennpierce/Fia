@@ -296,9 +296,9 @@ FIA_CorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2, FIARECT
     int err = FIA_CorrelateImages(src1_rgn, src2_rgn, pt, max);
     
     // Add the point found to the start of the region searched
-    pt->x += rect1.left;
-    pt->y += rect1.top;
-    
+    pt->x += (rect1.left - rect2.left);
+    pt->y += (rect1.top - rect2.top);
+
     FreeImage_Unload(src1_rgn);
     FreeImage_Unload(src2_rgn);
     

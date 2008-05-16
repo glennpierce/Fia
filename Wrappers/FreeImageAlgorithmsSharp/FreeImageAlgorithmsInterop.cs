@@ -57,5 +57,11 @@ namespace FreeImage
 
         [DllImport("FreeImageAlgorithms.dll", EntryPoint = "FIA_StretchImageToType")]
         internal static extern uint StretchImageToType(uint src, FreeImageType type, double max);
+
+        [DllImport("FreeImageAlgorithms.dll", EntryPoint = "FIA_Is16BitReally12BitImage")]
+        internal static extern bool Is16BitReally12BitImage(uint src);
+
+        [DllImport("FreeImageAlgorithms.dll", EntryPoint = "FIA_CorrelateImageRegions")]
+        internal static extern bool CorrelateImageRegions(uint src1, FIARECT rect1, uint src2, FIARECT rect2, out FIAPOINT pt, out double max);
     }
 }
