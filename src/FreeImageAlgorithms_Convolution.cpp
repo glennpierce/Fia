@@ -226,9 +226,9 @@ FIA_CorrelateImages(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *max)
     pt->x = 0;
     pt->y = 0;
     
-    FIBITMAP *src1 = FreeImage_ConvertToGreyscale(_src1);
-    FIBITMAP *src2 = FreeImage_ConvertToGreyscale(_src2);
-    
+    FIBITMAP *src1 = FreeImage_Clone(_src1);
+    FIBITMAP *src2 = FreeImage_Clone(_src2);
+
     if(src1 == NULL || src2 == NULL) {
         FreeImage_OutputMessageProc(FIF_UNKNOWN, "Conversion to standard image falied");
         return FIA_ERROR;
@@ -265,9 +265,14 @@ FIA_CorrelateImages(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *max)
         return FIA_ERROR;
     }
     
+    // Convert colour images to greyscale
     if (bpp1 >= 24 && src1_type == FIT_BITMAP) {
-        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not perform correlation on a colour image");
-        return NULL;
+           
+        FreeImage_Unload(src1);
+        FreeImage_Unload(src2);
+        
+        src1 = FreeImage_ConvertToGreyscale(_src1);
+        src2 = FreeImage_ConvertToGreyscale(_src2);
     }
     
     // Increase the contrast for better correlation ?

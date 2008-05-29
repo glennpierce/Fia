@@ -311,6 +311,11 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
     FreeImage_Unload(colour_section);
 }
 
+static void Paste(FIBITMAP *dst, FIBITMAP* src, int left, int top)
+{
+    FIA_SimplePaste(dst, src, left, FreeImage_GetHeight(dst) - top - FreeImage_GetHeight(src) - 1); 
+    
+}
 static void
 TestFIA_CorrelateTissueRegionsTest(CuTest* tc)
 {
@@ -333,13 +338,16 @@ TestFIA_CorrelateTissueRegionsTest(CuTest* tc)
     FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), FreeImage_GetWidth(src1) * 2, FreeImage_GetHeight(src1) * 2, 
                     FreeImage_GetBPP(src1), 0, 0, 0);    
     
-    if(FreeImage_Paste(joined_image, src1, 0, 0, 255) == 0) {
-        printf("paste failed\n");
-    }
+    //if(FreeImage_Paste(joined_image, src1, 0, 0, 255) == 0) {
+    //    printf("paste failed\n");
+    //}
     
-    if(FreeImage_Paste(joined_image, src2, pt.x, pt.y, 255) == 0) {
-        printf("paste failed\n");
-    }
+    Paste(joined_image, src1, 0, 0);
+    Paste(joined_image, src2, pt.x, pt.y);
+   
+    //if(FreeImage_Paste(joined_image, src2, pt.x, pt.y, 255) == 0) {
+    //    printf("paste failed\n");
+    //}
     
     FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "joined.png", BIT24);
 
