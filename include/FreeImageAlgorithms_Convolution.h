@@ -70,6 +70,14 @@ DLL_API int DLL_CALLCONV
 FIA_CorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2,  FIARECT rect2,
                 FIAPOINT *pt, double *max);
 
+DLL_API int DLL_CALLCONV
+FIA_CorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2,
+                unsigned int edge_thickness, FIAPOINT *pt, double *max);
+
+DLL_API int DLL_CALLCONV
+FIA_CorrelateImagesAlongBottomEdge(FIBITMAP *src1, FIBITMAP *src2,
+                unsigned int edge_thickness, FIAPOINT *pt, double *max);
+
 #ifdef __cplusplus
 }
 #endif

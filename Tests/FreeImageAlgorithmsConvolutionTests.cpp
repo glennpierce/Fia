@@ -238,8 +238,6 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 	    goto TEST_ERROR;
 	}
 	
-    printf("position x %d position y %d\n", pt.x, pt.y);
-
 	PROFILE_STOP("FIA_CorrelateImages");
 
     if(FreeImage_Paste(colour_src, colour_section, pt.x, pt.y, 255) == 0) {
@@ -319,56 +317,81 @@ TestFIA_CorrelateTissueRegionsTest(CuTest* tc)
     const char *tissue1_file = TEST_DATA_DIR "d12ob101.bmp";
     const char *tissue2_file = TEST_DATA_DIR "d12ob102.bmp";
     double max;
-    
-    FIBITMAP *tissue1_src = FIA_LoadFIBFromFile(tissue1_file);
-    FIBITMAP *tissue2_src = FIA_LoadFIBFromFile(tissue2_file);
-    
-    FIBITMAP *gs_tissue1_src = FreeImage_ConvertToGreyscale(tissue1_src);
-    FIBITMAP *gs_tissue2_src = FreeImage_ConvertToGreyscale(tissue2_src);
-           
-    CuAssertTrue(tc, gs_tissue1_src != NULL);
-    CuAssertTrue(tc, gs_tissue2_src != NULL);
-
-    FIARECT rect1, rect2;
-    rect1.left = 590;
-    rect1.top = 310;
-    rect1.bottom = 310 + 250;
-    rect1.right = 590 + 170;
-
-    rect2.left = 0;
-    rect2.top = 380;
-    rect2.bottom = 380 + 37;
-    rect2.right = 0 + 37;
-        
-    PROFILE_START("FIA_CorrelateImageRegions");
-
     FIAPOINT pt;
     
-    if(FIA_CorrelateImageRegions(gs_tissue1_src, rect1, gs_tissue2_src, rect2, &pt, &max) == FIA_ERROR) {
-        PROFILE_STOP("FIA_CorrelateImageRegions");
-        goto TEST_ERROR;
-    }
+    FIBITMAP *src1 = FIA_LoadFIBFromFile(tissue1_file);
+    FIBITMAP *src2 = FIA_LoadFIBFromFile(tissue2_file);
+  
+    PROFILE_START("FIA_CorrelateImageRegions");
+    
+    FIA_CorrelateImagesAlongRightEdge(src1, src2, 200, &pt, &max);
     
     PROFILE_STOP("FIA_CorrelateImageRegions");
     
-    std::cout << "pt.x " << pt.x << " pt.y " << pt.y << "Max " << max << std::endl;
+    std::cout << "pt.x " << pt.x << " pt.y " << pt.y << " Max " << max << std::endl;
     
-    //colour_section = FreeImage_Copy(colour_src, pt.x, pt.y, pt.x + 39, pt.y + 39);
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), FreeImage_GetWidth(src1) * 2, FreeImage_GetHeight(src1) * 2, 
+                    FreeImage_GetBPP(src1), 0, 0, 0);    
     
-    //if(FreeImage_Paste(gs_src24, colour_section, pt.x, pt.y, 255) == 0) {
-    //    printf("paste failed\n");
-    //}
-
-    //FIA_SaveFIBToFile(gs_src24, TEST_DATA_OUTPUT_DIR  "correlated-region.jpg", BIT24);
+    if(FreeImage_Paste(joined_image, src1, 0, 0, 255) == 0) {
+        printf("paste failed\n");
+    }
+    
+    if(FreeImage_Paste(joined_image, src2, pt.x, pt.y, 255) == 0) {
+        printf("paste failed\n");
+    }
+    
+    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "joined.png", BIT24);
 
     TEST_ERROR:
         
     return;
         
-    //FreeImage_Unload(colour_src);
-    //FreeImage_Unload(gs_src);
-    //FreeImage_Unload(gs_src24);
-    //FreeImage_Unload(colour_section);
+    FreeImage_Unload(src1);
+    FreeImage_Unload(src2);
+    FreeImage_Unload(joined_image);
+    
+}
+
+static void
+TestFIA_CorrelateTissueRegionsVerticalTest(CuTest* tc)
+{
+    const char *tissue1_file = TEST_DATA_DIR "d12ob101.bmp";
+    const char *tissue2_file = TEST_DATA_DIR "d12ob104.bmp";
+    double max;
+    FIAPOINT pt;
+    
+    FIBITMAP *src1 = FIA_LoadFIBFromFile(tissue1_file);
+    FIBITMAP *src2 = FIA_LoadFIBFromFile(tissue2_file);
+  
+    PROFILE_START("FIA_CorrelateImageRegions");
+    
+    FIA_CorrelateImagesAlongBottomEdge(src1, src2, 200, &pt, &max);
+    
+    PROFILE_STOP("FIA_CorrelateImageRegions");
+    
+    std::cout << "pt.x " << pt.x << " pt.y " << pt.y << " Max " << max << std::endl;
+    
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), FreeImage_GetWidth(src1) * 3, FreeImage_GetHeight(src1) * 3, 
+                    FreeImage_GetBPP(src1), 0, 0, 0);    
+    
+    if(FreeImage_Paste(joined_image, src1, 0 + 100, 0 + 100, 255) == 0) {
+        printf("paste failed\n");
+    }
+    
+    if(FreeImage_Paste(joined_image, src2, pt.x + 100, pt.y + 100, 255) == 0) {
+        printf("paste failed\n");
+    }
+    
+    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "joined-vertical.png", BIT24);
+
+    TEST_ERROR:
+        
+    return;
+        
+    FreeImage_Unload(src1);
+    FreeImage_Unload(src2);
+    FreeImage_Unload(joined_image);
 }
 
 CuSuite* DLL_CALLCONV
@@ -381,8 +404,9 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
 	SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
-    SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
+    //SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateTissueRegionsTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateTissueRegionsVerticalTest);
     
 	return suite;
 }
