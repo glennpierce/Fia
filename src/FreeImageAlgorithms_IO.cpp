@@ -298,6 +298,7 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
 {
     FIBITMAP *standard_dib, *converted_dib;
     FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(dib);
 
     if(dib == NULL) {
         return FIA_ERROR;
@@ -306,17 +307,34 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
     // try to guess the file format from the file extension
     fif = FreeImage_GetFIFFromFilename(filepath);
 
+	if(fif != FIF_PNG && bit_depth == BIT16) {
+		FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error Saving File! Image type can not save as 16 bit");
+        return FIA_ERROR;
+	}
+
     // check that the plugin has writing capabilities ... 
     if((fif != FIF_UNKNOWN) && FreeImage_FIFSupportsWriting(fif)) {
 
-        standard_dib = FreeImage_ConvertToStandardType(dib, 0);
+		if(fif == FIF_PNG && bit_depth == BIT16)
+		{
+			if(type == FIT_INT16 || type == FIT_UINT16)
+				converted_dib = FreeImage_Clone(dib);
+			else
+				converted_dib = FreeImage_ConvertToStandardType(dib, 0);
+		}
+		else {
 
-        if(bit_depth == BIT24) {
-            converted_dib = FreeImage_ConvertTo24Bits(standard_dib);
-        }
-        else {
-            converted_dib = FreeImage_ConvertTo8Bits(standard_dib);
-        }
+			standard_dib = FreeImage_ConvertToStandardType(dib, 0);
+
+			if(bit_depth == BIT24) {
+			    converted_dib = FreeImage_ConvertTo24Bits(standard_dib);
+			}
+			else {
+		      converted_dib = FreeImage_ConvertTo8Bits(standard_dib);
+			}
+
+			FreeImage_Unload(standard_dib);
+		}
 
         if(converted_dib == NULL) {
             FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error Saving File! Failed converting to 8 or 24 bit");
@@ -327,8 +345,7 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
             FreeImage_OutputMessageProc(FIF_UNKNOWN, "Unknown Error Saving File! FreeImage_Save Failed");
             return FIA_ERROR;
         }
-
-        FreeImage_Unload(standard_dib);
+     
         FreeImage_Unload(converted_dib);
     }
     else {

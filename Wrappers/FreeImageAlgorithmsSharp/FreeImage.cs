@@ -549,5 +549,25 @@ namespace FreeImage
 
             return pt;
         }
+
+        public FIAPOINT CorrelateImageAlongRightEdge(FreeImageBitmap src2, uint thickness, out double max)
+        {
+            FIAPOINT pt = new FIAPOINT();
+
+            FreeImageAlgorithmsNativeMethods.CorrelateImagesAlongRightEdge(this.dib,
+                src2.dib, thickness, out pt, out max);
+
+            return pt;
+        }
+
+        public FIAPOINT CorrelateImageAlongBottomEdge(FreeImageBitmap src2, uint thickness, out double max)
+        {
+            FIAPOINT pt = new FIAPOINT();
+
+            FreeImageAlgorithmsNativeMethods.CorrelateImagesAlongBottomEdge(this.dib,
+                src2.dib, thickness, out pt, out max);
+
+            return pt;
+        }
     }
 }

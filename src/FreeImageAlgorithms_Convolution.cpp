@@ -266,10 +266,6 @@ FIA_CorrelateImages(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *max)
     FreeImage_AdjustContrast(src1, 100.0);
     FreeImage_AdjustContrast(src2, 100.0);
     
-    FIA_SaveFIBToFile(src1, "/home/glenn/Desktop/image1.png", BIT8);
-    FIA_SaveFIBToFile(src2, "/home/glenn/Desktop/image2.png", BIT8);
-    
-    
     kernel.x_radius = 0;
     kernel.y_radius = 0;
     kernel.values = NULL;
