@@ -314,8 +314,8 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
 static void
 TestFIA_CorrelateTissueRegionsTest(CuTest* tc)
 {
-    const char *tissue1_file = TEST_DATA_DIR "d12ob101.bmp";
-    const char *tissue2_file = TEST_DATA_DIR "d12ob102.bmp";
+    const char *tissue1_file = TEST_DATA_DIR "test00006.png"; // "d12ob101.bmp";
+    const char *tissue2_file = TEST_DATA_DIR "test00007.png"; // "d12ob102.bmp";
     double max;
     FIAPOINT pt;
     

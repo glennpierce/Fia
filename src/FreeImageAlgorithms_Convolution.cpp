@@ -257,14 +257,24 @@ FIA_CorrelateImages(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *max)
         return NULL;
     }
     
-    if (FreeImage_GetBPP(src1) >= 24 && src1_type == FIT_BITMAP) {
+    int bpp1 = FreeImage_GetBPP(src1);
+    int bpp2 = FreeImage_GetBPP(src2);
+    
+    if (bpp1 != bpp2) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Images must have the same bpp");
+        return FIA_ERROR;
+    }
+    
+    if (bpp1 >= 24 && src1_type == FIT_BITMAP) {
         FreeImage_OutputMessageProc(FIF_UNKNOWN, "Error can not perform correlation on a colour image");
         return NULL;
     }
     
     // Increase the contrast for better correlation ?
-    FreeImage_AdjustContrast(src1, 100.0);
-    FreeImage_AdjustContrast(src2, 100.0);
+    if(bpp1 == 8) {
+        FreeImage_AdjustContrast(src1, 100.0);
+        FreeImage_AdjustContrast(src2, 100.0);
+    }
     
     kernel.x_radius = 0;
     kernel.y_radius = 0;
