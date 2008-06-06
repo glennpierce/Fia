@@ -30,7 +30,7 @@ TestFIA_MaskTest(CuTest* tc)
 
 	CuAssertTrue(tc, err != FIA_ERROR);
 
-	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "dronebee-masked.jpg", BIT24);
+	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Logic/dronebee-masked.jpg", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(mask);
@@ -41,6 +41,8 @@ CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsLogicSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
+
+	MkDir(TEST_DATA_OUTPUT_DIR "/Logic");
 
 	SUITE_ADD_TEST(suite, TestFIA_MaskTest);
 

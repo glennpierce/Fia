@@ -64,7 +64,7 @@ TestFIA_ConvolutionTest(CuTest* tc)
 
 	PROFILE_STOP("FreeImageAlgorithms_Convolve");
 
-	FIA_SaveFIBToFile(dib4, TEST_DATA_OUTPUT_DIR "drone-bee-convolved.bmp", BIT24);
+	FIA_SaveFIBToFile(dib4, TEST_DATA_OUTPUT_DIR "/Convolution/drone-bee-convolved.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FIA_Unload(dib2);
@@ -94,7 +94,7 @@ TestFIA_SobelTest(CuTest* tc)
 	//FIA_SetTernaryPalettePalette(dib2, FIA_RGBQUAD(0,0,0), 
 	//		1, FIA_RGBQUAD(255,0,0), 2, FIA_RGBQUAD(0,255,0));
 
-	FIA_SaveFIBToFile(bit8_dib, TEST_DATA_OUTPUT_DIR "drone-bee_sobel.bmp", BIT24);
+	FIA_SaveFIBToFile(bit8_dib, TEST_DATA_OUTPUT_DIR "/Convolution/drone-bee_sobel.bmp", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -125,15 +125,15 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
 
     if(vertical_dib != NULL)
 	    FIA_SaveFIBToFile(vertical_dib,
-            TEST_DATA_OUTPUT_DIR "drone-bee_vertical.bmp", BIT8);
+            TEST_DATA_OUTPUT_DIR "/Convolution/drone-bee_vertical.bmp", BIT8);
 
     if(horizontal_dib != NULL)
         FIA_SaveFIBToFile(bit8_dib,
-            TEST_DATA_OUTPUT_DIR "drone-bee_sobel_horizontal_dib.bmp", BIT8);
+            TEST_DATA_OUTPUT_DIR "/Convolution/drone-bee_sobel_horizontal_dib.bmp", BIT8);
 
     if(mag_dib != NULL)
         FIA_SaveFIBToFile(mag_dib,
-            TEST_DATA_OUTPUT_DIR "drone-bee_sobel_magnitude_dib.bmp", BIT8);
+            TEST_DATA_OUTPUT_DIR "/Convolution/drone-bee_sobel_magnitude_dib.bmp", BIT8);
 
     if(vertical_dib != NULL)
 	    FreeImage_Unload(vertical_dib);
@@ -197,7 +197,7 @@ TestFIA_MedianFilterTest(CuTest* tc)
 
 	PROFILE_STOP("MedianFilter");
 
-	FIA_SaveFIBToFile(dib5, TEST_DATA_OUTPUT_DIR  "drone-bee-median_filtered.jpg", BIT8);
+	FIA_SaveFIBToFile(dib5, TEST_DATA_OUTPUT_DIR  "/Convolution/drone-bee-median_filtered.jpg", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -229,22 +229,22 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 	rect.bottom = FreeImage_GetHeight(colour_src);
 	rect.right = FreeImage_GetWidth(colour_src);
 
-	PROFILE_START("FIA_CorrelateImages");
+	PROFILE_START("TestFIA_CorrelateFilterTest");
 
 	FIAPOINT pt;
 	
 	if(FIA_CorrelateImages(gs_src, src, &pt, &max) == FIA_ERROR) {
-	    PROFILE_STOP("FIA_CorrelateImages");
+	    PROFILE_STOP("TestFIA_CorrelateFilterTest");
 	    goto TEST_ERROR;
 	}
 	
-	PROFILE_STOP("FIA_CorrelateImages");
+	PROFILE_STOP("TestFIA_CorrelateFilterTest");
 
     if(FreeImage_Paste(colour_src, colour_section, pt.x, pt.y, 255) == 0) {
         printf("paste failed\n");
     }
 
-	FIA_SaveFIBToFile(colour_src, TEST_DATA_OUTPUT_DIR  "correlated.jpg", BIT24);
+	FIA_SaveFIBToFile(colour_src, TEST_DATA_OUTPUT_DIR  "/Convolution/kernel-correlated.jpg", BIT24);
 
 	TEST_ERROR:
 	
@@ -252,8 +252,6 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
 	FreeImage_Unload(colour_src);
 	FreeImage_Unload(gs_src);
     FreeImage_Unload(colour_section);
-
-    //178, 138
 }
 
 
@@ -284,16 +282,16 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
     rect2.bottom = 139;
     rect2.right = 139;
         
-    PROFILE_START("FIA_CorrelateImageRegions");
+    PROFILE_START("TestFIA_CorrelateRegionsTest");
 
     FIAPOINT pt;
     
     if(FIA_CorrelateImageRegions(gs_src, rect1, gs_src, rect2, &pt, &max) == FIA_ERROR) {
-        PROFILE_STOP("FIA_CorrelateImageRegions");
+        PROFILE_STOP("TestFIA_CorrelateRegionsTest");
         goto TEST_ERROR;
     }
     
-    PROFILE_STOP("FIA_CorrelateImageRegions");
+    PROFILE_STOP("TestFIA_CorrelateRegionsTest");
     
     colour_section = FreeImage_Copy(colour_src, pt.x, pt.y, pt.x + 39, pt.y + 39);
     
@@ -301,7 +299,7 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
         printf("paste failed\n");
     }
 
-    FIA_SaveFIBToFile(gs_src24, TEST_DATA_OUTPUT_DIR  "correlated-region.jpg", BIT24);
+    FIA_SaveFIBToFile(gs_src24, TEST_DATA_OUTPUT_DIR  "/Convolution/kernel-correlated-region.jpg", BIT24);
 
     TEST_ERROR:
     
@@ -311,95 +309,46 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
     FreeImage_Unload(colour_section);
 }
 
-static void Paste(FIBITMAP *dst, FIBITMAP* src, int left, int top)
-{
-    FIA_SimplePaste(dst, src, left, FreeImage_GetHeight(dst) - top - FreeImage_GetHeight(src) - 1); 
-    
-}
+
 static void
-TestFIA_CorrelateTissueRegionsTest(CuTest* tc)
+TestFIA_CorrelateFFTTest(CuTest* tc)
 {
-    const char *tissue1_file = TEST_DATA_DIR "test00006.png"; // "d12ob101.bmp";
-    const char *tissue2_file = TEST_DATA_DIR "test00007.png"; // "d12ob102.bmp";
-    double max;
+	const char *tissue1_file = TEST_DATA_DIR "gregarious-desert-locusts.jpg";
+    const char *tissue2_file = TEST_DATA_DIR "gregarious-desert-locusts-section.jpg"; //"d12ob102.bmp";
+
+    double max = 0.0;
     FIAPOINT pt;
     
+    pt.x = 0;
+    pt.y = 0;
+    
     FIBITMAP *src1 = FIA_LoadFIBFromFile(tissue1_file);
+	FIBITMAP *gs_src1 = FreeImage_ConvertToGreyscale(src1);
     FIBITMAP *src2 = FIA_LoadFIBFromFile(tissue2_file);
-  
-    PROFILE_START("FIA_CorrelateImageRegions");
+
+    PROFILE_START("TestFIA_CorrelateFFTTest");
     
-    FIA_CorrelateImagesAlongRightEdge(src1, src2, 200, &pt, &max);
+    FIA_CorrelateImagesFFT(src1, src2, &pt, &max);
     
-    PROFILE_STOP("FIA_CorrelateImageRegions");
-    
-    std::cout << "pt.x " << pt.x << " pt.y " << pt.y << " Max " << max << std::endl;
-    
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), FreeImage_GetWidth(src1) * 2, FreeImage_GetHeight(src1) * 2, 
+    PROFILE_STOP("TestFIA_CorrelateFFTTest");
+
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), 700, 700, 
                     FreeImage_GetBPP(src1), 0, 0, 0);    
     
-    //if(FreeImage_Paste(joined_image, src1, 0, 0, 255) == 0) {
-    //    printf("paste failed\n");
-    //}
-    
-    Paste(joined_image, src1, 0, 0);
-    Paste(joined_image, src2, pt.x, pt.y);
+    if(FreeImage_GetBPP(joined_image) == 8)
+        FIA_SetGreyLevelPalette(joined_image);
+
+    FreeImage_Paste(joined_image, gs_src1, 0, 0, 256);
+    FreeImage_Paste(joined_image, src2, pt.x, pt.y, 256);
    
-    //if(FreeImage_Paste(joined_image, src2, pt.x, pt.y, 255) == 0) {
-    //    printf("paste failed\n");
-    //}
-    
-    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "joined.png", BIT24);
+    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "/Convolution/correlated-fft.png", BIT24);
 
-    TEST_ERROR:
-        
-    return;
-        
     FreeImage_Unload(src1);
     FreeImage_Unload(src2);
-    FreeImage_Unload(joined_image);
-    
-}
+    FreeImage_Unload(gs_src1);
+    FreeImage_Unload(joined_image);   
 
-static void
-TestFIA_CorrelateTissueRegionsVerticalTest(CuTest* tc)
-{
-    const char *tissue1_file = TEST_DATA_DIR "d12ob101.bmp";
-    const char *tissue2_file = TEST_DATA_DIR "d12ob104.bmp";
-    double max;
-    FIAPOINT pt;
-    
-    FIBITMAP *src1 = FIA_LoadFIBFromFile(tissue1_file);
-    FIBITMAP *src2 = FIA_LoadFIBFromFile(tissue2_file);
-  
-    PROFILE_START("FIA_CorrelateImageRegions");
-    
-    FIA_CorrelateImagesAlongBottomEdge(src1, src2, 200, &pt, &max);
-    
-    PROFILE_STOP("FIA_CorrelateImageRegions");
-    
-    std::cout << "pt.x " << pt.x << " pt.y " << pt.y << " Max " << max << std::endl;
-    
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), FreeImage_GetWidth(src1) * 3, FreeImage_GetHeight(src1) * 3, 
-                    FreeImage_GetBPP(src1), 0, 0, 0);    
-    
-    if(FreeImage_Paste(joined_image, src1, 0 + 100, 0 + 100, 255) == 0) {
-        printf("paste failed\n");
-    }
-    
-    if(FreeImage_Paste(joined_image, src2, pt.x + 100, pt.y + 100, 255) == 0) {
-        printf("paste failed\n");
-    }
-    
-    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "joined-vertical.png", BIT24);
-
-    TEST_ERROR:
-        
     return;
-        
-    FreeImage_Unload(src1);
-    FreeImage_Unload(src2);
-    FreeImage_Unload(joined_image);
 }
 
 CuSuite* DLL_CALLCONV
@@ -407,14 +356,15 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
+	MkDir(TEST_DATA_OUTPUT_DIR "/Convolution");
+
 	SUITE_ADD_TEST(suite, TestFIA_ConvolutionTest);
 	SUITE_ADD_TEST(suite, TestFIA_SobelTest);
     SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
 	SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
-    //SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
-    SUITE_ADD_TEST(suite, TestFIA_CorrelateTissueRegionsTest);
-    SUITE_ADD_TEST(suite, TestFIA_CorrelateTissueRegionsVerticalTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);
     
 	return suite;
 }

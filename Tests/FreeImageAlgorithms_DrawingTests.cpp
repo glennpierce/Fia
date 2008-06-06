@@ -1,7 +1,5 @@
 #include "CuTest.h"
 
-#include "Constants.h"
-
 #include "FreeImage.h"
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Drawing.h"
@@ -27,7 +25,7 @@ TestFIA_GreyscaleElipseTest(CuTest* tc)
     FIA_DrawSolidGreyscaleEllipse (src, rect, 200, 1);
     FIA_DrawGreyscaleRect (src, rect, 200, 2);
 
-	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "TestFIA_GreyscaleElipseTest.jpg", BIT8);
+	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_GreyscaleElipseTest.jpg", BIT8);
 
 	FreeImage_Unload(src);
 }
@@ -44,7 +42,7 @@ TestFIA_ConvexHullTest(CuTest* tc)
 
     CuAssertTrue(tc, hull_dib != NULL);
 
-	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "TestFIA_ConvexHullTest.jpg", BIT8);
+	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ConvexHullTest.jpg", BIT8);
 
 	FreeImage_Unload(src);
     FreeImage_Unload(hull_dib);
@@ -67,7 +65,7 @@ TestFIA_GSLineTest(CuTest* tc)
 
     FIA_DrawGreyscaleLine (src, p1, p2, 150, 3, 0);
  
-	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "TestFIA_GSLineTest.jpg", BIT8);
+	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_GSLineTest.jpg", BIT8);
 
 	FreeImage_Unload(src);
 }
@@ -95,7 +93,7 @@ TestFIA_ColourLineTest(CuTest* tc)
 	FIA_DrawColourLine (src32, p1, p2, FIA_RGBQUAD(255, 0, 0), 5, 0);
     FIA_DrawColourLine (src32, p1, p3, FIA_RGBQUAD(255, 0, 0), 5, 1);
 
-	FIA_SaveFIBToFile(src32, TEST_DATA_OUTPUT_DIR "TestFIA_ColourLineTest.jpg", BIT24);
+	FIA_SaveFIBToFile(src32, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourLineTest.jpg", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src32);
@@ -121,7 +119,7 @@ TestFIA_Rect24bitTest(CuTest* tc)
 	
 	FIA_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 1);
 
-	FIA_SaveFIBToFile(src24, TEST_DATA_OUTPUT_DIR "TestFIA_Rect24bitTest.jpg", BIT24);
+	FIA_SaveFIBToFile(src24, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_Rect24bitTest.jpg", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src24);
@@ -147,7 +145,7 @@ TestFIA_Rect32bitTest(CuTest* tc)
 	
 	FIA_DrawColourRect (src32, rect, FIA_RGBQUAD(255,0,0), 7);
 
-	FIA_SaveFIBToFile(src32, TEST_DATA_OUTPUT_DIR "TestFIA_Rect32bitTest.jpg", BIT24);
+	FIA_SaveFIBToFile(src32, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_Rect32bitTest.jpg", BIT24);
 
 	FreeImage_Unload(src);
 	FreeImage_Unload(src32);
@@ -170,7 +168,7 @@ TestFIA_GsRectTest(CuTest* tc)
 	
 	FIA_DrawGreyscaleRect (src, rect, 200, 5);
 
-	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "TestFIA_GsRectTest.jpg", BIT8);
+	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_GsRectTest.jpg", BIT8);
 
 	FreeImage_Unload(src);
 }
@@ -192,7 +190,7 @@ TestFIA_SolidRectTest(CuTest* tc)
 	
 	FIA_DrawColourSolidRect (src, rect, FIA_RGBQUAD(255,0,0));
 
-	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "TestFIA_SolidRectTest.jpg", BIT24);
+	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_SolidRectTest.jpg", BIT24);
 
 	FreeImage_Unload(src);
 }
@@ -218,7 +216,7 @@ TestFIA_SolidGSRectTest(CuTest* tc)
 
 	FIA_DrawSolidGreyscaleRect (gs_src, rect, 100);
 
-	FIA_SaveFIBToFile(gs_src, TEST_DATA_OUTPUT_DIR "TestFIA_SolidGSRectTest.jpg", BIT8);
+	FIA_SaveFIBToFile(gs_src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_SolidGSRectTest.jpg", BIT8);
   
 	FreeImage_Unload(src);
 	FreeImage_Unload(gs_src);
@@ -243,7 +241,7 @@ TestFIA_FloodFillTest(CuTest* tc)
     
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FIA_SaveFIBToFile(dib3, TEST_DATA_OUTPUT_DIR "TestFIA_FloodFillTest.jpg", BIT24);
+	FIA_SaveFIBToFile(dib3, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_FloodFillTest.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -254,6 +252,8 @@ CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsDrawingSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
+
+	MkDir(TEST_DATA_OUTPUT_DIR "/Drawing");
 
 	SUITE_ADD_TEST(suite, TestFIA_GSLineTest);
 	SUITE_ADD_TEST(suite, TestFIA_ColourLineTest);

@@ -29,7 +29,7 @@ TestFIA_LinearScaleTest(CuTest* tc)
     PROFILE_STOP("LinearScale");
 
 
-    FIA_SaveFIBToFile(scaled_dib,  TEST_DATA_OUTPUT_DIR "drone-bee-linear-scaled.jpg", BIT8);
+    FIA_SaveFIBToFile(scaled_dib,  TEST_DATA_OUTPUT_DIR "/LinearScale/drone-bee-linear-scaled.jpg", BIT8);
 
     FreeImage_Unload(scaled_dib);
 	FreeImage_Unload(dib);
@@ -44,7 +44,7 @@ TestFIA_LinearScaleRangeTest(CuTest* tc)
 	FIBITMAP *scaled_dib = FIA_StretchImageAcrossRange(dib, 200, 255); 
 
     FIA_SaveFIBToFile(scaled_dib,
-        TEST_DATA_OUTPUT_DIR "drone-bee-linear-range-scaled.jpg", BIT8);
+        TEST_DATA_OUTPUT_DIR "/LinearScale/drone-bee-linear-range-scaled.jpg", BIT8);
 
 	FreeImage_Unload(dib);
 	FreeImage_Unload(scaled_dib);
@@ -55,6 +55,8 @@ CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsLinearScaleSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
+
+	MkDir(TEST_DATA_OUTPUT_DIR "/LinearScale");
 
 	SUITE_ADD_TEST(suite, TestFIA_LinearScaleTest);
     SUITE_ADD_TEST(suite, TestFIA_LinearScaleRangeTest);

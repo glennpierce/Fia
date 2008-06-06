@@ -22,7 +22,7 @@ static double kernel_values[] = {1.0, 1.0, 1.0, 1.0, 1.0,
 static void
 TestFIA_DilationTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = TEST_DATA_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -49,7 +49,7 @@ TestFIA_DilationTest(CuTest* tc)
 
 	PROFILE_STOP("DilationFilter");
 
-	FIA_SaveFIBToFile(result_dib, TEMP_DIR "\\dilation_result.jpg", BIT24);
+	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\dilation_result.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -61,7 +61,7 @@ TestFIA_DilationTest(CuTest* tc)
 static void
 TestFIA_ErosionTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = TEST_DATA_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -88,7 +88,7 @@ TestFIA_ErosionTest(CuTest* tc)
 
 	PROFILE_STOP("ErosionFilter");
 
-	FIA_SaveFIBToFile(result_dib, TEMP_DIR "\\erosion_result.jpg", BIT24);
+	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\erosion_result.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -100,7 +100,7 @@ TestFIA_ErosionTest(CuTest* tc)
 static void
 TestFIA_OpeningTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = TEST_DATA_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -123,7 +123,7 @@ TestFIA_OpeningTest(CuTest* tc)
 
 	CuAssertTrue(tc, result_dib != NULL);
 
-	FIA_SaveFIBToFile(result_dib, TEMP_DIR "\\opening_result.jpg", BIT24);
+	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\opening_result.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -135,7 +135,7 @@ TestFIA_OpeningTest(CuTest* tc)
 static void
 TestFIA_ClosingTest(CuTest* tc)
 {
-	const char *file = IMAGE_DIR "\\morpholology_test.bmp";
+	const char *file = TEST_DATA_DIR "\\morpholology_test.bmp";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
 	
@@ -158,7 +158,7 @@ TestFIA_ClosingTest(CuTest* tc)
 
 	CuAssertTrue(tc, result_dib != NULL);
 
-	FIA_SaveFIBToFile(result_dib, TEMP_DIR "\\closing_result.jpg", BIT24);
+	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\closing_result.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);

@@ -2,25 +2,19 @@
 #define __FREEIMAGE_ALGORITHMS_TESTING__
 
 #include "FreeImageAlgorithms.h"
-
-#ifdef _HOMEWORKING_
-#define IMAGE_DIR "C:\\Documents and Settings\\Glenn\\Desktop\\Working Area\\Test Images"
-#else
-#define IMAGE_DIR "C:\\Documents and Settings\\Pierce\\Desktop\\Working Area\\Test Images"
-#endif
-
-#define TEMP_DIR "C:\\Temp\\FIA_Tests"
+#include "Constants.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void
-ShowImage(FIBITMAP *src);
+#ifdef WIN32
+#define SEPARATOR "\\"
+#else
+#define SEPARATOR "/"
+#endif
 
-void
-ShowImageFromFile(char *filepath);
-
+int MkDir(const char *path);
 
 #ifdef __cplusplus
 }

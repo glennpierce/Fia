@@ -38,7 +38,7 @@ TestFIA_FillholeTest(CuTest* tc)
 
 	PROFILE_STOP("FillholeTest");
 	
-	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "fillhole_result.bmp", BIT8);
+	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "/Particle/fillhole_result.bmp", BIT8);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -99,7 +99,7 @@ TestFIA_ParticleInfoTest(CuTest* tc)
 
 	myfile.close();
 
-	FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "particle_found.jpg", BIT24);
+	FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "/Particle/particle_found.jpg", BIT24);
 
 	FIA_FreeParticleInfo(info);
 
@@ -178,6 +178,8 @@ CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsParticleSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
+
+	MkDir(TEST_DATA_OUTPUT_DIR "/Particle");
 
 	SUITE_ADD_TEST(suite, TestFIA_FillholeTest);
 	SUITE_ADD_TEST(suite, TestFIA_ParticleInfoTest);

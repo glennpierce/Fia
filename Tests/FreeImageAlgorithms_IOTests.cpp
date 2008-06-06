@@ -25,11 +25,11 @@ TestFIA_IO(CuTest* tc)
 	CuAssertTrue(tc, bpp == 24);
 	CuAssertTrue(tc, type == FIT_BITMAP);
 	
-	err = FIA_SaveFIBToFile (dib1, TEST_DATA_OUTPUT_DIR "save-colour-test.bmp", BIT8);
+	err = FIA_SaveFIBToFile (dib1, TEST_DATA_OUTPUT_DIR "/IO/save-colour-test.bmp", BIT8);
 
 	CuAssertTrue(tc, err == FIA_SUCCESS);
 
-	dib2 = FIA_LoadFIBFromFile(TEST_DATA_OUTPUT_DIR "save-colour-test.bmp");
+	dib2 = FIA_LoadFIBFromFile(TEST_DATA_OUTPUT_DIR "/IO/save-colour-test.bmp");
 
 	err = FIA_BitwiseCompare(dib1, dib2);
 
@@ -43,6 +43,8 @@ CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsIOSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
+
+	MkDir(TEST_DATA_OUTPUT_DIR "/IO");
 
 	SUITE_ADD_TEST(suite, TestFIA_IO);
 	

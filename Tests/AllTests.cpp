@@ -2,9 +2,16 @@
 
 #include "CuTest.h"
 #include "FreeImage.h"
+
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Testing.h"
 
 #include <iostream>
+
+
+#ifndef WIN32
+#include <sys/stat.h>
+#endif
 
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsColourSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLinearScaleSuite(void);
@@ -18,6 +25,15 @@ CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsMorphologySuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLogicSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsDrawingSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsParticleSuite(void);
+
+int MkDir(const char *path)
+{
+	#ifdef WIN32
+	return CreateDirectory(path, NULL);
+	#else
+	return mkdir(path, 0777);	
+	#endif
+}
 
 void RunAllTests(void)
 {
@@ -54,6 +70,8 @@ int __cdecl main(void)
 {
     FreeImage_SetOutputMessage(OnError);
     
+	MkDir(TEST_DATA_OUTPUT_DIR);
+	
 	RunAllTests();
 
 	return 0;

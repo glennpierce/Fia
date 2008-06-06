@@ -21,16 +21,9 @@ static void BorderTest(CuTest* tc)
 	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
-
-	PROFILE_START("FreeImageAlgorithms_AddBorder");
-
 	FIABITMAP *dst = FIA_SetBorder(src, 10, 10, BorderType_Mirror, 255);
 
-	PROFILE_STOP("FreeImageAlgorithms_AddBorder");
-
-	PROFILE_PRINT();
-
-	FIA_SaveFIBToFile(dst->fib, TEST_DATA_OUTPUT_DIR "border_test_result.bmp", BIT8);
+	FIA_SaveFIBToFile(dst->fib, TEST_DATA_OUTPUT_DIR "/Utility/border_test_result.bmp", BIT8);
 	
 	FreeImage_Unload(src);
 	FIA_Unload(dst);
@@ -119,7 +112,7 @@ TestFIA_DistanceTransformTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib3 != NULL);
 
-	FIA_SaveFIBToFile(dib3, TEST_DATA_OUTPUT_DIR "distance-transform.jpg", BIT24);
+	FIA_SaveFIBToFile(dib3, TEST_DATA_OUTPUT_DIR "/Utility/distance-transform.jpg", BIT24);
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
@@ -130,6 +123,8 @@ CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
+
+	MkDir(TEST_DATA_OUTPUT_DIR "/Utility");
 
     SUITE_ADD_TEST(suite, BorderTest);
 	SUITE_ADD_TEST(suite, TestFIA_UtilityTest);

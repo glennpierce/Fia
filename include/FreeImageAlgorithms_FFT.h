@@ -38,7 +38,10 @@ extern "C" {
  *  \return FIBITMAP* on success and NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FIA_FFT(FIBITMAP *src, int inverse, int shift);
+FIA_FFT(FIBITMAP *src);
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_IFFT(FIBITMAP *src);
 
 /** \brief Creates a FIT_DOUBLE absolute image from a complex image.
  *	
@@ -55,6 +58,15 @@ FIA_ConvertComplexImageToAbsoluteValued(FIBITMAP *src);
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src);
+
+DLL_API FIBITMAP*
+ComplexImageToRealValued(FIBITMAP *src);
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_ShiftImageEdgeToCenter(FIBITMAP *src);
+
+DLL_API int DLL_CALLCONV
+FIA_InPlaceShiftImageEdgeToCenter(FIBITMAP **src);
 
 #ifdef __cplusplus
 }

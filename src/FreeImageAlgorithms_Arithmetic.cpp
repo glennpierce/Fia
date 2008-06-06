@@ -149,8 +149,7 @@ template<class Tsrc> FIBITMAP* ARITHMATIC<Tsrc>::Log(FIBITMAP *src)
     int height = FreeImage_GetHeight(src);
     int bpp = FreeImage_GetBPP(src);
 
-    if ((dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, bpp, 0, 0, 0))
-            == NULL)
+    if ((dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, bpp, 0, 0, 0)) == NULL)
         return NULL;
 
     Tsrc *in_bits;
@@ -294,10 +293,18 @@ template<class Tsrc> int ARITHMATIC<Tsrc>::DivideImages(FIBITMAP* dst,
     if (dst_ptr == NULL || src_ptr == NULL)
         return FIA_ERROR;
 
-    int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
 
-    for (int i=0; i < number_of_pixels; i++)
-        *dst_ptr++ = (double) *dst_ptr / *src_ptr++;
+	for (register int y = 0; y < height; y++) {
+
+        dst_ptr = (double *) FreeImage_GetScanLine(dst, y);
+        src_ptr = (Tsrc *) FreeImage_GetScanLine(src, y);
+
+        for (register int x=0; x < width; x++) {
+            dst_ptr[x] = (double) dst_ptr[x] / src_ptr[x];
+        }
+    }
 
     return FIA_SUCCESS;
 }
@@ -623,6 +630,7 @@ ARITHMATIC<unsigned long> arithmaticULongImage;
 ARITHMATIC<long> arithmaticLongImage;
 ARITHMATIC<float> arithmaticFloatImage;
 ARITHMATIC<double> arithmaticDoubleImage;
+ARITHMATIC<FICOMPLEX> arithmaticComplexImage;
 
 FIBITMAP* DLL_CALLCONV
 FIA_Transpose(FIBITMAP *src)
@@ -658,6 +666,9 @@ FIA_Transpose(FIBITMAP *src)
         case FIT_DOUBLE: // array of double: 64-bit
             dst = arithmaticDoubleImage.Transpose(src);
             break;
+		case FIT_COMPLEX: // array of double: 64-bit
+            dst = arithmaticComplexImage.Transpose(src);
+			break;
         default:
             break;
     }
@@ -1014,23 +1025,28 @@ FIA_ComplexConjugate(FIBITMAP* src)
     if (FreeImage_GetImageType(src) != FIT_COMPLEX)
         return FIA_ERROR;
 
-    int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
 
-    FICOMPLEX *src_ptr = (FICOMPLEX *) FreeImage_GetBits(src);
+    FICOMPLEX *src_ptr = NULL;
 
-    for (int i=0; i < number_of_pixels; i++) {
+    for (register int y = 0; y < height; y++) {
 
-        src_ptr->i = -src_ptr->i;
-        src_ptr++;
+		src_ptr = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
+ 
+        for (register int x=0; x < width; x++)
+		{
+			src_ptr[x].i = -src_ptr[x].i;	
+		}
     }
 
     return FIA_SUCCESS;
 }
 
-// (a + ib) (c + id)
+// (a + ib) (c + id) 
 // = ac + ibc + ida + i^2bd
 // = ac + ibc + ida - bd
-// = ac - bd + i(bc + da)
+// = (ac - bd) + i(bc + da)
 int DLL_CALLCONV
 FIA_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
 {
@@ -1057,24 +1073,27 @@ FIA_MultiplyComplexImages(FIBITMAP* dst, FIBITMAP* src)
         return FIA_ERROR;
     }
 
-    FICOMPLEX *dst_ptr = (FICOMPLEX *) FreeImage_GetBits(dst);
-    FICOMPLEX *src_ptr = (FICOMPLEX *) FreeImage_GetBits(src);
-
-    int number_of_pixels = FreeImage_GetWidth(src) * FreeImage_GetHeight(src);
+    FICOMPLEX *dst_ptr = NULL;
+    FICOMPLEX *src_ptr = NULL;
 
     double tmp;
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
 
-    for (int i=0; i < number_of_pixels; i++) {
+	for (register int y = 0; y < height; y++) {
 
-        // real part = ac - bd
-        tmp = (dst_ptr->r * src_ptr->r) - (dst_ptr->i * src_ptr->i);
+		src_ptr = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
+        dst_ptr = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
 
-        // imaginary part = bc + da
-        dst_ptr->i = (dst_ptr->i * src_ptr->r) + (src_ptr->i * dst_ptr->r);
-        dst_ptr->r = tmp;
+        for (register int x=0; x < width; x++)
+		{
+			// real part = ac - bd
+			tmp = (dst_ptr[x].r * src_ptr[x].r) - (dst_ptr[x].i * src_ptr[x].i);
 
-        dst_ptr++;
-        src_ptr++;
+			// imaginary part = bc + da
+			dst_ptr[x].i = (dst_ptr[x].i * src_ptr[x].r) + (src_ptr[x].i * dst_ptr[x].r);
+			dst_ptr[x].r = tmp;
+		}
     }
 
     return FIA_SUCCESS;

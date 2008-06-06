@@ -4,7 +4,6 @@ SET(FIA_TEST_SRCS AllTests.cpp
 	     	  FreeImageAlgorithms_DrawingTests.cpp
 	     	  FreeImageAlgorithms_IOTests.cpp
 	     	  FreeImageAlgorithms_LogicTests.cpp
-	     	  FreeImageAlgorithms_Testing.cpp
 	     	  FreeImageAlgorithmsColourTests.cpp
 	     	  FreeImageAlgorithmsConvolutionTests.cpp
 	     	  FreeImageAlgorithmsFFTTests.cpp

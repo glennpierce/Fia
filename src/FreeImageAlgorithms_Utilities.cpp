@@ -18,6 +18,7 @@
  */
 
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
@@ -1248,7 +1249,7 @@ FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type)
     }
 
     if (gs_dib != NULL) {
-        dst = FreeImage_ConvertToType(gs_dib, type, 1);
+        dst = FreeImage_ConvertToType(gs_dib, type, 0);
         FreeImage_Unload(gs_dib);
         return dst;
     }
@@ -1321,6 +1322,17 @@ int DLL_CALLCONV
 FIA_InPlaceConvertToStandardType(FIBITMAP **src, int scale)
 {
     FIBITMAP *dst = FreeImage_ConvertToStandardType(*src, scale);
+
+    FreeImage_Unload(*src);
+    *src = dst;
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_InPlaceConvertToGreyscale(FIBITMAP **src)
+{
+    FIBITMAP *dst = FreeImage_ConvertToGreyscale(*src);
 
     FreeImage_Unload(*src);
     *src = dst;
