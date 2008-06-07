@@ -469,39 +469,22 @@ static FIBITMAP* edge_detect(FIBITMAP *src)
 
 
 static FIBITMAP*
-PadImage(FIBITMAP *src, int padded_width_size, int padded_height_size, int *left, int *top)
+PadImage(FIBITMAP *src, int padded_width_size, int padded_height_size)
 {
 	// Must pad the images so circular convolution does not take place.
     int width = FreeImage_GetWidth(src);
     int height = FreeImage_GetHeight(src);
     
-	assert((padded_width_size % 2) == 0); // Must be a factor of 2 for the FFT
-	assert((padded_height_size % 2) == 0); // Must be a factor of 2 for the FFT
-	assert(padded_width_size > width);
-	assert(padded_height_size > height);
-	
-	int insert_left = (int) (padded_width_size - width) / 2;
-	int insert_top = (int) (padded_height_size - height) / 2;
-
+    assert(padded_width_size > width);
+    assert(padded_height_size > height);
+    
 	FIBITMAP *border_src = FreeImage_Allocate(padded_width_size, padded_height_size, 8, 0, 0, 0);
 
 	FIA_SetGreyLevelPalette(border_src);
 
-	FreeImage_Paste(border_src, src, insert_left, insert_top, 256);
-
-	if(left != NULL)
-		*left = insert_left;
-
-	if(top != NULL)
-		*top = insert_top;
+	FreeImage_Paste(border_src, src, 0, 0, 256);
 
 	return border_src;
-}
-
-static int factor_of_two(int i)
-{
-	// Is it possible the compliler can optimise this away ?
-	return (int) ((int) (i / 2) * 2);
 }
 
 int DLL_CALLCONV
@@ -551,12 +534,11 @@ FIA_CorrelateImagesFFT(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *m
 	FIA_InPlaceConvertToStandardType(&src2, 0);
 
 	// Find the padded width and height to a factor of 2
-    int pad_width = factor_of_two(FreeImage_GetWidth(src1) + FreeImage_GetWidth(src2));
-    int pad_height = factor_of_two(FreeImage_GetHeight(src1) + FreeImage_GetHeight(src2));
-    int pad_left, pad_top;
-
-	FIBITMAP* border_src1 = PadImage(src1, pad_width, pad_height, &pad_left, &pad_top);
-	FIBITMAP* border_src2 = PadImage(src2, pad_width, pad_height, NULL, NULL);
+    int pad_width = FreeImage_GetWidth(src1) + FreeImage_GetWidth(src2); // factor_of_two(FreeImage_GetWidth(src1) + FreeImage_GetWidth(src2) + 1);
+    int pad_height = FreeImage_GetHeight(src1) + FreeImage_GetHeight(src2); // factor_of_two(FreeImage_GetHeight(src1) + FreeImage_GetHeight(src2) + 1);
+  
+	FIBITMAP* border_src1 = PadImage(src1, pad_width, pad_height);
+	FIBITMAP* border_src2 = PadImage(src2, pad_width, pad_height);
 
 	FIBITMAP* fft1 = FIA_FFT(border_src1);
     FIBITMAP* fft2 = FIA_FFT(border_src2);
@@ -570,28 +552,63 @@ FIA_CorrelateImagesFFT(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *m
     }
   
 	FIBITMAP *ifft = FIA_IFFT(fft1);
-	FIBITMAP *shifted_ifft = FIA_ShiftImageEdgeToCenter(ifft);
-    FIBITMAP *standard_dib = FreeImage_ConvertToStandardType(shifted_ifft, 1);
+
+    FIBITMAP *standard_dib = FreeImage_ConvertToStandardType(ifft, 1);
 
     FIA_FindMaxXY(standard_dib, max, pt);
 
     // FIBITMAPS start 0 at bottom row
 	pt->y = pad_height - pt->y - 1;
 
-	// Take account of the padding we added to the image
-	pt->x = pt->x - pad_left;
-	pt->y = pt->y - pad_top;
-
-	// Account of the center of the image. We want to return the top left of the template image 
-	pt->x = pt->x - pad_left;
-	pt->y = pt->y - pad_top;
-
-	FreeImage_Unload(shifted_ifft);
     FreeImage_Unload(ifft);
     FreeImage_Unload(fft1);
     FreeImage_Unload(fft2);
     FreeImage_Unload(src1);
     FreeImage_Unload(src2);
     
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_FFTCorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2,
+                unsigned int edge_thickness, FIAPOINT *pt)
+{
+    FIARECT left_rect, right_rect;
+    
+    int src1_width = FreeImage_GetWidth(src1);
+    int src1_height = FreeImage_GetHeight(src1);
+        
+    left_rect.left = 0;
+    left_rect.top = 0;
+    left_rect.right = src1_width;
+    left_rect.bottom = src1_height;
+        
+    // Get the second image edge
+    right_rect.left = 0;
+    right_rect.top = 0;
+    right_rect.right = edge_thickness;
+    right_rect.bottom = FreeImage_GetHeight(src2);
+    
+    FIBITMAP *src1_rgn = FreeImage_Copy(src1, left_rect.left, left_rect.top, left_rect.right, left_rect.bottom);
+    // Get the image to search for
+    FIBITMAP *rgn = FreeImage_Copy(src2, right_rect.left, right_rect.top, right_rect.right, right_rect.bottom);
+    
+    if (rgn == NULL) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "NULL value returned");
+        return FIA_ERROR;
+    }
+
+    double max;
+
+    if(FIA_CorrelateImagesFFT(src1_rgn, rgn, pt, &max) == FIA_ERROR)
+        return FIA_ERROR;
+        
+    // Add the point found to the start of the region searched
+    pt->x += left_rect.left;
+    pt->y += left_rect.top;
+
+    FreeImage_Unload(rgn);
+    FreeImage_Unload(src1_rgn);
+       
     return FIA_SUCCESS;
 }

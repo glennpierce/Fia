@@ -313,8 +313,8 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
 static void
 TestFIA_CorrelateFFTTest(CuTest* tc)
 {
-	const char *tissue1_file = TEST_DATA_DIR "gregarious-desert-locusts.jpg";
-    const char *tissue2_file = TEST_DATA_DIR "gregarious-desert-locusts-section.jpg"; //"d12ob102.bmp";
+    const char *tissue1_file = TEST_DATA_DIR "gregarious-desert-locusts.jpg";
+    const char *tissue2_file = TEST_DATA_DIR "gregarious-desert-locusts-section.jpg";
 
     double max = 0.0;
     FIAPOINT pt;
@@ -351,6 +351,98 @@ TestFIA_CorrelateFFTTest(CuTest* tc)
     return;
 }
 
+static void
+TestFIA_CorrelateFFTTest2(CuTest* tc)
+{
+    const char *file1 = TEST_DATA_DIR "correlation_test1.png";
+    const char *file2 = TEST_DATA_DIR "correlation_test2.png";
+    const char *file3 = TEST_DATA_DIR "correlation_test3.png";
+    const char *file4 = TEST_DATA_DIR "correlation_test4.png";
+    const char *file5 = TEST_DATA_DIR "correlation_test5.png";
+
+    double max = 0.0;
+    FIAPOINT pt;
+    
+    pt.x = 0;
+    pt.y = 0;
+    
+    FIBITMAP *src1 = FIA_LoadFIBFromFile(file1);
+    FIBITMAP *src2 = FIA_LoadFIBFromFile(file2);
+    FIBITMAP *src3 = FIA_LoadFIBFromFile(file3);
+    FIBITMAP *src4 = FIA_LoadFIBFromFile(file4);
+    FIBITMAP *src5 = FIA_LoadFIBFromFile(file5);
+
+    PROFILE_START("TestFIA_CorrelateFFTTest2");
+    
+    FIA_CorrelateImagesFFT(src1, src2, &pt, &max);
+    
+    PROFILE_STOP("TestFIA_CorrelateFFTTest2");
+
+    FreeImage_Paste(src1, src3, pt.x, pt.y, 256);
+
+    FIA_CorrelateImagesFFT(src1, src4, &pt, &max);
+    
+    FreeImage_Paste(src1, src5, pt.x, pt.y, 256);
+    
+    FIA_SaveFIBToFile(src1, TEST_DATA_OUTPUT_DIR  "/Convolution/correlated-fft2.png", BIT24);
+
+    FreeImage_Unload(src1);
+    FreeImage_Unload(src2);
+    FreeImage_Unload(src3);
+    FreeImage_Unload(src4);
+    FreeImage_Unload(src5);
+
+    return;
+}
+
+static void
+TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
+{
+    const char *left_file = TEST_DATA_DIR "spider-eating-a-fly.jpg";
+    const char *right_file = TEST_DATA_DIR "spider-eating-a-fly-right_edge.jpg";
+
+    FIBITMAP *left_src = FIA_LoadFIBFromFile(left_file);
+    FIBITMAP *right_src = FIA_LoadFIBFromFile(right_file);
+        
+    CuAssertTrue(tc, left_src != NULL);
+    CuAssertTrue(tc, right_src != NULL);
+
+    PROFILE_START("TestFIA_CorrelateFFTAlongRightEdge");
+
+    FIAPOINT pt;
+    
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(left_src), 800, 800, 
+                    FreeImage_GetBPP(left_src), 0, 0, 0);    
+    
+    if(FIA_FFTCorrelateImagesAlongRightEdge(left_src, right_src, FreeImage_GetWidth(right_src), &pt) == FIA_ERROR) {
+        PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
+        goto TEST_ERROR;
+    }
+    
+    PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
+       
+    if(FreeImage_GetBPP(joined_image) == 8)
+        FIA_SetGreyLevelPalette(joined_image);
+
+    if(FreeImage_Paste(joined_image, left_src, 0, 0, 255) == 0) {
+        printf("paste failed\n");
+    }
+
+    if(FreeImage_Paste(joined_image, right_src, pt.x, pt.y, 255) == 0) {
+        printf("paste failed\n");
+    }
+
+    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "/Convolution/fft-correlated-right_edge.png", BIT24);
+
+    TEST_ERROR:
+
+    FreeImage_Unload(left_src);
+    FreeImage_Unload(right_src);
+    FreeImage_Unload(joined_image);
+
+    return;
+}
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
@@ -365,6 +457,8 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTAlongRightEdge);    
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest2);
     
 	return suite;
 }

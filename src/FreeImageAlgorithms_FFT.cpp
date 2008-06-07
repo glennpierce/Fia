@@ -23,6 +23,7 @@
 #include "FreeImageAlgorithms_FFT.h"
 
 #include "kiss_fftnd.h"
+#include <iostream>
 
 template<class Tsrc> class FFT2D
 {
@@ -185,6 +186,9 @@ FIA_ShiftImageEdgeToCenter(FIBITMAP *src)
 	int bytes_pp = FreeImage_GetBPP(src) / 8;
 	int xhalf_bytes = xhalf * bytes_pp;
 
+	//std::cout << "width " << width << std::endl;
+	//std::cout << "xhalf " << xhalf << std::endl;
+	
 	FIBITMAP *dst = FIA_CloneImageType(src, width, height);
 
 	for(int y=0; y < yhalf; y++) { 
