@@ -25,413 +25,360 @@
 #include "kiss_fftnd.h"
 #include <iostream>
 
-template<class Tsrc> class FFT2D
+template < class Tsrc > class FFT2D
 {
-    public:
-        FIBITMAP* FFT(FIBITMAP *src);
+  public:
+    FIBITMAP * FFT (FIBITMAP * src);
 };
 
 // Do FFT for type X
-static FFT2D<unsigned char> fftUCharImage;
-static FFT2D<unsigned short> fftUShortImage;
-static FFT2D<short> fftShortImage;
-static FFT2D<unsigned long> fftULongImage;
-static FFT2D<long> fftLongImage;
-static FFT2D<float> fftFloatImage;
-static FFT2D<double> fftDoubleImage;
+static FFT2D < unsigned char >fftUCharImage;
+static FFT2D < unsigned short >fftUShortImage;
+static FFT2D < short >fftShortImage;
+static FFT2D < unsigned long >fftULongImage;
+static FFT2D < long >fftLongImage;
+static FFT2D < float >fftFloatImage;
+static FFT2D < double >fftDoubleImage;
 
-/*
-static inline void GetAbsoluteXValues(kiss_fft_cpx* fftbuf, double *out_values, int size)
+template < class Tsrc > FIBITMAP * FFT2D < Tsrc >::FFT (FIBITMAP * src)
 {
-	int x;
+    int height, width;
 
-	for(x=0; x < size; x++) {
-				
-		*(out_values + x) = (double) sqrt(pow( (double)((fftbuf + x)->r), (double) 2.0) + 
-										  pow( (double) ((fftbuf + x)->i), (double) 2.0));		  
-	}
-}
-
-static inline void GetAbsoluteShiftedXValues(kiss_fft_cpx* fftbuf, double *out_values, int size)
-{
-	int x, xhalf = size / 2;
-
-	for(x=0; x < xhalf; x++) {
-				
-		*(out_values + x + xhalf) = (double) sqrt(pow( (double)((fftbuf + x)->r), (double) 2.0) + 
-										  pow( (double) ((fftbuf + x)->i), (double) 2.0));		  
-	}
-
-	for(x=xhalf; x < size; x++) {
-				
-		*(out_values + x - xhalf) = (double) sqrt(pow( (double)((fftbuf + x)->r), (double) 2.0) + 
-										  pow( (double) ((fftbuf + x)->i), (double) 2.0));
-	}
-}
-
-
-static inline void GetShiftedComplexXValues(kiss_fft_cpx* fftbuf, FICOMPLEX *out_values, int size)
-{
-	int x, xhalf = size / 2;
-    FICOMPLEX *out_value;
-    kiss_fft_cpx* buf_value;
-
-	for(x=0; x <= xhalf; x++) {
-				
-        out_value = out_values + x + xhalf;
-        buf_value = fftbuf + x;
-
-		out_value->r = (double)buf_value->r;
-		out_value->i = (double)buf_value->i;			  
-	}
-
-	for(x=xhalf + 1; x < size; x++) {
-		
-        out_value = out_values + x - xhalf;
-        buf_value = fftbuf + x;
-
-		out_value->r = (double)buf_value->r; 
-		out_value->i = (double)buf_value->i; 
-	}
-}
-*/
-
-template<class Tsrc> FIBITMAP* 
-FFT2D<Tsrc>::FFT(FIBITMAP *src)
-{
-	int height, width;
-
-	int i=0, x, y;
-	int dims[2];
-	int ndims = 2;
+    int i = 0, x, y;
+    int dims[2];
+    int ndims = 2;
     size_t bufsize;
-	Tsrc *bits; 
-	FICOMPLEX *outbits;
-	FIBITMAP *dst = NULL;
-	
-	kiss_fftnd_cfg st;
-	kiss_fft_cpx* fftbuf;
-	kiss_fft_cpx* fftoutbuf;
-    kiss_fft_cpx* tmp_fftoutbuf;
+    Tsrc *bits;
+    FICOMPLEX *outbits;
+    FIBITMAP *dst = NULL;
 
-	// Dims needs to be {rows, cols}, if you have contiguous rows.
-	dims[0] = height = FreeImage_GetHeight(src);
-	dims[1] = width = FreeImage_GetWidth(src);
-	
-    bufsize = width * height * sizeof(kiss_fft_cpx);
-	fftbuf = (kiss_fft_cpx*) malloc(bufsize);
-	tmp_fftoutbuf = fftoutbuf = (kiss_fft_cpx*) malloc(bufsize); 
-	
-    CheckMemory(fftbuf);
-    CheckMemory(fftoutbuf);
+    kiss_fftnd_cfg st;
+    kiss_fft_cpx *fftbuf;
+    kiss_fft_cpx *fftoutbuf;
+    kiss_fft_cpx *tmp_fftoutbuf;
 
-	memset(fftbuf,0,bufsize);
-    memset(tmp_fftoutbuf,0,bufsize);
+    // Dims needs to be {rows, cols}, if you have contiguous rows.
+    dims[0] = height = FreeImage_GetHeight (src);
+    dims[1] = width = FreeImage_GetWidth (src);
 
-	st = kiss_fftnd_alloc (dims, ndims, 0, 0, 0);
+    bufsize = width * height * sizeof (kiss_fft_cpx);
+    fftbuf = (kiss_fft_cpx *) malloc (bufsize);
+    tmp_fftoutbuf = fftoutbuf = (kiss_fft_cpx *) malloc (bufsize);
 
-	for(y = height - 1; y >= 0; y--) { 
-		
-		bits = (Tsrc *) FreeImage_GetScanLine(src, y);
-		
-		for(x=0; x < width; x++) {
-		
-			fftbuf[i].r = (float) bits[x];
-   		    fftbuf[i].i = 0.0;
-   		 
-   		    i++;
-		}
-	}
+    CheckMemory (fftbuf);
+    CheckMemory (fftoutbuf);
 
-	kiss_fftnd(st, fftbuf, tmp_fftoutbuf);
+    memset (fftbuf, 0, bufsize);
+    memset (tmp_fftoutbuf, 0, bufsize);
 
-	if ( (dst = FreeImage_AllocateT(FIT_COMPLEX, width, height, 32, 0, 0, 0)) == NULL )
-		goto Error;
+    st = kiss_fftnd_alloc (dims, ndims, 0, 0, 0);
 
-	for(y = height - 1; y >= 0; y--) { 
-		
-		outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
+    for(y = height - 1; y >= 0; y--)
+    {
+        bits = (Tsrc *) FreeImage_GetScanLine (src, y);
 
-		for(x=0; x < width; x++) {
-				
-			(outbits + x)->r = (double)((tmp_fftoutbuf + x)->r);
-			(outbits + x)->i = (double)((tmp_fftoutbuf + x)->i);	  
-		}
+        for(x = 0; x < width; x++)
+        {
 
-		tmp_fftoutbuf += width;
-	}
+            fftbuf[i].r = (float) bits[x];
+            fftbuf[i].i = 0.0;
 
-Error:
- 
-    free(fftbuf);
-    free(fftoutbuf);
-    free(st);
+            i++;
+        }
+    }
 
-	return dst;
+    kiss_fftnd (st, fftbuf, tmp_fftoutbuf);
+
+    if ((dst = FreeImage_AllocateT (FIT_COMPLEX, width, height, 32, 0, 0, 0)) == NULL)
+        goto Error;
+
+    for(y = height - 1; y >= 0; y--)
+    {
+        outbits = (FICOMPLEX *) FreeImage_GetScanLine (dst, y);
+
+        for(x = 0; x < width; x++)
+        {
+
+            (outbits + x)->r = (double) ((tmp_fftoutbuf + x)->r);
+            (outbits + x)->i = (double) ((tmp_fftoutbuf + x)->i);
+        }
+
+        tmp_fftoutbuf += width;
+    }
+
+  Error:
+
+    free (fftbuf);
+    free (fftoutbuf);
+    free (st);
+
+    return dst;
 }
 
-
-static void* FIA_GetScanLineFromTop(FIBITMAP *src, int line)
+static void *
+FIA_GetScanLineFromTop (FIBITMAP * src, int line)
 {
-	return FreeImage_GetScanLine(src, FreeImage_GetHeight(src) - 1 - line);	
+    return FreeImage_GetScanLine (src, FreeImage_GetHeight (src) - 1 - line);
 }
 
-FIBITMAP* DLL_CALLCONV
-FIA_ShiftImageEdgeToCenter(FIBITMAP *src)
+FIBITMAP *DLL_CALLCONV
+FIA_ShiftImageEdgeToCenter (FIBITMAP * src)
 {
-	int width = FreeImage_GetWidth(src);
-	int height = FreeImage_GetHeight(src);
-	int xhalf = (width / 2);
-	int yhalf = (height / 2);
-	int bytes_pp = FreeImage_GetBPP(src) / 8;
-	int xhalf_bytes = xhalf * bytes_pp;
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+    int xhalf = (width / 2);
+    int yhalf = (height / 2);
+    int bytes_pp = FreeImage_GetBPP (src) / 8;
+    int xhalf_bytes = xhalf * bytes_pp;
 
-	//std::cout << "width " << width << std::endl;
-	//std::cout << "xhalf " << xhalf << std::endl;
-	
-	FIBITMAP *dst = FIA_CloneImageType(src, width, height);
+    FIBITMAP *dst = FIA_CloneImageType (src, width, height);
 
-	for(int y=0; y < yhalf; y++) { 
-		
-		BYTE* srcbits = (BYTE *) FIA_GetScanLineFromTop(src, y);
-		BYTE* outbits = (BYTE *) FIA_GetScanLineFromTop(dst, y + yhalf);
+    for(int y = 0; y < yhalf; y++)
+    {
+        BYTE *srcbits = (BYTE *) FIA_GetScanLineFromTop (src, y);
+        BYTE *outbits = (BYTE *) FIA_GetScanLineFromTop (dst, y + yhalf);
 
-		memcpy(outbits + xhalf_bytes, srcbits, xhalf_bytes);
-		memcpy(outbits, srcbits + xhalf_bytes, xhalf_bytes);
-	}
+        memcpy (outbits + xhalf_bytes, srcbits, xhalf_bytes);
+        memcpy (outbits, srcbits + xhalf_bytes, xhalf_bytes);
+    }
 
-	for(int y=yhalf; y < height; y++) { 
-		
-		BYTE* srcbits = (BYTE *) FIA_GetScanLineFromTop(src, y);
-		BYTE* outbits = (BYTE *) FIA_GetScanLineFromTop(dst, y - yhalf);
+    for(int y = yhalf; y < height; y++)
+    {
+        BYTE *srcbits = (BYTE *) FIA_GetScanLineFromTop (src, y);
+        BYTE *outbits = (BYTE *) FIA_GetScanLineFromTop (dst, y - yhalf);
 
-		memcpy(outbits + xhalf_bytes, srcbits, xhalf_bytes);
-		memcpy(outbits, srcbits + xhalf_bytes, xhalf_bytes);
-	}
+        memcpy (outbits + xhalf_bytes, srcbits, xhalf_bytes);
+        memcpy (outbits, srcbits + xhalf_bytes, xhalf_bytes);
+    }
 
-	return dst;
+    return dst;
 }
 
 int DLL_CALLCONV
-FIA_InPlaceShiftImageEdgeToCenter(FIBITMAP **src)
+FIA_InPlaceShiftImageEdgeToCenter (FIBITMAP ** src)
 {
-    FIBITMAP *dst = FIA_ShiftImageEdgeToCenter(*src);
+    FIBITMAP *dst = FIA_ShiftImageEdgeToCenter (*src);
 
-    FreeImage_Unload(*src);
+    FreeImage_Unload (*src);
     *src = dst;
 
     return FIA_SUCCESS;
 }
 
-FIBITMAP* DLL_CALLCONV
-FIA_IFFT(FIBITMAP *src)
+FIBITMAP *DLL_CALLCONV
+FIA_IFFT (FIBITMAP * src)
 {
-	int height, width;
+    int height, width;
 
-	int i=0, x, y;
-	int dims[2];
-	int ndims = 2;
+    int i = 0, x, y;
+    int dims[2];
+    int ndims = 2;
     size_t bufsize;
-	FICOMPLEX *bits; 
-	FICOMPLEX *outbits;
-	FIBITMAP *dst = NULL;
-	
-	kiss_fftnd_cfg st;
-	kiss_fft_cpx* fftbuf;
-	kiss_fft_cpx* fftoutbuf;
-    kiss_fft_cpx* tmp_fftoutbuf;
+    FICOMPLEX *bits;
+    FICOMPLEX *outbits;
+    FIBITMAP *dst = NULL;
 
-	// Dims needs to be {rows, cols}, if you have contiguous rows.
-    dims[0] = height = FreeImage_GetHeight(src);
-    dims[1] = width = FreeImage_GetWidth(src);
-	
-    bufsize = width * height * sizeof(kiss_fft_cpx);
-	fftbuf = (kiss_fft_cpx*) malloc(bufsize);
-	tmp_fftoutbuf = fftoutbuf = (kiss_fft_cpx*) malloc(bufsize); 
-	
-    memset(fftbuf,0,bufsize);
-    memset(tmp_fftoutbuf,0,bufsize);
+    kiss_fftnd_cfg st;
+    kiss_fft_cpx *fftbuf;
+    kiss_fft_cpx *fftoutbuf;
+    kiss_fft_cpx *tmp_fftoutbuf;
 
-	st = kiss_fftnd_alloc (dims, ndims, 1, 0, 0);
-	
-		for(y = height - 1; y >= 0; y--) { 
-			
-			bits = (FICOMPLEX*) FreeImage_GetScanLine(src, y);
-			
-			for(x=0; x < width; x++) {	
+    // Dims needs to be {rows, cols}, if you have contiguous rows.
+    dims[0] = height = FreeImage_GetHeight (src);
+    dims[1] = width = FreeImage_GetWidth (src);
 
-				fftbuf[i].r = (float) bits[x].r;
-   				fftbuf[i].i = (float) bits[x].i;
-	        
-   				i++;
-			}
-		}
+    bufsize = width * height * sizeof (kiss_fft_cpx);
+    fftbuf = (kiss_fft_cpx *) malloc (bufsize);
+    tmp_fftoutbuf = fftoutbuf = (kiss_fft_cpx *) malloc (bufsize);
 
-	kiss_fftnd(st, fftbuf, tmp_fftoutbuf);
+    memset (fftbuf, 0, bufsize);
+    memset (tmp_fftoutbuf, 0, bufsize);
 
-	if ( (dst = FreeImage_AllocateT(FIT_COMPLEX, width, height, 32, 0, 0, 0)) == NULL )
-		goto Error;
+    st = kiss_fftnd_alloc (dims, ndims, 1, 0, 0);
 
-	for(y = height - 1; y >= 0; y--) { 
-		
-		outbits = (FICOMPLEX *) FreeImage_GetScanLine(dst, y);
-
-		for(x=0; x < width; x++) {
-				
-			outbits[x].r = (double)((tmp_fftoutbuf + x)->r);  
-			outbits[x].i = (double)((tmp_fftoutbuf + x)->i); 
-		}
-
-		tmp_fftoutbuf += width;
-	}
-
-	return ComplexImageToRealValued(dst);
-
-Error:
- 
-    free(fftbuf);
-    free(fftoutbuf);
-    free(st);
-
-	return dst;
-}
-
-
-FIBITMAP* DLL_CALLCONV
-FIA_FFT(FIBITMAP *src)
-{
-	if(!src)
-		return NULL;
-
-	// Convert from src_type to FIT_BITMAP
-	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
-
-	switch (src_type)
+    for(y = height - 1; y >= 0; y--)
     {
-		case FIT_BITMAP:	// standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
-			if(FreeImage_GetBPP(src) == 8)
-				return fftUCharImage.FFT(src);				
-			break;
-			
-		case FIT_UINT16:	// array of unsigned short: unsigned 16-bit
-			return fftUShortImage.FFT(src);
-	
-		case FIT_INT16:		// array of short: signed 16-bit
-			return fftShortImage.FFT(src);
-		
-		case FIT_UINT32:	// array of unsigned long: unsigned 32-bit
-			return fftULongImage.FFT(src);
-		
-		case FIT_INT32:		// array of long: signed 32-bit
-			return fftLongImage.FFT(src);
-		
-		case FIT_FLOAT:		// array of float: 32-bit
-			return fftFloatImage.FFT(src);
-		
-		case FIT_DOUBLE:	// array of double: 64-bit
-			return fftDoubleImage.FFT(src);
-				
-		default:
-			break;
-	}
+        bits = (FICOMPLEX *) FreeImage_GetScanLine (src, y);
 
-	FreeImage_OutputMessageProc(FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform FFT for type %d.", src_type);
+        for(x = 0; x < width; x++)
+        {
+            fftbuf[i].r = (float) bits[x].r;
+            fftbuf[i].i = (float) bits[x].i;
 
-	return NULL;
+            i++;
+        }
+    }
+
+    kiss_fftnd (st, fftbuf, tmp_fftoutbuf);
+
+    if ((dst = FreeImage_AllocateT (FIT_COMPLEX, width, height, 32, 0, 0, 0)) == NULL)
+        goto Error;
+
+    for(y = height - 1; y >= 0; y--)
+    {
+        outbits = (FICOMPLEX *) FreeImage_GetScanLine (dst, y);
+
+        for(x = 0; x < width; x++)
+        {
+            outbits[x].r = (double) ((tmp_fftoutbuf + x)->r);
+            outbits[x].i = (double) ((tmp_fftoutbuf + x)->i);
+        }
+
+        tmp_fftoutbuf += width;
+    }
+
+    return ComplexImageToRealValued (dst);
+
+  Error:
+
+    free (fftbuf);
+    free (fftoutbuf);
+    free (st);
+
+    return dst;
 }
 
 
-static FIBITMAP*
-ConvertComplexImageToAbsoluteValued(FIBITMAP *src, bool squared)
+FIBITMAP *DLL_CALLCONV
+FIA_FFT (FIBITMAP * src)
 {
-	FIBITMAP *dst = NULL;
-	unsigned x, y;
-						
-	unsigned width	= FreeImage_GetWidth(src);
-	unsigned height = FreeImage_GetHeight(src);
+    if (!src)
+        return NULL;
 
-	// Allocate a double bit dib
-	dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, 32, 0, 0, 0);
-	
-	if(!dst)
-		return NULL;
+    // Convert from src_type to FIT_BITMAP
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src);
 
-	FICOMPLEX *src_bits, *src_bit; 	
-	double	  *dst_bits; 
+    switch (src_type)
+    {
+        case FIT_BITMAP:       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+            if (FreeImage_GetBPP (src) == 8)
+                return fftUCharImage.FFT (src);
+            break;
 
-	if(squared) {
+        case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
+            return fftUShortImage.FFT (src);
 
-		for(y = 0; y < height; y++) { 
-		
-			src_bits = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
-			dst_bits = (double *) FreeImage_GetScanLine(dst, y);
+        case FIT_INT16:        // array of short: signed 16-bit
+            return fftShortImage.FFT (src);
 
-			for(x=0; x < width; x++) {
-				
+        case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
+            return fftULongImage.FFT (src);
+
+        case FIT_INT32:        // array of long: signed 32-bit
+            return fftLongImage.FFT (src);
+
+        case FIT_FLOAT:        // array of float: 32-bit
+            return fftFloatImage.FFT (src);
+
+        case FIT_DOUBLE:       // array of double: 64-bit
+            return fftDoubleImage.FFT (src);
+
+        default:
+            break;
+    }
+
+    FreeImage_OutputMessageProc (FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to perform FFT for type %d.",
+                                 src_type);
+
+    return NULL;
+}
+
+
+static FIBITMAP *
+ConvertComplexImageToAbsoluteValued (FIBITMAP * src, bool squared)
+{
+    FIBITMAP *dst = NULL;
+    unsigned x, y;
+
+    unsigned width = FreeImage_GetWidth (src);
+    unsigned height = FreeImage_GetHeight (src);
+
+    // Allocate a double bit dib
+    dst = FreeImage_AllocateT (FIT_DOUBLE, width, height, 32, 0, 0, 0);
+
+    if (!dst)
+        return NULL;
+
+    FICOMPLEX *src_bits, *src_bit;
+    double *dst_bits;
+
+    if (squared)
+    {
+        for(y = 0; y < height; y++)
+        {
+            src_bits = (FICOMPLEX *) FreeImage_GetScanLine (src, y);
+            dst_bits = (double *) FreeImage_GetScanLine (dst, y);
+
+            for(x = 0; x < width; x++)
+            {
+
                 src_bit = src_bits + x;
 
-				*(dst_bits + x) = (double) ((src_bit->r * src_bit->r) + (src_bit->i * src_bit->i));
-			}
-		}
-	}
-	else {
+                *(dst_bits + x) = (double) ((src_bit->r * src_bit->r) + (src_bit->i * src_bit->i));
+            }
+        }
+    }
+    else
+    {
 
-		for(y = 0; y < height; y++) { 
-		
-			src_bits = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
-			dst_bits = (double *) FreeImage_GetScanLine(dst, y);
+        for(y = 0; y < height; y++)
+        {
+            src_bits = (FICOMPLEX *) FreeImage_GetScanLine (src, y);
+            dst_bits = (double *) FreeImage_GetScanLine (dst, y);
 
-			for(x=0; x < width; x++) {
-				
+            for(x = 0; x < width; x++)
+            {
                 src_bit = src_bits + x;
 
-				*(dst_bits + x) = sqrt((double) ((src_bit->r * src_bit->r) + (src_bit->i * src_bit->i)));
-			}
-		}
-	}
+                *(dst_bits + x) =
+                    sqrt ((double) ((src_bit->r * src_bit->r) + (src_bit->i * src_bit->i)));
+            }
+        }
+    }
 
-	return dst;
+    return dst;
 }
 
-FIBITMAP* DLL_CALLCONV
-FIA_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src)
+FIBITMAP *DLL_CALLCONV
+FIA_ConvertComplexImageToAbsoluteValuedSquared (FIBITMAP * src)
 {
-	return ConvertComplexImageToAbsoluteValued(src, true);
+    return ConvertComplexImageToAbsoluteValued (src, true);
 }
 
-FIBITMAP* DLL_CALLCONV
-FIA_ConvertComplexImageToAbsoluteValued(FIBITMAP *src)
+FIBITMAP *DLL_CALLCONV
+FIA_ConvertComplexImageToAbsoluteValued (FIBITMAP * src)
 {
-	return ConvertComplexImageToAbsoluteValued(src, false);
+    return ConvertComplexImageToAbsoluteValued (src, false);
 }
 
-FIBITMAP*
-ComplexImageToRealValued(FIBITMAP *src)
+FIBITMAP *
+ComplexImageToRealValued (FIBITMAP * src)
 {
-	FIBITMAP *dst = NULL;
-	unsigned x, y;
-						
-	unsigned width	= FreeImage_GetWidth(src);
-	unsigned height = FreeImage_GetHeight(src);
+    FIBITMAP *dst = NULL;
+    unsigned x, y;
 
-	// allocate a 8-bit dib
-	dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, 32, 0, 0, 0);
-	
-	if(!dst)
-		return NULL;
+    unsigned width = FreeImage_GetWidth (src);
+    unsigned height = FreeImage_GetHeight (src);
 
-	FICOMPLEX *src_bits; 	
-	double	  *dst_bits; 
+    // allocate a 8-bit dib
+    dst = FreeImage_AllocateT (FIT_DOUBLE, width, height, 32, 0, 0, 0);
 
-	for(y = 0; y < height; y++) { 
-		
-		src_bits = (FICOMPLEX *) FreeImage_GetScanLine(src, y);
-		dst_bits = (double *) FreeImage_GetScanLine(dst, y);
+    if (!dst)
+        return NULL;
 
-		for(x=0; x < width; x++) {
-			dst_bits[x] = (double) src_bits[x].r;
-		}
-	}
+    FICOMPLEX *src_bits;
+    double *dst_bits;
 
-	return dst;
+    for(y = 0; y < height; y++)
+    {
+        src_bits = (FICOMPLEX *) FreeImage_GetScanLine (src, y);
+        dst_bits = (double *) FreeImage_GetScanLine (dst, y);
+
+        for(x = 0; x < width; x++)
+        {
+            dst_bits[x] = (double) src_bits[x].r;
+        }
+    }
+
+    return dst;
 }

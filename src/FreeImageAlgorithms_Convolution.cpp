@@ -557,9 +557,6 @@ FIA_CorrelateImagesFFT (FIBITMAP * _src1, FIBITMAP * _src2, FIAPOINT * pt, doubl
     FIA_InPlaceConvertToStandardType (&src1, 1);
     FIA_InPlaceConvertToStandardType (&src2, 1);
 
-    FIA_InplaceLinearScaleToStandardTypee (&src1, 0.0, 255.0, &found_min, &found_max);
-    FIA_InplaceLinearScaleToStandardTypee (&src2, 0.0, 255.0, &found_min, &found_max);
-
     FIBITMAP *filtered_src1 = edge_detect (src1);
     FIBITMAP *filtered_src2 = edge_detect (src2);
 
