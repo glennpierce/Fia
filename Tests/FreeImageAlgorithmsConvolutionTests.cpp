@@ -398,8 +398,8 @@ TestFIA_CorrelateFFTTest2(CuTest* tc)
 static void
 TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
 {
-    const char *left_file = TEST_DATA_DIR "spider-eating-a-fly.jpg";
-    const char *right_file = TEST_DATA_DIR "spider-eating-a-fly-right_edge.jpg";
+    const char *left_file = TEST_DATA_DIR "test00006.png"; //"spider-eating-a-fly.jpg";
+    const char *right_file = TEST_DATA_DIR "test00007.png"; //"spider-eating-a-fly-right_edge.jpg";
 
     FIBITMAP *left_src = FIA_LoadFIBFromFile(left_file);
     FIBITMAP *right_src = FIA_LoadFIBFromFile(right_file);
@@ -411,7 +411,7 @@ TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
 
     FIAPOINT pt;
     
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(left_src), 800, 800, 
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(left_src), 1500, 1500, 
                     FreeImage_GetBPP(left_src), 0, 0, 0);    
     
     if(FIA_FFTCorrelateImagesAlongRightEdge(left_src, right_src, FreeImage_GetWidth(right_src), &pt) == FIA_ERROR) {
@@ -420,15 +420,17 @@ TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
     }
     
     PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
-       
+
+    std::cout << "x " << pt.x << " y " << pt.y << std::endl;
+    
     if(FreeImage_GetBPP(joined_image) == 8)
         FIA_SetGreyLevelPalette(joined_image);
 
-    if(FreeImage_Paste(joined_image, left_src, 0, 0, 255) == 0) {
+    if(FIA_SimplePaste(joined_image, left_src, 0, FreeImage_GetHeight(joined_image) - 1) == 0) {
         printf("paste failed\n");
     }
 
-    if(FreeImage_Paste(joined_image, right_src, pt.x, pt.y, 255) == 0) {
+    if(FIA_SimplePaste(joined_image, right_src, pt.x, FreeImage_GetHeight(joined_image) - pt.y - 1) == 0) {
         printf("paste failed\n");
     }
 
@@ -458,7 +460,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTAlongRightEdge);    
-    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest2);
+    //SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest2);
     
 	return suite;
 }

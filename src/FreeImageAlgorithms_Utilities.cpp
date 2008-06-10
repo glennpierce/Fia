@@ -1329,6 +1329,7 @@ FIA_InPlaceConvertToStandardType(FIBITMAP **src, int scale)
     return FIA_SUCCESS;
 }
 
+
 int DLL_CALLCONV
 FIA_InPlaceConvertToGreyscale(FIBITMAP **src)
 {

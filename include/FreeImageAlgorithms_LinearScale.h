@@ -60,6 +60,9 @@ FIA_StretchImageToType(FIBITMAP *src, FREE_IMAGE_TYPE type, double max);
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_StretchImageAcrossRange(FIBITMAP *src, double min, double max);
 
+DLL_API int DLL_CALLCONV
+FIA_InplaceLinearScaleToStandardTypee(FIBITMAP **src, double min, double max, double* found_min, double* found_max);
+
 #ifdef __cplusplus
 }
 #endif

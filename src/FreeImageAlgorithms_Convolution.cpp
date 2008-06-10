@@ -29,6 +29,7 @@
 #include "FreeImageAlgorithms_FFT.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Arithmetic.h"
+#include "FreeImageAlgorithms_LinearScale.h"
 
 #include <math.h>
 #include <iostream>
@@ -516,9 +517,34 @@ FIA_CorrelateImagesFFT(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *m
         FIA_InPlaceConvertToGreyscale(&src2);
     }
     
-	FIA_InPlaceConvertToStandardType(&src1, 0);
-	FIA_InPlaceConvertToStandardType(&src2, 0);
+	FIA_InPlaceConvertToStandardType(&src1, 1);
+	FIA_InPlaceConvertToStandardType(&src2, 1);
 
+	double found_min, found_max;
+	
+	int bpp = FreeImage_GetBPP(src2);
+	    FREE_IMAGE_TYPE type = FreeImage_GetImageType(src2);
+	    
+	    std::cout << "bpp " << bpp << " type " << type << std::endl;
+	    
+	    
+	FIA_FindMinMax(src2, &found_min, &found_max);
+	
+	
+	
+	FIA_InplaceLinearScaleToStandardTypee(&src1, 0.0, 255.0, &found_min, &found_max);
+	FIA_InplaceLinearScaleToStandardTypee(&src2, 0.0, 255.0, &found_min, &found_max);
+	
+	//FreeImage_AdjustContrast(src1, 60.0);
+	//FreeImage_AdjustContrast(src2, 60.0);
+	
+	bpp = FreeImage_GetBPP(src2);
+	type = FreeImage_GetImageType(src2);
+	
+	std::cout << "bpp " << bpp << " type " << type << std::endl;
+	
+	FIA_SaveFIBToFile(src2, "input.bmp", BIT8);
+	
 	FIBITMAP* filtered_src1 = edge_detect(src1);
 	FIBITMAP* filtered_src2 = edge_detect(src2);
 
@@ -540,6 +566,8 @@ FIA_CorrelateImagesFFT(FIBITMAP *_src1, FIBITMAP *_src2, FIAPOINT *pt, double *m
 	FIBITMAP* border_src1 = PadImage(src1, pad_width, pad_height);
 	FIBITMAP* border_src2 = PadImage(src2, pad_width, pad_height);
 
+	FIA_SaveFIBToFile(border_src1, "border_edge.bmp", BIT8);
+	
 	FIBITMAP* fft1 = FIA_FFT(border_src1);
     FIBITMAP* fft2 = FIA_FFT(border_src2);
 
