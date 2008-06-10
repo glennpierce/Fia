@@ -30,8 +30,8 @@
 // Satuation between 0 and 1
 // Value between 0 and 1
 int DLL_CALLCONV
-FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
-        double *hue, double *satuation, double *value)
+FIA_RGBToHSV (unsigned char red, unsigned char green, unsigned char blue,
+              double *hue, double *satuation, double *value)
 {
     unsigned char max, min, rgb[3];
 
@@ -40,26 +40,30 @@ FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
     *value = 0;
 
     rgb[0] = red, rgb[1] = green, rgb[2] = blue;
-    MAXMIN( rgb , 3, max, min);
+    MAXMIN (rgb, 3, max, min);
 
-    if(max != min) {
-
-        if(red == max) {
+    if (max != min)
+    {
+        if (red == max)
+        {
             *hue = ((double) (green - blue) / (max - min)) * 60.0;
         }
 
-        if(green == max) {
+        if (green == max)
+        {
             *hue = (2 + (double) (blue - red) / (max - min)) * 60.0;
         }
 
-        if(blue == max) {
+        if (blue == max)
+        {
             *hue = (4 + (double) (red - green) / (max - min)) * 60.0;
         }
     }
 
     *value = (double) max / 255.0;
 
-    if(max != 0) {
+    if (max != 0)
+    {
         *satuation = ((double) (max - min) / max);
     }
 
@@ -71,77 +75,84 @@ FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
 // Satuation between 0 and 1
 // Value between 0 and 1
 int DLL_CALLCONV
-FIA_HSVToRGB( double hue, double satuation, double value,
-        unsigned char *red, unsigned char *green, unsigned char *blue)
+FIA_HSVToRGB (double hue, double satuation, double value,
+              unsigned char *red, unsigned char *green, unsigned char *blue)
 {
-    unsigned int h,p,q,t,v;
+    unsigned int h, p, q, t, v;
     double temp_hue, f;
 
-    if(satuation == 0.0)
-    return FIA_SUCCESS;
+    if (satuation == 0.0)
+        return FIA_SUCCESS;
 
     // The if statement is here as the % operator requires integers
     // and thus looses some accuracy.
-    if(hue < 0 || hue> 360) {
-
-        temp_hue = floor(hue + 0.5);
+    if (hue < 0 || hue > 360)
+    {
+        temp_hue = floor (hue + 0.5);
         temp_hue = (int) temp_hue % 360;
     }
-    else {
+    else
+    {
         temp_hue = hue;
     }
 
-    *red = (unsigned char) floor(value + 0.5);
+    *red = (unsigned char) floor (value + 0.5);
     *green = *red;
     *blue = *red;
 
     h = (unsigned int) (temp_hue / 60);
     f = (double) (temp_hue / 60.0) - h;
-    p = (unsigned int) floor( (value * (1 - satuation) * 255) + 0.5);
-    q = (unsigned int) floor( (value * (1 - f * satuation) * 255) + 0.5);
-    t = (unsigned int) floor( (value * (1 - (1 - f) * satuation) * 255) + 0.5);
+    p = (unsigned int) floor ((value * (1 - satuation) * 255) + 0.5);
+    q = (unsigned int) floor ((value * (1 - f * satuation) * 255) + 0.5);
+    t = (unsigned int) floor ((value * (1 - (1 - f) * satuation) * 255) + 0.5);
 
     v = (unsigned int) (value * 255.0);
 
-    switch (h) {
-
+    switch (h)
+    {
         case 6:
-        case 0: {
+        case 0:
+        {
             *red = v;
             *green = t;
             *blue = p;
             break;
         }
 
-        case 1: {
+        case 1:
+        {
             *red = q;
             *green = v;
             *blue = p;
             break;
         }
 
-        case 2: {
+        case 2:
+        {
             *red = p;
             *green = v;
             *blue = t;
             break;
         }
 
-        case 3: {
+        case 3:
+        {
             *red = p;
             *green = q;
             *blue = v;
             break;
         }
 
-        case 4: {
+        case 4:
+        {
             *red = t;
             *green = p;
             *blue = v;
             break;
         }
 
-        case 5: {
+        case 5:
+        {
             *red = v;
             *green = p;
             *blue = q;
@@ -157,8 +168,8 @@ FIA_HSVToRGB( double hue, double satuation, double value,
 // Satuation between 0 and 1
 // Value between 0 and 1
 int DLL_CALLCONV
-FIA_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
-        double *hue, double *satuation, double *luminosity)
+FIA_RGBToHSL (unsigned char red, unsigned char green, unsigned char blue,
+              double *hue, double *satuation, double *luminosity)
 {
     unsigned char max, min, rgb[3];
 
@@ -167,61 +178,76 @@ FIA_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
     *luminosity = 0;
 
     rgb[0] = red, rgb[1] = green, rgb[2] = blue;
-    MAXMIN( rgb , 3, max, min);
+    MAXMIN (rgb, 3, max, min);
 
-    if(max != min) {
+    if (max != min)
+    {
+        if (red == max)
+            *hue = ((double) (green - blue) / (max - min)) * 60.0;
 
-        if(red == max)
-        *hue = ((double) (green - blue) / (max - min)) * 60.0;
+        if (green == max)
+            *hue = (2 + (double) (blue - red) / (max - min)) * 60.0;
 
-        if(green == max)
-        *hue = (2 + (double) (blue - red) / (max - min)) * 60.0;
-
-        if(blue == max)
-        *hue = (4 + (double) (red - green) / (max - min)) * 60.0;
+        if (blue == max)
+            *hue = (4 + (double) (red - green) / (max - min)) * 60.0;
     }
 
-    *luminosity = (double) (max + min) / ( 510.0);
+    *luminosity = (double) (max + min) / (510.0);
 
-    if(*luminosity < 0.5) {
+    if (*luminosity < 0.5)
+    {
         *satuation = ((double) (max - min) / (510.0 * *luminosity));
     }
-    else {
+    else
+    {
         *satuation = ((double) (max - min) / (510.0 * (2 - (2 * *luminosity))));
     }
 
     return FIA_SUCCESS;
 }
 
-static double HSLToRGBColour(double q1, double q2, double hue)
+static double
+HSLToRGBColour (double q1, double q2, double hue)
 {
-    if (hue > 360.0) {
+    if (hue > 360.0)
+    {
         hue -= 360.0;
-    } else if (hue < 0.0) {
+    }
+    else if (hue < 0.0)
+    {
         hue += 360.0;
     }
-    
-    if (hue < 60.0) {
-        return (q1 + (q2-q1) *hue /60.0);
-    } else if (hue < 180.0) {
+
+    if (hue < 60.0)
+    {
+        return (q1 + (q2 - q1) * hue / 60.0);
+    }
+    else if (hue < 180.0)
+    {
         return q2;
-    } else if (hue < 240.0) {
-        return (q1 + (q2-q1) * (240.0 - hue) /60.0);
-    } else {
+    }
+    else if (hue < 240.0)
+    {
+        return (q1 + (q2 - q1) * (240.0 - hue) / 60.0);
+    }
+    else
+    {
         return q1;
     }
 }
 
 int DLL_CALLCONV
-FIA_HSLToRGB( double hue, double satuation, double luminosity,
-        unsigned char *red, unsigned char *green, unsigned char *blue)
+FIA_HSLToRGB (double hue, double satuation, double luminosity,
+              unsigned char *red, unsigned char *green, unsigned char *blue)
 {
     double p1, p2;
 
-    if (luminosity <= 0.5) {
+    if (luminosity <= 0.5)
+    {
         p2 = luminosity * (1 + satuation);
     }
-    else {
+    else
+    {
         p2 = luminosity + satuation - (luminosity * satuation);
     }
 
@@ -235,9 +261,9 @@ FIA_HSLToRGB( double hue, double satuation, double luminosity,
     }
     else
     {
-        *red = (unsigned int) ((HSLToRGBColour(p1, p2, hue+120.0) * 255.0) + 0.5);
-        *green = (unsigned int) ((HSLToRGBColour(p1, p2, hue) * 255.0) + 0.5);
-        *blue = (unsigned int) ((HSLToRGBColour(p1, p2, hue-120.0) * 255.0) + 0.5);
+        *red = (unsigned int) ((HSLToRGBColour (p1, p2, hue + 120.0) * 255.0) + 0.5);
+        *green = (unsigned int) ((HSLToRGBColour (p1, p2, hue) * 255.0) + 0.5);
+        *blue = (unsigned int) ((HSLToRGBColour (p1, p2, hue - 120.0) * 255.0) + 0.5);
     }
 
     return FIA_SUCCESS;
