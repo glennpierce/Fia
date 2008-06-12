@@ -1,19 +1,11 @@
 #ifndef KISS_FFT_H
 #define KISS_FFT_H
 
-#ifdef _CVI_
-
-#include <ansi_c.h>
-
-#else
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <memory.h>
 #include <malloc.h>
-
-#endif 
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,7 +43,7 @@ extern "C" {
 #else
 # ifndef kiss_fft_scalar
 /*  default is float */
-#   define kiss_fft_scalar double
+#   define kiss_fft_scalar float
 # endif
 #endif
 
@@ -114,6 +106,11 @@ void kiss_fft_stride(kiss_fft_cfg cfg,const kiss_fft_cpx *fin,kiss_fft_cpx *fout
 */
 void kiss_fft_cleanup(void);
 	
+
+/*
+ * Returns the smallest integer k, such that k>=n and k has only "fast" factors (2,3,5)
+ */
+int kiss_fft_next_fast_size(int n);
 
 #ifdef __cplusplus
 } 

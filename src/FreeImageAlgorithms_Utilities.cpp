@@ -1257,6 +1257,18 @@ FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type)
     return NULL;
 }
 
+
+int DLL_CALLCONV
+FIA_InPlaceConvertToGreyscaleFloatType(FIBITMAP **src, FREE_IMAGE_TYPE type)
+{
+	FIBITMAP *dst = FIA_ConvertToGreyscaleFloatType(*src, type);
+
+    FreeImage_Unload(*src);
+    *src = dst;
+
+    return FIA_SUCCESS;
+}
+
 int DLL_CALLCONV
 FIA_Is8Bit(FIBITMAP *src)
 {

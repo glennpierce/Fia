@@ -60,7 +60,7 @@ DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ConvertComplexImageToAbsoluteValuedSquared(FIBITMAP *src);
 
 DLL_API FIBITMAP*
-ComplexImageToRealValued(FIBITMAP *src);
+FIA_ComplexImageToRealValued(FIBITMAP *src);
 
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ShiftImageEdgeToCenter(FIBITMAP *src);

@@ -5,6 +5,7 @@
 #include "FreeImage.h"
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Drawing.h"
 #include "FreeImageAlgorithms_Filters.h"
 #include "FreeImageAlgorithms_Testing.h"
 #include "FreeImageAlgorithms_Palettes.h"
@@ -328,7 +329,7 @@ TestFIA_CorrelateFFTTest(CuTest* tc)
 
     PROFILE_START("TestFIA_CorrelateFFTTest");
     
-    FIA_CorrelateImagesFFT(src1, src2, &pt, &max);
+    FIA_CorrelateImagesFFT(src1, src2, FIA_EdgeDetect, &pt, &max);
     
     PROFILE_STOP("TestFIA_CorrelateFFTTest");
 
@@ -352,7 +353,7 @@ TestFIA_CorrelateFFTTest(CuTest* tc)
 }
 
 static void
-TestFIA_CorrelateFFTTest2(CuTest* tc)
+TestFIA_CorrelateFFTLetterTest(CuTest* tc)
 {
     const char *file1 = TEST_DATA_DIR "correlation_test1.png";
     const char *file2 = TEST_DATA_DIR "correlation_test2.png";
@@ -374,13 +375,13 @@ TestFIA_CorrelateFFTTest2(CuTest* tc)
 
     PROFILE_START("TestFIA_CorrelateFFTTest2");
     
-    FIA_CorrelateImagesFFT(src1, src2, &pt, &max);
+    FIA_CorrelateImagesFFT(src1, src2, NULL, &pt, &max);
     
     PROFILE_STOP("TestFIA_CorrelateFFTTest2");
 
     FreeImage_Paste(src1, src3, pt.x, pt.y, 256);
 
-    FIA_CorrelateImagesFFT(src1, src4, &pt, &max);
+    FIA_CorrelateImagesFFT(src1, src4, NULL, &pt, &max);
     
     FreeImage_Paste(src1, src5, pt.x, pt.y, 256);
     
@@ -398,12 +399,13 @@ TestFIA_CorrelateFFTTest2(CuTest* tc)
 static void
 TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
 {
-    const char *left_file = TEST_DATA_DIR "test00006.png"; //"spider-eating-a-fly.jpg";
-    const char *right_file = TEST_DATA_DIR "test00007.png"; //"spider-eating-a-fly-right_edge.jpg";
+	const char *left_file = TEST_DATA_DIR "spider-eating-a-fly.jpg";
+    const char *right_file = TEST_DATA_DIR "spider-eating-a-fly-right_edge.jpg";
 
     FIBITMAP *left_src = FIA_LoadFIBFromFile(left_file);
     FIBITMAP *right_src = FIA_LoadFIBFromFile(right_file);
-        
+
+	CuAssertTrue(tc, FreeImage_GetBPP(left_src) == FreeImage_GetBPP(right_src));
     CuAssertTrue(tc, left_src != NULL);
     CuAssertTrue(tc, right_src != NULL);
 
@@ -411,26 +413,24 @@ TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
 
     FIAPOINT pt;
     
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(left_src), 1500, 1500, 
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(left_src), 300, 400, 
                     FreeImage_GetBPP(left_src), 0, 0, 0);    
     
-    if(FIA_FFTCorrelateImagesAlongRightEdge(left_src, right_src, FreeImage_GetWidth(right_src), &pt) == FIA_ERROR) {
+    if(FIA_FFTCorrelateImagesAlongRightEdge(left_src, right_src, NULL, 57, &pt) == FIA_ERROR) {
         PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
         goto TEST_ERROR;
     }
     
     PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
 
-    std::cout << "x " << pt.x << " y " << pt.y << std::endl;
-    
     if(FreeImage_GetBPP(joined_image) == 8)
         FIA_SetGreyLevelPalette(joined_image);
 
-    if(FIA_SimplePaste(joined_image, left_src, 0, FreeImage_GetHeight(joined_image) - 1) == 0) {
+    if(FreeImage_Paste(joined_image, left_src, 0, 0, 256) == 0) {
         printf("paste failed\n");
     }
 
-    if(FIA_SimplePaste(joined_image, right_src, pt.x, FreeImage_GetHeight(joined_image) - pt.y - 1) == 0) {
+    if(FreeImage_Paste(joined_image, right_src, pt.x, pt.y, 256) == 0) {
         printf("paste failed\n");
     }
 
@@ -460,7 +460,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTAlongRightEdge);    
-    //SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest2);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTLetterTest);
     
 	return suite;
 }

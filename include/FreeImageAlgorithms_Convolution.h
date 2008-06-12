@@ -39,6 +39,8 @@ typedef struct
 
 } FilterKernel;
 
+typedef FIBITMAP* (__cdecl *CORRELATION_PREFILTER) (FIBITMAP*);
+
 /** \brief Create a kernel.
  *
  *  \param x_radius for a kernel of width 3 the x radius would be 1.
@@ -79,12 +81,16 @@ FIA_CorrelateImagesAlongBottomEdge(FIBITMAP *src1, FIBITMAP *src2,
                 unsigned int edge_thickness, FIAPOINT *pt, double *max);
 
 DLL_API int DLL_CALLCONV
-FIA_CorrelateImagesFFT(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt, double *max);
+FIA_CorrelateImagesFFT(FIBITMAP *src1, FIBITMAP *src2,
+				CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
 
 DLL_API int DLL_CALLCONV
-FIA_FFTCorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2,
+FIA_FFTCorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2, CORRELATION_PREFILTER filter,
                 unsigned int edge_thickness, FIAPOINT *pt);
-                
+       
+DLL_API FIBITMAP* __cdecl
+FIA_EdgeDetect(FIBITMAP *src);
+
 #ifdef __cplusplus
 }
 #endif

@@ -512,6 +512,10 @@ FIA_CloneImageType(FIBITMAP *src, int width, int height);
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
 
+
+DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertToGreyscaleFloatType(FIBITMAP **src, FREE_IMAGE_TYPE type);
+
 /** \brief Performs a threshold on greyscale images.
  *
  *	This function performs a threshold on the src image.

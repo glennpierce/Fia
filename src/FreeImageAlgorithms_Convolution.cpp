@@ -31,6 +31,8 @@
 #include "FreeImageAlgorithms_Arithmetic.h"
 #include "FreeImageAlgorithms_LinearScale.h"
 
+#include "kiss_fft.h"
+
 #include <math.h>
 #include <iostream>
 
@@ -299,7 +301,6 @@ FIA_CorrelateImages (FIBITMAP * _src1, FIBITMAP * _src2, FIAPOINT * pt, double *
     // Convert colour images to greyscale
     if (bpp1 >= 24 && src1_type == FIT_BITMAP)
     {
-
         FreeImage_Unload (src1);
         FreeImage_Unload (src2);
 
@@ -373,122 +374,110 @@ FIA_CorrelateImageRegions (FIBITMAP * src1, FIARECT rect1, FIBITMAP * src2, FIAR
     return FIA_SUCCESS;
 }
 
+/*
 int DLL_CALLCONV
-FIA_CorrelateImagesAlongRightEdge (FIBITMAP * src1, FIBITMAP * src2,
-                                   unsigned int edge_thickness, FIAPOINT * pt, double *max)
+FIA_CorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2,
+                unsigned int edge_thickness, FIAPOINT *pt, double *max)
 {
     FIARECT search_rect;
     FIARECT kernel_rect;
+    
+    int src1_width = FreeImage_GetWidth(src1);
+    int src1_height = FreeImage_GetHeight(src1);
 
-    int src1_width = FreeImage_GetWidth (src1);
-    int src1_height = FreeImage_GetHeight (src1);
-
-    if (src1_width <= 41 || src1_height <= 81)
-    {
-        FreeImage_OutputMessageProc (FIF_UNKNOWN,
-                                     "Image too small to correlate at edge. Needs to be at least 41 * 81 pixels");
+    if(src1_width <= 41 || src1_height <= 81) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image too small to correlate at edge. Needs to be at least 41 * 81 pixels");
         return FIA_ERROR;
     }
-
+        
     search_rect.left = src1_width - edge_thickness - 1;
     search_rect.top = 0;
     search_rect.right = src1_width;
     search_rect.bottom = src1_height;
-
+        
     // Get the second image (middle left)
     kernel_rect.left = 0;
     kernel_rect.top = (src1_height / 2) - 40;
     kernel_rect.right = 41;
     kernel_rect.bottom = kernel_rect.top + 81;
-
-    FIBITMAP *src1_rgn =
-        FreeImage_Copy (src1, search_rect.left, search_rect.top, search_rect.right,
-                        search_rect.bottom);
+    
+    FIBITMAP *src1_rgn = FreeImage_Copy(src1, search_rect.left, search_rect.top, search_rect.right, search_rect.bottom);
     // Get the image to search for
-    FIBITMAP *rgn =
-        FreeImage_Copy (src2, kernel_rect.left, kernel_rect.top, kernel_rect.right,
-                        kernel_rect.bottom);
-
-    if (rgn == NULL)
-    {
-        FreeImage_OutputMessageProc (FIF_UNKNOWN, "NULL value returned");
+    FIBITMAP *rgn = FreeImage_Copy(src2, kernel_rect.left, kernel_rect.top, kernel_rect.right, kernel_rect.bottom);
+    
+    if (rgn == NULL) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "NULL value returned");
         return FIA_ERROR;
     }
-
-    if (FIA_CorrelateImages (src1_rgn, rgn, pt, max) == FIA_ERROR)
+    
+    if(FIA_CorrelateImages(src1_rgn, rgn, pt, max) == FIA_ERROR)
         return FIA_ERROR;
-
-    FreeImage_Unload (rgn);
-    FreeImage_Unload (src1_rgn);
-
+        
+    FreeImage_Unload(rgn);
+    FreeImage_Unload(src1_rgn);
+    
     // Add the point found to the start of the region searched
     pt->x += (search_rect.left - kernel_rect.left);
     pt->y += (search_rect.top - kernel_rect.top);
-
+    
     return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
-FIA_CorrelateImagesAlongBottomEdge (FIBITMAP * src1, FIBITMAP * src2,
-                                    unsigned int edge_thickness, FIAPOINT * pt, double *max)
+FIA_CorrelateImagesAlongBottomEdge(FIBITMAP *src1, FIBITMAP *src2,
+                unsigned int edge_thickness, FIAPOINT *pt, double *max)
 {
     FIARECT search_rect;
     FIARECT kernel_rect;
+    
+    int src1_width = FreeImage_GetWidth(src1);
+    int src1_height = FreeImage_GetHeight(src1);
 
-    int src1_width = FreeImage_GetWidth (src1);
-    int src1_height = FreeImage_GetHeight (src1);
-
-    if (src1_width <= 41 || src1_height <= 81)
-    {
-        FreeImage_OutputMessageProc (FIF_UNKNOWN,
-                                     "Image too small to correlate at edge. Needs to be at least 41 * 81 pixels");
+    if(src1_width <= 41 || src1_height <= 81) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "Image too small to correlate at edge. Needs to be at least 41 * 81 pixels");
         return FIA_ERROR;
     }
-
+        
     search_rect.left = 0;
-    search_rect.top = src1_height - edge_thickness - 1;
+    search_rect.top = src1_height - edge_thickness -1;
     search_rect.right = src1_width;
     search_rect.bottom = src1_height;
-
+        
     // Get the second image (middle left)
     kernel_rect.left = (src1_width / 2) - 40;
     kernel_rect.top = 0;
     kernel_rect.right = kernel_rect.left + 81;
     kernel_rect.bottom = 41;
-
-    FIBITMAP *src1_rgn =
-        FreeImage_Copy (src1, search_rect.left, search_rect.top, search_rect.right,
-                        search_rect.bottom);
+    
+    FIBITMAP *src1_rgn = FreeImage_Copy(src1, search_rect.left, search_rect.top, search_rect.right, search_rect.bottom);
     // Get the image to search for
-    FIBITMAP *rgn =
-        FreeImage_Copy (src2, kernel_rect.left, kernel_rect.top, kernel_rect.right,
-                        kernel_rect.bottom);
-
-    if (rgn == NULL)
-    {
-        FreeImage_OutputMessageProc (FIF_UNKNOWN, "NULL value returned");
+    FIBITMAP *rgn = FreeImage_Copy(src2, kernel_rect.left, kernel_rect.top, kernel_rect.right, kernel_rect.bottom);
+    
+    if (rgn == NULL) {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN, "NULL value returned");
         return FIA_ERROR;
     }
-
-    if (FIA_CorrelateImages (src1_rgn, rgn, pt, max) == FIA_ERROR)
+    
+    if(FIA_CorrelateImages(src1_rgn, rgn, pt, max) == FIA_ERROR)
         return FIA_ERROR;
-
-    FreeImage_Unload (rgn);
-    FreeImage_Unload (src1_rgn);
-
+        
+    FreeImage_Unload(rgn);
+    FreeImage_Unload(src1_rgn);
+    
     // Add the point found to the start of the region searched
     pt->x += (search_rect.left - kernel_rect.left);
     pt->y += (search_rect.top - kernel_rect.top);
-
+    
     return FIA_SUCCESS;
 }
+*/
 
-static FIBITMAP *
-edge_detect (FIBITMAP * src)
+FIBITMAP *__cdecl
+FIA_EdgeDetect (FIBITMAP * src)
 {
     double kernel[] = { -1.0 / 8.0, -1.0 / 8.0, -1.0 / 8.0,
-        -1.0 / 8.0, 1.0, -1.0 / 8.0,
-        -1.0 / 8.0, -1.0 / 8.0, -1.0 / 8.0
+                        -1.0 / 8.0, 1.0, -1.0 / 8.0,
+                        -1.0 / 8.0, -1.0 / 8.0, -1.0 / 8.0
     };
 
     FIABITMAP *src_bordered = FIA_SetBorder (src, 1, 1, BorderType_Copy, 0.0);
@@ -501,7 +490,6 @@ edge_detect (FIBITMAP * src)
 
     return dib;
 }
-
 
 static FIBITMAP *
 PadImage (FIBITMAP * src, int padded_width_size, int padded_height_size)
@@ -523,7 +511,8 @@ PadImage (FIBITMAP * src, int padded_width_size, int padded_height_size)
 }
 
 int DLL_CALLCONV
-FIA_CorrelateImagesFFT (FIBITMAP * _src1, FIBITMAP * _src2, FIAPOINT * pt, double *max)
+FIA_CorrelateImagesFFT (FIBITMAP * _src1, FIBITMAP * _src2,
+                        CORRELATION_PREFILTER filter, FIAPOINT * pt, double *max)
 {
     FIBITMAP *src1 = FreeImage_Clone (_src1);
     FIBITMAP *src2 = FreeImage_Clone (_src2);
@@ -549,34 +538,74 @@ FIA_CorrelateImagesFFT (FIBITMAP * _src1, FIBITMAP * _src2, FIAPOINT * pt, doubl
     // Convert colour images to greyscale
     if (bpp1 >= 24 && src1_type == FIT_BITMAP)
     {
-
         FIA_InPlaceConvertToGreyscale (&src1);
         FIA_InPlaceConvertToGreyscale (&src2);
     }
 
-    FIA_InPlaceConvertToStandardType (&src1, 1);
-    FIA_InPlaceConvertToStandardType (&src2, 1);
+    StatisticReport report;
 
-    FIBITMAP *filtered_src1 = edge_detect (src1);
-    FIBITMAP *filtered_src2 = edge_detect (src2);
+    FIA_InPlaceConvertToGreyscaleFloatType (&src1, FIT_DOUBLE);
+    FIA_InPlaceConvertToGreyscaleFloatType (&src2, FIT_DOUBLE);
 
-    assert (FreeImage_GetWidth (filtered_src1) == FreeImage_GetWidth (src1));
+    FIA_StatisticReport (src1, &report);
 
-    FreeImage_Unload (src1);
-    FreeImage_Unload (src2);
+    // Subtract avergae value from each pixel
+    FIA_SubtractGreyLevelImageConstant (src1, report.mean);
 
-    src1 = filtered_src1;
-    src2 = filtered_src2;
+    FIA_StatisticReport (src2, &report);
+    FIA_SubtractGreyLevelImageConstant (src2, report.mean);
 
     FIA_InPlaceConvertToStandardType (&src1, 0);
     FIA_InPlaceConvertToStandardType (&src2, 0);
 
-    // Find the padded width and height to a factor of 2
-    int pad_width = FreeImage_GetWidth (src1) + FreeImage_GetWidth (src2);      // factor_of_two(FreeImage_GetWidth(src1) + FreeImage_GetWidth(src2) + 1);
-    int pad_height = FreeImage_GetHeight (src1) + FreeImage_GetHeight (src2);   // factor_of_two(FreeImage_GetHeight(src1) + FreeImage_GetHeight(src2) + 1);
+    double found_min, found_max;
 
-    FIBITMAP *border_src1 = PadImage (src1, pad_width, pad_height);
-    FIBITMAP *border_src2 = PadImage (src2, pad_width, pad_height);
+    FIBITMAP *filtered_src1 = NULL;
+    FIBITMAP *filtered_src2 = NULL;
+
+    if (filter != NULL)
+    {
+        if ((filtered_src1 = filter (src1)) == NULL)
+        {
+            FreeImage_OutputMessageProc (FIF_UNKNOWN, "Filter function returned NULL");
+            return FIA_ERROR;
+        }
+
+        if ((filtered_src2 = filter (src2)) == FIA_ERROR)
+        {
+            FreeImage_OutputMessageProc (FIF_UNKNOWN, "Filter function returned NULL");
+            return FIA_ERROR;
+        }
+    }
+    else
+    {
+        filtered_src1 = FreeImage_Clone (src1);
+        filtered_src2 = FreeImage_Clone (src2);
+    }
+
+    FIA_FindMinMax (filtered_src1, &found_min, &found_max);
+
+    FIA_InPlaceConvertToStandardType (&filtered_src1, 0);
+    FIA_InPlaceConvertToStandardType (&filtered_src2, 0);
+
+    int src1_width = FreeImage_GetWidth (src1);
+    int src1_height = FreeImage_GetHeight (src1);
+    int filtered_src1_width = FreeImage_GetWidth (filtered_src1);
+
+    if (filtered_src1_width != src1_width)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Filter function has changed the size of the source input");
+        return FIA_ERROR;
+    }
+
+    // Find the padded width and height.
+    int pad_width = kiss_fft_next_fast_size (src1_width + FreeImage_GetWidth (filtered_src2) + 1);
+    int pad_height =
+        kiss_fft_next_fast_size (src1_height + FreeImage_GetHeight (filtered_src2) + 1);
+
+    FIBITMAP *border_src1 = PadImage (filtered_src1, pad_width, pad_height);
+    FIBITMAP *border_src2 = PadImage (filtered_src2, pad_width, pad_height);
 
     FIBITMAP *fft1 = FIA_FFT (border_src1);
     FIBITMAP *fft2 = FIA_FFT (border_src2);
@@ -591,32 +620,46 @@ FIA_CorrelateImagesFFT (FIBITMAP * _src1, FIBITMAP * _src2, FIAPOINT * pt, doubl
 
     FIBITMAP *ifft = FIA_IFFT (fft1);
 
-    FIBITMAP *standard_dib = FreeImage_ConvertToStandardType (ifft, 1);
+    FIBITMAP *real = FIA_ComplexImageToRealValued (ifft);
 
-    FIA_FindMaxXY (standard_dib, max, pt);
+    FIA_FindMaxXY (real, max, pt);
+
+    if (pt->x > src1_width)
+    {
+        pt->x = pt->x - pad_width;
+    }
 
     // FIBITMAPS start 0 at bottom row
     pt->y = pad_height - pt->y - 1;
 
+    if (pt->y > src1_height)
+    {
+        pt->y = pt->y - pad_height;
+    }
+
+    FreeImage_Unload (real);
     FreeImage_Unload (ifft);
     FreeImage_Unload (fft1);
     FreeImage_Unload (fft2);
     FreeImage_Unload (src1);
     FreeImage_Unload (src2);
+    FreeImage_Unload (filtered_src1);
+    FreeImage_Unload (filtered_src2);
 
     return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
 FIA_FFTCorrelateImagesAlongRightEdge (FIBITMAP * src1, FIBITMAP * src2,
-                                      unsigned int edge_thickness, FIAPOINT * pt)
+                                      CORRELATION_PREFILTER filter, unsigned int edge_thickness,
+                                      FIAPOINT * pt)
 {
     FIARECT left_rect, right_rect;
 
     int src1_width = FreeImage_GetWidth (src1);
     int src1_height = FreeImage_GetHeight (src1);
 
-    left_rect.left = 0;
+    left_rect.left = src1_width - edge_thickness;
     left_rect.top = 0;
     left_rect.right = src1_width;
     left_rect.bottom = src1_height;
@@ -641,7 +684,7 @@ FIA_FFTCorrelateImagesAlongRightEdge (FIBITMAP * src1, FIBITMAP * src2,
 
     double max;
 
-    if (FIA_CorrelateImagesFFT (src1_rgn, rgn, pt, &max) == FIA_ERROR)
+    if (FIA_CorrelateImagesFFT (src1_rgn, rgn, filter, pt, &max) == FIA_ERROR)
         return FIA_ERROR;
 
     // Add the point found to the start of the region searched
