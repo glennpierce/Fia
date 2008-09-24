@@ -65,7 +65,7 @@ CopyGreyScaleBytesToFIBitmap (FIBITMAP * src, BYTE * data, int padded, int verti
 
 static void
 CopyColourBytesToFIBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_flip,
-                           int red_byte, int green_byte, int blue_byte)
+                           COLOUR_ORDER order)
 {
     int data_line_length;
     int height = FreeImage_GetHeight (src);
@@ -83,42 +83,50 @@ CopyColourBytesToFIBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical
     // Calculate the number of bytes per pixel (3 for 24-bit or 4 for 32-bit) 
     int bytespp = FreeImage_GetLine (src) / width;
 
-    BYTE *bits;
-    BYTE *data_row;
+    BYTE *bits, *data_row;
 
     int line;
 
-    for(register int y = 0; y < height; y++)
-    {
-        if (vertical_flip)
-        {
-            line = height - y - 1;
-        }
-        else
-        {
-            line = y;
-        }
+	if(order == COLOUR_ORDER_RGB) {
 
-        bits = (BYTE *) FreeImage_GetScanLine (src, line);
+		for(register int y = 0; y < height; y++)
+		{
+			if (vertical_flip) {
+				line = height - y - 1;
+			}
+			else {
+				line = y;
+			}
 
-        data_row = (BYTE *) data + (height - y - 1) * data_line_length;
+			bits = (BYTE *) FreeImage_GetScanLine (src, line);
 
-        for(register int x = 0; x < width; x++)
-        {
-            bits[FI_RGBA_RED] = data_row[red_byte];
-            bits[FI_RGBA_GREEN] = data_row[green_byte];
-            bits[FI_RGBA_BLUE] = data_row[blue_byte];
+			data_row = (BYTE *) data + (height - y - 1) * data_line_length;
 
-            if (bytespp == 4)
-            {
-                bits[FI_RGBA_ALPHA] = data_row[3];
-            }
+			memcpy(bits, data_row, data_line_length);
+		}
+	}
+	else {
 
-            // jump to next pixel
-            bits += bytespp;
-            data_row += bytespp;
-        }
-    }
+		for(register int y = 0; y < height; y++)
+		{
+			if (vertical_flip)
+				line = height - y - 1;
+			else
+				line = y;
+
+			bits = (BYTE *) FreeImage_GetScanLine (src, line);
+
+			data_row = (BYTE *) data + (height - y - 1) * data_line_length;
+
+			memcpy(bits, data_row, data_line_length);
+
+			// Switch R and B pixels
+			for(register int x = 0; x < data_line_length; x+=bytespp) {
+
+				SWAP(bits[x], bits[x+2]);
+			}
+		}
+	}
 }
 
 void DLL_CALLCONV
@@ -127,20 +135,6 @@ FIA_CopyBytesToFBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_fl
 {
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
     int bpp = FreeImage_GetBPP (src);
-    int red_byte, green_byte, blue_byte;
-
-    if (order == COLOUR_ORDER_RGB)
-    {
-        red_byte = FI_RGBA_RED;
-        green_byte = FI_RGBA_GREEN;
-        blue_byte = FI_RGBA_BLUE;
-    }
-    else
-    {
-        red_byte = FI_RGBA_BLUE;
-        green_byte = FI_RGBA_GREEN;
-        blue_byte = FI_RGBA_RED;
-    }
 
     switch (bpp)
     {
@@ -153,8 +147,7 @@ FIA_CopyBytesToFBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_fl
 
         case 24:
         {
-            CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, red_byte, green_byte,
-                                       blue_byte);
+            CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, order);
             break;
         }
 
@@ -162,8 +155,7 @@ FIA_CopyBytesToFBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_fl
         {
             if (type == FIT_BITMAP)
             {
-                CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, red_byte, green_byte,
-                                           blue_byte);
+                CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, order);
             }
 
             if (type == FIT_FLOAT)
