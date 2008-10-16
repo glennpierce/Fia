@@ -37,7 +37,31 @@ TestFIA_IO(CuTest* tc)
 	FreeImage_Unload(dib2);
 }
 
+static void
+TestFIA_SaveBPPWithPalette(CuTest* tc)
+{
+	FIBITMAP *dib1 = NULL, *dib2 = NULL;
+	FREE_IMAGE_TYPE type;
+	int bpp, err;
+    
+    const char *file = TEST_DATA_DIR "fly.bmp";
+	dib1 = FIA_LoadFIBFromFile(file);
 
+	CuAssertTrue(tc, dib1 != NULL);
+
+	bpp = FreeImage_GetBPP(dib1);
+	type = FreeImage_GetImageType(dib1);
+
+	CuAssertTrue(tc, bpp == 8);
+	CuAssertTrue(tc, type == FIT_BITMAP);
+
+	FIA_SetReverseRainBowPalette(dib1);
+	err = FIA_SaveFIBToFile (dib1, TEST_DATA_OUTPUT_DIR "/IO/save-bmp-colour-test.bmp", BIT8);
+
+	CuAssertTrue(tc, err == FIA_SUCCESS);
+
+	FreeImage_Unload(dib1);
+}
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsIOSuite(void)
@@ -47,6 +71,7 @@ CuGetFreeImageAlgorithmsIOSuite(void)
 	MkDir(TEST_DATA_OUTPUT_DIR "/IO");
 
 	SUITE_ADD_TEST(suite, TestFIA_IO);
+    SUITE_ADD_TEST(suite, TestFIA_SaveBPPWithPalette);
 	
 	return suite;
 }
