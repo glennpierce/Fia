@@ -3,6 +3,7 @@
 #include "Constants.h"
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
 #include "FreeImageAlgorithms_Testing.h"
@@ -44,7 +45,7 @@ TestFIA_SaveBPPWithPalette(CuTest* tc)
 	FREE_IMAGE_TYPE type;
 	int bpp, err;
     
-    const char *file = TEST_DATA_DIR "fly.bmp";
+	const char *file = TEST_DATA_DIR "fly.bmp";
 	dib1 = FIA_LoadFIBFromFile(file);
 
 	CuAssertTrue(tc, dib1 != NULL);
