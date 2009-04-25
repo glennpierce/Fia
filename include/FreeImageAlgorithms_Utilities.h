@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FIA.  If not, see <http://www.gnu.org/licenses/>.
 */
@@ -20,9 +20,9 @@
 #ifndef __FREEIMAGE_ALGORITHMS_UTILITIES__
 #define __FREEIMAGE_ALGORITHMS_UTILITIES__
 
-/*! \file 
+/*! \file
 	Provides various utility methods.
-*/ 
+*/
 
 #include "FreeImageAlgorithms.h"
 
@@ -386,7 +386,7 @@ FIA_GetMinPosibleValueForFib(FIBITMAP *src, double *min);
 DLL_API int DLL_CALLCONV
 FIA_IsGreyScale(FIBITMAP *src);
 
-/** \brief Gets the pixels values along a line on an image where the 
+/** \brief Gets the pixels values along a line on an image where the
  *         image consists of char data.
  *
  *  \param src FIBITMAP bitmap.
@@ -396,9 +396,9 @@ FIA_IsGreyScale(FIBITMAP *src);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values); 
+FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values);
 
-/** \brief Gets the pixels values along a line on an image where the 
+/** \brief Gets the pixels values along a line on an image where the
  *         image consists of unsigned char data.
  *
  *  \param src FIBITMAP bitmap.
@@ -410,7 +410,7 @@ FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *va
 DLL_API int DLL_CALLCONV
 FIA_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char *values);
 
-/** \brief Gets the pixels values along a line on an image where the 
+/** \brief Gets the pixels values along a line on an image where the
  *         image consists of short int data.
  *
  *  \param src FIBITMAP bitmap.
@@ -420,9 +420,9 @@ FIA_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigne
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *values); 
+FIA_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *values);
 
-/** \brief Gets the pixels values along a line on an image where the 
+/** \brief Gets the pixels values along a line on an image where the
  *         image consists of unsigned short data.
  *
  *  \param src FIBITMAP bitmap.
@@ -432,9 +432,9 @@ FIA_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned short *values); 
+FIA_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned short *values);
 
-/** \brief Gets the pixels values along a line on an image where the 
+/** \brief Gets the pixels values along a line on an image where the
  *         image consists of float data.
  *
  *  \param src FIBITMAP bitmap.
@@ -444,9 +444,9 @@ FIA_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsign
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *values); 
+FIA_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *values);
 
-/** \brief Gets the pixels values along a line on an image where the 
+/** \brief Gets the pixels values along a line on an image where the
  *         image consists of double data.
  *
  *  \param src FIBITMAP bitmap.
@@ -456,9 +456,9 @@ FIA_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double *values); 
+FIA_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double *values);
 
-/** \brief Gets the pixels values along a line on an image where the 
+/** \brief Gets the pixels values along a line on an image where the
  *         image is a colour image.
  *
  *  \param src FIBITMAP bitmap.
@@ -479,7 +479,13 @@ FIA_GetDistanceMap (int width, int height, float *distance_map);
 // above 8bits.
 // This function is very limited.
 DLL_API int DLL_CALLCONV
-FIA_SimplePaste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom);
+FIA_Paste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom);
+
+DLL_API BYTE* DLL_CALLCONV
+FIA_GetScanLineFromTop (FIBITMAP *src, int line);
+
+DLL_API int DLL_CALLCONV
+FIA_PasteFromTopLeft (FIBITMAP *dst, FIBITMAP * src, int left, int top);
 
 /** \brief Performs a bitwise compare between two images.
  *		   Returns 1 for images that are the same.
@@ -521,7 +527,7 @@ FIA_InPlaceConvertToGreyscaleFloatType(FIBITMAP **src, FREE_IMAGE_TYPE type);
  *	This function performs a threshold on the src image.
  *	An 8bit image is returned not a 1bit image.
  *  The new value is used for all values between min and max.
- *  Below min pixels are replaced by 0 and above max they are replaced by 255. 
+ *  Below min pixels are replaced by 0 and above max they are replaced by 255.
  *
  *  \param src Image to threshold.
  *  \param min double minimum value to threshold.
@@ -537,7 +543,7 @@ FIA_Threshold(FIBITMAP *src, double min, double max, double new_value);
  *	This function performs a threshold on the src image.
  *	An 8bit image is returned not a 1bit image.
  *  The new value is used for all values between min and max.
- *  Below min pixels are replaced by 0 and above max they are replaced by 255. 
+ *  Below min pixels are replaced by 0 and above max they are replaced by 255.
  *
  *  \param src Image to threshold.
  *  \param min double minimum value to threshold.
@@ -566,7 +572,7 @@ DLL_API FIBITMAP* DLL_CALLCONV
 FIA_DistanceTransform(FIBITMAP *src);
 
 /** \brief Get the value of a particular pixel.
- * 
+ *
  *	Does not check the position is valid works with all greyscale types.
  *
  *  \param src Image to get pixel value from.
@@ -591,7 +597,7 @@ DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ConvertInt16ToUInt16(FIBITMAP *src);
 
 /** \brief Rescales an image to half its size.
- * 
+ *
  *	This is much much faster than the freeimage rescale function.
  *  Obviously it is also much more limited.
  *

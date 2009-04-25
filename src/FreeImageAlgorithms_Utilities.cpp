@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -348,43 +348,43 @@ FIA_FindMinMax (FIBITMAP * src, double *min, double *max)
             }
             break;
         }
-        
+
         case FIT_UINT16:
         {
             minmaxUShortImage.find (src, min, max);
             break;
         }
-        
+
         case FIT_INT16:
         {
             minmaxShortImage.find (src, min, max);
             break;
         }
-        
+
         case FIT_UINT32:
         {
             minmaxULongImage.find (src, min, max);
             break;
         }
-        
+
         case FIT_INT32:
         {
             minmaxLongImage.find (src, min, max);
             break;
         }
-        
+
         case FIT_FLOAT:
         {
             minmaxFloatImage.find (src, min, max);
             break;
         }
-        
+
         case FIT_DOUBLE:
         {
             minmaxDoubleImage.find (src, min, max);
             break;
         }
-        
+
         default:
         {
             break;
@@ -448,43 +448,43 @@ FIA_FindMaxXY (FIBITMAP * src, double *max, FIAPOINT * pt)
             }
             break;
         }
-        
+
         case FIT_UINT16:
         {
             minmaxUShortImage.find_max_xy (src, max, pt);
             break;
         }
-        
+
         case FIT_INT16:
         {
             minmaxShortImage.find_max_xy (src, max, pt);
             break;
         }
-        
+
         case FIT_UINT32:
         {
             minmaxULongImage.find_max_xy (src, max, pt);
             break;
         }
-        
+
         case FIT_INT32:
         {
             minmaxLongImage.find_max_xy (src, max, pt);
             break;
         }
-        
+
         case FIT_FLOAT:
         {
             minmaxFloatImage.find_max_xy (src, max, pt);
             break;
         }
-        
+
         case FIT_DOUBLE:
         {
             minmaxDoubleImage.find_max_xy (src, max, pt);
             break;
         }
-        
+
         default:
         {
             break;
@@ -752,7 +752,7 @@ FIA_GetMaxPosibleValueForFib (FIBITMAP * src, double *max)
     switch (src_type)
     {
         case FIT_BITMAP:
-        {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit               
+        {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
             *max = UCHAR_MAX;
             break;
         }
@@ -849,12 +849,12 @@ FIA_Is16BitReally12BitImage (FIBITMAP * src)
     unsigned int x, width, height, *bptr;
 
     // Future work! Can proceed 8 pixels at once using xmm registers (128 bit registers).
-    // Is Assembly Code possible in labwindows ? 
+    // Is Assembly Code possible in labwindows ?
 
     // We want to know if there are some bits set at 0xF000 ie 1111 0000 0000 0000
-    // and we will use the advantage of 32bit CPU: 
+    // and we will use the advantage of 32bit CPU:
 #define MASK_12BIT 0xF000F000   // 1111 0000 0000 0000   1111 0000 0000 0000
-    
+
     if (!src || FreeImage_GetImageType (src) == FIT_BITMAP)
     {
         return 0;
@@ -868,15 +868,15 @@ FIA_Is16BitReally12BitImage (FIBITMAP * src)
     width = FreeImage_GetWidth (src);
     height = FreeImage_GetHeight (src);
 
-    // we need to change ptr size to 32bit 
-    // bits should be aligned to 4 Bytes 
+    // we need to change ptr size to 32bit
+    // bits should be aligned to 4 Bytes
     bptr = (unsigned int *) FreeImage_GetBits (src);
 
-    x = (width * height) / 2;   // 2 pixels at once 
+    x = (width * height) / 2;   // 2 pixels at once
 
     do
-    {                           // this loop will skip one conditional jump 
-        // let's avoid [] operator 
+    {                           // this loop will skip one conditional jump
+        // let's avoid [] operator
         if (*bptr++ & MASK_12BIT)
         {
             return 0;
@@ -904,8 +904,8 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
     T value;
     int swapped = 0, dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
 
-    // If necessary, switch the points so we're 
-    // always drawing from left to right. 
+    // If necessary, switch the points so we're
+    // always drawing from left to right.
     if (p2.x < p1.x)
     {
         swapped = 1;
@@ -1048,8 +1048,8 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
     RGBQUAD value;
     int dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
 
-    // If necessary, switch the points so we're 
-    // always drawing from left to right. 
+    // If necessary, switch the points so we're
+    // always drawing from left to right.
     if (p2.x < p1.x)
     {
         int t;
@@ -1188,33 +1188,101 @@ FIA_GetDistanceMap (int width, int height, int *distance_map)
     }
 }
 
-int DLL_CALLCONV
-FIA_SimplePaste (FIBITMAP * dst, FIBITMAP * src, int left, int bottom)
+// Find two intersecting rects
+static int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
 {
+    int fIntersect = (r2.left < r1.right && r2.right > r1.left && r2.top < r1.bottom && r2.bottom > r1.top);
 
+	MakeFIARect(0,0,0,0);
+
+    if(fIntersect)
+    {
+        r3->left = std::max(r1.left, r2.left);
+        r3->top = std::max(r1.top, r2.top);
+        r3->right = std::min(r1.right, r2.right);
+        r3->bottom = std::min(r1.bottom, r2.bottom);
+    }
+
+    return fIntersect;
+}
+
+static FIARECT SetRectRelativeToPoint(FIARECT *rect, FIAPOINT pt)
+{
+	FIARECT r;
+
+	r.left = rect->left - pt.x;
+	r.right = rect->right - pt.x;
+	r.top = rect->top - pt.y;
+	r.bottom = rect->bottom - pt.y;
+
+	return r;
+}
+
+BYTE* DLL_CALLCONV
+FIA_GetScanLineFromTop (FIBITMAP *src, int line)
+{
+	return (BYTE*) FreeImage_GetScanLine(src, FreeImage_GetHeight(src) - 1 - line);
+}
+
+int DLL_CALLCONV
+FIA_PasteFromTopLeft (FIBITMAP * dst, FIBITMAP * src, int left, int top)
+{
+	int lines, dst_start = 0;
+	int src_width = FreeImage_GetWidth (src);
     int src_height = FreeImage_GetHeight (src);
+	int dst_width = FreeImage_GetWidth (dst);
+    int dst_height = FreeImage_GetHeight (dst);
     int dst_pitch = FreeImage_GetPitch (dst);
+	FIARECT src_rect, intersect_rect;
+    FIAPOINT pt;
+
+	if (FreeImage_GetImageType (dst) != FreeImage_GetImageType (src))
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Destination and src image are not of the same type");
+        return FIA_ERROR;
+    }
 
     int src_line_bytes = FreeImage_GetLine (src);
 
     // calculate the number of bytes per pixel
     int bytespp = FreeImage_GetLine (dst) / FreeImage_GetWidth (dst);
 
-    //int dst_scan_line = dst_height - src_height - top;
-    BYTE *dst_bits = FreeImage_GetScanLine (dst, bottom);
+	if(IntersectingRect(MakeFIARect(0, 0, dst_width - 1, dst_height - 1),
+		MakeFIARect(left, top, left + src_width - 1, top + src_height - 1), &intersect_rect) == 0)
+	{
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Destination and src image do not intersect");
+		return FIA_ERROR;
+	}
 
-    dst_bits += (left * bytespp);
+	pt.x = left;
+	pt.y = top;
+	src_rect = SetRectRelativeToPoint(&intersect_rect, pt);
 
+	dst_start = bytespp * intersect_rect.left;
+    src_line_bytes = bytespp * (intersect_rect.right - intersect_rect.left + 1);
+
+    BYTE *dst_bits = FreeImage_GetScanLine (dst, dst_height - intersect_rect.bottom - 1);
     BYTE *src_bits;
 
-    for(int i = 0; i < src_height; i++)
+	lines = intersect_rect.bottom - intersect_rect.top + 1;
+
+    for(int i = 0; i < lines; i++)
     {
-        src_bits = FreeImage_GetScanLine (src, i);
+        src_bits = FIA_GetScanLineFromTop (src, src_rect.top + i) + src_rect.left;
+		dst_bits = FIA_GetScanLineFromTop (dst, intersect_rect.top + i) + dst_start;
         memcpy (dst_bits, src_bits, src_line_bytes);
-        dst_bits += dst_pitch;
     }
 
     return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_Paste (FIBITMAP * dst, FIBITMAP * src, int left, int bottom)
+{
+	return FIA_PasteFromTopLeft (dst, src, left,
+		FreeImage_GetHeight(dst) - 1 - bottom - FreeImage_GetHeight(src));
 }
 
 int DLL_CALLCONV
@@ -1438,7 +1506,7 @@ FIA_ConvertFloatTo16Bit (FIBITMAP * src, int sign)
 
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
 
-    // Mask has to be 8 bit 
+    // Mask has to be 8 bit
     if (type != FIT_FLOAT)
         return NULL;
 
@@ -1485,7 +1553,7 @@ FIA_ConvertInt16ToUInt16 (FIBITMAP * src)
 
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
 
-    // Mask has to be 8 bit 
+    // Mask has to be 8 bit
     if (type != FIT_INT16)
         return NULL;
 
@@ -1569,7 +1637,7 @@ ColourRescaleToHalf (FIBITMAP * src)
     int startx = 0, starty = 0, startxplus1;
     int dstx;
 
-    // Calculate the number of bytes per pixel (3 for 24-bit or 4 for 32-bit) 
+    // Calculate the number of bytes per pixel (3 for 24-bit or 4 for 32-bit)
     int bytespp = FreeImage_GetLine (src) / src_width;
     register int tmp, tmp2;
 
@@ -1692,25 +1760,25 @@ FIA_RescaleToHalf (FIBITMAP * src)
             }
             break;
         }
-        
+
         case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
         {
             dst = fastResampleUShortImage.IntegerRescaleToHalf (src);
             break;
         }
-        
+
         case FIT_INT16:        // array of short: signed 16-bit
         {
             dst = fastResampleShortImage.IntegerRescaleToHalf (src);
             break;
         }
-        
+
         case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
         {
             dst = fastResampleULongImage.IntegerRescaleToHalf (src);
             break;
         }
-        
+
         case FIT_INT32:        // array of long: signed 32-bit
         {
             dst = fastResampleLongImage.IntegerRescaleToHalf (src);

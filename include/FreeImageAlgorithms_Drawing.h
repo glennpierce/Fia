@@ -143,6 +143,9 @@ FIA_DrawGreyscaleRect (FIBITMAP *src, FIARECT rect, double colour, int line_widt
 DLL_API int DLL_CALLCONV
 FIA_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased);
 
+DLL_API int DLL_CALLCONV
+FIA_DrawGreyScaleCheckerBoard (FIBITMAP *src, int square_size);
+
 #ifdef __cplusplus
 }
 #endif

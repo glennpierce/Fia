@@ -843,3 +843,47 @@ FIA_DrawSolidGreyscaleEllipse (FIBITMAP * src, FIARECT rect, unsigned char value
 
     return FIA_ERROR;
 }
+
+
+int DLL_CALLCONV
+FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
+{
+	int row;   // Row number, from 0 to cols
+    int col;   // Column number, from 0 to rowss
+	int x, y, x_size, y_size;   // Top-left corner of square
+	double value;
+
+	// Minimum grid size
+	if(square_size < 5)
+		square_size = 5;
+
+	// Sret Maximum grid size 
+	if(square_size > 500)
+		square_size = 500;
+
+	int width =  FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	int cols = width / square_size;
+	int rows = height / square_size;
+
+	for ( row = 0;  row < rows + 1;  row++ ) {
+      
+         for ( col = 0;  col < cols + 1;  col++) {
+
+            x = col * square_size;
+            y = row * square_size;
+
+            if ( (row % 2) == (col % 2) )
+               value = 255.0;
+            else
+               value = 0.0;
+
+			if(FIA_DrawSolidGreyscaleRect (src, MakeFIARect(x, y, x + square_size, y + square_size), value) == FIA_ERROR)
+				return FIA_ERROR;	
+         } 
+      } 
+
+	return FIA_SUCCESS;
+}
+

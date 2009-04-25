@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -113,7 +113,7 @@ template < typename Tsrc >
     dst->fib = FIA_CloneImageType (src, dst_width, dst_height);
     dst->xborder = xborder;
     dst->yborder = yborder;
-    FIA_SimplePaste (dst->fib, src, xborder, yborder);
+    FIA_Paste (dst->fib, src, xborder, yborder);
 
     if (type == BorderType_Constant && constant != 0.0)
     {
@@ -162,7 +162,7 @@ template < typename Tsrc >
             image_row_start++;
         }
 
-        // Top 
+        // Top
         border_row_start = dst_height - yborder;        // First row on border fort bottom
         image_row_start = border_row_start - 1;
 

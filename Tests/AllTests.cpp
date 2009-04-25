@@ -31,7 +31,7 @@ int MkDir(const char *path)
 	#ifdef WIN32
 	return CreateDirectory(path, NULL);
 	#else
-	return mkdir(path, 0777);	
+	return mkdir(path, 0777);
 	#endif
 }
 
@@ -69,9 +69,9 @@ static void OnError(FREE_IMAGE_FORMAT fif, const char *msg)
 int __cdecl main(void)
 {
     FreeImage_SetOutputMessage(OnError);
-    
+
 	MkDir(TEST_DATA_OUTPUT_DIR);
-	
+
 	RunAllTests();
 
 	return 0;

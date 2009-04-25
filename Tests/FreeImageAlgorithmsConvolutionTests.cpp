@@ -81,7 +81,7 @@ TestFIA_SobelTest(CuTest* tc)
 
     FIBITMAP *bit8_dib = NULL;
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
-	
+
 	CuAssertTrue(tc, dib1 != NULL);
 
 	PROFILE_START("FreeImageAlgorithms_Sobel");
@@ -92,7 +92,7 @@ TestFIA_SobelTest(CuTest* tc)
 
     bit8_dib = FreeImage_ConvertToStandardType(dib2, 0);
 
-	//FIA_SetTernaryPalettePalette(dib2, FIA_RGBQUAD(0,0,0), 
+	//FIA_SetTernaryPalettePalette(dib2, FIA_RGBQUAD(0,0,0),
 	//		1, FIA_RGBQUAD(255,0,0), 2, FIA_RGBQUAD(0,255,0));
 
 	FIA_SaveFIBToFile(bit8_dib, TEST_DATA_OUTPUT_DIR "/Convolution/drone-bee_sobel.bmp", BIT24);
@@ -108,7 +108,7 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
 	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
-	
+
 	CuAssertTrue(tc, dib1 != NULL);
 
 	PROFILE_START("FreeImageAlgorithms_SobelAdvanced");
@@ -117,8 +117,8 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
 
     int err = FIA_SobelAdvanced(dib1, &vertical_dib,
         &horizontal_dib, NULL);
-     
-    CuAssertTrue(tc, err == FIA_SUCCESS); 
+
+    CuAssertTrue(tc, err == FIA_SUCCESS);
 
 	PROFILE_STOP("FreeImageAlgorithms_SobelAdvanced");
 
@@ -138,10 +138,10 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
 
     if(vertical_dib != NULL)
 	    FreeImage_Unload(vertical_dib);
-    
+
     if(horizontal_dib != NULL)
 	    FreeImage_Unload(horizontal_dib);
-    
+
     if(mag_dib != NULL)
         FreeImage_Unload(mag_dib);
 }
@@ -153,7 +153,7 @@ TestFIA_SeparableSobelTest(CuTest* tc)
 	const char *file = IMAGE_DIR "\\wallpaper_river.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
-	
+
 	CuAssertTrue(tc, dib1 != NULL);
 
 	ProfileStart("FreeImageAlgorithms_SeparableSobel");
@@ -176,7 +176,7 @@ TestFIA_MedianFilterTest(CuTest* tc)
 	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
 	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
-	
+
 	CuAssertTrue(tc, dib1 != NULL);
 
 	FIBITMAP *dib2 = FreeImage_ConvertToGreyscale(dib1);
@@ -219,36 +219,32 @@ TestFIA_CorrelateFilterTest(CuTest* tc)
     FIBITMAP *gs_src = FIA_LoadFIBFromFile(gs_file);
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
     FIBITMAP *colour_section = FreeImage_ConvertTo24Bits(src);
-	
+
 	CuAssertTrue(tc, src != NULL);
 	CuAssertTrue(tc, gs_src != NULL);
 	CuAssertTrue(tc, colour_src != NULL);
 
-    FIARECT rect;
-	rect.left = 0;
-	rect.top = 0;
-	rect.bottom = FreeImage_GetHeight(colour_src);
-	rect.right = FreeImage_GetWidth(colour_src);
-
 	PROFILE_START("TestFIA_CorrelateFilterTest");
 
 	FIAPOINT pt;
-	
+
 	if(FIA_CorrelateImages(gs_src, src, &pt, &max) == FIA_ERROR) {
 	    PROFILE_STOP("TestFIA_CorrelateFilterTest");
 	    goto TEST_ERROR;
 	}
-	
+
 	PROFILE_STOP("TestFIA_CorrelateFilterTest");
 
+
     if(FreeImage_Paste(colour_src, colour_section, pt.x, pt.y, 255) == 0) {
-        printf("paste failed\n");
+        printf("Paste failed for TestFIA_CorrelateFilterTest. Trying to paste at %d, %d\n",
+        		pt.x, pt.y);
     }
 
 	FIA_SaveFIBToFile(colour_src, TEST_DATA_OUTPUT_DIR  "/Convolution/kernel-correlated.jpg", BIT24);
 
 	TEST_ERROR:
-	
+
 	FreeImage_Unload(src);
 	FreeImage_Unload(colour_src);
 	FreeImage_Unload(gs_src);
@@ -260,7 +256,7 @@ static void
 TestFIA_CorrelateRegionsTest(CuTest* tc)
 {
     double max;
-    
+
     const char *colour_file = TEST_DATA_DIR "drone-bee.jpg";
     const char *gs_file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
@@ -268,42 +264,43 @@ TestFIA_CorrelateRegionsTest(CuTest* tc)
     FIBITMAP *gs_src = FIA_LoadFIBFromFile(gs_file);
     FIBITMAP *gs_src24 = FreeImage_ConvertTo24Bits(gs_src);
     FIBITMAP *colour_section = NULL;
-        
+
     CuAssertTrue(tc, gs_src != NULL);
     CuAssertTrue(tc, colour_src != NULL);
 
     FIARECT rect1, rect2;
-    rect1.left = 0;
-    rect1.top = 0;
-    rect1.bottom = FreeImage_GetHeight(colour_src);
-    rect1.right = FreeImage_GetWidth(colour_src);
+    rect1.left = 50;
+    rect1.top = 100;
+    rect1.bottom = 210;
+    rect1.right = 180;
 
-    rect2.left = 100;
-    rect2.top = 100;
-    rect2.bottom = 139;
-    rect2.right = 139;
-        
+    rect2.left = 105;
+    rect2.top = 125;
+    rect2.bottom = 200;
+    rect2.right = 162;
+
     PROFILE_START("TestFIA_CorrelateRegionsTest");
 
     FIAPOINT pt;
-    
+
     if(FIA_CorrelateImageRegions(gs_src, rect1, gs_src, rect2, &pt, &max) == FIA_ERROR) {
         PROFILE_STOP("TestFIA_CorrelateRegionsTest");
         goto TEST_ERROR;
     }
-    
+
     PROFILE_STOP("TestFIA_CorrelateRegionsTest");
-    
+
     colour_section = FreeImage_Copy(colour_src, pt.x, pt.y, pt.x + 39, pt.y + 39);
-    
+
     if(FreeImage_Paste(gs_src24, colour_section, pt.x, pt.y, 255) == 0) {
-        printf("paste failed\n");
+        printf("Paste failed for TestFIA_CorrelateRegionsTest. Trying to paste at %d, %d\n",
+        		pt.x, pt.y);
     }
 
     FIA_SaveFIBToFile(gs_src24, TEST_DATA_OUTPUT_DIR  "/Convolution/kernel-correlated-region.jpg", BIT24);
 
     TEST_ERROR:
-    
+
     FreeImage_Unload(colour_src);
     FreeImage_Unload(gs_src);
     FreeImage_Unload(gs_src24);
@@ -319,35 +316,35 @@ TestFIA_CorrelateFFTTest(CuTest* tc)
 
     double max = 0.0;
     FIAPOINT pt;
-    
+
     pt.x = 0;
     pt.y = 0;
-    
+
     FIBITMAP *src1 = FIA_LoadFIBFromFile(tissue1_file);
-	FIBITMAP *gs_src1 = FreeImage_ConvertToGreyscale(src1);
+    FIBITMAP *gs_src1 = FreeImage_ConvertToGreyscale(src1);
     FIBITMAP *src2 = FIA_LoadFIBFromFile(tissue2_file);
 
     PROFILE_START("TestFIA_CorrelateFFTTest");
-    
+
     FIA_CorrelateImagesFFT(src1, src2, FIA_EdgeDetect, &pt, &max);
-    
+
     PROFILE_STOP("TestFIA_CorrelateFFTTest");
 
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), 700, 700, 
-                    FreeImage_GetBPP(src1), 0, 0, 0);    
-    
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(src1), 400, 400,
+                    FreeImage_GetBPP(src1), 0, 0, 0);
+
     if(FreeImage_GetBPP(joined_image) == 8)
         FIA_SetGreyLevelPalette(joined_image);
 
     FreeImage_Paste(joined_image, gs_src1, 0, 0, 256);
     FreeImage_Paste(joined_image, src2, pt.x, pt.y, 256);
-   
+
     FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "/Convolution/correlated-fft.png", BIT24);
 
     FreeImage_Unload(src1);
     FreeImage_Unload(src2);
     FreeImage_Unload(gs_src1);
-    FreeImage_Unload(joined_image);   
+    FreeImage_Unload(joined_image);
 
     return;
 }
@@ -363,10 +360,10 @@ TestFIA_CorrelateFFTLetterTest(CuTest* tc)
 
     double max = 0.0;
     FIAPOINT pt;
-    
+
     pt.x = 0;
     pt.y = 0;
-    
+
     FIBITMAP *src1 = FIA_LoadFIBFromFile(file1);
     FIBITMAP *src2 = FIA_LoadFIBFromFile(file2);
     FIBITMAP *src3 = FIA_LoadFIBFromFile(file3);
@@ -374,17 +371,17 @@ TestFIA_CorrelateFFTLetterTest(CuTest* tc)
     FIBITMAP *src5 = FIA_LoadFIBFromFile(file5);
 
     PROFILE_START("TestFIA_CorrelateFFTTest2");
-    
+
     FIA_CorrelateImagesFFT(src1, src2, NULL, &pt, &max);
-    
+
     PROFILE_STOP("TestFIA_CorrelateFFTTest2");
 
     FreeImage_Paste(src1, src3, pt.x, pt.y, 256);
 
     FIA_CorrelateImagesFFT(src1, src4, NULL, &pt, &max);
-    
+
     FreeImage_Paste(src1, src5, pt.x, pt.y, 256);
-    
+
     FIA_SaveFIBToFile(src1, TEST_DATA_OUTPUT_DIR  "/Convolution/correlated-fft2.png", BIT24);
 
     FreeImage_Unload(src1);
@@ -412,26 +409,28 @@ TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
     PROFILE_START("TestFIA_CorrelateFFTAlongRightEdge");
 
     FIAPOINT pt;
-    
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(left_src), 300, 400, 
-                    FreeImage_GetBPP(left_src), 0, 0, 0);    
-    
+
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(left_src), 300, 400,
+                    FreeImage_GetBPP(left_src), 0, 0, 0);
+
     if(FIA_FFTCorrelateImagesAlongRightEdge(left_src, right_src, NULL, 57, &pt) == FIA_ERROR) {
         PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
         goto TEST_ERROR;
     }
-    
+
     PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
 
     if(FreeImage_GetBPP(joined_image) == 8)
         FIA_SetGreyLevelPalette(joined_image);
 
     if(FreeImage_Paste(joined_image, left_src, 0, 0, 256) == 0) {
-        printf("paste failed\n");
+        printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
+        		pt.x, pt.y);
     }
 
     if(FreeImage_Paste(joined_image, right_src, pt.x, pt.y, 256) == 0) {
-        printf("paste failed\n");
+        printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
+        		pt.x,pt.y);
     }
 
     FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "/Convolution/fft-correlated-right_edge.png", BIT24);
@@ -459,8 +458,8 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateRegionsTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);
-    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTAlongRightEdge);    
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTAlongRightEdge);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTLetterTest);
-    
+
 	return suite;
 }
