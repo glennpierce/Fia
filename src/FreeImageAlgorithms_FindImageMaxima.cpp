@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -323,7 +323,7 @@ FindMaxima::DrawMaxima (int size)
         size = 1;               // Just a check as this has created much confusion
     }
 
-    this->peek_image = FreeImage_Allocate (width, height, 8, 0, 0, 0);
+    this->peek_image = FreeImage_Allocate (this->width, this->height, 8, 0, 0, 0);
 
     FIA_SetGreyLevelPalette (this->peek_image);
 
@@ -383,6 +383,9 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak ** peaks_ref)
 
     FIA_ParticleInfo (this->peek_image, &info, 1);
 
+    if(FIA_ParticleInfo (this->peek_image, &info, 1) == FIA_ERROR)
+        return FIA_ERROR;
+
     int total_blobs = info->number_of_blobs;
 
     if (number <= 0)
@@ -430,6 +433,8 @@ FIBITMAP *
 FindMaxima::FindImageMaxima (FIBITMAP * src, FIBITMAP * mask, unsigned char threshold,
                              int min_separation, FIAPeak ** peaks, int number, int *peaks_found)
 {
+    *peaks_found = 0;
+
     this->regionGrowCount = 0;
     this->threshold = threshold;
     this->min_separation = min_separation;
@@ -438,6 +443,13 @@ FindMaxima::FindImageMaxima (FIBITMAP * src, FIBITMAP * mask, unsigned char thre
 
     this->width = FreeImage_GetWidth (this->original_image);
     this->height = FreeImage_GetHeight (this->original_image);
+
+    if(this->width == 0 || this->height == 0) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                      "Error image size is %d x %d", width, height);
+        return NULL;
+    }
 
     this->processing_image = FreeImage_Allocate (this->width, this->height, 8, 0, 0, 0);
 

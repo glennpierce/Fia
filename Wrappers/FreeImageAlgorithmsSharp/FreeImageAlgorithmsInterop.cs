@@ -4,6 +4,13 @@ using System.Runtime.InteropServices;
 
 namespace FreeImage
 {
+	public enum FIA_BITDEPTH
+	{
+		BIT8,
+		BIT16,
+		BIT24
+	}
+	
     internal sealed class FreeImageAlgorithmsNativeMethods
     {
         private FreeImageAlgorithmsNativeMethods() {}
@@ -22,8 +29,8 @@ namespace FreeImage
         internal static extern uint LoadFIBFromFile(string filepath);
 
         [DllImport("FreeImageAlgorithms.dll", EntryPoint="FIA_SaveFIBToFile")]
-        internal static extern int SaveFIBToFile(uint dib,  string filepath, int bitDepth);
-
+        internal static extern int SaveFIBToFile(uint dib, string filepath, FIA_BITDEPTH bitDepth);
+		
         [DllImport("FreeImageAlgorithms.dll", EntryPoint="FIA_HistEq")]
         internal static extern uint FreeImage_HistEq(uint dib);
 
@@ -53,8 +60,12 @@ namespace FreeImage
     
         [DllImport("FreeImageAlgorithms.dll", EntryPoint="FIA_SimplePaste")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SimplePaste(uint dst, uint src, int left, int top);
-
+        internal static extern bool SimplePaste(uint dst, uint src, int left, int bottom);
+		
+		[DllImport("FreeImageAlgorithms.dll", EntryPoint="FIA_SimplePasteFromTopLeft")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool SimplePasteFromTopLeft(uint dst, uint src, int left, int top);
+		
         [DllImport("FreeImageAlgorithms.dll", EntryPoint = "FIA_StretchImageToType")]
         internal static extern uint StretchImageToType(uint src, FreeImageType type, double max);
 

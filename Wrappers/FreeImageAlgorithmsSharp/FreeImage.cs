@@ -107,9 +107,15 @@ namespace FreeImage
                 imageType, width, height, bitsPerPixel,
                 red_mask, green_mask, blue_mask);
 
-            this.LoadFromDib(dib);
-
-            this.SetGreyLevelPalette();
+            if (dib == 0)
+            {
+                throw new FreeImageException("Failed to allocate image");
+            }
+            else
+            {
+                this.LoadFromDib(dib);
+                this.SetGreyLevelPalette();
+            }
         }
 
         public FreeImageBitmap(int width, int height, int bitsPerPixel)
@@ -151,11 +157,16 @@ namespace FreeImage
         public void SaveToFile(string filePath)
         {
             if(this.IsGreyScale)
-                FreeImageAlgorithmsNativeMethods.SaveFIBToFile(this.dib, filePath, 0);
+				FreeImageAlgorithmsNativeMethods.SaveFIBToFile(this.dib, filePath, FIA_BITDEPTH.BIT8);
             else
-                FreeImageAlgorithmsNativeMethods.SaveFIBToFile(this.dib, filePath, 1);
+                FreeImageAlgorithmsNativeMethods.SaveFIBToFile(this.dib, filePath, FIA_BITDEPTH.BIT24);
         }
 
+		public void SaveToFile(string filePath, FreeImage.FIA_BITDEPTH depth)
+		{
+			FreeImageAlgorithmsNativeMethods.SaveFIBToFile(this.dib, filePath, depth);
+		}
+		
         public void LoadFromBitmap(IntPtr hdc, Bitmap bitmap)
         {
             IntPtr hbitmap = bitmap.GetHbitmap();
@@ -530,6 +541,11 @@ namespace FreeImage
         {
             return FreeImageAlgorithmsNativeMethods.SimplePaste(this.dib, src.dib, location.X, location.Y);
         }
+		
+		public bool SimplePasteFromTopLeft(FreeImageBitmap src, Point location)
+		{
+			return FreeImageAlgorithmsNativeMethods.SimplePasteFromTopLeft(this.dib, src.dib, location.X, location.Y);
+		}
 
         public void EqualizeHistogram()
         {

@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -176,6 +176,13 @@ FIA_ParticleInfo (FIBITMAP * src, PARTICLEINFO ** info, unsigned char white_on_b
 
     const int width = FreeImage_GetWidth (src);
     const int height = FreeImage_GetHeight (src);
+
+    if(width == 0 || height == 0) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                         "Error image size is %d x %d", width, height);
+        return FIA_ERROR;
+    }
 
     unsigned int top_row = height - 1;
     unsigned char *src_ptr;

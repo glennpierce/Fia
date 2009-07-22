@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -330,10 +330,10 @@ Draw24BitSolidColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour)
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::renderer < agg::span_bgr24 > ren (rbuf);
     agg::rasterizer ras;
 
@@ -357,10 +357,10 @@ Draw32BitSolidColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour)
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the renderer 
+    // Create the renderer
     agg::renderer < agg::span_bgra32 > ren (rbuf);
     agg::rasterizer ras;
 
@@ -451,10 +451,10 @@ Draw24BitColourLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::renderer < agg::span_bgr24 > ren (rbuf);
     agg::rasterizer ras;
 
@@ -485,10 +485,10 @@ Draw32BitColourLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::renderer < agg::span_bgra32 > ren (rbuf);
     agg::rasterizer ras;
 
@@ -547,10 +547,10 @@ Draw8BitGreyscaleLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, unsigned char v
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::renderer < agg::span_mono8 > ren (rbuf);
     agg::rasterizer ras;
 
@@ -644,10 +644,10 @@ Draw8BitGreyscalePolygon (FIBITMAP * src, FIAPOINT * points, int number_of_point
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::renderer < agg::span_mono8 > ren (rbuf);
     agg::rasterizer ras;
 
@@ -772,10 +772,10 @@ Draw8BitSolidEllipse (FIBITMAP * src, FIARECT rect, unsigned char value, int ant
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer 
+    // Create the rendering buffer
     agg::renderer < agg::span_mono8 > ren (rbuf);
     agg::rasterizer ras;
 
@@ -849,7 +849,7 @@ int DLL_CALLCONV
 FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
 {
 	int row;   // Row number, from 0 to cols
-    int col;   // Column number, from 0 to rowss
+    int col;   // Column number, from 0 to rows
 	int x, y, x_size, y_size;   // Top-left corner of square
 	double value;
 
@@ -857,7 +857,7 @@ FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
 	if(square_size < 5)
 		square_size = 5;
 
-	// Sret Maximum grid size 
+	// Sret Maximum grid size
 	if(square_size > 500)
 		square_size = 500;
 
@@ -868,7 +868,7 @@ FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
 	int rows = height / square_size;
 
 	for ( row = 0;  row < rows + 1;  row++ ) {
-      
+
          for ( col = 0;  col < cols + 1;  col++) {
 
             x = col * square_size;
@@ -880,9 +880,9 @@ FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
                value = 0.0;
 
 			if(FIA_DrawSolidGreyscaleRect (src, MakeFIARect(x, y, x + square_size, y + square_size), value) == FIA_ERROR)
-				return FIA_ERROR;	
-         } 
-      } 
+				return FIA_ERROR;
+         }
+      }
 
 	return FIA_SUCCESS;
 }

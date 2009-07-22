@@ -1191,7 +1191,8 @@ FIA_GetDistanceMap (int width, int height, int *distance_map)
 // Find two intersecting rects
 static int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
 {
-    int fIntersect = (r2.left < r1.right && r2.right > r1.left && r2.top < r1.bottom && r2.bottom > r1.top);
+    int fIntersect = (r2.left <= r1.right && r2.right >= r1.left &&
+            r2.top <= r1.bottom && r2.bottom >= r1.top);
 
 	MakeFIARect(0,0,0,0);
 
@@ -1263,7 +1264,7 @@ FIA_PasteFromTopLeft (FIBITMAP * dst, FIBITMAP * src, int left, int top)
 	dst_start = bytespp * intersect_rect.left;
     src_line_bytes = bytespp * (intersect_rect.right - intersect_rect.left + 1);
 
-    BYTE *dst_bits = FreeImage_GetScanLine (dst, dst_height - intersect_rect.bottom - 1);
+    BYTE *dst_bits = NULL;
     BYTE *src_bits;
 
 	lines = intersect_rect.bottom - intersect_rect.top + 1;
@@ -1282,7 +1283,7 @@ int DLL_CALLCONV
 FIA_Paste (FIBITMAP * dst, FIBITMAP * src, int left, int bottom)
 {
 	return FIA_PasteFromTopLeft (dst, src, left,
-		FreeImage_GetHeight(dst) - 1 - bottom - FreeImage_GetHeight(src));
+		FreeImage_GetHeight(dst) - bottom - FreeImage_GetHeight(src));
 }
 
 int DLL_CALLCONV

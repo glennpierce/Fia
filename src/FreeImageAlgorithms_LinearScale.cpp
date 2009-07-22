@@ -12,7 +12,7 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -26,7 +26,7 @@
 #include "assert.h"
 
 /*  Convert a greyscale image to a 8-bit grayscale dib.
- *	Convert a greyscale image to a 8-bit grayscale dib. Conversion is done using either a linear scaling from [min, max] to [0, 255]. 
+ *	Convert a greyscale image to a 8-bit grayscale dib. Conversion is done using either a linear scaling from [min, max] to [0, 255].
  */
 template < class Tsrc > class LINEAR_SCALE
 {
@@ -459,7 +459,7 @@ FIA_StretchImageAcrossRange (FIBITMAP * src, double min, double max)
 }
 
 int DLL_CALLCONV
-FIA_InplaceLinearScaleToStandardTypee (FIBITMAP ** src, double min, double max, double *found_min,
+FIA_InplaceLinearScaleToStandardType (FIBITMAP ** src, double min, double max, double *found_min,
                                        double *found_max)
 {
     FIBITMAP *dst = FIA_LinearScaleToStandardType (*src, min, max, found_min, found_max);
