@@ -2,6 +2,8 @@
 #define FIA_VIEWER_H
  
 #include "ui_FiaViewer.h"
+
+#include "FreeImage.h"
  
 class FiaViewer : public QMainWindow, private Ui::FiaViewerWindow
 {
@@ -22,6 +24,7 @@ public:
 
     void fitImageToViewer(bool fit);
     void setImage(QPixmap pix);
+    void setImage(FIBITMAP *fib);
 
     void zoom(float zoom);
 

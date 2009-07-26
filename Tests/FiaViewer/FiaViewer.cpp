@@ -8,7 +8,7 @@ const float ZOOM_DEC = 1 / 1.20f;
  
 FiaViewer::FiaViewer()
 {
-    setupUi(this); // this sets up GUI
+    setupUi(this);
 
     this->zoomFactor = 1.0f; 
     this->scene = new QGraphicsScene(this->graphicsView);
@@ -31,12 +31,29 @@ void FiaViewer::zoom(float zoom)
 
 void FiaViewer::setImage(QPixmap pix)
 {
-    //this->pixmap = QPixmap::fromImage (pix);
-    this->pixmap = pix;
+    this->pixmap = pix.copy();
     this->scene->setSceneRect(this->pixmap.rect());
     this->scene->addPixmap(this->pixmap);
     this->graphicsView->setScene(this->scene);
 }
+
+void FiaViewer::setImage(FIBITMAP *fib)
+{
+    uchar *data = FreeImage_GetBits(fib);
+    int width = FreeImage_GetWidth(fib);
+    int height = FreeImage_GetHeight(fib);
+    int pitch = FreeImage_GetPitch(fib);
+    int bpp = FreeImage_GetBPP(fib);
+
+    QImage image(data, width, height, QImage::Format_RGB888);
+
+    this->pixmap = QPixmap::fromImage (image);
+
+    this->scene->setSceneRect(this->pixmap.rect());
+    this->scene->addPixmap(this->pixmap);
+    this->graphicsView->setScene(this->scene);
+}
+
 
 /* 
 void FiaViewer::about() 
