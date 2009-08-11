@@ -902,7 +902,7 @@ template < class T > int
 GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
 {
     T value;
-    int swapped = 0, dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
+    int swapped = 0, dx, dy, abs_dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
 
     // If necessary, switch the points so we're
     // always drawing from left to right.
@@ -914,6 +914,7 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
 
     dx = p2.x - p1.x;
     dy = p2.y - p1.y;
+    abs_dy = abs(dy);
 
     if (dy < 0)
     {
@@ -928,7 +929,7 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
     x = p1.x;
     y = p1.y;
 
-    if (abs (dy) <= dx)
+    if (abs_dy <= dx)
     {
         d = 2 * dy - dx;
         incrE = 2 * dy;         // E
@@ -940,7 +941,7 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
 
         *values++ = value;
 
-        while (x < p2.x)
+        while (x <= p2.x)
         {
             if (d <= 0)
             {
@@ -977,7 +978,7 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
 
         *values++ = value;
 
-        for(tmp_y = 0; tmp_y < abs (p2.y - p1.y); tmp_y++)
+        for(tmp_y = 0; tmp_y < abs_dy; tmp_y++)
         {
             if (d > 0)
             {
@@ -1046,7 +1047,7 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
                               BYTE * red_values, BYTE * green_values, BYTE * blue_values)
 {
     RGBQUAD value;
-    int dx, dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
+    int dx, dy, abs_dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
 
     // If necessary, switch the points so we're
     // always drawing from left to right.
@@ -1065,6 +1066,7 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
 
     dx = p2.x - p1.x;
     dy = p2.y - p1.y;
+    abs_dy = abs(dy);
 
     if (dy < 0)
     {
@@ -1079,7 +1081,7 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
     x = p1.x;
     y = p1.y;
 
-    if (abs (dy) <= dx)
+    if (abs_dy <= dx)
     {
         d = 2 * dy - dx;
         incrE = 2 * dy;         // E
@@ -1090,7 +1092,10 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
         *green_values++ = value.rgbGreen;
         *blue_values++ = value.rgbBlue;
 
-        while (x < p2.x)
+        x++;
+        len++;
+
+        while (x <= p2.x)
         {
             if (d <= 0)
             {
@@ -1125,7 +1130,9 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
         *green_values++ = value.rgbGreen;
         *blue_values++ = value.rgbBlue;
 
-        for(tmp_y = 0; tmp_y < abs (p2.y - p1.y); tmp_y++)
+        len++;
+
+        for(tmp_y = 0; tmp_y < abs_dy; tmp_y++)
         {
             if (d > 0)
             {

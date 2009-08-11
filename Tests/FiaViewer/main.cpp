@@ -12,7 +12,7 @@ int main(int argc, char *argv[])
     //viewer->setImage(pix); 
    
     FIBITMAP *fib = FreeImage_Load(FIF_JPEG,
-		"/home/glenn/Devel/Fia/Tests/Data/water-strider.jpg", JPEG_DEFAULT);
+		"/home/glenn/Devel/Fia/Tests/FiaViewer/Test.jpg", JPEG_DEFAULT);
  
     viewer->setImage(fib);
 

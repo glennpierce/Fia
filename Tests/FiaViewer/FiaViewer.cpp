@@ -45,9 +45,11 @@ void FiaViewer::setImage(FIBITMAP *fib)
     int pitch = FreeImage_GetPitch(fib);
     int bpp = FreeImage_GetBPP(fib);
 
+    FreeImage_FlipVertical(fib);
+
     QImage image(data, width, height, QImage::Format_RGB888);
 
-    this->pixmap = QPixmap::fromImage (image);
+    this->pixmap = QPixmap::fromImage (image.rgbSwapped());
 
     this->scene->setSceneRect(this->pixmap.rect());
     this->scene->addPixmap(this->pixmap);
