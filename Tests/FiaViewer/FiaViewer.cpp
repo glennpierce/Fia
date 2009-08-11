@@ -1,5 +1,6 @@
 #include <QtGui> 
 #include "FiaViewer.h"
+#include "FreeImageAlgorithms_IO.h"
 
 const float ZOOM_MIN = 0.1f;
 const float ZOOM_MAX = 100.0f;
@@ -9,6 +10,11 @@ const float ZOOM_DEC = 1 / 1.20f;
 FiaViewer::FiaViewer()
 {
     setupUi(this);
+
+    //openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+    //openAct->setShortcuts(QKeySequence::Open);
+    //openAct->setStatusTip(tr("Open an existing file"));
+    connect(this->openAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
 
     this->zoomFactor = 1.0f; 
     this->scene = new QGraphicsScene(this->graphicsView);
@@ -56,6 +62,18 @@ void FiaViewer::setImage(FIBITMAP *fib)
     this->graphicsView->setScene(this->scene);
 }
 
+void FiaViewer::fileOpen()
+{
+    QString fileName = QFileDialog::getOpenFileName(this);
+
+    if (!fileName.isEmpty()) {
+
+	QByteArray ba = fileName.toLatin1();
+	const char *path = ba.data(); 
+
+	this->setImage(FIA_LoadFIBFromFile(path));
+    }
+}
 
 /* 
 void FiaViewer::about() 

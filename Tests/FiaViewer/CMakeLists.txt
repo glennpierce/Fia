@@ -14,7 +14,7 @@ SET(QT_USE_QTHELP TRUE)
 SET(QT_USE_QTNETWORK TRUE)
 SET(QT_USE_QTASSISTANT TRUE)
 
-INCLUDE_DIRECTORIES(${FiaViewer_BINARY_DIR} ${FREEIMAGE_INCLUDE_PATH})
+INCLUDE_DIRECTORIES(${FiaViewer_BINARY_DIR} ${FREEIMAGE_INCLUDE_PATH} ../../include)
 
 SET(SRCS FiaViewer.cpp
 	 main.cpp
@@ -46,4 +46,4 @@ ADD_EXECUTABLE(FiaViewer ${SRCS} ${MOC_SRCS} ${QRCS_SRCS} ${UI_OUT_SRCS})
 
 # Link the "qtproject" target against the Qt libraries.
 # Which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
-TARGET_LINK_LIBRARIES(FiaViewer ${QT_LIBRARIES} ${FREEIMAGE_LIBRARY})
+TARGET_LINK_LIBRARIES(FiaViewer ${QT_LIBRARIES} ${FREEIMAGE_LIBRARY} freeimagealgorithms)

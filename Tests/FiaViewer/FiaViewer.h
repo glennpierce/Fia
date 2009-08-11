@@ -32,6 +32,8 @@ public:
  public slots:
      void zoomIn() { this->graphicsView->scale(1.2, 1.2); }
      void zoomOut() { this->graphicsView->scale(1 / 1.2, 1 / 1.2); }
+
+     void fileOpen();
 //    void about();
 };
  
