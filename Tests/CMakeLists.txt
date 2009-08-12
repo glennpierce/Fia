@@ -1,3 +1,5 @@
+SUBDIRS(FiaViewer)
+
 SET(FIA_TEST_SRCS AllTests.cpp
 	     	  CuTest.cpp
 	     	  FreeImageAlgorithms_ArithmeticTests.cpp
