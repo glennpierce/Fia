@@ -41,7 +41,7 @@ QT4_WRAP_UI(UI_OUT_SRCS ${UIRS})
 # generate rules for building source files that moc generates
 QT4_WRAP_CPP(MOC_SRCS ${MOCS})
 
-IF(QT4_INSTALLED)
+#IF(QT4_INSTALLED)
 
 # build sources, moc'd sources, and rcc'd sources
 ADD_EXECUTABLE(FiaViewer ${SRCS} ${MOC_SRCS} ${QRCS_SRCS} ${UI_OUT_SRCS})
@@ -50,4 +50,4 @@ ADD_EXECUTABLE(FiaViewer ${SRCS} ${MOC_SRCS} ${QRCS_SRCS} ${UI_OUT_SRCS})
 # Which libraries exactly, is defined by the "include(${QT_USE_FILE})" line above, which sets up this variable.
 TARGET_LINK_LIBRARIES(FiaViewer ${QT_LIBRARIES} ${FREEIMAGE_LIBRARY} freeimagealgorithms)
 
-ENDIF(QT4_INSTALLED)
+#ENDIF(QT4_INSTALLED)

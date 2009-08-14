@@ -2,6 +2,8 @@
 #include "FiaViewer.h"
 #include "FreeImageAlgorithms_IO.h"
 
+#include <iostream>
+
 const float ZOOM_MIN = 0.1f;
 const float ZOOM_MAX = 100.0f;
 const float ZOOM_INC = 1.20f;
@@ -18,6 +20,7 @@ FiaViewer::FiaViewer()
 
     this->zoomFactor = 1.0f; 
     this->scene = new QGraphicsScene(this->graphicsView);
+    this->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
 }
 
 
@@ -87,13 +90,19 @@ void FiaViewer::about()
 
 void FiaViewer::mousePressEvent( QMouseEvent * e)
 {
+   
+
     if ( e->button() == Qt::LeftButton ) {
 
 	if(this->zoomFactor * ZOOM_INC > ZOOM_MAX)
             return;
 
+//	std::cout << e->x() << std::endl;
+	this->graphicsView->translate(e->x(), e->y());
+
         //this->zoom(this->zoomFactor * ZOOM_INC);
 	this->graphicsView->scale(ZOOM_INC,ZOOM_INC);
+
 
 	//buttonDown = TRUE;
 	//moveOffset = mapToParent( e->pos() );
@@ -105,7 +114,11 @@ void FiaViewer::mousePressEvent( QMouseEvent * e)
 	//if(this->zoomFactor / ZOOM_DEC < ZOOM_MIN)
         //    return;
 
+        this->graphicsView->translate(e->x(), e->y());
+
 	this->graphicsView->scale(ZOOM_DEC,ZOOM_DEC);
     }
+
+   e->accept();
 }
 
