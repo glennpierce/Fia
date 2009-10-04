@@ -1,11 +1,13 @@
 #ifndef FIA_VIEWER_H
 #define FIA_VIEWER_H
- 
-#include "ui_FiaViewer.h"
 
 #include "FreeImage.h"
+
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QRubberBand>
  
-class FiaViewer : public QMainWindow, private Ui::FiaViewerWindow
+class FiaViewer : public QGraphicsView
 {
     Q_OBJECT
 
@@ -13,11 +15,14 @@ private:
     float zoomFactor;
     QPixmap pixmap;
     QGraphicsScene *scene;
+    QRubberBand *rubberBand;
+    QPoint mouseDownPos;
+    QPoint lastMouseViewPos;
 
 protected:
     void mousePressEvent( QMouseEvent * );
-    //void mouseReleaseEvent( QMouseEvent * );
-    //void mouseMoveEvent( QMouseEvent * );
+    void mouseReleaseEvent( QMouseEvent * );
+    void mouseMoveEvent( QMouseEvent * );
  
 public:
     FiaViewer();
@@ -30,11 +35,8 @@ public:
 
 
  public slots:
-     void zoomIn() { this->graphicsView->scale(1.2, 1.2); }
-     void zoomOut() { this->graphicsView->scale(1 / 1.2, 1 / 1.2); }
-
-     void fileOpen();
-//    void about();
+     void zoomIn() { this->scale(1.2, 1.2); }
+     void zoomOut() { this->scale(1 / 1.2, 1 / 1.2); }
 };
  
  

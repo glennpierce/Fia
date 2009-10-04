@@ -314,7 +314,6 @@ TestFIA_CorrelateFFTTest(CuTest* tc)
     const char *tissue1_file = TEST_DATA_DIR "gregarious-desert-locusts.jpg";
     const char *tissue2_file = TEST_DATA_DIR "gregarious-desert-locusts-section.jpg";
 
-    double max = 0.0;
     FIAPOINT pt;
 
     pt.x = 0;
@@ -326,7 +325,7 @@ TestFIA_CorrelateFFTTest(CuTest* tc)
 
     PROFILE_START("TestFIA_CorrelateFFTTest");
 
-    FIA_CorrelateImagesFFT(src1, src2, FIA_EdgeDetect, &pt, &max);
+    FIA_CorrelateImagesFFT(src1, src2, FIA_EdgeDetect, &pt);
 
     PROFILE_STOP("TestFIA_CorrelateFFTTest");
 
@@ -349,6 +348,97 @@ TestFIA_CorrelateFFTTest(CuTest* tc)
     return;
 }
 
+
+static FIBITMAP* GetRandomImageRect(FIBITMAP *src, FIARECT *rect)
+{
+    int width = FreeImage_GetWidth(src);
+    int height = FreeImage_GetHeight(src);
+    int section_width = 400;
+    int section_height = 400;
+    int min = 50;
+
+    rect->left = (int) (((float) rand() / RAND_MAX) * (width - min));
+    rect->top = (int) (((float) rand() / RAND_MAX) * (height - min));
+    rect->right = std::min(rect->left + section_width, width - 1);
+    rect->bottom = std::min(rect->top + section_width, height - 1);
+
+    return FreeImage_Copy(src, rect->left, rect->top, rect->right, rect->bottom);
+}
+
+static void
+TestFIA_CorrelateFFTTest2(CuTest* tc)
+{
+    FIARECT first_rect, rect;
+    FIBITMAP* fibs[20];
+
+    const int number_of_images = 20;
+
+    const char *original_file = TEST_DATA_DIR "Spice1.jpg";
+    FIBITMAP *original_fib = FIA_LoadFIBFromFile(original_file);
+
+    int width = FreeImage_GetWidth(original_fib);
+    int height = FreeImage_GetHeight(original_fib);
+    FIAPOINT pt;
+
+    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(original_fib), width,
+            height, FreeImage_GetBPP(original_fib), 0, 0, 0);
+
+    fibs[0] = FreeImage_Copy(original_fib, 0, 0, 500, 300);
+    FIA_PasteFromTopLeft(joined_image, fibs[0], 0, 0);
+    FreeImage_Unload(fibs[0]);
+
+    /*
+    fibs[1] = FreeImage_Copy(original_fib, 300, 200, 700, 500);
+    FIA_CorrelateImagesFFT(joined_image, fibs[1], FIA_EdgeDetect, &pt);
+    std::cout << pt.x << " " << pt.y << std::endl;
+    FIA_PasteFromTopLeft(joined_image, fibs[0], pt.x, pt.y);
+    FIA_PasteFromTopLeft(joined_image, fibs[1], pt.x, pt.y);
+    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "/Convolution/spice-join-fft.png", BIT24);
+    */
+
+    //first_rect = MakeFIARect(0, 0, 1000, 1000);
+
+    for(int i=0; i < number_of_images; i++) {
+
+          fibs[i] = GetRandomImageRect(original_fib, &rect);
+
+          PROFILE_START("TestFIA_CorrelateFFTTest2");
+
+          std::cout << "rect left: " << rect.left << " rect top: " << rect.top
+              << " width: " << rect.right - rect.left + 1 << " height: " << rect.bottom - rect.top + 1 << std::endl;
+
+          std::cout << "Correlating image " << i << std::endl;
+
+          FIA_CorrelateImagesFFT(joined_image, fibs[i], FIA_EdgeDetect, &pt);
+
+          std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
+
+          double measure = FIA_CorrelationDifferenceMeasure(joined_image, fibs[i], pt);
+
+          std::cout << "Measure " << measure << std::endl;
+
+          if(measure >= 0.0 && measure < 1000.0) {
+              std::cout << "x: " << pt.x << " y: " << pt.y << std::endl;
+
+              FIA_PasteFromTopLeft(joined_image, fibs[i], pt.x, pt.y);
+          }
+
+          PROFILE_STOP("TestFIA_CorrelateFFTTest2");
+    }
+
+    FIA_SaveFIBToFile(joined_image, TEST_DATA_OUTPUT_DIR  "/Convolution/spice-join-fft.png", BIT24);
+
+    for(int i=0; i < number_of_images; i++) {
+
+        FreeImage_Unload(fibs[i]);
+    }
+
+    FreeImage_Unload(original_fib);
+    FreeImage_Unload(joined_image);
+
+    return;
+}
+
 static void
 TestFIA_CorrelateFFTLetterTest(CuTest* tc)
 {
@@ -358,7 +448,6 @@ TestFIA_CorrelateFFTLetterTest(CuTest* tc)
     const char *file4 = TEST_DATA_DIR "correlation_test4.png";
     const char *file5 = TEST_DATA_DIR "correlation_test5.png";
 
-    double max = 0.0;
     FIAPOINT pt;
 
     pt.x = 0;
@@ -372,13 +461,13 @@ TestFIA_CorrelateFFTLetterTest(CuTest* tc)
 
     PROFILE_START("TestFIA_CorrelateFFTTest2");
 
-    FIA_CorrelateImagesFFT(src1, src2, NULL, &pt, &max);
+    FIA_CorrelateImagesFFT(src1, src2, NULL, &pt);
 
     PROFILE_STOP("TestFIA_CorrelateFFTTest2");
 
     FreeImage_Paste(src1, src3, pt.x, pt.y, 256);
 
-    FIA_CorrelateImagesFFT(src1, src4, NULL, &pt, &max);
+    FIA_CorrelateImagesFFT(src1, src4, NULL, &pt);
 
     FreeImage_Paste(src1, src5, pt.x, pt.y, 256);
 
@@ -460,6 +549,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTAlongRightEdge);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTLetterTest);
+    SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest2);
 
 	return suite;
 }

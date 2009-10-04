@@ -11,16 +11,11 @@ const float ZOOM_DEC = 1 / 1.20f;
  
 FiaViewer::FiaViewer()
 {
-    setupUi(this);
-
-    //openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
-    //openAct->setShortcuts(QKeySequence::Open);
-    //openAct->setStatusTip(tr("Open an existing file"));
-    connect(this->openAction, SIGNAL(triggered()), this, SLOT(fileOpen()));
-
     this->zoomFactor = 1.0f; 
-    this->scene = new QGraphicsScene(this->graphicsView);
-    this->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+    this->scene = new QGraphicsScene(this);
+    this->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+
+    this->rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
 }
 
 
@@ -35,7 +30,7 @@ void FiaViewer::fitImageToViewer(bool fit)
 void FiaViewer::zoom(float zoom)
 {
     this->zoomFactor = zoom;
-    this->graphicsView->scale(zoom,zoom);
+    this->scale(zoom,zoom);
 }
 
 void FiaViewer::setImage(QPixmap pix)
@@ -43,7 +38,7 @@ void FiaViewer::setImage(QPixmap pix)
     this->pixmap = pix.copy();
     this->scene->setSceneRect(this->pixmap.rect());
     this->scene->addPixmap(this->pixmap);
-    this->graphicsView->setScene(this->scene);
+    this->setScene(this->scene);
 }
 
 void FiaViewer::setImage(FIBITMAP *fib)
@@ -62,43 +57,31 @@ void FiaViewer::setImage(FIBITMAP *fib)
 
     this->scene->setSceneRect(this->pixmap.rect());
     this->scene->addPixmap(this->pixmap);
-    this->graphicsView->setScene(this->scene);
+    this->setScene(this->scene);
 }
 
-void FiaViewer::fileOpen()
+void FiaViewer::mousePressEvent( QMouseEvent * evt)
 {
-    QString fileName = QFileDialog::getOpenFileName(this);
+	qDebug() << "press";
+	QGraphicsView::mousePressEvent(evt);
 
-    if (!fileName.isEmpty()) {
+//	if(!this->scene->itemAt(this->mapToScene(evt->pos()))) {
+		mouseDownPos = this->mapToScene(evt->pos()).toPoint();
+		lastMouseViewPos = evt->pos();
+		rubberBand->setGeometry(this->mapFromScene(mouseDownPos).x(),
+			this->mapFromScene(mouseDownPos).y(), 0,0);
+		rubberBand->show();
+//	}
 
-	QByteArray ba = fileName.toLatin1();
-	const char *path = ba.data(); 
 
-	this->setImage(FIA_LoadFIBFromFile(path));
-    }
-}
-
-/* 
-void FiaViewer::about() 
-{
-    QMessageBox::about(this,"About FiaViewer",
-                "This app was coded for educational purposes.\n"
-                "Number 1 is: " + QString::number(spinBox1->value()) + "\n\n"
-                "Bye.\n");
-}
-*/
-
-void FiaViewer::mousePressEvent( QMouseEvent * e)
-{
-   
-
+/*
     if ( e->button() == Qt::LeftButton ) {
 
 	if(this->zoomFactor * ZOOM_INC > ZOOM_MAX)
             return;
 
 //	std::cout << e->x() << std::endl;
-	this->graphicsView->translate(e->x(), e->y());
+//	this->graphicsView->translate(e->x(), e->y());
 
         //this->zoom(this->zoomFactor * ZOOM_INC);
 	this->graphicsView->scale(ZOOM_INC,ZOOM_INC);
@@ -120,5 +103,39 @@ void FiaViewer::mousePressEvent( QMouseEvent * e)
     }
 
    e->accept();
+*/
 }
 
+void FiaViewer::mouseMoveEvent(QMouseEvent* evt)
+{
+std::cout << "here0" << std::endl;
+
+	if(evt->buttons().testFlag(Qt::LeftButton)) {
+		// handle the rubberband
+std::cout << "here1" << std::endl;
+
+		if(rubberBand->isVisible()) {
+
+std::cout << "here2" << std::endl;
+
+			QPoint mouseDownView = this->mapFromScene(mouseDownPos);
+			lastMouseViewPos = evt->pos();
+			QRect rubberRect(mouseDownView, lastMouseViewPos);
+			rubberRect = rubberRect.normalized();
+			rubberBand->setGeometry(rubberRect);
+			QPolygonF p = this->mapToScene(rubberRect);
+			QPainterPath path;
+			path.addPolygon(p);
+			this->scene->setSelectionArea(path, Qt::IntersectsItemShape);
+		}
+	}
+
+	QGraphicsView::mouseMoveEvent(evt);
+}
+
+void FiaViewer::mouseReleaseEvent(QMouseEvent* evt)
+{
+	qDebug() << "release";
+	rubberBand->hide();
+	QGraphicsView::mouseReleaseEvent(evt);
+}

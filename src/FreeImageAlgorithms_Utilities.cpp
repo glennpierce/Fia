@@ -146,6 +146,7 @@ Round (double v)
 }
 
 #endif //  _MSC_VER
+
 FIAPOINT DLL_CALLCONV
 MakeFIAPoint (int x, int y)
 {
@@ -1196,7 +1197,7 @@ FIA_GetDistanceMap (int width, int height, int *distance_map)
 }
 
 // Find two intersecting rects
-static int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
+int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
 {
     int fIntersect = (r2.left <= r1.right && r2.right >= r1.left &&
             r2.top <= r1.bottom && r2.bottom >= r1.top);

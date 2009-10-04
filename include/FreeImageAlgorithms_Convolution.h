@@ -82,7 +82,7 @@ FIA_CorrelateImagesAlongBottomEdge(FIBITMAP *src1, FIBITMAP *src2,
 
 DLL_API int DLL_CALLCONV
 FIA_CorrelateImagesFFT(FIBITMAP *src1, FIBITMAP *src2,
-				CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
+				CORRELATION_PREFILTER filter, FIAPOINT *pt);
 
 DLL_API int DLL_CALLCONV
 FIA_FFTCorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2, CORRELATION_PREFILTER filter,
@@ -90,6 +90,9 @@ FIA_FFTCorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2, CORRELATION
        
 DLL_API FIBITMAP* __cdecl
 FIA_EdgeDetect(FIBITMAP *src);
+
+DLL_API double DLL_CALLCONV
+FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt);
 
 #ifdef __cplusplus
 }

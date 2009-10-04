@@ -17,15 +17,17 @@ SET(QT_USE_QTASSISTANT TRUE)
 INCLUDE_DIRECTORIES(${FiaViewer_BINARY_DIR} ${FREEIMAGE_INCLUDE_PATH} ../../include)
 
 SET(SRCS FiaViewer.cpp
+	 FiaWindow.cpp
 	 main.cpp
 )
 
 SET(MOCS FiaViewer.h
+	 FiaWindow.h
 )
 
 #SET(QRCS qtdemo.qrc)
 
-SET(UIRS  FiaViewer.ui)
+SET(UIRS  FiaWindow.ui)
 
 # The next line sets up include and link directories and defines some variables that we will use.
 # you can modify the behavior by setting some variables, e.g.

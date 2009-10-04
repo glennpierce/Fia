@@ -36,6 +36,7 @@ template < class Tsrc > class ARITHMATIC
     int AddGreyLevelImageConstant (FIBITMAP * dst, double constant);
     int SubtractGreyLevelImageConstant (FIBITMAP * dst, double constant);
     int SumOfAllPixels (FIBITMAP * src, FIBITMAP * mask, double *sum);
+    double DifferenceMeasure (FIBITMAP * src1, FIBITMAP *src2);
 
     FIBITMAP *Transpose (FIBITMAP * src);
     FIBITMAP *Log (FIBITMAP * src);
@@ -143,6 +144,61 @@ template < class Tsrc > FIBITMAP * ARITHMATIC < Tsrc >::Transpose (FIBITMAP * sr
     }
 
     return dst;
+}
+
+
+template < class Tsrc > double ARITHMATIC < Tsrc >::DifferenceMeasure (FIBITMAP * src1, FIBITMAP *src2)
+{
+    // Loop through the two images adding the differences of each pixel
+    // and finally divide by total.
+    int width1 = FreeImage_GetWidth(src1);
+    int width2 = FreeImage_GetWidth(src2);
+    int height1 = FreeImage_GetHeight(src1);
+    int height2 = FreeImage_GetHeight(src2);
+
+    if (FreeImage_GetImageType(src1) != FreeImage_GetImageType(src2))
+    {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Images must be of the same type");
+        return -1.0;
+    }
+
+    if (FreeImage_GetBPP(src1) != FreeImage_GetBPP(src2))
+    {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Images must be of the same bpp");
+        return -1.0;
+    }
+
+    if (width1 != width2)
+    {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Filter function has changed the size of the source input");
+        return -1.0;
+    }
+
+    if (height1 != height2)
+    {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Filter function has changed the size of the source input");
+        return -1.0;
+    }
+
+    Tsrc *src1_ptr, *src2_ptr;
+    float sum = 0.0f;
+
+    for(int y = 0; y < height1; y++)
+    {
+        src1_ptr = (Tsrc *) FreeImage_GetScanLine (src1, y);
+        src2_ptr = (Tsrc *) FreeImage_GetScanLine (src2, y);
+
+        for(int x = 0; x < width1; x++)
+        {
+            sum += abs(src1_ptr[x] - src2_ptr[x]);
+        }
+    }
+
+    return sum;
 }
 
 template < class Tsrc > FIBITMAP * ARITHMATIC < Tsrc >::Log (FIBITMAP * src)
@@ -706,6 +762,53 @@ FIA_Transpose (FIBITMAP * src)
     }
 
     return dst;
+}
+
+double DLL_CALLCONV
+FIA_DifferenceMeasure (FIBITMAP *src1, FIBITMAP *src2)
+{
+    if (!src1)
+        return -1.0;
+
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src1);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+            if (FreeImage_GetBPP (src1) == 8)
+                return arithmaticUCharImage.DifferenceMeasure (src1, src2);
+            else {
+
+                FIBITMAP * gs1 = FreeImage_ConvertToGreyscale(src1);
+                FIBITMAP * gs2 = FreeImage_ConvertToGreyscale(src2);
+
+                double max =  arithmaticUCharImage.DifferenceMeasure (gs1, gs2);
+
+                FreeImage_Unload(gs1);
+                FreeImage_Unload(gs2);
+
+                return max;
+            }
+
+        case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
+            return arithmaticUShortImage.DifferenceMeasure (src1, src2);
+        case FIT_INT16:        // array of short: signed 16-bit
+            return arithmaticShortImage.DifferenceMeasure (src1, src2);
+        case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
+            return arithmaticULongImage.DifferenceMeasure (src1, src2);
+        case FIT_INT32:        // array of long: signed 32-bit
+            return arithmaticLongImage.DifferenceMeasure (src1, src2);
+        case FIT_FLOAT:        // array of float: 32-bit
+            return arithmaticFloatImage.DifferenceMeasure (src1, src2);
+        case FIT_DOUBLE:       // array of double: 64-bit
+            return arithmaticDoubleImage.DifferenceMeasure (src1, src2);
+        case FIT_COMPLEX:      // array of double: 64-bit
+            break;
+        default:
+            break;
+    }
+
+    return -1.0;
 }
 
 FIBITMAP *DLL_CALLCONV
