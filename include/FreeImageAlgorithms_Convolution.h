@@ -39,6 +39,8 @@ typedef struct
 
 } FilterKernel;
 
+typedef enum {CORRELATION_KERNEL, CORRELATION_FFT} CorrelationType;
+
 typedef FIBITMAP* (__cdecl *CORRELATION_PREFILTER) (FIBITMAP*);
 
 /** \brief Create a kernel.
@@ -66,33 +68,33 @@ DLL_API FIBITMAP* DLL_CALLCONV
 FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel);
 
 DLL_API int DLL_CALLCONV
-FIA_CorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIAPOINT *pt, double *max);
+FIA_KernelCorrelateImages(FIBITMAP *src1, FIBITMAP *src2, CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
 
 DLL_API int DLL_CALLCONV
-FIA_CorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2,  FIARECT rect2,
-                FIAPOINT *pt, double *max);
+FIA_KernelCorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2,  FIARECT rect2,
+        CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
 
 DLL_API int DLL_CALLCONV
-FIA_CorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2,
-                unsigned int edge_thickness, FIAPOINT *pt, double *max);
-
-DLL_API int DLL_CALLCONV
-FIA_CorrelateImagesAlongBottomEdge(FIBITMAP *src1, FIBITMAP *src2,
-                unsigned int edge_thickness, FIAPOINT *pt, double *max);
-
-DLL_API int DLL_CALLCONV
-FIA_CorrelateImagesFFT(FIBITMAP *src1, FIBITMAP *src2,
+FIA_FFTCorrelateImages(FIBITMAP *src1, FIBITMAP *src2,
 				CORRELATION_PREFILTER filter, FIAPOINT *pt);
 
 DLL_API int DLL_CALLCONV
-FIA_FFTCorrelateImagesAlongRightEdge(FIBITMAP *src1, FIBITMAP *src2, CORRELATION_PREFILTER filter,
-                unsigned int edge_thickness, FIAPOINT *pt);
-       
+FIA_FFTCorrelateImageRegions(FIBITMAP * src1, FIARECT rect1, FIBITMAP * src2,
+        FIARECT rect2, CORRELATION_PREFILTER filter, FIAPOINT * pt);
+
 DLL_API FIBITMAP* __cdecl
 FIA_EdgeDetect(FIBITMAP *src);
 
 DLL_API double DLL_CALLCONV
 FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt);
+
+DLL_API int DLL_CALLCONV
+FIA_CorrelateImageRegions(FIBITMAP * src1, FIARECT region1, FIBITMAP * src2, FIARECT region2,
+        CorrelationType type, CORRELATION_PREFILTER filter, FIAPOINT *pt);
+
+DLL_API int DLL_CALLCONV
+FIA_CorrelateImagesAroundOverlap(FIBITMAP * src1, FIARECT region1, FIBITMAP * src2, FIARECT region2,
+        int strip_width, CorrelationType type, CORRELATION_PREFILTER filter, FIAPOINT *pt);
 
 #ifdef __cplusplus
 }

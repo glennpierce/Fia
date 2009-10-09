@@ -68,6 +68,7 @@ static void OnError(FREE_IMAGE_FORMAT fif, const char *msg)
 
 int __cdecl main(void)
 {
+
     FreeImage_SetOutputMessage(OnError);
 
 	MkDir(TEST_DATA_OUTPUT_DIR);

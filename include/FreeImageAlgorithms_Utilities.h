@@ -481,6 +481,9 @@ FIA_GetDistanceMap (int width, int height, float *distance_map);
 DLL_API int DLL_CALLCONV
 FIA_Paste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom);
 
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_Copy (FIBITMAP * src, int left, int top, int right, int bottom);
+
 DLL_API BYTE* DLL_CALLCONV
 FIA_GetScanLineFromTop (FIBITMAP *src, int line);
 

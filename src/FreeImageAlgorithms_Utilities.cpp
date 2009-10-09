@@ -1279,7 +1279,7 @@ FIA_PasteFromTopLeft (FIBITMAP * dst, FIBITMAP * src, int left, int top)
 
     for(int i = 0; i < lines; i++)
     {
-        src_bits = FIA_GetScanLineFromTop (src, src_rect.top + i) + src_rect.left;
+        src_bits = FIA_GetScanLineFromTop (src, src_rect.top + i) + (src_rect.left * bytespp);
 		dst_bits = FIA_GetScanLineFromTop (dst, intersect_rect.top + i) + dst_start;
         memcpy (dst_bits, src_bits, src_line_bytes);
     }
@@ -1292,6 +1292,27 @@ FIA_Paste (FIBITMAP * dst, FIBITMAP * src, int left, int bottom)
 {
 	return FIA_PasteFromTopLeft (dst, src, left,
 		FreeImage_GetHeight(dst) - bottom - FreeImage_GetHeight(src));
+}
+
+FIBITMAP* DLL_CALLCONV
+FIA_Copy ( FIBITMAP * src, int left, int top, int right, int bottom)
+{
+    int max_right = FreeImage_GetWidth(src) - 1;
+    int max_bottom = FreeImage_GetHeight(src) - 1;
+
+    if(left < 0)
+        left = 0;
+
+    if(top < 0)
+        top = 0;
+
+    if(right > max_right)
+        right = max_right;
+
+    if(bottom > max_bottom)
+        bottom = max_bottom;
+
+    return FreeImage_Copy(src, left, top, right, bottom);
 }
 
 int DLL_CALLCONV
