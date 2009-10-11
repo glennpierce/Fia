@@ -71,6 +71,7 @@ int __cdecl main(void)
 
     FreeImage_SetOutputMessage(OnError);
 
+	MkDir(DEBUG_DATA_DIR);
 	MkDir(TEST_DATA_OUTPUT_DIR);
 
 	RunAllTests();

@@ -11,6 +11,8 @@ SUBDIRS(src Tests)
 
 SET(CMAKE_DEBUG_POSTFIX "_d")
 
+ADD_DEFINITIONS(-D GENERATE_DEBUG_IMAGES)
+
 # Look for the FreeImage library
 FIND_PACKAGE(FreeImage REQUIRED) 
 
@@ -20,7 +22,7 @@ INCLUDE_DIRECTORIES(include Tests ${FREEIMAGE_INCLUDE_PATH})
 SET (LIBRARY_OUTPUT_PATH ${FreeImageAlgorithms_BINARY_DIR}/bin)
 SET (EXECUTABLE_OUTPUT_PATH ${FreeImageAlgorithms_BINARY_DIR}/bin)
 
-CONFIGURE_FILE(${FreeImageAlgorithms_SOURCE_DIR}/Tests/Constants.h.template ${FreeImageAlgorithms_SOURCE_DIR}/Tests/Constants.h)
+CONFIGURE_FILE(${FreeImageAlgorithms_SOURCE_DIR}/Constants.h.template ${FreeImageAlgorithms_SOURCE_DIR}/include/Constants.h)
 
 LINK_DIRECTORIES(${LIBRARY_OUTPUT_PATH})
 

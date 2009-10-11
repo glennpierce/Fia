@@ -173,14 +173,14 @@ template < class Tsrc > double ARITHMATIC < Tsrc >::DifferenceMeasure (FIBITMAP 
     if (width1 != width2)
     {
         FreeImage_OutputMessageProc(FIF_UNKNOWN,
-                "Filter function has changed the size of the source input");
+                "DifferenceMeasure: input images are different sizes");
         return -1.0;
     }
 
     if (height1 != height2)
     {
         FreeImage_OutputMessageProc(FIF_UNKNOWN,
-                "Filter function has changed the size of the source input");
+                "DifferenceMeasure: input images are different sizes");
         return -1.0;
     }
 
