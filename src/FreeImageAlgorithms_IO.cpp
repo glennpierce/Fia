@@ -361,12 +361,16 @@ FIA_SaveFIBToFile (FIBITMAP * dib, const char *filepath,
             {
                 converted_dib = FreeImage_ConvertTo24Bits (standard_dib);
             }
+            else if (bit_depth == BIT32)
+            {
+                converted_dib = FreeImage_ConvertTo32Bits (standard_dib);
+            }
             else
             {
                 converted_dib = FreeImage_ConvertTo8Bits (standard_dib);
 
-		if(FreeImage_GetBPP(dib) == 8)
-			FIA_CopyPalette(dib, converted_dib);
+                if(FreeImage_GetBPP(dib) == 8)
+                    FIA_CopyPalette(dib, converted_dib);
             }
 
             FreeImage_Unload (standard_dib);
