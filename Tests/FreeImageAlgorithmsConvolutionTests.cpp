@@ -381,8 +381,6 @@ FIA_EdgeEnhancer(FIBITMAP * src)
 
     FreeImage_AdjustContrast(sobel, 100.0);
 
-    FIA_SaveFIBToFile(sobel, "/home/glenn/sobel.png", BIT8);
-
     FIA_Unload(bordered);
     FreeImage_Unload(median_filtered);
 
@@ -720,18 +718,26 @@ TestFIA_CorrelateBloodTissueImagesTwoImages(CuTest* tc)
     int width = 768;
     int height = 576;
 
-    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00006.png");
-    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00011.png");
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00010.png");
 
     FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(fib1),
             2 * width, 2 * height, FreeImage_GetBPP(fib1), 0, 0, 0);
 
     FIAPOINT pt;
 
-    FIARECT rect1 = MakeFIARect(0,height-150,width-1,height-1);
-    FIARECT rect2 = MakeFIARect(0, 0, width-1, 50);
+    FIARECT rect1 = MakeFIARect(width-150,0,width-1,height-1);
+    FIARECT rect2 = MakeFIARect(0, 0, 40, 40);
 
-    FIA_FFTCorrelateImageRegions(fib1, rect1, fib2, rect2, FIA_EdgeEnhancer, &pt);
+    FIA_CorrelateImageRegions(fib1, rect1, fib2, rect2, CORRELATION_KERNEL, FIA_EdgeEnhancer, &pt);
+
+    double measure;
+
+    FIA_CorrelationDifferenceMeasure(fib1, fib2, pt, &measure);
+
+    std::cout << "Difference Measure: " << measure << std::endl;
+
+    //FIA_CorrelateImages(fib1, fib2, CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
 
     std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
 
@@ -842,7 +848,9 @@ TestFIA_CorrelateBloodTissueImagesWithNoKnowledge(CuTest* tc)
             FIA_CorrelateImageEdgesWithImage(fib1, rect1, fib2,
                     20, CORRELATION_KERNEL, NULL, &pt);
 
-            factor = FIA_CorrelationDifferenceMeasure(fib1, fib2, pt);
+            double factor;
+
+            FIA_CorrelationDifferenceMeasure(fib1, fib2, pt, &factor);
 
             if(factor > max) {
                 max = factor;
@@ -1009,6 +1017,45 @@ TestFIA_CorrelateEdgeTest(CuTest* tc)
     return;
 }
 
+
+static void
+TestFIA_GradientBlend(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00010.png");
+
+    int width = FreeImage_GetWidth(fib1);
+    int height = FreeImage_GetHeight(fib1);
+
+    FIAPOINT pt;
+
+    FIARECT rect1 = MakeFIARect(width-150,0,width-1,height-1);
+    FIARECT rect2 = MakeFIARect(0, 0, 40, 40);
+
+    FIA_CorrelateImageRegions(fib1, rect1, fib2, rect2, CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
+
+    rect1.left = 0;
+    rect1.top = 0;
+    rect1.right = width - 1;
+    rect1.bottom = height - 1;
+
+    rect2.left = pt.x;
+    rect2.top = pt.y;
+    rect2.right = rect2.left + width - 1;
+    rect2.bottom = rect2.top + height - 1;
+
+    PROFILE_START("FIA_GradientBlend");
+
+    FIBITMAP *blended = FIA_GradientBlend (fib1, rect1, fib2, rect2);
+
+    PROFILE_STOP("FIA_GradientBlend");
+
+    FIA_SaveFIBToFile(blended, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended.png", BIT32);
+
+    FreeImage_Unload(blended);
+}
+
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
@@ -1016,19 +1063,12 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/Convolution");
 
-
-
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImages);
     SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesTwoImages);
-
-
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesWithNoKnowledge);
 
-
-
-
-
     // Done
+    SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);

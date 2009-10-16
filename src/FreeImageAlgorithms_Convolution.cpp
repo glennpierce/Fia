@@ -697,15 +697,17 @@ FIA_FFTCorrelateImageRegions(FIBITMAP * src1, FIARECT rect1, FIBITMAP * src2,
     return FIA_SUCCESS;
 }
 
-double DLL_CALLCONV
-FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt)
+int DLL_CALLCONV
+FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt, double *max)
 {
-    FIAPOINT *found_pt;
+    FIAPOINT found_pt;
     FIARECT r1, r2, r3, src1_corner, src2_corner;
     int width, height;
 
     width = FreeImage_GetWidth(src1);
     height = FreeImage_GetHeight(src1);
+
+    *max = 0.0;
 
     r1.left = r1.top = 0;
     r1.right = width - 1;
@@ -720,13 +722,22 @@ FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt)
     r2.right = r2.left + width - 1;
     r2.bottom = r2.top + height - 1;
 
-    IntersectingRect(r1, r2, &r3);
+    if(!IntersectingRect(r1, r2, &r3))
+        return FIA_ERROR;
+
+    int intersect_width = r3.right - r3.left + 1;
+    int intersect_height = r3.bottom - r3.top + 1;
+
+    std::cout << "r3.left: " << r3.left << " r3.top: " << r3.top << std::endl;
+
+    intersect_width = std::min(intersect_width, 50);
+    intersect_height = std::min(intersect_height, 200);
 
     // Try to take the normal correlation measure in the first corner of the intersection
-    src1_corner = MakeFIARect(r3.left, r3.top,
-            std::min(r3.left + 30, r3.right), std::min(r3.top + 30, r3.bottom));
-    src2_corner = MakeFIARect(0, 0, 30, 30);
+    src1_corner = MakeFIARect(r3.left, r3.top, r3.left + intersect_width, r3.top + intersect_height);
+    src2_corner = MakeFIARect(0, 0, 10, 10);
 
+    /*
     FIBITMAP *src1_region = FreeImage_Copy(src1, src1_corner.left,
             src1_corner.top, src1_corner.right, src1_corner.bottom);
     FIBITMAP *src2_region = FreeImage_Copy(src2, src2_corner.left,
@@ -736,8 +747,11 @@ FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt)
 
     FreeImage_Unload(src1_region);
     FreeImage_Unload(src2_region);
+    */
 
-    return max;
+    FIA_KernelCorrelateImageRegions (src1, src1_corner, src2, src2_corner, NULL, &found_pt, max);
+
+    return FIA_SUCCESS;
 }
 
 int DLL_CALLCONV
@@ -774,13 +788,15 @@ FIA_CorrelateImageRegions(FIBITMAP * src1, FIARECT region1, FIBITMAP * src2,
 
         if (FIA_FFTCorrelateImageRegions(src1, region1, src2, region2, filter,
                 pt) == FIA_ERROR)
+
             return FIA_ERROR;
     }
     else
     {
+        double max;
 
         FIA_KernelCorrelateImageRegions(src1, region1, src2, region2, filter,
-                pt, NULL);
+                pt, &max);
     }
 
     return FIA_SUCCESS;
@@ -875,7 +891,7 @@ FIA_CorrelateImageEdgesWithImage(FIBITMAP * src1, FIARECT region1,
     FIA_CorrelateImageRegions(src1, region1, src2, edge, type, filter,
             &best_point);
 
-    max_measure = FIA_CorrelationDifferenceMeasure(src1, src2, best_point);
+    FIA_CorrelationDifferenceMeasure(src1, src2, best_point, &max_measure);
 
     /*
 

@@ -85,8 +85,8 @@ FIA_FFTCorrelateImageRegions(FIBITMAP * src1, FIARECT rect1, FIBITMAP * src2,
 DLL_API FIBITMAP* __cdecl
 FIA_EdgeDetect(FIBITMAP *src);
 
-DLL_API double DLL_CALLCONV
-FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt);
+DLL_API int DLL_CALLCONV
+FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt, double *max);
 
 DLL_API int DLL_CALLCONV
 FIA_CorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, CorrelationType type,

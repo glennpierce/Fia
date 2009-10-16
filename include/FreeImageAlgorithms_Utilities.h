@@ -61,6 +61,15 @@ MakeFIARect(int left, int top, int right, int bottom);
 DLL_API FIARECT DLL_CALLCONV
 FIAImageRect(FIBITMAP *src);
 
+/** \brief Checks the dimesions of two images are the same.
+ *
+ *  \param src1 First image to compare.
+ *  \param src2 Second image to compare.
+ *  \return FIARECT rectangle.
+*/
+DLL_API int DLL_CALLCONV
+FIA_CheckSizesAreSame(FIBITMAP *fib1, FIBITMAP *fib2);
+
 DLL_API int DLL_CALLCONV
 _os_support(int feature);
 
@@ -472,8 +481,8 @@ FIA_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double
 DLL_API int DLL_CALLCONV
 FIA_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, BYTE *red_values, BYTE *green_values, BYTE *blue_values);
 
-DLL_API void DLL_CALLCONV
-FIA_GetDistanceMap (int width, int height, float *distance_map);
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_DistanceMapForRectangle (FIARECT rect, int normalise);
 
 // Hopefully this is a temp solution until FreeImage paste supports greyscale that is
 // above 8bits.
@@ -609,6 +618,9 @@ FIA_ConvertInt16ToUInt16(FIBITMAP *src);
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_RescaleToHalf(FIBITMAP *src);
+
+FIBITMAP *DLL_CALLCONV
+FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2);
 
 #ifdef __cplusplus
 }
