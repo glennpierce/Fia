@@ -19,6 +19,7 @@
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
+#include "FreeImageAlgorithms_Drawing.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
@@ -1159,43 +1160,6 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
     return len;
 }
 
-void DLL_CALLCONV
-FIA_GetDistanceMap (int width, int height, int *distance_map)
-{
-    int xcentre = (int) (width / 2 + 0.5);
-    int ycentre = (int) (height / 2 + 0.5);
-
-    int tmp_min;
-
-    distance_map = (int *) malloc (width * height * sizeof (float));
-
-    CheckMemory (distance_map);
-
-    for(int y = 0; y < height; y++)
-    {
-        for(int x = 0; x < width; x++)
-        {
-            if (x <= xcentre)
-            {
-                tmp_min = x;
-            }
-            else
-            {
-                tmp_min = width - x;
-            }
-
-            if (y <= ycentre)
-            {
-                distance_map[y * width + x] = MIN (tmp_min, y);
-            }
-            else
-            {
-                distance_map[y * width + x] = MIN (tmp_min, height - y);
-            }
-        }
-    }
-}
-
 // Find two intersecting rects
 int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
 {
@@ -1215,14 +1179,14 @@ int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
     return fIntersect;
 }
 
-static FIARECT SetRectRelativeToPoint(FIARECT *rect, FIAPOINT pt)
+static FIARECT SetRectRelativeToPoint(FIARECT rect, FIAPOINT pt)
 {
 	FIARECT r;
 
-	r.left = rect->left - pt.x;
-	r.right = rect->right - pt.x;
-	r.top = rect->top - pt.y;
-	r.bottom = rect->bottom - pt.y;
+	r.left = rect.left - pt.x;
+	r.right = rect.right - pt.x;
+	r.top = rect.top - pt.y;
+	r.bottom = rect.bottom - pt.y;
 
 	return r;
 }
@@ -1267,7 +1231,7 @@ FIA_PasteFromTopLeft (FIBITMAP * dst, FIBITMAP * src, int left, int top)
 
 	pt.x = left;
 	pt.y = top;
-	src_rect = SetRectRelativeToPoint(&intersect_rect, pt);
+	src_rect = SetRectRelativeToPoint(intersect_rect, pt);
 
 	dst_start = bytespp * intersect_rect.left;
     src_line_bytes = bytespp * (intersect_rect.right - intersect_rect.left + 1);
@@ -1846,4 +1810,132 @@ FIA_RescaleToHalf (FIBITMAP * src)
     }
 
     return dst;
+}
+
+int DLL_CALLCONV
+FIA_CheckSizesAreSame(FIBITMAP *fib1, FIBITMAP *fib2)
+{
+    int width1 = FreeImage_GetWidth(fib1);
+    int height1 = FreeImage_GetHeight(fib1);
+
+    int width2 = FreeImage_GetWidth(fib2);
+    int height2 = FreeImage_GetHeight(fib2);
+
+    if(width1 == width2 && height1 == height2)
+        return 1;
+
+    return 0;
+}
+
+static FIBITMAP *
+FIA_SetAlphaValuesFromDistanceMapImage (FIBITMAP * src, FIBITMAP* alpha_values)
+{
+    FIBITMAP *colour_dib = FreeImage_ConvertTo32Bits(src);
+
+    FreeImage_SetTransparent(colour_dib, 1);
+
+    FreeImage_SetChannel(colour_dib, alpha_values, FICC_ALPHA);
+
+    if(!FreeImage_IsTransparent(colour_dib))
+         return FIA_ERROR;
+
+    return colour_dib;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
+{
+    FIARECT intersection_rect, map_rect;
+    FIBITMAP *alpha = NULL, *src1_24 = NULL, *blended = NULL, *src1_region = NULL;
+    FIBITMAP *src2_region = NULL, *map = NULL, *map_region = NULL, *src1_cpy = NULL;
+    int map_width,  map_height;
+
+    if(!IntersectingRect(rect1, rect2, &intersection_rect))
+        return FIA_ERROR;
+
+    src1_cpy = FreeImage_Clone(src1);
+
+    int intersect_width = intersection_rect.right - intersection_rect.left + 1;
+    int intersect_height = intersection_rect.bottom - intersection_rect.top + 1;
+
+    map_rect.left = intersection_rect.left;
+    map_rect.top = intersection_rect.top;
+    map_rect.right = map_rect.left + (2 * intersect_width) - 1;
+    map_rect.bottom = map_rect.top + (2 * intersect_height) - 1;
+
+    // Generate a distance map twice the size of this intersection
+    // We only wish half the map to produce a one way gradient
+    map = FIA_DistanceMapForRectangle (map_rect, 1);
+
+    FIARECT src1_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect1.left, rect1.top));
+    FIARECT src2_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect2.left, rect2.top));
+
+    src1_region = FIA_Copy(src1, src1_intersection_rect.left, src1_intersection_rect.top,
+            src1_intersection_rect.right, src1_intersection_rect.bottom);
+
+    src2_region = FIA_Copy(src2, src2_intersection_rect.left, src2_intersection_rect.top,
+                src2_intersection_rect.right, src2_intersection_rect.bottom);
+
+    if(FIA_CheckSizesAreSame(src1_region, src2_region) == 0) {
+        goto CLEANUP;
+    }
+
+    map_width = FreeImage_GetWidth(map);
+    map_height = FreeImage_GetHeight(map);
+
+    if(rect2.left < rect1.left) {
+        map_rect.left = map_width / 2;
+        map_rect.right = map_width - 1;
+    }
+    else {
+        map_rect.left = 0;
+        map_rect.right = map_width / 2 - 1;
+    }
+
+    if(rect2.top < rect1.top) {
+        map_rect.top = map_height / 2;
+        map_rect.bottom = map_height - 1;
+    }
+    else {
+        map_rect.top = 0;
+        map_rect.bottom = map_height / 2 - 1;
+    }
+
+    map_region = FIA_Copy(map, map_rect.left, map_rect.top,
+            map_rect.right, map_rect.bottom);
+
+    FIA_InPlaceConvertToStandardType(&map_region, 1);
+
+    alpha = FIA_SetAlphaValuesFromDistanceMapImage (src2_region, map_region);
+
+    src1_24 = FreeImage_ConvertTo24Bits(src1_region);
+
+    blended = FreeImage_Composite(alpha, 1, NULL, src1_24);
+
+    FIA_PasteFromTopLeft(src1_cpy, blended,  src1_intersection_rect.left, src1_intersection_rect.top);
+
+CLEANUP:
+
+    if(src1_region != NULL)
+        FreeImage_Unload(src1_region);
+
+    if(src2_region != NULL)
+        FreeImage_Unload(src2_region);
+
+    if(map != NULL)
+        FreeImage_Unload(map);
+
+    if(map_region != NULL)
+        FreeImage_Unload(map_region);
+
+    if(alpha != NULL)
+        FreeImage_Unload(alpha);
+
+    if(blended != NULL)
+        FreeImage_Unload(blended);
+
+    if(src1_24 != NULL)
+        FreeImage_Unload(src1_24);
+
+    return src1_cpy;
 }
