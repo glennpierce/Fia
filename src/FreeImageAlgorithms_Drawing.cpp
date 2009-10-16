@@ -395,6 +395,29 @@ Draw8BitSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, unsigned char value)
     return FIA_SUCCESS;
 }
 
+static int DLL_CALLCONV
+DrawFloatSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, float value)
+{
+    // Seems that Anti grain method is to slow probably  because it is too advanced
+    // Does accurate drawing etc with anti aliasing.
+    // We just want a simple rectangle.
+    // Allocate the framebuffer
+    float *buf = NULL;
+    FIARECT tmp_rect = rect;
+
+    int right = tmp_rect.left + (tmp_rect.right - tmp_rect.left);
+
+    for(register int y = tmp_rect.bottom; y <= tmp_rect.top; y++)
+    {
+        buf = (float*) FreeImage_GetScanLine (src, y);
+
+        for(register int x = tmp_rect.left; x <= right; x++)
+            buf[x] = value;
+    }
+
+    return FIA_SUCCESS;
+}
+
 int DLL_CALLCONV
 FIA_DrawSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, double value)
 {
@@ -436,6 +459,10 @@ FIA_DrawSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, double value)
     if (type == FIT_BITMAP && bpp == 8)
     {
         return Draw8BitSolidGreyscaleRect (src, tmp_rect, (unsigned char) value);
+    }
+    else if(type == FIT_FLOAT)
+    {
+        return DrawFloatSolidGreyscaleRect (src, tmp_rect, (float) value);
     }
 
     return FIA_ERROR;
