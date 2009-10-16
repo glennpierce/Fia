@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <math.h>
 #include <float.h>
+#include <iostream>
 
 #define INF 1E10
 
@@ -181,4 +182,45 @@ FIA_DistanceTransform (FIBITMAP * src)
     FreeImage_Unload (out);
 
     return ret;
+}
+
+
+FIBITMAP *DLL_CALLCONV
+FIA_DistanceMapForRectangle (FIARECT rect, int normalise)
+{
+    int width = rect.right - rect.left + 1;
+    int height = rect.bottom - rect.top + 1;
+
+    FIBITMAP *image = FreeImage_AllocateT(FIT_FLOAT, width, height, 32, 0, 0, 0);
+
+    float *bits = NULL;
+
+    int center_x = (int)(width / 2 + 0.5);
+    int center_y = (int)(height / 2 + 0.5);
+
+    float current_min;
+
+    for(int y = 0; y < height; y++)
+    {
+        bits = (float *) FIA_GetScanLineFromTop(image, y);
+
+        for(int x = 0; x < width; x++) {
+
+            if (x <= center_x)
+                current_min = x;
+            else
+                current_min = width - x;
+
+            if (y <= center_y)
+                bits[x] = std::min(current_min, (float) y);
+            else
+                bits[x] = std::min(current_min, (float) (height - y));
+
+            if(normalise > 0) {
+                bits[x] = bits[x] / std::max(center_x, center_y);
+            }
+        }
+    }
+
+    return image;
 }
