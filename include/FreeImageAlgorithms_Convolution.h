@@ -82,6 +82,13 @@ DLL_API int DLL_CALLCONV
 FIA_FFTCorrelateImageRegions(FIBITMAP * src1, FIARECT rect1, FIBITMAP * src2,
         FIARECT rect2, CORRELATION_PREFILTER filter, FIAPOINT * pt);
 
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_PreCalculateCorrelationFFT(FIBITMAP *_src1, FIBITMAP *_src2, int pad_size, CORRELATION_PREFILTER filter);
+
+DLL_API int DLL_CALLCONV
+FIA_FFTCorrelateImageWithPreCorrelationFFT(FIBITMAP * fft_fib, FIBITMAP *_src1, FIBITMAP *_src2, int pad_size,
+        CORRELATION_PREFILTER filter, FIAPOINT * pt);
+
 DLL_API FIBITMAP* __cdecl
 FIA_EdgeDetect(FIBITMAP *src);
 

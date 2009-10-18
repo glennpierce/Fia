@@ -601,6 +601,14 @@ FIA_FFTCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2,
     FIBITMAP *fft1 = FIA_FFT(border_src1);
     FIBITMAP *fft2 = FIA_FFT(border_src2);
 
+#ifdef GENERATE_DEBUG_IMAGES
+    FIBITMAP *i = FIA_IFFT(fft1);
+    FIBITMAP *r = FIA_ComplexImageToRealValued(i);
+    FIA_SaveFIBToFile(FreeImage_ConvertToStandardType(r, 1),  DEBUG_DATA_DIR "FIA_FFTCorrelateImages-fft.png", BIT24);
+    FreeImage_Unload(i);
+    FreeImage_Unload(r);
+#endif
+
     FIA_ComplexConjugate(fft2);
 
     if (FIA_MultiplyComplexImages(fft1, fft2) == FIA_ERROR)
@@ -643,9 +651,248 @@ FIA_FFTCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2,
     FreeImage_Unload(src2);
     FreeImage_Unload(filtered_src1);
     FreeImage_Unload(filtered_src2);
+    FreeImage_Unload(border_src1);
+    FreeImage_Unload(border_src2);
 
     return FIA_SUCCESS;
 }
+
+FIBITMAP* DLL_CALLCONV
+FIA_PreCalculateCorrelationFFT(FIBITMAP *_src1, FIBITMAP *_src2, int pad_size, CORRELATION_PREFILTER filter)
+{
+    FIBITMAP *src1 = FreeImage_Clone(_src1);
+    FIBITMAP *src2 = FreeImage_Clone(_src2);
+
+    FREE_IMAGE_TYPE src1_type = FreeImage_GetImageType(src1);
+    FREE_IMAGE_TYPE src2_type = FreeImage_GetImageType(src2);
+
+    if (src1_type != src2_type)
+    {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Images must be of the same type");
+        return FIA_ERROR;
+    }
+
+    int bpp1 = FreeImage_GetBPP(src1);
+    int bpp2 = FreeImage_GetBPP(src2);
+
+    if (bpp1 != bpp2)
+    {
+        FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                "Images must have the same bpp");
+        return FIA_ERROR;
+    }
+
+    // Convert colour images to greyscale
+    if (bpp1 >= 24 && src1_type == FIT_BITMAP)
+    {
+        FIA_InPlaceConvertToGreyscale(&src1);
+    }
+
+    FIA_InPlaceConvertToStandardType(&src1, 0);
+
+    FIBITMAP *filtered_src1 = NULL;
+
+    if (filter != NULL)
+    {
+        filtered_src1 = filter(src1);
+
+        if (filtered_src1 == NULL)
+        {
+            FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                    "Filter function returned NULL");
+            return FIA_ERROR;
+        }
+    }
+    else
+    {
+        filtered_src1 = FreeImage_Clone(src1);
+    }
+
+    FIA_InPlaceConvertToStandardType(&filtered_src1, 0);
+
+#ifdef GENERATE_DEBUG_IMAGES
+    FIA_SaveFIBToFile(filtered_src1,  DEBUG_DATA_DIR "fft-prefiltered1.png", BIT8);
+#endif
+
+    int src1_width = FreeImage_GetWidth(src1);
+    int src1_height = FreeImage_GetHeight(src1);
+    int filtered_src1_width = FreeImage_GetWidth(filtered_src1);
+    int filtered_src1_height = FreeImage_GetHeight(filtered_src1);
+
+    if(!FIA_CheckSizesAreSame(src1, filtered_src1))
+    {
+        FreeImage_OutputMessageProc(
+                FIF_UNKNOWN,
+                "Filter function has changed the size of the source input from %d,%d to %d,%d",
+                src1_width, src1_height, filtered_src1_width,
+                filtered_src1_height);
+
+        return FIA_ERROR;
+    }
+
+    // Find the padded width and height.
+    int pad_width = kiss_fft_next_fast_size(src1_width + pad_size );
+    int pad_height = kiss_fft_next_fast_size(src1_height + pad_size);
+
+    FIBITMAP *border_src1 = PadImage(filtered_src1, pad_width, pad_height);
+
+    FIBITMAP *fft = FIA_FFT(border_src1);
+
+    FreeImage_Unload(src1);
+    FreeImage_Unload(src2);
+    FreeImage_Unload(filtered_src1);
+    FreeImage_Unload(border_src1);
+
+#ifdef GENERATE_DEBUG_IMAGES
+    FIBITMAP *ifft = FIA_IFFT(fft);
+    FIBITMAP *real = FIA_ComplexImageToRealValued(ifft);
+
+    FIA_SaveFIBToFile(FreeImage_ConvertToStandardType(real, 1),  DEBUG_DATA_DIR "fft-pre-generated.png", BIT24);
+
+    FreeImage_Unload(ifft);
+    FreeImage_Unload(real);
+
+#endif
+
+    return fft;
+}
+
+int DLL_CALLCONV
+FIA_FFTCorrelateImageWithPreCorrelationFFT(FIBITMAP * fft1_fib, FIBITMAP *_src1, FIBITMAP *_src2, int pad_size,
+        CORRELATION_PREFILTER filter, FIAPOINT * pt)
+{
+    if(FreeImage_GetImageType(fft1_fib) != FIT_COMPLEX)
+        return FIA_ERROR;
+
+    FIBITMAP *fft_fib = FreeImage_Clone(fft1_fib);
+    FIBITMAP *src1 = FreeImage_Clone(_src1);
+    FIBITMAP *src2 = FreeImage_Clone(_src2);
+
+     pt->x = 0;
+     pt->y = 0;
+
+     FREE_IMAGE_TYPE src1_type = FreeImage_GetImageType(src1);
+     FREE_IMAGE_TYPE src2_type = FreeImage_GetImageType(src2);
+
+     if (src1_type != src2_type)
+     {
+         FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                 "Images must be of the same type");
+         return FIA_ERROR;
+     }
+
+     int bpp1 = FreeImage_GetBPP(src1);
+     int bpp2 = FreeImage_GetBPP(src2);
+
+     if (bpp1 != bpp2)
+     {
+         FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                 "Images must have the same bpp");
+         return FIA_ERROR;
+     }
+
+     // Convert colour images to greyscale
+     if (bpp2 >= 24 && src2_type == FIT_BITMAP)
+     {
+         FIA_InPlaceConvertToGreyscale(&src2);
+     }
+
+     FIA_InPlaceConvertToStandardType(&src2, 0);
+
+     FIBITMAP *filtered_src2 = NULL;
+
+     if (filter != NULL)
+     {
+         filtered_src2 = filter(src2);
+
+         if (filtered_src2 == NULL)
+         {
+             FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                     "Filter function returned NULL");
+             return FIA_ERROR;
+         }
+     }
+     else
+     {
+         filtered_src2 = FreeImage_Clone(src2);
+     }
+
+     FIA_InPlaceConvertToStandardType(&filtered_src2, 0);
+
+ #ifdef GENERATE_DEBUG_IMAGES
+     FIA_SaveFIBToFile(filtered_src2,  DEBUG_DATA_DIR "fft-prefiltered2.png", BIT8);
+ #endif
+
+     int src1_width = FreeImage_GetWidth(src1);
+     int src1_height = FreeImage_GetHeight(src1);
+     int filtered_src_width = FreeImage_GetWidth(filtered_src2);
+     int filtered_src_height = FreeImage_GetHeight(filtered_src2);
+
+     if(!FIA_CheckSizesAreSame(src2, filtered_src2))
+     {
+         FreeImage_OutputMessageProc(
+                 FIF_UNKNOWN,
+                 "Filter function has changed the size of the source input from %d,%d to %d,%d",
+                 src1_width, src1_height, filtered_src_width,
+                 filtered_src_height);
+
+         return FIA_ERROR;
+     }
+
+     // Find the padded width and height.
+     int pad_width = kiss_fft_next_fast_size(src1_width + pad_size);
+     int pad_height = kiss_fft_next_fast_size(src1_height + pad_size);
+
+     FIBITMAP *border_src2 = PadImage(filtered_src2, pad_width, pad_height);
+
+     FIBITMAP *fft2 = FIA_FFT(border_src2);
+
+     FIA_ComplexConjugate(fft2);
+
+     if (FIA_MultiplyComplexImages(fft_fib, fft2) == FIA_ERROR)
+     {
+         FreeImage_OutputMessageProc(FIF_UNKNOWN,
+                 "FIA_MultiplyComplexImages Failed");
+         return FIA_ERROR;
+     }
+
+     FIBITMAP *ifft = FIA_IFFT(fft_fib);
+
+     FIBITMAP *real = FIA_ComplexImageToRealValued(ifft);
+
+ #ifdef GENERATE_DEBUG_IMAGES
+     FIA_SaveFIBToFile(FreeImage_ConvertToStandardType(real, 1),  DEBUG_DATA_DIR "fft.png", BIT24);
+ #endif
+
+     double max;
+
+     FIA_FindMaxXY(real, &max, pt);
+
+     if (pt->x > src1_width)
+     {
+         pt->x = pt->x - pad_width;
+     }
+
+     // FIBITMAPS start 0 at bottom row
+     pt->y = pad_height - pt->y - 1;
+
+     if (pt->y > src1_height)
+     {
+         pt->y = pt->y - pad_height;
+     }
+
+     FreeImage_Unload(real);
+     FreeImage_Unload(fft_fib);
+     FreeImage_Unload(ifft);
+     FreeImage_Unload(fft2);
+     FreeImage_Unload(src1);
+     FreeImage_Unload(src2);
+     FreeImage_Unload(filtered_src2);
+     FreeImage_Unload(border_src2);
+
+     return FIA_SUCCESS;
+ }
 
 int DLL_CALLCONV
 FIA_FFTCorrelateImageRegions(FIBITMAP * src1, FIARECT rect1, FIBITMAP * src2,
