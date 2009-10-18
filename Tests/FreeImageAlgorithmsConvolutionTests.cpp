@@ -718,18 +718,18 @@ TestFIA_CorrelateBloodTissueImagesTwoImages(CuTest* tc)
     int width = 768;
     int height = 576;
 
-    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
-    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00010.png");
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00008.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00007.png");
 
     FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(fib1),
             2 * width, 2 * height, FreeImage_GetBPP(fib1), 0, 0, 0);
 
     FIAPOINT pt;
 
-    FIARECT rect1 = MakeFIARect(width-150,0,width-1,height-1);
-    FIARECT rect2 = MakeFIARect(0, 0, 40, 40);
+    FIARECT rect1 = MakeFIARect(width-350,0,width-1,height-1);
+    FIARECT rect2 = MakeFIARect(0, 0, 100, height-1);
 
-    FIA_CorrelateImageRegions(fib1, rect1, fib2, rect2, CORRELATION_KERNEL, FIA_EdgeEnhancer, &pt);
+    FIA_CorrelateImageRegions(fib1, rect1, fib2, rect2, CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
 
     double measure;
 
@@ -991,7 +991,30 @@ TestFIA_CorrelateEdgeTest(CuTest* tc)
 
     const int number_of_images = sizeof(edges) / sizeof(char *);
 
+    int max_width = 0, max_height = 0;
+
+    for(int i=0; i < number_of_images; i++) {
+
+           edge_dib = FIA_LoadFIBFromFile(edges[i]);
+
+           if(FreeImage_GetWidth(edge_dib) > max_width)
+               max_width = FreeImage_GetWidth(edge_dib);
+
+           if(FreeImage_GetHeight(edge_dib) > max_height)
+               max_height = FreeImage_GetHeight(edge_dib);
+
+           FreeImage_Unload(edge_dib);
+       }
+
+    int max_dimension = std::max(max_width, max_height);
+
     file_dib = FIA_LoadFIBFromFile(file);
+
+        edge_dib = FIA_LoadFIBFromFile(edges[0]);
+
+        FIBITMAP* fft = FIA_PreCalculateCorrelationFFT(file_dib, edge_dib, max_dimension, FIA_EdgeEnhancer);
+
+        FreeImage_Unload(edge_dib);
 
     for(int i=0; i < number_of_images; i++) {
 
@@ -999,7 +1022,11 @@ TestFIA_CorrelateEdgeTest(CuTest* tc)
 
         PROFILE_START("TestFIA_CorrelateEdgeTest");
 
-        FIA_CorrelateImages(file_dib, edge_dib, CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
+        //FIA_CorrelateImages(file_dib, edge_dib, CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
+
+        FIA_FFTCorrelateImageWithPreCorrelationFFT(fft, file_dib, edge_dib, max_dimension, FIA_EdgeEnhancer, &pt);
+
+        std::cout << pt.x << ", " << pt.y << std::endl;
 
         PROFILE_STOP("TestFIA_CorrelateEdgeTest");
 
@@ -1064,12 +1091,12 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	MkDir(TEST_DATA_OUTPUT_DIR "/Convolution");
 
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImages);
-    SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesTwoImages);
+    //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesTwoImages);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesWithNoKnowledge);
 
     // Done
-    SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
-	//SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
+    //SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTLetterTest);
