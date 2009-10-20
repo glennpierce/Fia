@@ -194,7 +194,7 @@ template < class Tsrc > double ARITHMATIC < Tsrc >::DifferenceMeasure (FIBITMAP 
 
         for(int x = 0; x < width1; x++)
         {
-            sum += abs(src1_ptr[x] - src2_ptr[x]);
+            sum += (float) fabs((float)(src1_ptr[x] - src2_ptr[x]));
         }
     }
 

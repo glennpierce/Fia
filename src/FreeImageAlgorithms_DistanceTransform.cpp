@@ -211,14 +211,25 @@ FIA_DistanceMapForRectangle (FIARECT rect, int normalise)
             else
                 current_min = width - x;
 
+#ifdef WIN32
             if (y <= center_y)
+                bits[x] = min(current_min, (float) y);
+            else
+                bits[x] = min(current_min, (float) (height - y));
+
+			if(normalise > 0) {
+                bits[x] = bits[x] / max(center_x, center_y);
+            }
+#else
+			if (y <= center_y)
                 bits[x] = std::min(current_min, (float) y);
             else
                 bits[x] = std::min(current_min, (float) (height - y));
 
-            if(normalise > 0) {
+			if(normalise > 0) {
                 bits[x] = bits[x] / std::max(center_x, center_y);
             }
+#endif
         }
     }
 

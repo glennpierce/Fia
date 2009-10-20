@@ -400,3 +400,65 @@ FIA_SaveFIBToFile (FIBITMAP * dib, const char *filepath,
 
     return FIA_SUCCESS;
 }
+int DLL_CALLCONV
+FIA_SimpleSaveFIBToFile (FIBITMAP * dib, const char *filepath)
+{
+	// Pass a filepath to be saved
+	// Determine the file type from the extension
+	// Try to save in the highest bpp possible for that plugin.
+
+    FIBITMAP *converted_dib;
+    FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	int bpp = FreeImage_GetBPP(dib);
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (dib);
+
+    if (dib == NULL)
+        return FIA_ERROR;
+
+    // Try to guess the file format from the file extension
+    fif = FreeImage_GetFIFFromFilename (filepath);
+
+	// Check that the plugin has writing capabilities ... 
+	if(FreeImage_FIFSupportsWriting(fif) == 0)
+	{
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Error Saving File! Image Plugin does not support writing.");
+		return FIA_ERROR;
+	}
+
+	int supportsBPPExport = FreeImage_FIFSupportsExportBPP(fif, bpp);
+
+	// Hack to fix bug in latest freeimage
+	if(fif == FIF_PNG && bpp == 16)
+		supportsBPPExport = 1;
+
+	int supportsTypeExport = FreeImage_FIFSupportsExportType(fif, type);
+		
+	int bCanSave = supportsBPPExport && supportsTypeExport;
+
+	if(bCanSave) {
+		
+		converted_dib = FreeImage_Clone (dib);
+	}
+	else {
+		// Error Saving File! Image type can not save with the desired bpp or type;
+		// Try converting to a standard type.
+		converted_dib = FreeImage_ConvertToStandardType (dib, 1);
+	}
+	
+	if(FreeImage_GetBPP(dib) == 8)
+		FIA_CopyPalette(dib, converted_dib);
+
+	if (!FreeImage_Save (fif, converted_dib, filepath, 0))
+    {
+		FreeImage_Unload (converted_dib);
+
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Unknown Error Saving File! FreeImage_Save Failed");
+        return FIA_ERROR;
+    }
+
+	FreeImage_Unload (converted_dib);
+
+	return FIA_SUCCESS;
+}

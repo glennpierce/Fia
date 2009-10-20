@@ -969,16 +969,19 @@ FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt, 
     r2.right = r2.left + width - 1;
     r2.bottom = r2.top + height - 1;
 
-    if(!IntersectingRect(r1, r2, &r3))
+    if(!FIA_IntersectingRect(r1, r2, &r3))
         return FIA_ERROR;
 
     int intersect_width = r3.right - r3.left + 1;
     int intersect_height = r3.bottom - r3.top + 1;
 
-    std::cout << "r3.left: " << r3.left << " r3.top: " << r3.top << std::endl;
-
-    intersect_width = std::min(intersect_width, 50);
+#ifdef WIN32
+    intersect_width = min(intersect_width, 50);
+    intersect_height = min(intersect_height, 200);
+#else
+	intersect_width = std::min(intersect_width, 50);
     intersect_height = std::min(intersect_height, 200);
+#endif
 
     // Try to take the normal correlation measure in the first corner of the intersection
     src1_corner = MakeFIARect(r3.left, r3.top, r3.left + intersect_width, r3.top + intersect_height);
@@ -1056,7 +1059,7 @@ FIA_CorrelateImagesAroundOverlap(FIBITMAP * src1, FIARECT region1,
 {
     FIARECT intersection_rect;
 
-    IntersectingRect(region1, region2, &intersection_rect);
+    FIA_IntersectingRect(region1, region2, &intersection_rect);
 
     pt->x = 0; // intersection_rect.left;
     pt->y = 0; // intersection_rect.top;
@@ -1130,7 +1133,11 @@ FIA_CorrelateImageEdgesWithImage(FIBITMAP * src1, FIARECT region1,
     edge.left = 0;
     edge.top = 0;
     edge.right = edge_size;
-    edge.bottom = std::min(src1_height - 1, src2_height - 1);
+#ifdef WIN32
+    edge.bottom = min(src1_height - 1, src2_height - 1);
+#else
+	edge.bottom = std::min(src1_height - 1, src2_height - 1);
+#endif
 
     FIAPOINT best_point, tmp_pt;
     double measure, max_measure;

@@ -395,7 +395,20 @@ FIA_GetMinPosibleValueForFib(FIBITMAP *src, double *min);
 DLL_API int DLL_CALLCONV
 FIA_IsGreyScale(FIBITMAP *src);
 
-/** \brief Gets the pixels values along a line on an image where the
+/** \brief Gets the pixels values along a line on an image where the 
+ *         image consists of char data.
+ *
+ *  \param src FIBITMAP bitmap.
+ *  \param p1  Start point of line.
+ *  \param p2  End point of line.
+ *  \param type FREE_IMAGE_TYPE of the pixels required. Must match the image type. Assures user is using correct type.
+ *  \param values Returned values along line.
+ *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_GetGreyScalePixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, FREE_IMAGE_TYPE type, void *values);
+
+/** \brief Gets the pixels values along a line on an image where the 
  *         image consists of char data.
  *
  *  \param src FIBITMAP bitmap.
@@ -405,7 +418,7 @@ FIA_IsGreyScale(FIBITMAP *src);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values);
+FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values); 
 
 /** \brief Gets the pixels values along a line on an image where the
  *         image consists of unsigned char data.
@@ -484,20 +497,23 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, BYTE *red
 DLL_API FIBITMAP *DLL_CALLCONV
 FIA_DistanceMapForRectangle (FIARECT rect, int normalise);
 
+DLL_API int DLL_CALLCONV
+FIA_IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3);
+
 // Hopefully this is a temp solution until FreeImage paste supports greyscale that is
 // above 8bits.
 // This function is very limited.
 DLL_API int DLL_CALLCONV
 FIA_Paste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom);
 
+DLL_API int DLL_CALLCONV
+FIA_PasteFromTopLeft (FIBITMAP *dst, FIBITMAP * src, int left, int top);
+
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_Copy (FIBITMAP * src, int left, int top, int right, int bottom);
 
 DLL_API BYTE* DLL_CALLCONV
 FIA_GetScanLineFromTop (FIBITMAP *src, int line);
-
-DLL_API int DLL_CALLCONV
-FIA_PasteFromTopLeft (FIBITMAP *dst, FIBITMAP * src, int left, int top);
 
 /** \brief Performs a bitwise compare between two images.
  *		   Returns 1 for images that are the same.

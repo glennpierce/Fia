@@ -1008,6 +1008,71 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
 }
 
 int DLL_CALLCONV
+FIA_GetGreyScalePixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, FREE_IMAGE_TYPE type, void *values)
+{
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+	int bpp = FreeImage_GetBPP(src);
+
+	if(src_type != type)
+		return FIA_ERROR;
+
+	switch (src_type)
+    {
+        case FIT_BITMAP:       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+        {
+            if (FreeImage_GetBPP (src) == 8)
+            {
+				return GetPixelValuesForLine (src, p1, p2, (BYTE*) values);
+            }
+
+            break;
+        }
+        
+        case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
+        {
+            return GetPixelValuesForLine (src, p1, p2, (unsigned short*) values);
+        }
+        
+        case FIT_INT16:        // array of short: signed 16-bit
+        {
+            return GetPixelValuesForLine (src, p1, p2, (short*) values);
+        }
+        
+        case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
+        {
+            return GetPixelValuesForLine (src, p1, p2, (unsigned int*) values);
+        }
+        
+        case FIT_INT32:        // array of long: signed 32-bit
+        {
+            return GetPixelValuesForLine (src, p1, p2, (int*) values);
+        }
+
+        case FIT_FLOAT:        // array of float: 32-bit
+        {
+            return GetPixelValuesForLine (src, p1, p2, (float*) values);
+        }
+
+        case FIT_DOUBLE:       // array of double: 64-bit
+        {
+            return GetPixelValuesForLine (src, p1, p2, (double*) values);
+        }
+
+        case FIT_COMPLEX:      // array of FICOMPLEX: 2 x 64-bit
+        {
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    return FIA_ERROR; 
+}
+
+int DLL_CALLCONV
 FIA_GetCharPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, char *values)
 {
     return GetPixelValuesForLine (src, p1, p2, values);
@@ -1161,7 +1226,8 @@ FIA_GetRGBPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2,
 }
 
 // Find two intersecting rects
-int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
+int DLL_CALLCONV
+FIA_IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
 {
     int fIntersect = (r2.left <= r1.right && r2.right >= r1.left &&
             r2.top <= r1.bottom && r2.bottom >= r1.top);
@@ -1170,11 +1236,19 @@ int IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3)
 
     if(fIntersect)
     {
+#ifdef WIN32
+
+		r3->left = max(r1.left, r2.left);
+        r3->top = max(r1.top, r2.top);
+        r3->right = min(r1.right, r2.right);
+        r3->bottom = min(r1.bottom, r2.bottom);
+#else
         r3->left = std::max(r1.left, r2.left);
         r3->top = std::max(r1.top, r2.top);
         r3->right = std::min(r1.right, r2.right);
         r3->bottom = std::min(r1.bottom, r2.bottom);
-    }
+#endif
+	}
 
     return fIntersect;
 }
@@ -1221,7 +1295,7 @@ FIA_PasteFromTopLeft (FIBITMAP * dst, FIBITMAP * src, int left, int top)
     // calculate the number of bytes per pixel
     int bytespp = FreeImage_GetLine (dst) / FreeImage_GetWidth (dst);
 
-	if(IntersectingRect(MakeFIARect(0, 0, dst_width - 1, dst_height - 1),
+	if(FIA_IntersectingRect(MakeFIARect(0, 0, dst_width - 1, dst_height - 1),
 		MakeFIARect(left, top, left + src_width - 1, top + src_height - 1), &intersect_rect) == 0)
 	{
 		FreeImage_OutputMessageProc (FIF_UNKNOWN,
@@ -1850,7 +1924,7 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
     FIBITMAP *src2_region = NULL, *map = NULL, *map_region = NULL, *src1_cpy = NULL;
     int map_width,  map_height;
 
-    if(!IntersectingRect(rect1, rect2, &intersection_rect))
+    if(!FIA_IntersectingRect(rect1, rect2, &intersection_rect))
         return FIA_ERROR;
 
     src1_cpy = FreeImage_Clone(src1);

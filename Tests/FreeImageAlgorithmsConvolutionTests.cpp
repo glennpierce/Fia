@@ -358,10 +358,17 @@ static FIBITMAP* GetRandomImageRect(FIBITMAP *src, FIARECT *rect)
     int section_height = 400;
     int min = 50;
 
+#ifdef WIN32
     rect->left = (int) (((float) rand() / RAND_MAX) * (width - min));
+    rect->top = (int) (((float) rand() / RAND_MAX) * (height - min));
+    rect->right = min(rect->left + section_width, width - 1);
+    rect->bottom = min(rect->top + section_width, height - 1);
+#else
+	rect->left = (int) (((float) rand() / RAND_MAX) * (width - min));
     rect->top = (int) (((float) rand() / RAND_MAX) * (height - min));
     rect->right = std::min(rect->left + section_width, width - 1);
     rect->bottom = std::min(rect->top + section_width, height - 1);
+#endif
 
     return FreeImage_Copy(src, rect->left, rect->top, rect->right, rect->bottom);
 }
@@ -1006,7 +1013,11 @@ TestFIA_CorrelateEdgeTest(CuTest* tc)
            FreeImage_Unload(edge_dib);
        }
 
-    int max_dimension = std::max(max_width, max_height);
+#ifdef WIN32
+    int max_dimension = max(max_width, max_height);
+#else
+	int max_dimension = std::max(max_width, max_height);
+#endif
 
     file_dib = FIA_LoadFIBFromFile(file);
 
