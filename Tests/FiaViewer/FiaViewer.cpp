@@ -60,11 +60,12 @@ void FiaViewer::setImage(FIBITMAP *fib)
     this->setScene(this->scene);
 }
 
-void FiaViewer::mousePressEvent( QMouseEvent * evt)
+void FiaViewer::mousePressEvent( QMouseEvent * e)
 {
-	qDebug() << "press";
-	QGraphicsView::mousePressEvent(evt);
+//	qDebug() << "press";
+	QGraphicsView::mousePressEvent(e);
 
+/*
 //	if(!this->scene->itemAt(this->mapToScene(evt->pos()))) {
 		mouseDownPos = this->mapToScene(evt->pos()).toPoint();
 		lastMouseViewPos = evt->pos();
@@ -72,9 +73,9 @@ void FiaViewer::mousePressEvent( QMouseEvent * evt)
 			this->mapFromScene(mouseDownPos).y(), 0,0);
 		rubberBand->show();
 //	}
+*/
 
 
-/*
     if ( e->button() == Qt::LeftButton ) {
 
 	if(this->zoomFactor * ZOOM_INC > ZOOM_MAX)
@@ -84,7 +85,7 @@ void FiaViewer::mousePressEvent( QMouseEvent * evt)
 //	this->graphicsView->translate(e->x(), e->y());
 
         //this->zoom(this->zoomFactor * ZOOM_INC);
-	this->graphicsView->scale(ZOOM_INC,ZOOM_INC);
+	this->scale(ZOOM_INC,ZOOM_INC);
 
 
 	//buttonDown = TRUE;
@@ -97,17 +98,18 @@ void FiaViewer::mousePressEvent( QMouseEvent * evt)
 	//if(this->zoomFactor / ZOOM_DEC < ZOOM_MIN)
         //    return;
 
-        this->graphicsView->translate(e->x(), e->y());
+        this->translate(e->x(), e->y());
 
-	this->graphicsView->scale(ZOOM_DEC,ZOOM_DEC);
+	this->scale(ZOOM_DEC,ZOOM_DEC);
     }
 
    e->accept();
-*/
+
 }
 
 void FiaViewer::mouseMoveEvent(QMouseEvent* evt)
 {
+/*
 std::cout << "here0" << std::endl;
 
 	if(evt->buttons().testFlag(Qt::LeftButton)) {
@@ -130,12 +132,16 @@ std::cout << "here2" << std::endl;
 		}
 	}
 
+*/
+
 	QGraphicsView::mouseMoveEvent(evt);
 }
 
 void FiaViewer::mouseReleaseEvent(QMouseEvent* evt)
 {
+/*
 	qDebug() << "release";
 	rubberBand->hide();
 	QGraphicsView::mouseReleaseEvent(evt);
+*/
 }

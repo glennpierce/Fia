@@ -119,6 +119,60 @@ TestFIA_DistanceTransformTest(CuTest* tc)
 	FreeImage_Unload(dib3);
 }
 
+
+static void
+TestFIA_MetaDataTest(CuTest* tc)
+{
+        const char *file = TEST_DATA_DIR "drone-bee.jpg";
+
+        FIBITMAP *dib = FIA_LoadFIBFromFile(file);
+
+	
+	FITAG *tag = FreeImage_CreateTag();
+
+	if(tag) {
+		// fill the tag members
+ 		// note that the FIMD_XMP model accept a single key named “XMLPacket”
+		char *value = "<GlennsStuff>Hmm</GlennsStuff>";
+ 		
+		int ret;
+
+		ret = FreeImage_SetTagKey(tag, "XMLPacket");
+		std::cout << ret << std::endl;
+
+		ret = FreeImage_SetTagLength(tag, strlen(value) + 1);
+		std::cout << ret << std::endl;
+
+		ret = FreeImage_SetTagCount(tag, strlen(value) + 1);
+		std::cout << ret << std::endl;
+
+		ret = FreeImage_SetTagType(tag, FIDT_ASCII);
+		std::cout << ret << std::endl;
+		
+		// the tag value must be stored after
+		// the tag data type, tag count and tag length have been filled.
+		ret = FreeImage_SetTagValue(tag, value);
+		std::cout << ret << std::endl;
+
+		ret = FreeImage_SetMetadata(FIMD_XMP, dib, FreeImage_GetTagKey(tag), tag);
+		std::cout << "Set MetaData: " << ret << std::endl;
+	}
+
+
+	int count = FreeImage_GetMetadataCount(FIMD_COMMENTS, dib);
+
+	std::cout << "Count: " << count << std::endl;
+
+	FreeImage_Save(FIF_JPEG, dib, TEST_DATA_OUTPUT_DIR "/Utility/metadata.jpg", 0);
+	FreeImage_Save(FIF_PNG, dib, TEST_DATA_OUTPUT_DIR "/Utility/metadata.png", 0);
+	//FIA_SaveFIBToFile(dib, TEST_DATA_OUTPUT_DIR "/Utility/metadata.png", BIT8);
+
+	// destroy the tag
+        FreeImage_DeleteTag(tag);
+
+        FreeImage_Unload(dib);
+}
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsUtilitySuite(void)
 {
@@ -126,9 +180,11 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/Utility");
 
-    SUITE_ADD_TEST(suite, BorderTest);
+    	SUITE_ADD_TEST(suite, BorderTest);
 	SUITE_ADD_TEST(suite, TestFIA_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFIA_DistanceTransformTest);
+	SUITE_ADD_TEST(suite, TestFIA_MetaDataTest);
+
 
 	return suite;
 }

@@ -184,13 +184,9 @@ FIA_DistanceTransform (FIBITMAP * src)
     return ret;
 }
 
-
 FIBITMAP *DLL_CALLCONV
-FIA_DistanceMapForRectangle (FIARECT rect, int normalise)
+FIA_DistanceMap (int width, int height, int normalise)
 {
-    int width = rect.right - rect.left + 1;
-    int height = rect.bottom - rect.top + 1;
-
     FIBITMAP *image = FreeImage_AllocateT(FIT_FLOAT, width, height, 32, 0, 0, 0);
 
     float *bits = NULL;
@@ -217,16 +213,16 @@ FIA_DistanceMapForRectangle (FIARECT rect, int normalise)
             else
                 bits[x] = min(current_min, (float) (height - y));
 
-			if(normalise > 0) {
+            if(normalise > 0) {
                 bits[x] = bits[x] / max(center_x, center_y);
             }
 #else
-			if (y <= center_y)
+            if (y <= center_y)
                 bits[x] = std::min(current_min, (float) y);
             else
                 bits[x] = std::min(current_min, (float) (height - y));
 
-			if(normalise > 0) {
+            if(normalise > 0) {
                 bits[x] = bits[x] / std::max(center_x, center_y);
             }
 #endif
@@ -234,4 +230,13 @@ FIA_DistanceMapForRectangle (FIARECT rect, int normalise)
     }
 
     return image;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_DistanceMapForRectangle (FIARECT rect, int normalise)
+{
+    int width = rect.right - rect.left + 1;
+    int height = rect.bottom - rect.top + 1;
+
+    return FIA_DistanceMap (width, height, normalise);
 }
