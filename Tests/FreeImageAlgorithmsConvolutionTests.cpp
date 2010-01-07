@@ -1115,7 +1115,31 @@ TestFIA_GradientBlendPasteTest(CuTest* tc)
     FreeImage_Unload(fib3);
 }
 
+static void
+TestFIA_GradientBlendFloatImagePasteTest(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00010.png");
+    FIBITMAP *fib3 =  LoadTissueFile(TEST_DATA_DIR "jigsaw.png");
 
+	FIA_InPlaceConvertToGreyscaleFloatType(&fib1, FIT_FLOAT);
+	FIA_InPlaceConvertToGreyscaleFloatType(&fib2, FIT_FLOAT);
+	FIA_InPlaceConvertToGreyscaleFloatType(&fib3, FIT_FLOAT);
+
+    PROFILE_START("FIA_GradientBlendPasteFromTopLeft");
+
+    //FIA_GradientBlendPasteFromTopLeft (fib1, fib2, 80, 50);
+
+    FIA_GradientBlendPasteFromTopLeft (fib1, fib3, -1, 100);
+
+    PROFILE_STOP("FIA_GradientBlendPasteFromTopLeft");
+
+    FIA_SaveFIBToFile(fib1, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_float_paste.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+    FreeImage_Unload(fib3);
+}
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
@@ -1131,6 +1155,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     // Done
     //SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
 	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest);
+	SUITE_ADD_TEST(suite, TestFIA_GradientBlendFloatImagePasteTest);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);

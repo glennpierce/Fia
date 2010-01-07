@@ -180,7 +180,7 @@ CuGetFreeImageAlgorithmsUtilitySuite(void)
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/Utility");
 
-    	SUITE_ADD_TEST(suite, BorderTest);
+    SUITE_ADD_TEST(suite, BorderTest);
 	SUITE_ADD_TEST(suite, TestFIA_UtilityTest);
 	SUITE_ADD_TEST(suite, TestFIA_DistanceTransformTest);
 	SUITE_ADD_TEST(suite, TestFIA_MetaDataTest);

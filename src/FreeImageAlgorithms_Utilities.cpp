@@ -33,6 +33,32 @@
 
 #include <xmmintrin.h>
 
+
+template < class Tsrc > class TemplateImageFunctionClass
+{
+  public:
+
+    // Find min max
+    void find (FIBITMAP * src, double *min, double *max);
+    void find_max_xy (FIBITMAP * src, double *max, FIAPOINT * pt);
+
+	// FastSimpleResample
+	FIBITMAP * IntegerRescaleToHalf (FIBITMAP * src);
+    FIBITMAP *ColourRescaleToHalf (FIBITMAP * src);
+    FIBITMAP *FloatRescaleToHalf (FIBITMAP * src);
+
+	// Composite function for all image types
+	FIBITMAP *Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values);
+};
+
+TemplateImageFunctionClass < unsigned char > UCharImage;
+TemplateImageFunctionClass < unsigned short > UShortImage;
+TemplateImageFunctionClass < short > ShortImage;
+TemplateImageFunctionClass < unsigned long > ULongImage;
+TemplateImageFunctionClass < long > LongImage;
+TemplateImageFunctionClass < float > FloatImage;
+TemplateImageFunctionClass < double > DoubleImage;
+
 /***
  * int _os_support(int feature)
  *   - Checks if OS Supports the capablity or not
@@ -131,6 +157,7 @@ FIA_SSEFindFloatMinMax (const float *data, long n, float *min, float *max)
  Caller is expected to range check 'v' before attempting to round.
  Valid range is INT_MIN to INT_MAX inclusive.
  *******************************************************************************/
+/*
 __forceinline int
 Round (double v)
 {
@@ -145,6 +172,7 @@ Round (double v)
 
     return result;
 }
+*/
 
 #endif //  _MSC_VER
 
@@ -275,14 +303,7 @@ FIA_FindDoubleMax (const double *data, long n, double *max)
     return FINDMAX (data, n, *max);
 }
 
-template < class Tsrc > class FIND_MINMAX_FOR_DIB
-{
-  public:
-    void find (FIBITMAP * src, double *min, double *max);
-    void find_max_xy (FIBITMAP * src, double *max, FIAPOINT * pt);
-};
-
-template < class Tsrc > void FIND_MINMAX_FOR_DIB < Tsrc >::find (FIBITMAP * src,
+template < class Tsrc > void TemplateImageFunctionClass < Tsrc >::find (FIBITMAP * src,
                                                                  double *min, double *max)
 {
     if (!src)
@@ -322,14 +343,6 @@ template < class Tsrc > void FIND_MINMAX_FOR_DIB < Tsrc >::find (FIBITMAP * src,
     *max = temp_max;
 }
 
-FIND_MINMAX_FOR_DIB < unsigned char >minmaxUCharImage;
-FIND_MINMAX_FOR_DIB < unsigned short >minmaxUShortImage;
-FIND_MINMAX_FOR_DIB < short >minmaxShortImage;
-FIND_MINMAX_FOR_DIB < unsigned long >minmaxULongImage;
-FIND_MINMAX_FOR_DIB < long >minmaxLongImage;
-FIND_MINMAX_FOR_DIB < float >minmaxFloatImage;
-FIND_MINMAX_FOR_DIB < double >minmaxDoubleImage;
-
 void DLL_CALLCONV
 FIA_FindMinMax (FIBITMAP * src, double *min, double *max)
 {
@@ -346,44 +359,44 @@ FIA_FindMinMax (FIBITMAP * src, double *min, double *max)
         {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
             if (FreeImage_GetBPP (src) == 8)
             {
-                minmaxUCharImage.find (src, min, max);
+                UCharImage.find (src, min, max);
             }
             break;
         }
 
         case FIT_UINT16:
         {
-            minmaxUShortImage.find (src, min, max);
+            UShortImage.find (src, min, max);
             break;
         }
 
         case FIT_INT16:
         {
-            minmaxShortImage.find (src, min, max);
+            ShortImage.find (src, min, max);
             break;
         }
 
         case FIT_UINT32:
         {
-            minmaxULongImage.find (src, min, max);
+            ULongImage.find (src, min, max);
             break;
         }
 
         case FIT_INT32:
         {
-            minmaxLongImage.find (src, min, max);
+            LongImage.find (src, min, max);
             break;
         }
 
         case FIT_FLOAT:
         {
-            minmaxFloatImage.find (src, min, max);
+            FloatImage.find (src, min, max);
             break;
         }
 
         case FIT_DOUBLE:
         {
-            minmaxDoubleImage.find (src, min, max);
+            DoubleImage.find (src, min, max);
             break;
         }
 
@@ -394,7 +407,7 @@ FIA_FindMinMax (FIBITMAP * src, double *min, double *max)
     }
 }
 
-template < class Tsrc > void FIND_MINMAX_FOR_DIB < Tsrc >::find_max_xy (FIBITMAP * src,
+template < class Tsrc > void TemplateImageFunctionClass < Tsrc >::find_max_xy (FIBITMAP * src,
                                                                         double *max, FIAPOINT * pt)
 {
     if (!src)
@@ -446,44 +459,44 @@ FIA_FindMaxXY (FIBITMAP * src, double *max, FIAPOINT * pt)
         {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
             if (FreeImage_GetBPP (src) == 8)
             {
-                minmaxUCharImage.find_max_xy (src, max, pt);
+                UCharImage.find_max_xy (src, max, pt);
             }
             break;
         }
 
         case FIT_UINT16:
         {
-            minmaxUShortImage.find_max_xy (src, max, pt);
+            UShortImage.find_max_xy (src, max, pt);
             break;
         }
 
         case FIT_INT16:
         {
-            minmaxShortImage.find_max_xy (src, max, pt);
+            ShortImage.find_max_xy (src, max, pt);
             break;
         }
 
         case FIT_UINT32:
         {
-            minmaxULongImage.find_max_xy (src, max, pt);
+            ULongImage.find_max_xy (src, max, pt);
             break;
         }
 
         case FIT_INT32:
         {
-            minmaxLongImage.find_max_xy (src, max, pt);
+            LongImage.find_max_xy (src, max, pt);
             break;
         }
 
         case FIT_FLOAT:
         {
-            minmaxFloatImage.find_max_xy (src, max, pt);
+            FloatImage.find_max_xy (src, max, pt);
             break;
         }
 
         case FIT_DOUBLE:
         {
-            minmaxDoubleImage.find_max_xy (src, max, pt);
+            DoubleImage.find_max_xy (src, max, pt);
             break;
         }
 
@@ -1646,15 +1659,7 @@ FIA_ConvertInt16ToUInt16 (FIBITMAP * src)
     return dst;
 }
 
-template < class Tsrc > class FastSimpleResample
-{
-  public:
-    FIBITMAP * IntegerRescaleToHalf (FIBITMAP * src);
-    FIBITMAP *ColourRescaleToHalf (FIBITMAP * src);
-    FIBITMAP *FloatRescaleToHalf (FIBITMAP * src);
-};
-
-template < typename Tsrc > FIBITMAP * FastSimpleResample <
+template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
     Tsrc >::IntegerRescaleToHalf (FIBITMAP * src)
 {
     int src_width = FreeImage_GetWidth (src);
@@ -1759,7 +1764,7 @@ ColourRescaleToHalf (FIBITMAP * src)
     return dst;
 }
 
-template < typename Tsrc > FIBITMAP * FastSimpleResample <
+template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
     Tsrc >::FloatRescaleToHalf (FIBITMAP * src)
 {
     int src_width = FreeImage_GetWidth (src);
@@ -1797,13 +1802,6 @@ template < typename Tsrc > FIBITMAP * FastSimpleResample <
     return dst;
 }
 
-FastSimpleResample < unsigned char >fastResampleUCharImage;
-FastSimpleResample < unsigned short >fastResampleUShortImage;
-FastSimpleResample < short >fastResampleShortImage;
-FastSimpleResample < unsigned long >fastResampleULongImage;
-FastSimpleResample < long >fastResampleLongImage;
-FastSimpleResample < float >fastResampleFloatImage;
-FastSimpleResample < double >fastResampleDoubleImage;
 
 FIBITMAP *DLL_CALLCONV
 FIA_RescaleToHalf (FIBITMAP * src)
@@ -1821,7 +1819,7 @@ FIA_RescaleToHalf (FIBITMAP * src)
         {
             if (FreeImage_GetBPP (src) == 8)
             {
-                dst = fastResampleUCharImage.IntegerRescaleToHalf (src);
+                dst = UCharImage.IntegerRescaleToHalf (src);
             }
             else
             {
@@ -1832,37 +1830,37 @@ FIA_RescaleToHalf (FIBITMAP * src)
 
         case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
         {
-            dst = fastResampleUShortImage.IntegerRescaleToHalf (src);
+            dst = UShortImage.IntegerRescaleToHalf (src);
             break;
         }
 
         case FIT_INT16:        // array of short: signed 16-bit
         {
-            dst = fastResampleShortImage.IntegerRescaleToHalf (src);
+            dst = ShortImage.IntegerRescaleToHalf (src);
             break;
         }
 
         case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
         {
-            dst = fastResampleULongImage.IntegerRescaleToHalf (src);
+            dst = ULongImage.IntegerRescaleToHalf (src);
             break;
         }
 
         case FIT_INT32:        // array of long: signed 32-bit
         {
-            dst = fastResampleLongImage.IntegerRescaleToHalf (src);
+            dst = LongImage.IntegerRescaleToHalf (src);
             break;
         }
 
         case FIT_FLOAT:        // array of float: 32-bit
         {
-            dst = fastResampleFloatImage.FloatRescaleToHalf (src);
+            dst = FloatImage.FloatRescaleToHalf (src);
             break;
         }
 
         case FIT_DOUBLE:       // array of double: 64-bit
         {
-            dst = fastResampleDoubleImage.FloatRescaleToHalf (src);
+            dst = DoubleImage.FloatRescaleToHalf (src);
             break;
         }
 
@@ -1931,6 +1929,171 @@ FIA_SetAlphaValuesFromDistanceMapImage (FIBITMAP * src, FIBITMAP* alpha_values)
     return colour_dib;
 }
 
+
+template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
+    Tsrc >::Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
+{
+	if (FreeImage_GetImageType (fg) != FreeImage_GetImageType (bg))
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Foreground and background image are not of the same type");
+        return NULL;
+    }
+
+	if (FreeImage_GetImageType (normalised_alpha_values) != FIT_FLOAT)
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Normalised_alpha_values is not a FIT_FLOAT image");
+        return NULL;
+    }
+
+	if(FIA_CheckSizesAreSame(fg, bg) == 0) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and background image are not the same size");
+
+        return NULL;
+    }
+
+	if(FIA_CheckSizesAreSame(fg, normalised_alpha_values) == 0) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and normalised_alpha_values image are not the same size");
+
+        return NULL;
+    }
+
+    int fg_width = FreeImage_GetWidth (fg);
+    int fg_height = FreeImage_GetHeight (fg);
+
+    FIBITMAP *dst = FIA_CloneImageType (fg, fg_width, fg_height);
+
+    for(register int y = 0; y < fg_height; y++)
+    {
+        Tsrc *dst_ptr = (Tsrc *) FIA_GetScanLineFromTop (dst, y);
+        Tsrc *fg_ptr = (Tsrc *) FIA_GetScanLineFromTop (fg, y);
+        Tsrc *bg_ptr = (Tsrc *) FIA_GetScanLineFromTop (bg, y);
+		float *alpha_ptr = (float *) FIA_GetScanLineFromTop (normalised_alpha_values, y);
+
+        for(register int x = 0; x < fg_width; x++)
+        {
+			dst_ptr[x] = (alpha_ptr[x] * fg_ptr[x]) + ((1 - alpha_ptr[x]) * bg_ptr[x]);
+        }
+    }
+
+    return dst;
+}
+
+
+FIBITMAP *DLL_CALLCONV
+FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
+{
+    FIBITMAP *dst = NULL;
+
+    if (!fg)
+        return NULL;
+
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (fg);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+        {
+            if (FreeImage_GetBPP (fg) == 8)
+            {
+                dst = UCharImage.Composite (fg, bg, normalised_alpha_values);
+            }
+            else
+            {
+				// Do the composite for each channel
+				FIBITMAP* red_channel_fg = FreeImage_GetChannel(fg, FICC_RED);
+				FIBITMAP* red_channel_bg = FreeImage_GetChannel(bg, FICC_RED);
+
+				FIBITMAP* green_channel_fg = FreeImage_GetChannel(fg, FICC_GREEN);
+				FIBITMAP* green_channel_bg = FreeImage_GetChannel(bg, FICC_GREEN);
+
+				FIBITMAP* blue_channel_fg = FreeImage_GetChannel(fg, FICC_BLUE);
+				FIBITMAP* blue_channel_bg = FreeImage_GetChannel(bg, FICC_BLUE);
+
+				FIBITMAP* dst1 = UCharImage.Composite (red_channel_fg, red_channel_bg, normalised_alpha_values);
+				FIBITMAP* dst2 = UCharImage.Composite (green_channel_fg, green_channel_bg, normalised_alpha_values);
+				FIBITMAP* dst3 = UCharImage.Composite (blue_channel_fg, blue_channel_bg, normalised_alpha_values);
+
+				dst = FIA_CloneImageType(fg, FreeImage_GetWidth(fg), FreeImage_GetHeight(fg));
+
+				FreeImage_SetChannel(dst, dst1, FICC_RED);
+				FreeImage_SetChannel(dst, dst2, FICC_GREEN);
+				FreeImage_SetChannel(dst, dst3, FICC_BLUE);
+
+				FreeImage_Unload(red_channel_fg);
+				FreeImage_Unload(red_channel_bg);
+				FreeImage_Unload(green_channel_fg);
+				FreeImage_Unload(green_channel_bg);
+				FreeImage_Unload(blue_channel_fg);
+				FreeImage_Unload(blue_channel_bg);
+				FreeImage_Unload(dst1);
+				FreeImage_Unload(dst2);
+				FreeImage_Unload(dst3);
+            }
+            break;
+        }
+
+        case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
+        {
+            dst = UShortImage.Composite (fg, bg, normalised_alpha_values);
+            break;
+        }
+
+        case FIT_INT16:        // array of short: signed 16-bit
+        {
+            dst = ShortImage.Composite (fg, bg, normalised_alpha_values);
+            break;
+        }
+
+        case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
+        {
+            dst = ULongImage.Composite (fg, bg, normalised_alpha_values);
+            break;
+        }
+
+        case FIT_INT32:        // array of long: signed 32-bit
+        {
+            dst = LongImage.Composite (fg, bg, normalised_alpha_values);
+            break;
+        }
+
+        case FIT_FLOAT:        // array of float: 32-bit
+        {
+            dst = FloatImage.Composite (fg, bg, normalised_alpha_values);
+            break;
+        }
+
+        case FIT_DOUBLE:       // array of double: 64-bit
+        {
+            dst = DoubleImage.Composite (fg, bg, normalised_alpha_values);
+            break;
+        }
+
+        case FIT_COMPLEX:      // array of FICOMPLEX: 2 x 64-bit
+        {
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    if (dst == NULL)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "FREE_IMAGE_TYPE: Unable to convert from type %d to type %d.\n No such conversion exists.",
+                                     src_type, FIT_BITMAP);
+    }
+
+    return dst;
+}
+
+
 int DLL_CALLCONV
 FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
 {
@@ -1946,29 +2109,6 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
 
     int src2_width = FreeImage_GetWidth(src2);
     int src2_height = FreeImage_GetHeight(src2);
-
-    /*
-
-#ifdef WIN32
- //   map_rect.right = min(map_rect.left + (2 * intersect_width) - 1, FreeImage_GetWidth(src2));
-#else
-    map_rect.right = std::min((2 * intersect_width) - 1, src2_width - 1);
-
-    std::cout << "intersect_width " << intersect_width << std::endl;
-    std::cout << "map_rect.right " <<  map_rect.right << std::endl;
-
-    map_rect.bottom = std::min((2 * intersect_height) - 1, src2_height - 1);
-
-    std::cout << "intersect_height " << intersect_height << std::endl;
-    std::cout << "map_rect.bottom " <<  map_rect.bottom << std::endl;
-
-    //map_rect.right = (2 * intersect_width);// - 1;
-    //map_rect.bottom = (2 * intersect_height);
-#endif
-*/
-
-
-
 
     FIARECT src1_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect1.left, rect1.top));
     FIARECT src2_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect2.left, rect2.top));
@@ -1994,12 +2134,8 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
         goto CLEANUP;
     }
 
-
     int map_width, map_height;
     FIARECT section_map_rect;
-
-    //map_width = FreeImage_GetWidth(map);
-    //map_height = FreeImage_GetHeight(map);
 
     if(rect2.left >= rect1.left && rect2.right <= rect1.right) {
 
@@ -2010,8 +2146,6 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
         map_width = intersect_width;
     }
     else if(rect2.right <= rect1.right) {
-        std::cout << "Here" << std::endl;
-
         section_map_rect.left = intersect_width;
         section_map_rect.right = intersect_width * 2;
 
@@ -2025,7 +2159,6 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
     }
 
     if(rect2.top >= rect1.top && rect2.bottom <= rect1.bottom) {
-        std::cout << "Here2" << std::endl;
         // Rect2 in completly within rect1 so we use all of the map
         section_map_rect.top = 0;
         section_map_rect.bottom = intersect_height - 1;
@@ -2033,24 +2166,17 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
         map_height = intersect_height;
     }
     else if(rect2.bottom <= rect1.bottom) {
-        std::cout << "Here3" << std::endl;
         section_map_rect.top = intersect_height;
         section_map_rect.bottom = section_map_rect.top + intersect_height * 2;
 
         map_height = intersect_height * 2;
     }
     else {
-        std::cout << "Here4" << std::endl;
         section_map_rect.top = 0;
         section_map_rect.bottom = intersect_height - 1;
 
         map_height = intersect_height * 2;
     }
-
-    //map_width = section_map_rect.right - section_map_rect.left + 1;
-    //map_height = section_map_rect.bottom - section_map_rect.top + 1;
-
-    std::cout << "map_width: " << map_width << " map_height: " << map_height << std::endl;
 
     // Generate a distance map twice the size of this intersection
     // We only wish half the map to produce a one way gradient
@@ -2059,17 +2185,12 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
     map_region = FIA_Copy (map, section_map_rect.left, section_map_rect.top,
             section_map_rect.right, section_map_rect.bottom);
 
-    std::cout << "section_map left: " << section_map_rect.left << " top: " << section_map_rect.top
-        << " right " << section_map_rect.right << " bottom " << section_map_rect.bottom << std::endl;
-
     if(map_region == NULL) {
 
         FreeImage_OutputMessageProc (FIF_UNKNOWN, "FIA_Copy returned NULL");
 
         goto CLEANUP;
     }
-
-    FIA_InPlaceConvertToStandardType(&map_region, 1);
 
     if(FIA_CheckSizesAreSame(src2_region, map_region) == 0) {
 
@@ -2081,18 +2202,7 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
         goto CLEANUP;
     }
 
-    alpha = FIA_SetAlphaValuesFromDistanceMapImage (src2_region, map_region);
-
-    if(alpha == NULL) {
-
-        FreeImage_OutputMessageProc (FIF_UNKNOWN, "FIA_SetAlphaValuesFromDistanceMapImage returned NULL");
-
-        goto CLEANUP;
-    }
-
-    src1_24 = FreeImage_ConvertTo24Bits(src1_region);
-
-    blended = FreeImage_Composite(alpha, 1, NULL, src1_24);
+	blended = FIA_Composite(src2_region, src1_region, map_region);
 
     if(blended == NULL) {
 
@@ -2100,7 +2210,6 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
 
         goto CLEANUP;
     }
-
 
     FIA_PasteFromTopLeft(src1, blended,  src1_intersection_rect.left, src1_intersection_rect.top);
 
