@@ -638,12 +638,59 @@ FIA_ConvertInt16ToUInt16(FIBITMAP *src);
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_RescaleToHalf(FIBITMAP *src);
 
+/** \brief Gradient blends one image into another
+ *
+ *  This function blends the src image into dest.
+ *  If the images are overlapping then the gradient goes from zero to its maximum value 
+ *	in the space of the overlap region of the tow images.
+ *
+ *	If src is completly within the destination image then the behaviour is slightly difference.
+ *	The gradient goes from zero at the edge and reaches its maximum at the center 
+ *	of the intersection.
+ *
+ *  \param dst Image to blend into.
+ *  \param src Image to blend.
+ *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
+*/
 DLL_API int DLL_CALLCONV
 FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2);
 
+/** \brief Gradient blends one image into another
+ *
+ *  This function blends the src image into dest.
+ *  If the images are overlapping then the gradient goes from zero to its maximum value 
+ *	in the space of the overlap region of the tow images.
+ *
+ *	If src is completly within the destination image then the behaviour is slightly difference.
+ *	The gradient goes from zero at the edge and reaches its maximum at the center 
+ *	of the intersection.
+ *
+ *  \param dst Image to blend into.
+ *  \param src Image to blend.
+ *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
+*/
 DLL_API int DLL_CALLCONV
 FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top);
 
+/** \brief Gradient blends one image into another
+ *
+ *  This function blends the src image into dest.
+ *  If the images are overlapping then the gradient goes from zero to its maximum value 
+ *	in the space of the overlap region of the tow images.
+ *
+ *	If src is completly within the destination image then the behaviour is slightly difference.
+ *	The gradient goes from zero at the edge and reaches its maximum at the center 
+ *	of the intersection.
+ *
+ *  The return value is a 32 bit image with the alpha values set appropriately.
+ *  The intersect_rect of where src need to be pasted into dst is also returned.
+ *
+ *  \param dst Image to blend into.
+ *  \param src Image to blend.
+ *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
+*/
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_GetGradientBlendAlphaImage (FIBITMAP* src2, FIARECT rect1, FIARECT rect2, FIARECT *intersect_rect);
 #ifdef __cplusplus
 }
 #endif

@@ -1094,6 +1094,55 @@ TestFIA_GradientBlend(CuTest* tc)
 }
 
 static void
+TestFIA_GetGradientBlendAlphaImageTest(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "jigsaw.png");
+
+	int left = -50;
+	int top = 300;
+
+    PROFILE_START("TestFIA_GetGradientBlendAlphaImageTest");
+
+	FIARECT rect1 = MakeFIARect(0, 0, FreeImage_GetWidth(fib1) - 1, FreeImage_GetHeight(fib1) - 1);
+	FIARECT rect2 = MakeFIARect(left, top, left + FreeImage_GetWidth(fib2) - 1, top + FreeImage_GetHeight(fib2) - 1);
+
+	FIARECT intersect_rect;
+
+    FIBITMAP *alpha = FIA_GetGradientBlendAlphaImage (fib2, rect1, rect2, &intersect_rect);
+
+	std::cout << "Alpha image Type: " << FreeImage_GetImageType(alpha)
+		<< "Bpp: " << FreeImage_GetBPP(alpha) 
+		<< "Width: " << FreeImage_GetWidth(alpha)
+		<< "Height: " << FreeImage_GetHeight(alpha) << std::endl;
+
+    PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest");
+
+	FIBITMAP *fib1_region = FIA_Copy(fib1, intersect_rect.left, intersect_rect.top,
+										   intersect_rect.right, intersect_rect.bottom);
+
+	FIBITMAP *fib1_24 = FreeImage_ConvertTo24Bits(fib1_region);
+
+	std::cout << "fib1_24 image Type: " << FreeImage_GetImageType(fib1_24) 
+		<< "Bpp: " << FreeImage_GetBPP(fib1_24)
+		<< "Width: " << FreeImage_GetWidth(fib1_24)
+		<< "Height: " << FreeImage_GetHeight(fib1_24) << std::endl;
+
+	FIBITMAP *blended = FreeImage_Composite(alpha, 1, NULL, fib1_24);
+
+    FIA_PasteFromTopLeft(fib1, blended, intersect_rect.left, intersect_rect.top);
+
+    FIA_SaveFIBToFile(fib1, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+	FreeImage_Unload(alpha);
+	FreeImage_Unload(blended);
+	FreeImage_Unload(fib1_24);
+	FreeImage_Unload(fib1_region);
+}
+
+static void
 TestFIA_GradientBlendPasteTest(CuTest* tc)
 {
     FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
@@ -1156,6 +1205,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     //SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
 	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest);
 	SUITE_ADD_TEST(suite, TestFIA_GradientBlendFloatImagePasteTest);
+	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);

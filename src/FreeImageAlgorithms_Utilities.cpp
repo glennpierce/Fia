@@ -2094,16 +2094,16 @@ FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
 }
 
 
-int DLL_CALLCONV
-FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
+FIBITMAP* DLL_CALLCONV
+FIA_GetGradientBlendAlphaImage (FIBITMAP* src2, FIARECT rect1, FIARECT rect2, FIARECT *intersect_rect)
 {
     FIARECT intersection_rect;
-    FIBITMAP *alpha = NULL, *src1_24 = NULL, *blended = NULL, *src1_region = NULL;
+    FIBITMAP *alpha = NULL, *blended = NULL;
     FIBITMAP *src2_region = NULL, *map = NULL, *map_region = NULL, *src1_cpy = NULL;
 
     if(!FIA_IntersectingRect(rect1, rect2, &intersection_rect))
-        return FIA_ERROR;
-
+        goto CLEANUP;
+	
     int intersect_width = intersection_rect.right - intersection_rect.left + 1;
     int intersect_height = intersection_rect.bottom - intersection_rect.top + 1;
 
@@ -2113,6 +2113,137 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
     FIARECT src1_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect1.left, rect1.top));
     FIARECT src2_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect2.left, rect2.top));
 
+	*intersect_rect = src1_intersection_rect;
+
+    src2_region = FIA_Copy(src2, src2_intersection_rect.left, src2_intersection_rect.top,
+                src2_intersection_rect.right, src2_intersection_rect.bottom);
+
+    if(src2_region == NULL) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "FIA_Copy returned NULL (src2_region)");
+
+        goto CLEANUP;
+    }
+
+    int map_width, map_height;
+    FIARECT section_map_rect;
+
+    if(rect2.left >= rect1.left && rect2.right <= rect1.right) {
+
+        // Rect2 in completly within rect1 so we use all of the map
+        section_map_rect.left = 0;
+        section_map_rect.right = src2_width - 1;
+
+        map_width = intersect_width;
+    }
+    else if(rect2.right <= rect1.right) {
+        section_map_rect.left = intersect_width;
+        section_map_rect.right = intersect_width * 2;
+
+        map_width = intersect_width * 2;
+    }
+    else {
+        section_map_rect.left = 0;
+        section_map_rect.right = intersect_width - 1;
+
+        map_width = intersect_width * 2;
+    }
+
+    if(rect2.top >= rect1.top && rect2.bottom <= rect1.bottom) {
+        // Rect2 in completly within rect1 so we use all of the map
+        section_map_rect.top = 0;
+        section_map_rect.bottom = intersect_height - 1;
+
+        map_height = intersect_height;
+    }
+    else if(rect2.bottom <= rect1.bottom) {
+        section_map_rect.top = intersect_height;
+        section_map_rect.bottom = section_map_rect.top + intersect_height * 2;
+
+        map_height = intersect_height * 2;
+    }
+    else {
+        section_map_rect.top = 0;
+        section_map_rect.bottom = intersect_height - 1;
+
+        map_height = intersect_height * 2;
+    }
+
+    // Generate a distance map twice the size of this intersection
+    // We only wish half the map to produce a one way gradient
+    map = FIA_DistanceMap (map_width, map_height, 1);
+
+    map_region = FIA_Copy (map, section_map_rect.left, section_map_rect.top,
+            section_map_rect.right, section_map_rect.bottom);
+
+    if(map_region == NULL) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "FIA_Copy returned NULL");
+
+        goto CLEANUP;
+	}
+
+    if(FIA_CheckSizesAreSame(src2_region, map_region) == 0) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "FIA_CheckSizesAreSame Failed "
+                "Src2 Region: width: %d height: %d - Map Region: width: %d height: %d",
+                FreeImage_GetWidth(src2_region), FreeImage_GetHeight(src2_region),
+                FreeImage_GetWidth(map_region), FreeImage_GetHeight(map_region));
+
+        goto CLEANUP;
+    }
+
+	FIA_InPlaceConvertToStandardType(&map_region, 1);
+
+    alpha = FIA_SetAlphaValuesFromDistanceMapImage (src2_region, map_region);
+	
+	if(alpha == NULL) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "FIA_SetAlphaValuesFromDistanceMapImage Failed");
+
+        goto CLEANUP;
+    }
+
+    return alpha;
+
+CLEANUP:
+
+    if(src2_region != NULL)
+        FreeImage_Unload(src2_region);
+
+    if(map != NULL)
+        FreeImage_Unload(map);
+
+    if(map_region != NULL)
+        FreeImage_Unload(map_region);
+
+    if(alpha != NULL)
+        FreeImage_Unload(alpha);
+
+    if(blended != NULL)
+        FreeImage_Unload(blended);
+
+    return NULL;
+}
+
+int DLL_CALLCONV
+FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
+{
+    FIARECT intersection_rect;
+    FIBITMAP *alpha = NULL, *src1_24 = NULL, *blended = NULL, *src1_region = NULL;
+    FIBITMAP *src2_region = NULL, *map = NULL, *map_region = NULL, *src1_cpy = NULL;
+
+    if(!FIA_IntersectingRect(rect1, rect2, &intersection_rect))
+        goto CLEANUP;
+
+    int intersect_width = intersection_rect.right - intersection_rect.left + 1;
+    int intersect_height = intersection_rect.bottom - intersection_rect.top + 1;
+
+    int src2_width = FreeImage_GetWidth(src2);
+    int src2_height = FreeImage_GetHeight(src2);
+
+    FIARECT src1_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect1.left, rect1.top));
+    FIARECT src2_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect2.left, rect2.top));
 
     src1_region = FIA_Copy(src1, src1_intersection_rect.left, src1_intersection_rect.top,
             src1_intersection_rect.right, src1_intersection_rect.bottom);
