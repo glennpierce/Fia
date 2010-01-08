@@ -1057,6 +1057,19 @@ TestFIA_CorrelateEdgeTest(CuTest* tc)
 
 
 static void
+TestFIA_IntersectingRect(CuTest* tc)
+{
+    FIARECT rect1 = MakeFIARect(505, 0, 1445, 583);
+    FIARECT rect2 = MakeFIARect(0, 0, 1360, 1054);
+
+	FIARECT intersection_rect;
+
+	FIA_IntersectingRect(rect1, rect2, &intersection_rect);
+   
+	//CuAssertTrue(tc, dib != NULL);
+}
+
+static void
 TestFIA_GradientBlend(CuTest* tc)
 {
     FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
@@ -1111,35 +1124,55 @@ TestFIA_GetGradientBlendAlphaImageTest(CuTest* tc)
 
     FIBITMAP *alpha = FIA_GetGradientBlendAlphaImage (fib2, rect1, rect2, &intersect_rect);
 
-	std::cout << "Alpha image Type: " << FreeImage_GetImageType(alpha)
-		<< "Bpp: " << FreeImage_GetBPP(alpha) 
-		<< "Width: " << FreeImage_GetWidth(alpha)
-		<< "Height: " << FreeImage_GetHeight(alpha) << std::endl;
-
     PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest");
 
-	FIBITMAP *fib1_region = FIA_Copy(fib1, intersect_rect.left, intersect_rect.top,
-										   intersect_rect.right, intersect_rect.bottom);
+	//FIBITMAP *fib1_region = FIA_Copy(fib1, intersect_rect.left, intersect_rect.top,
+	//									   intersect_rect.right, intersect_rect.bottom);
 
-	FIBITMAP *fib1_24 = FreeImage_ConvertTo24Bits(fib1_region);
+	//FIBITMAP *fib1_24 = FreeImage_ConvertTo24Bits(fib1_region);
 
-	std::cout << "fib1_24 image Type: " << FreeImage_GetImageType(fib1_24) 
-		<< "Bpp: " << FreeImage_GetBPP(fib1_24)
-		<< "Width: " << FreeImage_GetWidth(fib1_24)
-		<< "Height: " << FreeImage_GetHeight(fib1_24) << std::endl;
+	//FIBITMAP *blended = FreeImage_Composite(alpha, 1, NULL, fib1_24);
 
-	FIBITMAP *blended = FreeImage_Composite(alpha, 1, NULL, fib1_24);
+    //FIA_PasteFromTopLeft(fib1, blended, intersect_rect.left, intersect_rect.top);
 
-    FIA_PasteFromTopLeft(fib1, blended, intersect_rect.left, intersect_rect.top);
-
-    FIA_SaveFIBToFile(fib1, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value.png", BIT32);
+    FIA_SaveFIBToFile(alpha, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value.png", BIT32);
 
     FreeImage_Unload(fib1);
     FreeImage_Unload(fib2);
 	FreeImage_Unload(alpha);
-	FreeImage_Unload(blended);
-	FreeImage_Unload(fib1_24);
-	FreeImage_Unload(fib1_region);
+	//FreeImage_Unload(blended);
+	//FreeImage_Unload(fib1_24);
+	//FreeImage_Unload(fib1_region);
+}
+
+static void
+TestFIA_GetGradientBlendAlphaImageTest2(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "histology1.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "jigsaw.png");
+	FIBITMAP *fib3 = FreeImage_Rescale(fib2, 1360, 1024, FILTER_BOX);
+
+    PROFILE_START("TestFIA_GetGradientBlendAlphaImageTest2");
+
+	FIARECT rect1 = MakeFIARect(505, 0, 1445, 583);
+	FIARECT rect2 = MakeFIARect(0, 0, 1360, 1024);
+
+	FIARECT intersect_rect;
+
+    FIBITMAP *alpha = FIA_GetGradientBlendAlphaImage (fib3, rect1, rect2, &intersect_rect);
+
+    PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest2");
+
+	//FIBITMAP *blended = FreeImage_Composite(alpha, 1, NULL, fib1);
+
+	//FIA_CompositeRegion(alpha, fib1, intersect_rect);
+
+    FIA_SaveFIBToFile(alpha, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value_histology.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+	FreeImage_Unload(fib3);
+	FreeImage_Unload(alpha);
 }
 
 static void
@@ -1162,6 +1195,46 @@ TestFIA_GradientBlendPasteTest(CuTest* tc)
     FreeImage_Unload(fib1);
     FreeImage_Unload(fib2);
     FreeImage_Unload(fib3);
+}
+
+static void
+TestFIA_GradientBlendPasteTest2(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "jigsaw.png");
+
+    PROFILE_START("TestFIA_GradientBlendPasteTest2");
+
+    FIA_GradientBlendPasteFromTopLeft (fib1, fib2, 10, 10);
+
+    PROFILE_STOP("TestFIA_GradientBlendPasteTest2");
+
+    FIA_SaveFIBToFile(fib1, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_paste2.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+}
+
+
+static void
+TestFIA_GradientBlendPasteTest3(CuTest* tc)
+{
+    FIBITMAP *fib1 = FreeImage_Allocate(2000,2000, 24, 0, 0, 0);
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "jigsaw.png");
+
+    PROFILE_START("TestFIA_GradientBlendPasteTest3");
+
+    FIA_GradientBlendPasteFromTopLeft (fib1, fib2, -100, 10);
+	FIA_GradientBlendPasteFromTopLeft (fib1, fib2, 100, 500);
+	FIA_GradientBlendPasteFromTopLeft (fib1, fib2, 500, 1000);
+	//FIA_GradientBlendPasteFromTopLeft (fib1, fib2, 500, 500);
+
+    PROFILE_STOP("TestFIA_GradientBlendPasteTest3");
+
+    FIA_SaveFIBToFile(fib1, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_paste3.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
 }
 
 static void
@@ -1200,12 +1273,18 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImages);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesTwoImages);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesWithNoKnowledge);
+	
+	//SUITE_ADD_TEST(suite, TestFIA_IntersectingRect);
 
     // Done
-    //SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
+    SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
 	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest);
+	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest2);
+	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest3);
 	SUITE_ADD_TEST(suite, TestFIA_GradientBlendFloatImagePasteTest);
-	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest);
+	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest);	
+	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest2);
+
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateFFTTest);

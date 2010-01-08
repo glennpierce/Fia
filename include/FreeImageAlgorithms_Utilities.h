@@ -503,9 +503,6 @@ FIA_DistanceMapForRectangle (FIARECT rect, int normalise);
 DLL_API int DLL_CALLCONV
 FIA_IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3);
 
-// Hopefully this is a temp solution until FreeImage paste supports greyscale that is
-// above 8bits.
-// This function is very limited.
 DLL_API int DLL_CALLCONV
 FIA_Paste(FIBITMAP *dst, FIBITMAP *src, int left, int bottom);
 
@@ -691,6 +688,11 @@ FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int 
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_GetGradientBlendAlphaImage (FIBITMAP* src2, FIARECT rect1, FIARECT rect2, FIARECT *intersect_rect);
+DLL_API int DLL_CALLCONV
+FIA_CompositeRegion(FIBITMAP * fg, FIBITMAP * bg, FIARECT rect);
+
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values);
 #ifdef __cplusplus
 }
 #endif
