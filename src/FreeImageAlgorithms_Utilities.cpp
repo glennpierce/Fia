@@ -1021,13 +1021,10 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
 }
 
 int DLL_CALLCONV
-FIA_GetGreyScalePixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, FREE_IMAGE_TYPE type, void *values)
+FIA_GetGreyScalePixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, void *values)
 {
 	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
 	int bpp = FreeImage_GetBPP(src);
-
-	if(src_type != type)
-		return FIA_ERROR;
 
 	switch (src_type)
     {
