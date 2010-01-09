@@ -2261,9 +2261,7 @@ FIA_GetGradientBlendAlphaImage (FIBITMAP* src2, FIARECT rect1, FIARECT rect2, FI
     FIBITMAP *src2_region = NULL, *map_region = NULL, *src1_cpy = NULL;
 
 	// Make sure the passed in rect 2 does not exceed the size of the corresponding image.
-	//FIA_ClipRectToImage (src2, &rect2);
 	FIA_RectChangeWidthHeight (&rect2, FreeImage_GetWidth(src2), FreeImage_GetHeight(src2));
-
 
     map_region = FIA_GetGradientAlphaValuesForIntersection(rect1, rect2, &intersection_rect);
 
@@ -2358,16 +2356,17 @@ CLEANUP:
     return NULL;
 }
 
-int DLL_CALLCONV
-FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
+FIBITMAP* DLL_CALLCONV
+FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2, 
+									  FIARECT *intersect_image_rect)
 {
     FIARECT intersection_rect;
     FIBITMAP *alpha = NULL, *src1_24 = NULL, *blended = NULL, *src1_region = NULL;
     FIBITMAP *src2_region = NULL, *map_region = NULL, *src1_cpy = NULL;
 
-	// Make sure the passed in rects do not exceed the size of the corresponding image.
-	//FIA_ClipRectToImage (src1, &rect1);
-	//FIA_ClipRectToImage (src2, &rect2);
+	// Make sure the passed in rect 2 does not exceed the size of the corresponding image.
+	FIA_RectChangeWidthHeight (&rect1, FreeImage_GetWidth(src1), FreeImage_GetHeight(src1));
+	FIA_RectChangeWidthHeight (&rect2, FreeImage_GetWidth(src2), FreeImage_GetHeight(src2));
 
 	map_region = FIA_GetGradientAlphaValuesForIntersection(rect1, rect2, &intersection_rect);
 
@@ -2380,6 +2379,8 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
 
     FIARECT src1_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect1.left, rect1.top));
     FIARECT src2_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect2.left, rect2.top));
+
+	*intersect_image_rect = src1_intersection_rect;
 
     src1_region = FIA_Copy(src1, src1_intersection_rect.left, src1_intersection_rect.top,
             src1_intersection_rect.right, src1_intersection_rect.bottom);
@@ -2427,8 +2428,6 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
         goto CLEANUP;
     }
 
-    FIA_PasteFromTopLeft(src1, blended,  src1_intersection_rect.left, src1_intersection_rect.top);
-
 	if(src1_region != NULL)
         FreeImage_Unload(src1_region);
 
@@ -2441,13 +2440,10 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
     if(alpha != NULL)
         FreeImage_Unload(alpha);
 
-    if(blended != NULL)
-        FreeImage_Unload(blended);
-
     if(src1_24 != NULL)
         FreeImage_Unload(src1_24);
 
-    return FIA_SUCCESS;
+    return blended;
 
 CLEANUP:
 
@@ -2463,15 +2459,33 @@ CLEANUP:
     if(alpha != NULL)
         FreeImage_Unload(alpha);
 
-    if(blended != NULL)
-        FreeImage_Unload(blended);
-
     if(src1_24 != NULL)
         FreeImage_Unload(src1_24);
 
-    return FIA_ERROR;
+    return NULL;
 }
 
+int DLL_CALLCONV
+FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
+{
+	FIARECT intersect_image_rect;
+
+	FIBITMAP* blended = FIA_GradientBlendedIntersectionImage (src1, rect1, src2, rect2, &intersect_image_rect);
+
+    FIA_PasteFromTopLeft(src1, blended,  intersect_image_rect.left, intersect_image_rect.top);
+
+    if(blended != NULL)
+        FreeImage_Unload(blended);
+
+    return FIA_SUCCESS;
+
+CLEANUP:
+
+    if(blended != NULL)
+        FreeImage_Unload(blended);
+
+    return FIA_ERROR;
+}
 
 int DLL_CALLCONV
 FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top)
