@@ -1151,12 +1151,12 @@ TestFIA_GetGradientBlendAlphaImageTest2(CuTest* tc)
 
     PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest2");
 
-    FIA_SaveFIBToFile(alpha, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value_histology.png", BIT32);
+    FIA_SaveFIBToFile(alpha, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value_histology2.png", BIT32);
 
     FreeImage_Unload(fib1);
     FreeImage_Unload(fib2);
-	FreeImage_Unload(fib3);
-	FreeImage_Unload(alpha);
+    FreeImage_Unload(fib3);
+    FreeImage_Unload(alpha);
 }
 
 static void
@@ -1166,7 +1166,7 @@ TestFIA_GetGradientBlendAlphaImageTest3(CuTest* tc)
     FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "jigsaw.png");
 	FIBITMAP *fib3 = FreeImage_Rescale(fib2, 1360, 1024, FILTER_BOX);
 
-    PROFILE_START("TestFIA_GetGradientBlendAlphaImageTest2");
+    PROFILE_START("TestFIA_GetGradientBlendAlphaImageTest3");
 
 	FIARECT rect1 = MakeFIARect(505, 0, 1445, 583);
 	FIARECT rect2 = MakeFIARect(600, 0, 1360, 1024);
@@ -1175,14 +1175,41 @@ TestFIA_GetGradientBlendAlphaImageTest3(CuTest* tc)
 
     FIBITMAP *alpha = FIA_GetGradientBlendAlphaImage (fib3, rect1, rect2, &intersect_rect);
 
-    PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest2");
+    PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest3");
 
-    FIA_SaveFIBToFile(alpha, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value_histology2.png", BIT32);
+    FIA_SaveFIBToFile(alpha, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_alpha_value_histology3.png", BIT32);
 
     FreeImage_Unload(fib1);
     FreeImage_Unload(fib2);
-	FreeImage_Unload(fib3);
-	FreeImage_Unload(alpha);
+    FreeImage_Unload(fib3);
+    FreeImage_Unload(alpha);
+}
+
+
+static void
+TestFIA_GetGradientBlendAlphaImageTest4(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "histology1.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "jigsaw.png");
+    FIBITMAP *fib3 = FreeImage_Rescale(fib2, 1360, 1024, FILTER_BOX);
+
+    PROFILE_START("TestFIA_GetGradientBlendAlphaImageTest4");
+
+    FIARECT rect1 = MakeFIARect(505, 0, 1445, 583);
+    FIARECT rect2 = MakeFIARect(600, 0, 1360, 1024);
+
+    FIARECT intersect_rect;
+
+    FIBITMAP *intersection_fib = FIA_GradientBlendedIntersectionImage (fib3, rect1, fib2, rect2, &intersect_rect);
+
+    PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest4");
+
+    FIA_SaveFIBToFile(intersection_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_intersection_fib.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+    FreeImage_Unload(fib3);
+    FreeImage_Unload(intersection_fib);
 }
 
 static void
@@ -1295,6 +1322,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest);	
 	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest2);
 	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest3);
+    SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest4);
 
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection);
