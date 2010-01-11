@@ -43,7 +43,7 @@ template < class Tsrc > class TemplateImageFunctionClass
     FIBITMAP *FloatRescaleToHalf (FIBITMAP * src);
 
 	// Composite function for all image types
-	FIBITMAP *Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values);
+	FIBITMAP *Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask);
 };
 
 TemplateImageFunctionClass < unsigned char > UCharImage;
@@ -1958,7 +1958,7 @@ FIA_SetAlphaValuesFromDistanceMapImage (FIBITMAP * src, FIBITMAP* alpha_values)
 
 
 template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
-    Tsrc >::Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
+    Tsrc >::Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask)
 {
 	if (FreeImage_GetImageType (fg) != FreeImage_GetImageType (bg))
     {
@@ -1974,6 +1974,15 @@ template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
         return NULL;
     }
 
+	if(mask != NULL) {
+		if (FreeImage_GetImageType (mask) != FIT_BITMAP)
+		{
+			FreeImage_OutputMessageProc (FIF_UNKNOWN,
+										 "mask is not a FIT_BITMAP image");
+			return NULL;
+		}
+	}
+
 	if(FIA_CheckSizesAreSame(fg, bg) == 0) {
 
         FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and background image are not the same size");
@@ -1988,30 +1997,60 @@ template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
         return NULL;
     }
 
+	if(mask != NULL) {
+
+		if(FIA_CheckSizesAreSame(fg, mask) == 0) {
+
+			FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and mask image are not the same size");
+
+			return NULL;
+		}
+	}
+
     int fg_width = FreeImage_GetWidth (fg);
     int fg_height = FreeImage_GetHeight (fg);
 
     FIBITMAP *dst = FIA_CloneImageType (fg, fg_width, fg_height);
 
-    for(register int y = 0; y < fg_height; y++)
-    {
-        Tsrc *dst_ptr = (Tsrc *) FIA_GetScanLineFromTop (dst, y);
-        Tsrc *fg_ptr = (Tsrc *) FIA_GetScanLineFromTop (fg, y);
-        Tsrc *bg_ptr = (Tsrc *) FIA_GetScanLineFromTop (bg, y);
-		float *alpha_ptr = (float *) FIA_GetScanLineFromTop (normalised_alpha_values, y);
+	if(mask != NULL) {
 
-        for(register int x = 0; x < fg_width; x++)
-        {
-			dst_ptr[x] = (alpha_ptr[x] * fg_ptr[x]) + ((1 - alpha_ptr[x]) * bg_ptr[x]);
-        }
-    }
+		for(register int y = 0; y < fg_height; y++)
+		{
+			Tsrc *dst_ptr = (Tsrc *) FIA_GetScanLineFromTop (dst, y);
+			Tsrc *fg_ptr = (Tsrc *) FIA_GetScanLineFromTop (fg, y);
+			Tsrc *bg_ptr = (Tsrc *) FIA_GetScanLineFromTop (bg, y);
+			BYTE *mask_ptr = (BYTE *) FIA_GetScanLineFromTop (mask, y);
+			float *alpha_ptr = (float *) FIA_GetScanLineFromTop (normalised_alpha_values, y);
+
+			for(register int x = 0; x < fg_width; x++)
+			{
+				if(mask_ptr[x] > 0)
+					dst_ptr[x] = (alpha_ptr[x] * fg_ptr[x]) + ((1 - alpha_ptr[x]) * bg_ptr[x]);
+				else
+					dst_ptr[x] = fg_ptr[x];
+			}
+		}
+	}
+	else {
+		for(register int y = 0; y < fg_height; y++)
+		{
+			Tsrc *dst_ptr = (Tsrc *) FIA_GetScanLineFromTop (dst, y);
+			Tsrc *fg_ptr = (Tsrc *) FIA_GetScanLineFromTop (fg, y);
+			Tsrc *bg_ptr = (Tsrc *) FIA_GetScanLineFromTop (bg, y);
+			float *alpha_ptr = (float *) FIA_GetScanLineFromTop (normalised_alpha_values, y);
+
+			for(register int x = 0; x < fg_width; x++)
+			{
+				dst_ptr[x] = (alpha_ptr[x] * fg_ptr[x]) + ((1 - alpha_ptr[x]) * bg_ptr[x]);
+			}
+		}
+	}
 
     return dst;
 }
 
-
 FIBITMAP *DLL_CALLCONV
-FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
+FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask)
 {
     FIBITMAP *dst = NULL;
 
@@ -2026,7 +2065,7 @@ FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
         {
             if (FreeImage_GetBPP (fg) == 8)
             {
-                dst = UCharImage.Composite (fg, bg, normalised_alpha_values);
+                dst = UCharImage.Composite (fg, bg, normalised_alpha_values, mask);
             }
             else
             {
@@ -2040,9 +2079,9 @@ FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
 				FIBITMAP* blue_channel_fg = FreeImage_GetChannel(fg, FICC_BLUE);
 				FIBITMAP* blue_channel_bg = FreeImage_GetChannel(bg, FICC_BLUE);
 
-				FIBITMAP* dst1 = UCharImage.Composite (red_channel_fg, red_channel_bg, normalised_alpha_values);
-				FIBITMAP* dst2 = UCharImage.Composite (green_channel_fg, green_channel_bg, normalised_alpha_values);
-				FIBITMAP* dst3 = UCharImage.Composite (blue_channel_fg, blue_channel_bg, normalised_alpha_values);
+				FIBITMAP* dst1 = UCharImage.Composite (red_channel_fg, red_channel_bg, normalised_alpha_values, mask);
+				FIBITMAP* dst2 = UCharImage.Composite (green_channel_fg, green_channel_bg, normalised_alpha_values, mask);
+				FIBITMAP* dst3 = UCharImage.Composite (blue_channel_fg, blue_channel_bg, normalised_alpha_values, mask);
 
 				dst = FIA_CloneImageType(fg, FreeImage_GetWidth(fg), FreeImage_GetHeight(fg));
 
@@ -2065,37 +2104,37 @@ FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values)
 
         case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
         {
-            dst = UShortImage.Composite (fg, bg, normalised_alpha_values);
+            dst = UShortImage.Composite (fg, bg, normalised_alpha_values, mask);
             break;
         }
 
         case FIT_INT16:        // array of short: signed 16-bit
         {
-            dst = ShortImage.Composite (fg, bg, normalised_alpha_values);
+            dst = ShortImage.Composite (fg, bg, normalised_alpha_values, mask);
             break;
         }
 
         case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
         {
-            dst = ULongImage.Composite (fg, bg, normalised_alpha_values);
+            dst = ULongImage.Composite (fg, bg, normalised_alpha_values, mask);
             break;
         }
 
         case FIT_INT32:        // array of long: signed 32-bit
         {
-            dst = LongImage.Composite (fg, bg, normalised_alpha_values);
+            dst = LongImage.Composite (fg, bg, normalised_alpha_values, mask);
             break;
         }
 
         case FIT_FLOAT:        // array of float: 32-bit
         {
-            dst = FloatImage.Composite (fg, bg, normalised_alpha_values);
+            dst = FloatImage.Composite (fg, bg, normalised_alpha_values, mask);
             break;
         }
 
         case FIT_DOUBLE:       // array of double: 64-bit
         {
-            dst = DoubleImage.Composite (fg, bg, normalised_alpha_values);
+            dst = DoubleImage.Composite (fg, bg, normalised_alpha_values, mask);
             break;
         }
 
@@ -2353,14 +2392,16 @@ CLEANUP:
     return NULL;
 }
 
+// src1 mask is a bitmap that specifies that only pixels corresponding to
+// the non zero mask values will be blended
 FIBITMAP* DLL_CALLCONV
 FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2, 
-									  FIARECT *intersect_image_rect)
+									  FIBITMAP *src1_mask, FIARECT *intersect_image_rect)
 {
     FIARECT intersection_rect, src1_intersection_rect,  src2_intersection_rect;
 
     FIBITMAP *alpha = NULL, *src1_24 = NULL, *blended = NULL, *src1_region = NULL;
-    FIBITMAP *src2_region = NULL, *map_region = NULL, *src1_cpy = NULL;
+    FIBITMAP *src2_region = NULL, *map_region = NULL, *src1_cpy = NULL, *src1_mask_region = NULL;
 
     // Make sure the passed in rect 2 does not exceed the size of the corresponding image.
     FIA_RectChangeWidthHeight (&rect1, FreeImage_GetWidth(src1), FreeImage_GetHeight(src1));
@@ -2389,6 +2430,18 @@ FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* 
 
         goto CLEANUP;
     }
+
+	if(src1_mask != NULL) {
+		src1_mask_region = FIA_Copy(src1_mask, src1_intersection_rect.left, src1_intersection_rect.top,
+				src1_intersection_rect.right, src1_intersection_rect.bottom);
+
+		if(src1_mask_region == NULL) {
+
+			FreeImage_OutputMessageProc (FIF_UNKNOWN, "FIA_Copy returned NULL (src1_mask_region)");
+
+			goto CLEANUP;
+		}
+	}
 	
     src2_region = FIA_Copy(src2, src2_intersection_rect.left, src2_intersection_rect.top,
                 src2_intersection_rect.right, src2_intersection_rect.bottom);
@@ -2417,7 +2470,7 @@ FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* 
         goto CLEANUP;
     }
 
-    blended = FIA_Composite(src2_region, src1_region, map_region);
+    blended = FIA_Composite(src2_region, src1_region, map_region, src1_mask_region);
 
     if(blended == NULL) {
 
@@ -2428,6 +2481,9 @@ FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* 
 
     if(src1_region != NULL)
         FreeImage_Unload(src1_region);
+
+	if(src1_mask_region != NULL)
+        FreeImage_Unload(src1_mask_region);
 
     if(src2_region != NULL)
         FreeImage_Unload(src2_region);
@@ -2464,11 +2520,11 @@ CLEANUP:
 }
 
 int DLL_CALLCONV
-FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
+FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2, FIBITMAP *mask)
 {
 	FIARECT intersect_image_rect;
 
-	FIBITMAP* blended = FIA_GradientBlendedIntersectionImage (src1, rect1, src2, rect2, &intersect_image_rect);
+	FIBITMAP* blended = FIA_GradientBlendedIntersectionImage (src1, rect1, src2, rect2, mask, &intersect_image_rect);
 
     FIA_PasteFromTopLeft(src1, blended,  intersect_image_rect.left, intersect_image_rect.top);
 
@@ -2486,7 +2542,7 @@ CLEANUP:
 }
 
 int DLL_CALLCONV
-FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top)
+FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top, FIBITMAP *mask)
 {
     int dst_width = FreeImage_GetWidth(dst);
     int dst_height = FreeImage_GetHeight(dst);
@@ -2497,5 +2553,5 @@ FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int 
     FIARECT dst_rect = MakeFIARect(0,0,dst_width-1,dst_height-1);
     FIARECT src_rect = MakeFIARect(left,top,left + src_width-1, top + src_height-1);
 
-    return FIA_GradientBlend (dst, dst_rect, src, src_rect);
+    return FIA_GradientBlend (dst, dst_rect, src, src_rect, mask);
 }
