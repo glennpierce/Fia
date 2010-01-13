@@ -1213,6 +1213,54 @@ TestFIA_GetGradientBlendAlphaImageTest4(CuTest* tc)
 }
 
 static void
+TestFIA_GetGradientBlendAlphaImageListerHistologyTest(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "HistologyRS1.png");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "HistologyRS2.png");
+   
+    PROFILE_START("TestFIA_GetGradientBlendAlphaImageListerHistologyTest");
+
+    FIARECT rect1 = MakeFIARect(0, 0, FreeImage_GetWidth(fib1), FreeImage_GetHeight(fib1));
+    FIARECT rect2 = MakeFIARect(1224, 0, FreeImage_GetWidth(fib2), FreeImage_GetHeight(fib2));
+
+    FIARECT intersect_rect;
+
+    FIBITMAP *intersection_fib = FIA_GradientBlendedIntersectionImage (fib1, rect1, fib2, rect2, NULL, &intersect_rect);
+
+    PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageListerHistologyTest");
+
+    FIA_SaveFIBToFile(intersection_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_lister_histology_fib.png", BIT24);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+    FreeImage_Unload(intersection_fib);
+}
+
+static void
+TestFIA_GetGradientBlendAlphaImageTest5(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "drone-bee-left-blend.jpg");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "drone-bee-right-blend.jpg");
+
+    PROFILE_START("TestFIA_GetGradientBlendAlphaImageTest5");
+
+    FIARECT rect1 = MakeFIARect(0, 0, FreeImage_GetWidth(fib1) - 1, FreeImage_GetHeight(fib1) - 1);
+    FIARECT rect2 = MakeFIARect(105, 0, FreeImage_GetWidth(fib2) - 1, FreeImage_GetHeight(fib2) - 1);
+
+    FIARECT intersect_rect;
+
+    FIBITMAP *intersection_fib = FIA_GradientBlendedIntersectionImage (fib1, rect1, fib2, rect2, NULL, &intersect_rect);
+
+    PROFILE_STOP("TestFIA_GetGradientBlendAlphaImageTest5");
+
+    FIA_SaveFIBToFile(intersection_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_intersection_fib2.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+    FreeImage_Unload(intersection_fib);
+}
+
+static void
 TestFIA_GradientBlendPasteTest(CuTest* tc)
 {
     FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
@@ -1313,6 +1361,37 @@ TestFIA_GradientBlendPasteTest4(CuTest* tc)
 }
 
 static void
+TestFIA_GradientBlendPasteTest5(CuTest* tc)
+{
+    FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "drone-bee-left-blend.jpg");
+    FIBITMAP *fib2 =  LoadTissueFile(TEST_DATA_DIR "drone-bee-right-blend.jpg");
+
+	int bpp = FreeImage_GetBPP(fib1);
+	int width = FreeImage_GetWidth(fib1);
+	int height = FreeImage_GetHeight(fib1);
+
+	int background_width = width * 2;
+	int background_height = height * 2;
+
+	FIBITMAP *background = FreeImage_Allocate(background_width, background_height, bpp, 0, 0, 0);
+	FIBITMAP *mask = FreeImage_Allocate(background_width, background_height, 8, 0, 0, 0);
+
+	//
+    PROFILE_START("FIA_GradientBlendPasteFromTopLeft4");
+
+	FIA_GradientBlendPasteFromTopLeft (background, fib1, 0, 0, mask);
+	FIA_DrawSolidGreyscaleRect(mask, MakeFIARect(0,0, width -1, height - 1), 250.0);
+    FIA_GradientBlendPasteFromTopLeft (background, fib2, 105, 0, mask);
+
+    PROFILE_STOP("FIA_GradientBlendPasteFromTopLeft4");
+
+    FIA_SaveFIBToFile(background, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_mask_test.png", BIT32);
+
+    FreeImage_Unload(fib1);
+    FreeImage_Unload(fib2);
+}
+
+static void
 TestFIA_GradientBlendFloatImagePasteTest(CuTest* tc)
 {
     FIBITMAP *fib1 =  LoadTissueFile(TEST_DATA_DIR "BloodVessels/d9ob20_00009.png");
@@ -1362,6 +1441,9 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest2);
 	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest3);
     SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest4);
+    SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageTest5);
+	SUITE_ADD_TEST(suite, TestFIA_GetGradientBlendAlphaImageListerHistologyTest);
+	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest5);
 
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateEdgeTest);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection);

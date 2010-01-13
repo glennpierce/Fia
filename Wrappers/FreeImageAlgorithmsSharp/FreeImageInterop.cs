@@ -3,7 +3,7 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 
 namespace FreeImage
-{	
+{
     [StructLayout(LayoutKind.Sequential)]
     internal struct RGBQUAD
     { 
