@@ -20,13 +20,32 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_Drawing.h"
+#include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 
+#include <iostream>
 #include <math.h>
-#include "agg.h"
 
+#include "agg_basics.h"
+#include "agg_rendering_buffer.h"
+#include "agg_rasterizer_scanline_aa.h"
+#include "agg_rasterizer_outline.h"
+#include "agg_renderer_primitives.h"
+#include "agg_scanline_p.h"
+#include "agg_renderer_scanline.h"
+#include "agg_pixfmt_rgb.h"
+#include "agg_pixfmt_rgba.h"
+#include "agg_pixfmt_gray.h"
+#include "agg_path_storage.h"
+#include "agg_conv_stroke.h"
+#include "agg_ellipse.h"
+#include "agg_glyph_raster_bin.h"
+#include "agg_renderer_raster_text.h"
+#include "agg_embedded_raster_fonts.h"
+
+template<class Rasterizer>
 static void
-draw_line (agg::rasterizer & ras, double x1, double y1, double x2, double y2, double width)
+RasterLine (Rasterizer& ras, double x1, double y1, double x2, double y2, double width)
 {
     double dx = x2 - x1;
     double dy = y2 - y1;
@@ -41,385 +60,33 @@ draw_line (agg::rasterizer & ras, double x1, double y1, double x2, double y2, do
     ras.line_to_d (x1 + dx, y1 - dy);
 }
 
-// Draws a orthogonal no aa line of width one pixel
-// This is for drawing rectangles fast
+template<class RendererType>
 static int
-orthogonal_draw_colour_line (FIBITMAP * src, int x1, int y1, int x2, int y2, RGBQUAD colour)
+DrawLine (RendererType& renderer, FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour, int line_width, int antialiased)
 {
-    if (!src)
+    // the Rasterizer definition
+    agg::rasterizer_scanline_aa<> ras;
+    ras.reset();
+ 
+    agg::scanline_p8 scanline;
+
+    RasterLine (ras, p1.x, p1.y, p2.x, p2.y, line_width);
+
+    if (antialiased)
     {
-        return FIA_ERROR;
+        agg::render_scanlines_aa_solid(ras, scanline, renderer, agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+    }
+    else
+    {
+        agg::render_scanlines_bin_solid(ras, scanline, renderer, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
     }
 
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
-
-    // Draw from the left
-    if (x2 < x1)
-    {
-        SWAP (x1, x2);
-    }
-
-    // Draw from the top
-    if (y2 < y1)
-    {
-        SWAP (y1, y2);
-    }
-
-    if (x2 < 0 || y2 < 0)
-    {
-        return FIA_ERROR;
-    }
-
-    if (x1 < 0)
-    {
-        x1 = 0;
-    }
-
-    if (x2 >= width)
-    {
-        x2 = width - 1;
-    }
-
-    if (y1 < 0)
-    {
-        y1 = 0;
-    }
-
-    if (y2 >= height)
-    {
-        y2 = height - 1;
-    }
-
-    int bytespp = FreeImage_GetLine (src) / FreeImage_GetWidth (src);
-    int pitch = FreeImage_GetPitch (src);
-
-    if (x1 != x2)
-    {
-        // We have a horizontal line
-        // Make sure y's are the same
-        if (y1 != y2)
-        {
-            return FIA_ERROR;
-        }
-
-        BYTE *bits = (BYTE *) FreeImage_GetScanLine (src, y1) + (x1 * bytespp);
-
-        for(register int x = x1; x <= x2; x++)
-        {
-            bits[FI_RGBA_RED] = colour.rgbRed;
-            bits[FI_RGBA_GREEN] = colour.rgbGreen;
-            bits[FI_RGBA_BLUE] = colour.rgbBlue;
-
-            if (bytespp == 4)
-            {
-                bits[FI_RGBA_ALPHA] = 0;
-            }
-
-            // jump to next pixel
-            bits += bytespp;
-        }
-
-        return FIA_SUCCESS;
-    }
-
-    if (y1 != y2)
-    {
-        // We have a verticle line
-        // Make sure x's are the same
-        if (x1 != x2)
-        {
-            return FIA_ERROR;
-        }
-
-        // Get starting point
-        BYTE *bits = (BYTE *) FreeImage_GetScanLine (src, y1) + (x1 * bytespp);
-
-        while (y1 <= y2)
-        {
-            bits[FI_RGBA_RED] = colour.rgbRed;
-            bits[FI_RGBA_GREEN] = colour.rgbGreen;
-            bits[FI_RGBA_BLUE] = colour.rgbBlue;
-
-            if (bytespp == 4)
-            {
-                bits[FI_RGBA_ALPHA] = 0;
-            }
-
-            bits += pitch;
-
-            y1++;
-        }
-
-        return FIA_SUCCESS;
-    }
-
-    return FIA_ERROR;
+    return FIA_SUCCESS;
 }
 
-// Draws a orthogonal no aa line of width one pixel
-// This is for drawing rectangles fast and with subpixel position as with agg.
-template < typename valType > static int
-orthogonal_draw_gs_line (FIBITMAP * src, int x1, int y1, int x2, int y2, valType colour)
-{
-    if (!src)
-    {
-        return FIA_ERROR;
-    }
-
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
-
-    // Draw from the left
-    if (x2 < x1)
-    {
-        SWAP (x1, x2);
-    }
-
-    // Draw from the top
-    if (y2 < y1)
-    {
-        SWAP (y1, y2);
-    }
-
-    if (x2 < 0 || y2 < 0)
-    {
-        return FIA_ERROR;
-    }
-
-    if (x1 < 0)
-    {
-        x1 = 0;
-    }
-
-    if (x2 >= width)
-    {
-        x2 = width - 1;
-    }
-
-    if (y1 < 0)
-    {
-        y1 = 0;
-    }
-
-    if (y2 >= height)
-    {
-        y2 = height - 1;
-    }
-
-    int bytespp = FreeImage_GetLine (src) / FreeImage_GetWidth (src);
-    int pitch = FreeImage_GetPitch (src);
-
-    if (x1 != x2)
-    {
-        // We have a horizontal line
-        // Make sure y's are the same
-        if (y1 != y2)
-        {
-            return FIA_ERROR;
-        }
-
-        valType *bits = (valType *) FreeImage_GetScanLine (src, y1) + (x1 * bytespp);
-
-        while (x1 <= x2)
-        {
-            *bits++ = colour;
-            x1++;
-        }
-
-        return FIA_SUCCESS;
-    }
-
-    if (y1 != y2)
-    {
-        // We have a verticle line
-        // Make sure x's are the same
-        if (x1 != x2)
-        {
-            return FIA_ERROR;
-        }
-
-        // Get starting point
-        valType *bits = (valType *) (FreeImage_GetScanLine (src, y1) + (x1 * bytespp));
-
-        while (y1 <= y2)
-        {
-            *bits = colour;
-
-            bits += pitch;
-
-            y1++;
-        }
-
-        return FIA_SUCCESS;
-    }
-
-    return FIA_ERROR;
-}
-
+template<typename RendererType, typename ColorT>
 static int
-DrawColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour, int line_width)
-{
-    int err = FIA_ERROR;
-
-    for(int i = 0; i < line_width; i++)
-    {
-        // Top
-        err = orthogonal_draw_colour_line (src, rect.left - line_width + 1, rect.top + i, rect.right
-                                           + line_width - 1, rect.top + i, colour);
-
-        // Bottom
-        err = orthogonal_draw_colour_line (src, rect.left - line_width + 1, rect.bottom - i,
-                                           rect.right + line_width - 1, rect.bottom - i, colour);
-
-        // Left
-        err = orthogonal_draw_colour_line (src, rect.left - i, rect.top, rect.left - i, rect.bottom,
-                                           colour);
-
-        // Right
-        err = orthogonal_draw_colour_line (src, rect.right + i, rect.top, rect.right + i,
-                                           rect.bottom, colour);
-    }
-
-    if (err == FIA_ERROR)
-    {
-        return FIA_ERROR;
-    }
-
-    return FIA_SUCCESS;
-}
-
-template < typename valType > static int
-DrawGSRect (FIBITMAP * src, FIARECT rect, valType colour, int line_width)
-{
-    int err = FIA_ERROR;
-
-    for(int i = 0; i < line_width; i++)
-    {
-        // Top
-        err = orthogonal_draw_gs_line (src, rect.left - line_width + 1, rect.top + i, rect.right
-                                       + line_width - 1, rect.top + i, colour);
-
-        // Bottom
-        err = orthogonal_draw_gs_line (src, rect.left - line_width + 1, rect.bottom - i, rect.right
-                                       + line_width - 1, rect.bottom - i, colour);
-
-        // Left
-        err = orthogonal_draw_gs_line (src, rect.left - i, rect.top, rect.left - i, rect.bottom,
-                                       colour);
-
-        // Right
-        err = orthogonal_draw_gs_line (src, rect.right + i, rect.top, rect.right + i, rect.bottom,
-                                       colour);
-    }
-
-    if (err == FIA_ERROR)
-    {
-        return FIA_ERROR;
-    }
-
-    return FIA_SUCCESS;
-}
-
-static int
-Draw24BitSolidColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour)
-{
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
-
-    // Allocate the framebuffer
-    unsigned char *buf = FreeImage_GetBits (src);
-
-    // Create the rendering buffer
-    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
-
-    // Create the rendering buffer
-    agg::renderer < agg::span_bgr24 > ren (rbuf);
-    agg::rasterizer ras;
-
-    ras.move_to_d (rect.left, rect.top);
-    ras.line_to_d (rect.right, rect.top);
-    ras.line_to_d (rect.right, rect.bottom);
-    ras.line_to_d (rect.left, rect.bottom);
-    ras.line_to_d (rect.left, rect.top);
-
-    ras.render (ren, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
-
-    return FIA_SUCCESS;
-}
-
-static int
-Draw32BitSolidColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour)
-{
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
-
-    // Allocate the framebuffer
-    unsigned char *buf = FreeImage_GetBits (src);
-
-    // Create the rendering buffer
-    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
-
-    // Create the renderer
-    agg::renderer < agg::span_bgra32 > ren (rbuf);
-    agg::rasterizer ras;
-
-    ras.move_to_d (rect.left, rect.top);
-    ras.line_to_d (rect.right, rect.top);
-    ras.line_to_d (rect.right, rect.bottom);
-    ras.line_to_d (rect.left, rect.bottom);
-    ras.line_to_d (rect.left, rect.top);
-
-    ras.render (ren, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
-
-    return FIA_SUCCESS;
-}
-
-static int DLL_CALLCONV
-Draw8BitSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, unsigned char value)
-{
-    // Seems that Anti grain method is to slow probably  because it is too advanced
-    // Does accurate drawing etc with anti aliasing.
-    // We just want a simple rectangle.
-    // Allocate the framebuffer
-    unsigned char *buf = NULL;
-    FIARECT tmp_rect = rect;
-
-    for(register int y = tmp_rect.bottom; y <= tmp_rect.top; y++)
-    {
-        buf = FreeImage_GetScanLine (src, y);
-
-        memset (buf + tmp_rect.left, value, tmp_rect.right - tmp_rect.left + 1);
-    }
-
-    return FIA_SUCCESS;
-}
-
-static int DLL_CALLCONV
-DrawFloatSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, float value)
-{
-    // Seems that Anti grain method is to slow probably  because it is too advanced
-    // Does accurate drawing etc with anti aliasing.
-    // We just want a simple rectangle.
-    // Allocate the framebuffer
-    float *buf = NULL;
-    FIARECT tmp_rect = rect;
-
-    int right = tmp_rect.left + (tmp_rect.right - tmp_rect.left);
-
-    for(register int y = tmp_rect.bottom; y <= tmp_rect.top; y++)
-    {
-        buf = (float*) FreeImage_GetScanLine (src, y);
-
-        for(register int x = tmp_rect.left; x <= right; x++)
-            buf[x] = value;
-    }
-
-    return FIA_SUCCESS;
-}
-
-int DLL_CALLCONV
-FIA_DrawSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, double value)
+DrawEllipse (RendererType& renderer, FIBITMAP * src, FIARECT rect, const ColorT& colour, int solid, int line_width, int antialiased)
 {
     int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
@@ -453,93 +120,623 @@ FIA_DrawSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, double value)
     tmp_rect.top = height - rect.top - 1;
     tmp_rect.bottom = height - rect.bottom - 1;
 
-    int bpp = FreeImage_GetBPP (src);
-    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+    // the Rasterizer definition
+    agg::rasterizer_scanline_aa<> ras;
+    ras.reset();
 
-    if (type == FIT_BITMAP && bpp == 8)
-    {
-        return Draw8BitSolidGreyscaleRect (src, tmp_rect, (unsigned char) value);
+    agg::scanline_p8 scanline;
+
+    agg::ellipse ellipse;
+
+    int w = tmp_rect.right - tmp_rect.left;
+    int h = tmp_rect.bottom - tmp_rect.top;
+
+    double center_x = (int) (tmp_rect.left + w / 2.0);
+    double center_y = (int) (tmp_rect.top + h / 2.0);
+
+    ellipse.init(center_x, center_y, w / 2, h / 2, 360);
+    
+    if(solid) {
+        ras.add_path(ellipse, 0);
     }
-    else if(type == FIT_FLOAT)
+    else {      
+        agg::conv_stroke<agg::ellipse> poly(ellipse);
+        poly.width(line_width);
+        ras.add_path(poly, 0);
+    }
+
+    if(antialiased)
+        agg::render_scanlines_aa_solid(ras, scanline, renderer, colour);
+    else
+        agg::render_scanlines_bin_solid(ras, scanline, renderer, colour);
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_DrawColourSolidEllipse (FIBITMAP * src, FIARECT rect, RGBQUAD colour, int antialiased)
+{
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+    int bpp = FreeImage_GetBPP(src);
+
+    unsigned char *buf = FreeImage_GetBits (src);
+
+    // Create the rendering buffer
+    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+    if (type == FIT_BITMAP && bpp == 32)
     {
-        return DrawFloatSolidGreyscaleRect (src, tmp_rect, (float) value);
+        typedef agg::pixfmt_bgra32                       pixfmt_type;
+    	typedef agg::renderer_base < pixfmt_type >       renbase_type;
+     
+        pixfmt_type pixf(rbuf);
+        renbase_type rbase(pixf);
+
+        return DrawEllipse (rbase, src, rect, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue), 1, 0, antialiased);
+    }
+    else if (type == FIT_BITMAP && bpp == 24)
+    {
+	    typedef agg::pixfmt_bgr24                        pixfmt_type;
+    	typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+        pixfmt_type pixf(rbuf);
+        renbase_type rbase(pixf);
+
+        return DrawEllipse (rbase, src, rect, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue), 1, 0, antialiased);
     }
 
     return FIA_ERROR;
 }
 
-static int
-Draw24BitColourLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
-                     int line_width, int antialiased)
+
+int DLL_CALLCONV
+FIA_DrawSolidGreyscaleEllipse (FIBITMAP * src, FIARECT rect, unsigned char value, int antialiased)
 {
     int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
 
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+
     // Allocate the framebuffer
+    unsigned char *buf = FreeImage_GetBits (src);
+
+    switch (type)
+    {
+        case FIT_BITMAP:
+        {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+            if (FreeImage_GetBPP (src) == 8) {
+                
+                typedef agg::pixfmt_gray8                        pixfmt_type;
+                typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+                // Create the rendering buffer
+                agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+                pixfmt_type pixf(rbuf);
+                renbase_type rbase(pixf);
+
+                RGBQUAD colour = FIA_RGBQUAD ((unsigned char) value, (unsigned char) value, (unsigned char) value);
+
+                return DrawEllipse (rbase, src, rect, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue), 1, 0, antialiased);
+            }
+
+            break;
+        }
+        case FIT_UINT16:
+        {      
+            typedef agg::pixfmt_gray16                       pixfmt_type;
+            typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+            // Create the rendering buffer
+            agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+            pixfmt_type pixf(rbuf);
+            renbase_type rbase(pixf);
+
+            return DrawEllipse (rbase, src, rect, agg::gray16(value), 1, 0, antialiased);
+
+       }
+        case FIT_INT16:
+        {   
+            break;
+        }
+        case FIT_UINT32:
+        {             
+            break;
+        }
+        case FIT_INT32:
+        {
+            break;
+        }
+        case FIT_FLOAT:
+        {
+            break;
+        }
+        case FIT_DOUBLE:
+        { 
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+
+    return FIA_ERROR;
+}
+
+
+
+template<typename RendererType, typename ColorT>
+static int
+DrawPolygon (RendererType& renderer, FIBITMAP * src, FIAPOINT * points, int number_of_points, const ColorT& colour, int solid, int line_width, int antialiased)
+{
+    // the Rasterizer definition
+    agg::rasterizer_scanline_aa<> ras;
+    ras.reset();
+
+    agg::scanline_p8 scanline;
+
+    agg::path_storage ps;
+
+    ps.move_to (points[0].x, points[0].y);
+
+    for(int i = 1; i < number_of_points; i++)
+    {
+        ps.line_to (points[i].x, points[i].y);
+    }
+
+    if(solid) {
+        ras.add_path(ps, 0);
+    }
+    else {      
+        agg::conv_stroke<agg::path_storage> poly(ps);
+        poly.width(line_width);
+        ras.add_path(poly, 0);
+    }
+
+    if(antialiased)
+        agg::render_scanlines_aa_solid(ras, scanline, renderer, colour);
+    else
+        agg::render_scanlines_bin_solid(ras, scanline, renderer, colour);
+
+    return FIA_SUCCESS;
+}
+
+
+int DLL_CALLCONV
+FIA_DrawSolidGreyscalePolygon (FIBITMAP * src, FIAPOINT * points,
+                          int number_of_points, unsigned char value, int antialiased)
+{
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+
+    // Allocate the framebuffer
+    unsigned char *buf = FreeImage_GetBits (src);
+
+    switch (type)
+    {
+        case FIT_BITMAP:
+        {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+            if (FreeImage_GetBPP (src) == 8) {
+                
+                typedef agg::pixfmt_gray8                        pixfmt_type;
+                typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+                // Create the rendering buffer
+                agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+                pixfmt_type pixf(rbuf);
+                renbase_type rbase(pixf);
+
+                RGBQUAD colour = FIA_RGBQUAD ((unsigned char) value, (unsigned char) value, (unsigned char) value);
+
+                return DrawPolygon (rbase, src, points, number_of_points,
+                            agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue), 1, 0, antialiased);
+            }
+        }
+        default:
+        {
+            break;
+        }
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_DrawColourSolidPolygon (FIBITMAP * src, FIAPOINT * points,
+                          int number_of_points, RGBQUAD colour, int antialiased)
+{
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+    int bpp = FreeImage_GetBPP(src);
+
     unsigned char *buf = FreeImage_GetBits (src);
 
     // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer
-    agg::renderer < agg::span_bgr24 > ren (rbuf);
-    agg::rasterizer ras;
-
-    // Setup the rasterizer
-    ras.filling_rule (agg::fill_even_odd);
-
-    draw_line (ras, p1.x, p1.y, p2.x, p2.y, line_width);
-
-    if (antialiased)
+    if (type == FIT_BITMAP && bpp == 32)
     {
-        ras.render (ren, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+        typedef agg::pixfmt_bgra32                       pixfmt_type;
+    	typedef agg::renderer_base < pixfmt_type >       renbase_type;
+     
+        pixfmt_type pixf(rbuf);
+        renbase_type rbase(pixf);
+
+
+        return DrawPolygon (rbase, src, points, number_of_points,
+                            agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue), 1, 0, antialiased);
     }
-    else
+    else if (type == FIT_BITMAP && bpp == 24)
     {
-        ras.render_aliased (ren, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+	    typedef agg::pixfmt_bgr24                        pixfmt_type;
+    	typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+        pixfmt_type pixf(rbuf);
+        renbase_type rbase(pixf);
+
+
+
+        return DrawPolygon (rbase, src, points, number_of_points,
+                            agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue), 1, 0, antialiased);
+    }
+
+    return FIA_ERROR;
+}
+
+// Draws a orthogonal no aa line of width one pixel
+// This is for drawing rectangles fast without subpixel position as with agg.
+template<typename ValueType>
+static int
+orthogonal_draw_line (FIBITMAP * src, int x1, int y1, int x2, int y2, ValueType value, RGBQUAD colour)
+{
+    if (!src)
+    {
+        return FIA_ERROR;
+    }
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    // Draw from the left
+    if (x2 < x1)
+    {
+        SWAP (x1, x2);
+    }
+
+    // Draw from the top
+    if (y2 < y1)
+    {
+        SWAP (y1, y2);
+    }
+
+    if (x2 < 0 || y2 < 0)
+    {
+        return FIA_ERROR;
+    }
+
+    if (x1 < 0)
+    {
+        x1 = 0;
+    }
+
+    if (x2 >= width)
+    {
+        x2 = width - 1;
+    }
+
+    if (y1 < 0)
+    {
+        y1 = 0;
+    }
+
+    if (y2 >= height)
+    {
+        y2 = height - 1;
+    }
+
+    int bytespp = FreeImage_GetLine (src) / FreeImage_GetWidth (src);
+    int pitch = FreeImage_GetPitch (src);
+
+    bool greyscale_image = true;
+
+    if(FreeImage_GetImageType(src) == FIT_BITMAP && FreeImage_GetBPP(src) > 8) {
+	    greyscale_image = false;
+    }
+
+    if (x1 != x2)
+    {
+        // We have a horizontal line
+        // Make sure y's are the same
+        if (y1 != y2)
+        {
+            return FIA_ERROR;
+        }
+
+        BYTE *bits = (BYTE *) FreeImage_GetScanLine (src, y1) + (x1 * bytespp);
+
+	    if(greyscale_image)
+	    {
+            	while (x1 <= x2)
+            	{
+                	*bits = value;  
+                    // jump to next pixel
+		            bits += bytespp;
+                    x1++;
+            	}
+	    }
+	    else {
+
+		    for(register int x = x1; x <= x2; x++)
+            	{
+		        bits[FI_RGBA_RED] = colour.rgbRed;
+		        bits[FI_RGBA_GREEN] = colour.rgbGreen;
+		        bits[FI_RGBA_BLUE] = colour.rgbBlue;
+
+		        if (bytespp == 4)
+		        {
+		            bits[FI_RGBA_ALPHA] = 0;
+		        }
+
+		        // jump to next pixel
+		        bits += bytespp;
+		    }
+	    }
+	
+        return FIA_SUCCESS;
+    }
+
+    if (y1 != y2)
+    {
+        // We have a verticle line
+        // Make sure x's are the same
+        if (x1 != x2)
+        {
+            return FIA_ERROR;
+        }
+
+        // Get starting point
+        BYTE *bits = (BYTE *) (FreeImage_GetScanLine (src, y1) + (x1 * bytespp));
+
+	    if(greyscale_image)
+	    {
+		    while (y1 <= y2)
+		    {
+		        *bits = value;
+
+		        bits += pitch;
+
+		        y1++;
+		    }
+	    }
+	    else {
+
+		    while (y1 <= y2)
+		    {
+		        bits[FI_RGBA_RED] = colour.rgbRed;
+		        bits[FI_RGBA_GREEN] = colour.rgbGreen;
+		        bits[FI_RGBA_BLUE] = colour.rgbBlue;
+
+		        if (bytespp == 4)
+		        {
+			        bits[FI_RGBA_ALPHA] = 0;
+		        }
+
+		        bits += pitch;
+
+		        y1++;
+		    }
+	    }
+
+        return FIA_SUCCESS;
+    }
+
+    return FIA_ERROR;
+}
+
+template<typename ValueType>
+static int
+DrawRectangle (FIBITMAP * src, FIARECT rect, ValueType value, RGBQUAD color_value, int line_width)
+{
+    int err = FIA_ERROR;
+
+    for(int i = 0; i < line_width; i++)
+    {
+        // Top
+        err = orthogonal_draw_line (src, rect.left - line_width + 1, rect.top + i, rect.right
+                                           + line_width - 1, rect.top + i, value, color_value);
+
+        // Bottom
+        err = orthogonal_draw_line (src, rect.left - line_width + 1, rect.bottom - i,
+                                           rect.right + line_width - 1, rect.bottom - i, value, color_value);
+
+        // Left
+        err = orthogonal_draw_line (src, rect.left - i, rect.top, rect.left - i, rect.bottom,
+                                           value, color_value);
+
+        // Right
+        err = orthogonal_draw_line (src, rect.right + i, rect.top, rect.right + i,
+                                           rect.bottom, value, color_value);
+    }
+
+    if (err == FIA_ERROR)
+    {
+        return FIA_ERROR;
     }
 
     return FIA_SUCCESS;
 }
 
+template<typename ValueType>
 static int
-Draw32BitColourLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
-                     int line_width, int antialiased)
+DrawSolidRectangle (FIBITMAP * src, FIARECT rect, ValueType value, RGBQUAD colour)
 {
+    // Seems that Anti grain method is to slow probably  because it is too advanced
+    // Does accurate drawing etc with anti aliasing.
+    // We just want a simple rectangle with no antialising or sub pixel position.
+    // Would we ever want that for rectangles ?
+  
     int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
 
-    // Allocate the framebuffer
-    unsigned char *buf = FreeImage_GetBits (src);
-
-    // Create the rendering buffer
-    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
-
-    // Create the rendering buffer
-    agg::renderer < agg::span_bgra32 > ren (rbuf);
-    agg::rasterizer ras;
-
-    // Setup the rasterizer
-    ras.filling_rule (agg::fill_even_odd);
-
-    draw_line (ras, p1.x, p1.y, p2.x, p2.y, line_width);
-
-    if (antialiased)
+    if (rect.left < 0)
     {
-        ras.render (ren, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+        rect.left = 0;
+        rect.right += rect.left;
     }
-    else
+
+    if (rect.top < 0)
     {
-        ras.render_aliased (ren, agg::rgba8 (colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+        rect.top = 0;
+        rect.bottom += rect.top;
+    }
+
+    if (rect.right >= width)
+    {
+        rect.right = width - 1;
+    }
+
+    if (rect.bottom >= height)
+    {
+        rect.bottom = height - 1;
+    }
+
+    // Allocate the framebuffer
+    FIARECT tmp_rect = rect;
+
+    // FreeImages are flipped
+    tmp_rect.top = height - rect.top - 1;
+    tmp_rect.bottom = height - rect.bottom - 1;
+
+    int right = tmp_rect.left + (tmp_rect.right - tmp_rect.left);
+
+    bool greyscale_image = true;
+
+    if(FreeImage_GetImageType(src) == FIT_BITMAP && FreeImage_GetBPP(src) > 8) {
+	    greyscale_image = false;
+    }
+   
+    if(greyscale_image)
+    {
+        // Allocate the framebuffer
+        ValueType *buf = NULL;
+        
+        for(register int y = tmp_rect.bottom; y <= tmp_rect.top; y++)
+        {
+            buf = (ValueType*) FreeImage_GetScanLine (src, y);
+
+            for(register int x = tmp_rect.left; x <= right; x++)
+                buf[x] = value;
+        }
+    }
+    else {
+
+        BYTE *buf = NULL;
+
+        int bytespp = FreeImage_GetLine (src) / FreeImage_GetWidth (src);
+        int pitch = FreeImage_GetPitch (src);
+
+        for(register int y = tmp_rect.bottom; y <= tmp_rect.top; y++)
+        {
+            buf = (BYTE*) FreeImage_GetScanLine (src, y);
+            buf += (tmp_rect.left * bytespp);
+
+            for(register int x = tmp_rect.left; x <= right; x++) {
+        
+                buf[FI_RGBA_RED] = colour.rgbRed;
+		        buf[FI_RGBA_GREEN] = colour.rgbGreen;
+		        buf[FI_RGBA_BLUE] = colour.rgbBlue;
+
+		        if (bytespp == 4)
+		        {
+			        buf[x + FI_RGBA_ALPHA] = 0;
+		        }
+
+		        buf += bytespp;
+
+            }
+        }
+
     }
 
     return FIA_SUCCESS;
+}
+
+
+int DLL_CALLCONV
+FIA_DrawSolidGreyscaleRect (FIBITMAP * src, FIARECT rect, double value)
+{
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+
+    RGBQUAD colour = FIA_RGBQUAD (0, 0, 0);
+
+    switch (type)
+    {
+        case FIT_BITMAP:
+        {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+            if (FreeImage_GetBPP (src) == 8)
+                return DrawSolidRectangle (src, rect, (unsigned char) value, colour);
+            break;
+        }
+        case FIT_UINT16:
+        {                       // array of unsigned short: unsigned 16-bit
+            return DrawSolidRectangle (src, rect, (unsigned short) value, colour);
+            break;
+        }
+        case FIT_INT16:
+        {                       // array of short: signed 16-bit
+            return DrawSolidRectangle (src, rect, (short) value, colour);
+            break;
+        }
+        case FIT_UINT32:
+        {                       // array of unsigned long: unsigned 32-bit
+            return DrawSolidRectangle (src, rect, (unsigned long) value, colour);
+            break;
+        }
+        case FIT_INT32:
+        {                       // array of long: signed 32-bit
+            return DrawSolidRectangle (src, rect, (long) value, colour);
+            break;
+        }
+        case FIT_FLOAT:
+        {                       // array of float: 32-bit
+            return DrawSolidRectangle (src, rect, (float) value, colour);
+            break;
+        }
+        case FIT_DOUBLE:
+        {                       // array of double: 64-bit
+            return DrawSolidRectangle (src, rect, (double) value, colour);
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_DrawColourSolidRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour)
+{
+    return DrawSolidRectangle (src, rect, 0, colour);
 }
 
 int DLL_CALLCONV
 FIA_DrawColourLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
                     int line_width, int antialiased)
 {
+    int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
 
     FIAPOINT p1_tmp = p1, p2_tmp = p2;
@@ -550,26 +747,6 @@ FIA_DrawColourLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, RGBQUAD colour,
 
     int bpp = FreeImage_GetBPP (src);
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
-
-    if (type == FIT_BITMAP && bpp == 32)
-    {
-        return Draw32BitColourLine (src, p1_tmp, p2_tmp, colour, line_width, antialiased);
-    }
-
-    if (type == FIT_BITMAP && bpp == 24)
-    {
-        return Draw24BitColourLine (src, p1_tmp, p2_tmp, colour, line_width, antialiased);
-    }
-
-    return FIA_ERROR;
-}
-
-static int
-Draw8BitGreyscaleLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, unsigned char value,
-                       int line_width, int antialiased)
-{
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
 
     // Allocate the framebuffer
     unsigned char *buf = FreeImage_GetBits (src);
@@ -577,28 +754,39 @@ Draw8BitGreyscaleLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, unsigned char v
     // Create the rendering buffer
     agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
 
-    // Create the rendering buffer
-    agg::renderer < agg::span_mono8 > ren (rbuf);
-    agg::rasterizer ras;
-
-    draw_line (ras, p1.x, p1.y, p2.x, p2.y, line_width);
-
-    if (antialiased)
+    if (type == FIT_BITMAP && bpp == 32)
     {
-        ras.render (ren, agg::rgba8 (value, value, value));
-    }
-    else
-    {
-        ras.render_aliased (ren, agg::rgba8 (value, value, value));
+        typedef agg::pixfmt_bgra32                       pixfmt_type;
+    	typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+    	pixfmt_type pixf(rbuf);
+    	renbase_type rbase(pixf);
+
+        return DrawLine (rbase, src, p1_tmp, p2_tmp, colour, line_width, antialiased);
     }
 
-    return FIA_SUCCESS;
+    if (type == FIT_BITMAP && bpp == 24)
+    {
+	typedef agg::pixfmt_bgr24                        pixfmt_type;
+    	typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+    	// Create the rendering buffer
+    	agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+    	pixfmt_type pixf(rbuf);
+    	renbase_type rbase(pixf);
+
+    	return DrawLine (rbase, src, p1_tmp, p2_tmp, colour, line_width, antialiased);
+    }
+
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV
 FIA_DrawGreyscaleLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, double value,
                        int line_width, int antialiased)
 {
+    int width = FreeImage_GetWidth(src);
     int height = FreeImage_GetHeight (src);
 
     FIAPOINT p1_tmp = p1, p2_tmp = p2;
@@ -610,15 +798,34 @@ FIA_DrawGreyscaleLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, double value,
     int bpp = FreeImage_GetBPP (src);
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
 
+    // Allocate the framebuffer
+    unsigned char *buf = FreeImage_GetBits (src);
+
+    // Create the rendering buffer
+    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
     if (type == FIT_BITMAP && bpp == 8)
     {
-        return Draw8BitGreyscaleLine (src, p1_tmp, p2_tmp, (unsigned char) value,
-                                      line_width, antialiased);
+	    typedef agg::pixfmt_gray8                        pixfmt_type;
+        typedef agg::renderer_base < pixfmt_type >       renbase_type;
+
+        // Create the rendering buffer
+        agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+        pixfmt_type pixf(rbuf);
+        renbase_type rbase(pixf);
+
+	    RGBQUAD colour;
+
+	    colour.rgbRed = (unsigned char) value;
+	    colour.rgbGreen = (unsigned char) value;
+	    colour.rgbBlue = (unsigned char) value;
+
+        return DrawLine (rbase, src, p1_tmp, p2_tmp, colour, line_width, antialiased);
     }
 
     return FIA_ERROR;
 }
-
 
 int DLL_CALLCONV
 FIA_DrawColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour, int line_width)
@@ -631,90 +838,12 @@ FIA_DrawColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour, int line_width
     tmp_rect.top = height - rect.top - 1;
     tmp_rect.bottom = height - rect.bottom - 1;
 
-    return DrawColourRect (src, tmp_rect, colour, line_width);
+    return DrawRectangle (src, tmp_rect, 0, colour, line_width);
 }
 
-int DLL_CALLCONV
-FIA_DrawColourSolidRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour)
-{
-    int height = FreeImage_GetHeight (src);
-
-    FIARECT tmp_rect = rect;
-
-    // FreeImages are flipped
-    tmp_rect.top = height - rect.top;
-    tmp_rect.bottom = height - rect.bottom;
-
-    int bpp = FreeImage_GetBPP (src);
-    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
-
-    if (type == FIT_BITMAP && bpp == 32)
-    {
-        return Draw32BitSolidColourRect (src, tmp_rect, colour);
-    }
-
-    if (type == FIT_BITMAP && bpp == 24)
-    {
-        return Draw24BitSolidColourRect (src, tmp_rect, colour);
-    }
-
-    return FIA_ERROR;
-}
 
 int DLL_CALLCONV
-Draw8BitGreyscalePolygon (FIBITMAP * src, FIAPOINT * points, int number_of_points,
-                          unsigned char value, int antialiased)
-{
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
-
-    // Allocate the framebuffer
-    unsigned char *buf = FreeImage_GetBits (src);
-
-    // Create the rendering buffer
-    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
-
-    // Create the rendering buffer
-    agg::renderer < agg::span_mono8 > ren (rbuf);
-    agg::rasterizer ras;
-
-    //int y_point = height - points[0].y;
-    ras.move_to_d (points[0].x, points[0].y);
-
-    for(int i = 1; i < number_of_points; i++)
-    {
-        ras.line_to_d (points[i].x, points[i].y);
-    }
-
-    if (antialiased)
-    {
-        ras.render (ren, agg::rgba8 (value, value, value));
-    }
-    else
-    {
-        ras.render_aliased (ren, agg::rgba8 (value, value, value));
-    }
-
-    return FIA_SUCCESS;
-}
-
-int DLL_CALLCONV
-FIA_DrawGreyscalePolygon (FIBITMAP * src, FIAPOINT * points,
-                          int number_of_points, unsigned char value, int antialiased)
-{
-    int bpp = FreeImage_GetBPP (src);
-    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
-
-    if (type == FIT_BITMAP && bpp == 8)
-    {
-        return Draw8BitGreyscalePolygon (src, points, number_of_points, value, antialiased);
-    }
-
-    return FIA_ERROR;
-}
-
-int DLL_CALLCONV
-FIA_DrawGreyscaleRect (FIBITMAP * src, FIARECT rect, double colour, int line_width)
+FIA_DrawGreyscaleRect (FIBITMAP * src, FIARECT rect, double value, int line_width)
 {
     int height = FreeImage_GetHeight (src);
 
@@ -726,42 +855,44 @@ FIA_DrawGreyscaleRect (FIBITMAP * src, FIARECT rect, double colour, int line_wid
 
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
 
+    RGBQUAD colour = FIA_RGBQUAD (0, 0, 0);
+
     switch (type)
     {
         case FIT_BITMAP:
         {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
             if (FreeImage_GetBPP (src) == 8)
-                return DrawGSRect (src, tmp_rect, (unsigned char) colour, line_width);
+                return DrawRectangle (src, tmp_rect, (unsigned char) value, colour, line_width);
             break;
         }
         case FIT_UINT16:
         {                       // array of unsigned short: unsigned 16-bit
-            return DrawGSRect (src, tmp_rect, (unsigned short) colour, line_width);
+            return DrawRectangle (src, tmp_rect, (unsigned short) value, colour, line_width);
             break;
         }
         case FIT_INT16:
         {                       // array of short: signed 16-bit
-            return DrawGSRect (src, tmp_rect, (short) colour, line_width);
+            return DrawRectangle (src, tmp_rect, (short) value, colour, line_width);
             break;
         }
         case FIT_UINT32:
         {                       // array of unsigned long: unsigned 32-bit
-            return DrawGSRect (src, tmp_rect, (unsigned long) colour, line_width);
+            return DrawRectangle (src, tmp_rect, (unsigned long) value, colour, line_width);
             break;
         }
         case FIT_INT32:
         {                       // array of long: signed 32-bit
-            return DrawGSRect (src, tmp_rect, (long) colour, line_width);
+            return DrawRectangle (src, tmp_rect, (long) value, colour, line_width);
             break;
         }
         case FIT_FLOAT:
         {                       // array of float: 32-bit
-            return DrawGSRect (src, tmp_rect, (float) colour, line_width);
+            return DrawRectangle (src, tmp_rect, (float) value, colour, line_width);
             break;
         }
         case FIT_DOUBLE:
         {                       // array of double: 64-bit
-            return DrawGSRect (src, tmp_rect, (double) colour, line_width);
+            return DrawRectangle (src, tmp_rect, (double) value, colour, line_width);
             break;
         }
         default:
@@ -772,105 +903,6 @@ FIA_DrawGreyscaleRect (FIBITMAP * src, FIARECT rect, double colour, int line_wid
 
     return FIA_ERROR;
 }
-
-static void
-draw_ellipse (agg::rasterizer & ras, double x, double y, double rx, double ry)
-{
-    int i;
-
-    ras.move_to_d (x + rx, y);
-
-    // Here we have a fixed number of approximation steps, namely 360
-    // while in reality it's supposed to be smarter.
-    for(i = 1; i < 360; i++)
-    {
-        double a = double (i) * 3.1415926 / 180.0;
-
-        ras.line_to_d (x + cos (a) * rx, y + sin (a) * ry);
-    }
-}
-
-static int DLL_CALLCONV
-Draw8BitSolidEllipse (FIBITMAP * src, FIARECT rect, unsigned char value, int antialiased)
-{
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
-
-    // Allocate the framebuffer
-    unsigned char *buf = FreeImage_GetBits (src);
-
-    // Create the rendering buffer
-    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
-
-    // Create the rendering buffer
-    agg::renderer < agg::span_mono8 > ren (rbuf);
-    agg::rasterizer ras;
-
-    int x_radius = (rect.right - rect.left) / 2;
-    int y_radius = (rect.bottom - rect.top) / 2;
-    int centre_x = rect.left + x_radius;
-    int centre_y = rect.top + y_radius;
-
-    draw_ellipse (ras, centre_x, centre_y, x_radius, y_radius);
-
-    if (antialiased)
-    {
-        ras.render (ren, agg::rgba8 (value, value, value));
-    }
-    else
-    {
-        ras.render_aliased (ren, agg::rgba8 (value, value, value));
-    }
-
-    return FIA_SUCCESS;
-}
-
-int DLL_CALLCONV
-FIA_DrawSolidGreyscaleEllipse (FIBITMAP * src, FIARECT rect, unsigned char value, int antialiased)
-{
-    int width = FreeImage_GetWidth (src);
-    int height = FreeImage_GetHeight (src);
-
-    if (rect.left < 0)
-    {
-        rect.left = 0;
-        rect.right += rect.left;
-    }
-
-    if (rect.top < 0)
-    {
-        rect.top = 0;
-        rect.bottom += rect.top;
-    }
-
-    if (rect.right >= width)
-    {
-        rect.right = width - 1;
-    }
-
-    if (rect.bottom >= height)
-    {
-        rect.bottom = height - 1;
-    }
-
-    // Allocate the framebuffer
-    FIARECT tmp_rect = rect;
-
-    // FreeImages are flipped
-    tmp_rect.top = height - rect.top - 1;
-    tmp_rect.bottom = height - rect.bottom - 1;
-
-    int bpp = FreeImage_GetBPP (src);
-    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
-
-    if (type == FIT_BITMAP && bpp == 8)
-    {
-        return Draw8BitSolidEllipse (src, tmp_rect, (unsigned char) value, antialiased);
-    }
-
-    return FIA_ERROR;
-}
-
 
 int DLL_CALLCONV
 FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
@@ -914,3 +946,102 @@ FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
 	return FIA_SUCCESS;
 }
 
+
+int DLL_CALLCONV
+FIA_DrawHorizontalColourText (FIBITMAP *src, int left, int top, const char *text, RGBQUAD colour)
+{
+    typedef agg::pixfmt_bgr24 pixfmt;
+    typedef agg::renderer_base<pixfmt> ren_base;
+    typedef agg::glyph_raster_bin<agg::rgba8> glyph_gen;
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+    unsigned char *buf = FreeImage_GetBits (src);
+
+    // Create the rendering buffer
+    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+    glyph_gen glyph(0);
+    pixfmt pixf(rbuf);
+    ren_base rbase(pixf);
+
+    agg::renderer_raster_htext_solid<ren_base, glyph_gen> renderer(rbase, glyph);
+  
+    renderer.color(agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
+
+    glyph.font(agg::verdana18_bold);
+
+    renderer.render_text(left, top, text, false);
+    
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_DrawHorizontalGreyscaleText (FIBITMAP * src, int left, int top, const char *text, unsigned char value)
+{
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+
+    switch (type)
+    {
+        case FIT_BITMAP:
+        {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+            if (FreeImage_GetBPP (src) == 8) {
+                
+                typedef agg::pixfmt_gray8 pixfmt;
+                typedef agg::renderer_base<pixfmt> ren_base;
+                typedef agg::glyph_raster_bin<agg::rgba8> glyph_gen;
+
+                int width = FreeImage_GetWidth (src);
+                int height = FreeImage_GetHeight (src);
+                unsigned char *buf = FreeImage_GetBits (src);
+
+                // Create the rendering buffer
+                agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+                glyph_gen glyph(0);
+                pixfmt pixf(rbuf);
+                ren_base rbase(pixf);
+
+                agg::renderer_raster_htext_solid<ren_base, glyph_gen> renderer(rbase, glyph);
+              
+                renderer.color(agg::rgba8(value, value,value));
+
+                glyph.font(agg::verdana18_bold);
+
+                renderer.render_text(left, top, text, false);
+            }
+
+            break;
+        }
+        case FIT_UINT16:
+        {      
+           break;
+        }
+        case FIT_INT16:
+        {   
+            break;
+        }
+        case FIT_UINT32:
+        {             
+            break;
+        }
+        case FIT_INT32:
+        {
+            break;
+        }
+        case FIT_FLOAT:
+        {
+            break;
+        }
+        case FIT_DOUBLE:
+        { 
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+
+    return FIA_ERROR;
+}

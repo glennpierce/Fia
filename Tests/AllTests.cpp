@@ -46,12 +46,12 @@ void RunAllTests(void)
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsMorphologySuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
-    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
    // CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
-   // CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
-    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
+//    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);
@@ -75,8 +75,6 @@ int __cdecl main(void)
 	MkDir(TEST_DATA_OUTPUT_DIR);
 
 	RunAllTests();
-
-	while(1);
 
 	return 0;
 }

@@ -37,6 +37,7 @@ static const double kernel[] = {1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0
 						  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
 					  	  1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0};
 
+/*
 static void
 TestFIA_ConvolutionTest(CuTest* tc)
 {
@@ -147,7 +148,7 @@ TestFIA_SobelAdvancedTest(CuTest* tc)
         FreeImage_Unload(mag_dib);
 }
 
-/*
+
 static void
 TestFIA_SeparableSobelTest(CuTest* tc)
 {
@@ -168,7 +169,7 @@ TestFIA_SeparableSobelTest(CuTest* tc)
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(dib2);
 }
-*/
+
 
 
 static void
@@ -438,7 +439,6 @@ TestFIA_CorrelateFFTLetterTest(CuTest* tc)
     return;
 }
 
-/*
 static void
 TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
 {
@@ -489,7 +489,7 @@ TestFIA_CorrelateFFTAlongRightEdge(CuTest* tc)
 
     return;
 }
-*/
+
 
 
 static FIBITMAP* LoadTissueFile(const char *filepath)
@@ -572,102 +572,96 @@ TestFIA_CorrelateBloodTissueImages(CuTest* tc)
   //  }
 
 
-    /*
-    FIBITMAP *fib = LoadTissueFile(images[8]);
+   
+ //   FIBITMAP *fib = LoadTissueFile(images[8]);
 
-    int width = FreeImage_GetWidth(fib);
-    int height = FreeImage_GetHeight(fib);
-    FIAPOINT pt;
+  //  int width = FreeImage_GetWidth(fib);
+  //  int height = FreeImage_GetHeight(fib);
+  //  FIAPOINT pt;
 
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(fib), 1000,
-            1000, FreeImage_GetBPP(fib), 0, 0, 0);
+  //  FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(fib), 1000,
+  //          1000, FreeImage_GetBPP(fib), 0, 0, 0);
 
-    FIBITMAP *fib2 = LoadTissueFile(images[11]);
+  //  FIBITMAP *fib2 = LoadTissueFile(images[11]);
 
-    PROFILE_START("TestFIA_CorrelateFFTTest3");
+  //  PROFILE_START("TestFIA_CorrelateFFTTest3");
 
-    FIARECT region1 = MakeFIARect(0, height-100, width-1, height-1);
-    FIARECT region2 = MakeFIARect(0, 0, width-1, 50);
+  //  FIARECT region1 = MakeFIARect(0, height-100, width-1, height-1);
+  //  FIARECT region2 = MakeFIARect(0, 0, width-1, 50);
 
-    FIA_CorrelateImageRegions(fib, region1, fib2, region2,
-            CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
+  //  FIA_CorrelateImageRegions(fib, region1, fib2, region2,
+  //          CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
 
-    PROFILE_STOP("TestFIA_CorrelateFFTTest3");
+  //  PROFILE_STOP("TestFIA_CorrelateFFTTest3");
 
-    if(FIA_PasteFromTopLeft(joined_image, fib, 0, 0) == 0) {
-           printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
-                   pt.x, pt.y);
-       }
+  //  if(FIA_PasteFromTopLeft(joined_image, fib, 0, 0) == 0) {
+  //         printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
+  //                 pt.x, pt.y);
+  //     }
 
-       if(FIA_PasteFromTopLeft(joined_image, fib2, pt.x, pt.y) == 0) {
-           printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
-                   pt.x,pt.y);
-       }
+  //     if(FIA_PasteFromTopLeft(joined_image, fib2, pt.x, pt.y) == 0) {
+  //         printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
+   //                pt.x,pt.y);
+   //    }
 
-       std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
+   //    std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
 
- //      FIBITMAP *fib3 = FIA_LoadFIBFromFile(images[3]);
+ //  //    FIBITMAP *fib3 = FIA_LoadFIBFromFile(images[3]);
 
-  //     if(FIA_FFTCorrelateImagesAlongRightEdge(fib2, fib3, FIA_EdgeDetect2, 40, &pt) == FIA_ERROR) {
-                 //PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
-                 //goto TEST_ERROR;
-  //           }
+  //  //   if(FIA_FFTCorrelateImagesAlongRightEdge(fib2, fib3, FIA_EdgeDetect2, 40, &pt) == FIA_ERROR) {
+      //           //PROFILE_STOP("TestFIA_CorrelateFFTAlongRightEdge");
+      //           //goto TEST_ERROR;
+  //  //         }
 
-  //     if(FIA_PasteFromTopLeft(joined_image, fib3, pt.x, pt.y) == 0) {
-  //             printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
-   //                    pt.x,pt.y);
-    //       }
+  //    // if(FIA_PasteFromTopLeft(joined_image, fib3, pt.x, pt.y) == 0) {
+  //     //        printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n",
+   //    //                pt.x,pt.y);
+    //    //   }
 
-           std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
+         //  std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
+       
 
-*/
+//    double measure = FIA_CorrelationDifferenceMeasure(joined_image, fib, pt);
 
-       /*
+  //  std::cout << "Measure " << measure << std::endl;
 
-    double measure = FIA_CorrelationDifferenceMeasure(joined_image, fib, pt);
+  //   if(measure >= 0.0 && measure < 1000.0) {
 
-    std::cout << "Measure " << measure << std::endl;
+  //                FIA_PasteFromTopLeft(joined_image, fib, pt.x, pt.y);
+  //     }
 
-     if(measure >= 0.0 && measure < 1000.0) {
-
-                  FIA_PasteFromTopLeft(joined_image, fib, pt.x, pt.y);
-       }
-*/
 
   //   FIA_SaveFIBToFile(joined_image,  "/home/glenn/joined.png", BIT24);
 
 
-    /*
-    for(int i=0; i < number_of_images; i++) {
+    
+ //   for(int i=0; i < number_of_images; i++) {
 
-          fibs[i] = GetRandomImageRect(original_fib, &rect);
+   //       fibs[i] = GetRandomImageRect(original_fib, &rect);
 
-          PROFILE_START("TestFIA_CorrelateFFTTest2");
+    //      PROFILE_START("TestFIA_CorrelateFFTTest2");
 
-          std::cout << "rect left: " << rect.left << " rect top: " << rect.top
-              << " width: " << rect.right - rect.left + 1 << " height: " << rect.bottom - rect.top + 1 << std::endl;
+    //      std::cout << "rect left: " << rect.left << " rect top: " << rect.top
+   //           << " width: " << rect.right - rect.left + 1 << " height: " << rect.bottom - rect.top + 1 << std::endl;
 
-          std::cout << "Correlating image " << i << std::endl;
+   //       std::cout << "Correlating image " << i << std::endl;
 
-          FIA_CorrelateImagesFFT(joined_image, fibs[i], FIA_EdgeDetect, &pt);
+   //       FIA_CorrelateImagesFFT(joined_image, fibs[i], FIA_EdgeDetect, &pt);
 
-          std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
+   //       std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
 
-          double measure = FIA_CorrelationDifferenceMeasure(joined_image, fibs[i], pt);
+  //        double measure = FIA_CorrelationDifferenceMeasure(joined_image, fibs[i], pt);
 
-          std::cout << "Measure " << measure << std::endl;
+  //        std::cout << "Measure " << measure << std::endl;
 
-          if(measure >= 0.0 && measure < 1000.0) {
-              std::cout << "x: " << pt.x << " y: " << pt.y << std::endl;
+  //        if(measure >= 0.0 && measure < 1000.0) {
+  //            std::cout << "x: " << pt.x << " y: " << pt.y << std::endl;
 
-              FIA_PasteFromTopLeft(joined_image, fibs[i], pt.x, pt.y);
-          }
+  //            FIA_PasteFromTopLeft(joined_image, fibs[i], pt.x, pt.y);
+  //        }
 
-          PROFILE_STOP("TestFIA_CorrelateFFTTest2");
-    }
-*/
-
-
+  //        PROFILE_STOP("TestFIA_CorrelateFFTTest2");
+  //  }
 
    // for(int i=0; i < number_of_images; i++) {
 
@@ -780,22 +774,22 @@ TestFIA_CorrelateBloodTissueImagesWithNoKnowledge(CuTest* tc)
 
     const char* files[] =
     {
-            /*
-        TEST_DATA_DIR "CorrelationSections/1.png",
-        TEST_DATA_DIR "CorrelationSections/2.png",
-        TEST_DATA_DIR "CorrelationSections/3.png",
-        TEST_DATA_DIR "CorrelationSections/4.png",
-        TEST_DATA_DIR "CorrelationSections/5.png",
-        TEST_DATA_DIR "CorrelationSections/6.png",
-        TEST_DATA_DIR "CorrelationSections/7.png",
-        TEST_DATA_DIR "CorrelationSections/8.png",
-        TEST_DATA_DIR "CorrelationSections/9.png",
-        TEST_DATA_DIR "CorrelationSections/10.png",
-        TEST_DATA_DIR "CorrelationSections/11.png",
-        TEST_DATA_DIR "CorrelationSections/12.png",
-        TEST_DATA_DIR "CorrelationSections/13.png",
-        TEST_DATA_DIR "CorrelationSections/14.png",
-*/
+           
+  //      TEST_DATA_DIR "CorrelationSections/1.png",
+  //      TEST_DATA_DIR "CorrelationSections/2.png",
+  //      TEST_DATA_DIR "CorrelationSections/3.png",
+  //      TEST_DATA_DIR "CorrelationSections/4.png",
+  //      TEST_DATA_DIR "CorrelationSections/5.png",
+   //     TEST_DATA_DIR "CorrelationSections/6.png",
+   //     TEST_DATA_DIR "CorrelationSections/7.png",
+  //      TEST_DATA_DIR "CorrelationSections/8.png",
+  //      TEST_DATA_DIR "CorrelationSections/9.png",
+  //      TEST_DATA_DIR "CorrelationSections/10.png",
+  //      TEST_DATA_DIR "CorrelationSections/11.png",
+  //      TEST_DATA_DIR "CorrelationSections/12.png",
+  //      TEST_DATA_DIR "CorrelationSections/13.png",
+  //      TEST_DATA_DIR "CorrelationSections/14.png",
+
 
         TEST_DATA_DIR "CorrelationSections/9.png",
         TEST_DATA_DIR "CorrelationSections/2.png"
@@ -907,33 +901,32 @@ TestFIA_CorrelateBloodTissueImagesWithNoKnowledge(CuTest* tc)
 
        FIA_SaveFIBToFile(joined_image,  "/home/glenn/joined.png", BIT24);
 
-    /*
-    FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(fib1),
-            2 * width, 2 * height, FreeImage_GetBPP(fib1), 0, 0, 0);
+   
+ //   FIBITMAP *joined_image = FreeImage_AllocateT(FreeImage_GetImageType(fib1),
+ //           2 * width, 2 * height, FreeImage_GetBPP(fib1), 0, 0, 0);
 
-    FIAPOINT pt;
+ //   FIAPOINT pt;
 
-    FIARECT rect1 = MakeFIARect(0,0,width,height);
-    FIARECT rect2 = MakeFIARect(-50, height - 300, width-50, 2 * height - 300);
+ //   FIARECT rect1 = MakeFIARect(0,0,width,height);
+ //   FIARECT rect2 = MakeFIARect(-50, height - 300, width-50, 2 * height - 300);
 
-    FIA_CorrelateImagesAroundOverlap(fib1, rect1, fib2, rect2, 100, CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
+ //   FIA_CorrelateImagesAroundOverlap(fib1, rect1, fib2, rect2, 100, CORRELATION_FFT, FIA_EdgeEnhancer, &pt);
 
-    std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
+ //   std::cout << "pt.x " << pt.x << " pt.y: " << pt.y << std::endl;
 
-    if(FIA_PasteFromTopLeft(joined_image, fib1, 0, 0) == 0) {
-        printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n", pt.x, pt.y);
-    }
+  //  if(FIA_PasteFromTopLeft(joined_image, fib1, 0, 0) == 0) {
+  //      printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n", pt.x, pt.y);
+ //   }
 
-    if(FIA_PasteFromTopLeft(joined_image, fib2, pt.x, pt.y) == 0) {
-        printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n", pt.x,pt.y);
-    }
+ //   if(FIA_PasteFromTopLeft(joined_image, fib2, pt.x, pt.y) == 0) {
+ //       printf("Paste failed for TestFIA_CorrelateFFTAlongRightEdge. Trying to paste at %d, %d\n", pt.x,pt.y);
+  //  }
 
-    FIA_SaveFIBToFile(joined_image,  "/home/glenn/joined.png", BIT24);
+  //  FIA_SaveFIBToFile(joined_image,  "/home/glenn/joined.png", BIT24);
 
-    FreeImage_Unload(fib1);
-    FreeImage_Unload(fib2);
-    FreeImage_Unload(joined_image);
-*/
+  //  FreeImage_Unload(fib1);
+  //  FreeImage_Unload(fib2);
+  //  FreeImage_Unload(joined_image);
 
     return;
 }
@@ -1416,6 +1409,7 @@ TestFIA_GradientBlendFloatImagePasteTest(CuTest* tc)
     FreeImage_Unload(fib2);
     FreeImage_Unload(fib3);
 }
+*/
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
@@ -1431,6 +1425,8 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	//SUITE_ADD_TEST(suite, TestFIA_IntersectingRect);
 
     // Done
+
+/*
     SUITE_ADD_TEST(suite, TestFIA_GradientBlend);
 	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest);
 	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest2);
@@ -1455,6 +1451,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	//SUITE_ADD_TEST(suite, TestFIA_ConvolutionTest);
 	//SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateFilterTest);
+*/
 
 	return suite;
 }

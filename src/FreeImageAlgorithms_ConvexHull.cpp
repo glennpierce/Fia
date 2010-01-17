@@ -235,7 +235,7 @@ FreeImage_ConvexHull (FIBITMAP * src)
 
     delete sort_array;
 
-    FIA_DrawGreyscalePolygon (dst, hull_array, number_of_points, 255, 0);
+    FIA_DrawSolidGreyscalePolygon (dst, hull_array, number_of_points, 255, 0);
 
     delete hull_array;
 

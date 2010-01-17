@@ -126,8 +126,12 @@ FIA_InPlaceFloodFill(FIBITMAP* src, int seed_x, int seed_y, int fill_colour);
  *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_DrawGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
+FIA_DrawSolidGreyscalePolygon (FIBITMAP *src, FIAPOINT *points, int number_of_points,
                                           unsigned char value, int antialiased);
+
+DLL_API int DLL_CALLCONV
+FIA_DrawColourSolidPolygon (FIBITMAP * src, FIAPOINT * points,
+                          int number_of_points, RGBQUAD colour, int antialiased);
 
 /** \brief Draw a convexhull for points on an image.
  *
@@ -144,7 +148,16 @@ DLL_API int DLL_CALLCONV
 FIA_DrawSolidGreyscaleEllipse (FIBITMAP *src, FIARECT rect, unsigned char value, int antialiased);
 
 DLL_API int DLL_CALLCONV
+FIA_DrawColourSolidEllipse (FIBITMAP * src, FIARECT rect, RGBQUAD colour, int antialiased);
+
+DLL_API int DLL_CALLCONV
 FIA_DrawGreyScaleCheckerBoard (FIBITMAP *src, int square_size);
+
+DLL_API int DLL_CALLCONV
+FIA_DrawHorizontalColourText (FIBITMAP *src, int left, int top, const char *text, RGBQUAD colour);
+
+DLL_API int DLL_CALLCONV
+FIA_DrawHorizontalGreyscaleText (FIBITMAP * src, int left, int top, const char *text, unsigned char value);
 
 #ifdef __cplusplus
 }

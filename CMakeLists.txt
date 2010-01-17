@@ -17,7 +17,7 @@ ADD_DEFINITIONS(-D GENERATE_DEBUG_IMAGES)
 FIND_PACKAGE(FreeImage REQUIRED) 
 
 # Make sure the compiler can find include files from our library.
-INCLUDE_DIRECTORIES(include Tests ${FREEIMAGE_INCLUDE_PATH})
+INCLUDE_DIRECTORIES(include src/agg/include Tests ${FREEIMAGE_INCLUDE_PATH})
 
 SET (LIBRARY_OUTPUT_PATH ${FreeImageAlgorithms_BINARY_DIR}/bin)
 SET (EXECUTABLE_OUTPUT_PATH ${FreeImageAlgorithms_BINARY_DIR}/bin)
