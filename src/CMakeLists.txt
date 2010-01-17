@@ -207,6 +207,7 @@ ENDIF (WIN32)
 #  SET(AGG_SRCS ${AGG_SRCS} ${FreeImageAlgorithms_SOURCE_DIR}/src/agg/src/agg_font_freetype.cpp)
 #ENDIF (UNIX)
 
+SOURCE_GROUP("AntiGrain" FILES ${AGG_SRCS})
 ADD_DEFINITIONS(-DFREEIMAGE_EXPORTS)
 
 ADD_LIBRARY (freeimagealgorithms SHARED ${FIA_SRCS} ${AGG_SRCS})
