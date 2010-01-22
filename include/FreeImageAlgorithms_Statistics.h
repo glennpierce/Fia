@@ -28,11 +28,13 @@ extern "C" {
 
 typedef struct
 {
-   float   minValue;	   /* miminum pixel value found */
-   float   maxValue;	   /* maximum pixel value found */
-   float   mean;		   /* mean value				*/
-   float   stdDeviation;   /* standard deviation		   */
-   int	   area;		   /* number of pixel scanned	*/
+   double  minValue;					// miminum pixel value found 
+   double  maxValue;					// maximum pixel value found 
+   double  mean;						// mean value				
+   double  stdDeviation;				// standard deviation		
+   float   percentage_overloaded;		// amount of overloaded pixels
+   float   percentage_underloaded;	    // amount of underloaded pixels
+   int	   area;						// number of pixel scanned	
    
 } StatisticReport;
 

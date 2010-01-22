@@ -415,7 +415,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
             src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] += src_ptr[x];
+                dst_ptr[x] = (double) (dst_ptr[x] + src_ptr[x]);
         }
     }
     else
@@ -429,7 +429,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
             src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] += src_ptr[x];
+                dst_ptr[x] = (float) (dst_ptr[x] + src_ptr[x]);
         }
     }
 
@@ -475,7 +475,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractImages (FIBITMAP * dst,
             src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] -= src_ptr[x];
+                dst_ptr[x] = (double) (dst_ptr[x] - src_ptr[x]);
         }
     }
     else
@@ -489,7 +489,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractImages (FIBITMAP * dst,
             src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] -= src_ptr[x];
+                dst_ptr[x] = (float) (dst_ptr[x] - src_ptr[x]);
         }
     }
 
@@ -631,7 +631,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddGreyLevelImageConstant (FIBI
             dst_ptr = (double *) FreeImage_GetScanLine (dst, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] += casted_constant;
+                dst_ptr[x] = (double) (dst_ptr[x] + casted_constant);
         }
     }
     else
@@ -644,7 +644,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddGreyLevelImageConstant (FIBI
             dst_ptr = (float *) FreeImage_GetScanLine (dst, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] += casted_constant;
+                dst_ptr[x] = (float) (dst_ptr[x] + casted_constant);
         }
     }
 
@@ -684,7 +684,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractGreyLevelImageConstant 
             dst_ptr = (double *) FreeImage_GetScanLine (dst, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] -= casted_constant;
+                dst_ptr[x] = (double) (dst_ptr[x] - casted_constant);
         }
     }
     else
@@ -696,7 +696,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractGreyLevelImageConstant 
             dst_ptr = (float *) FreeImage_GetScanLine (dst, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] -= casted_constant;
+                dst_ptr[x] = (float) (dst_ptr[x] - casted_constant);
         }
     }
 

@@ -81,6 +81,9 @@ typedef enum
 
 } COLOUR_ORDER;
 
+typedef struct _FIA_Matrix FIA_Matrix;
+
+typedef enum _FIA_MatrixOrder {FIA_MatrixOrderPrepend = 0, FIA_MatrixOrderAppend} FIA_MatrixOrder;
 #define FIA_SUCCESS 1
 #define FIA_ERROR 0
 

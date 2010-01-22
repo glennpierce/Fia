@@ -203,9 +203,9 @@ FIA_DistanceMap (int width, int height, int normalise)
         for(int x = 0; x < width; x++) {
 
             if (x <= center_x)
-                current_min = x;
+                current_min = (float) x;
             else
-                current_min = width - x;
+                current_min = (float) (width - x);
 
 #ifdef WIN32
             if (y <= center_y)

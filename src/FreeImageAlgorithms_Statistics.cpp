@@ -117,6 +117,8 @@ template < class Tsrc > int Statistic < Tsrc >::CalculateHistogram (FIBITMAP * s
 template < class Tsrc > int Statistic < Tsrc >::CalculateStatisticReport (FIBITMAP * src,
                                                                           StatisticReport * report)
 {
+	memset(report, 0, sizeof(StatisticReport));
+
     if (report == NULL)
     {
         return FIA_ERROR;
@@ -127,6 +129,14 @@ template < class Tsrc > int Statistic < Tsrc >::CalculateStatisticReport (FIBITM
 
     double sum = 0.0, sd_sum = 0.0;
     Tsrc *bits;
+	int	amount_of_overloaded_pixels = 0;
+    int	amount_of_underloaded_pixels = 0;
+
+	double min_possible_for_type = 0.0;
+	double max_possible_for_type = 0.0;
+
+	FIA_GetMinPosibleValueForGreyScaleType (FreeImage_GetImageType(src), &min_possible_for_type);
+	FIA_GetMaxPosibleValueForGreyScaleType (FreeImage_GetImageType(src), &max_possible_for_type);
 
     report->maxValue = report->minValue = FreeImage_GetBits (src)[0];
 
@@ -138,20 +148,32 @@ template < class Tsrc > int Statistic < Tsrc >::CalculateStatisticReport (FIBITM
         {
             if (bits[x] > report->maxValue)
             {
-                report->maxValue = bits[x];
+                report->maxValue = (double) bits[x];
             }
 
             if (bits[x] < report->minValue)
             {
-                report->minValue = bits[x];
+                report->minValue = (double) bits[x];
             }
+
+			if(bits[x] <= min_possible_for_type)
+			{
+				amount_of_underloaded_pixels++;
+			}
+
+			if(bits[x] >= max_possible_for_type)
+			{
+				amount_of_overloaded_pixels++;
+			}
 
             sum += bits[x];
         }
     }
 
     report->area = width * height;
-    report->mean = (float) sum / report->area;
+    report->mean = (double) sum / report->area;
+	report->percentage_underloaded = (float) amount_of_underloaded_pixels / report->area;
+	report->percentage_overloaded = (float) amount_of_overloaded_pixels / report->area;
 
     for(register int y = 0; y < height; y++)
     {
@@ -163,7 +185,7 @@ template < class Tsrc > int Statistic < Tsrc >::CalculateStatisticReport (FIBITM
         }
     }
 
-    report->stdDeviation = sqrt ((float) sd_sum / (report->area - 1));
+    report->stdDeviation = sqrt ((double) sd_sum / (report->area - 1));
 
     return FIA_SUCCESS;
 }

@@ -500,6 +500,8 @@ FIA_DistanceMap (int width, int height, int normalise);
 DLL_API FIBITMAP *DLL_CALLCONV
 FIA_DistanceMapForRectangle (FIARECT rect, int normalise);
 
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_CopyLeftTopWidthHeight ( FIBITMAP * src, int left, int top, int width, int height);
 DLL_API int DLL_CALLCONV
 FIA_IntersectingRect(FIARECT r1, FIARECT r2, FIARECT *r3);
 
@@ -559,6 +561,11 @@ FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
 DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertToGreyscaleFloatType(FIBITMAP **src, FREE_IMAGE_TYPE type);
 
+DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertTo32Bit (FIBITMAP ** src);
+
+DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertTo24Bit (FIBITMAP ** src);
 /** \brief Performs a threshold on greyscale images.
  *
  *	This function performs a threshold on the src image.

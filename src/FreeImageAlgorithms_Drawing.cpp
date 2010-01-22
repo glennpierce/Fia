@@ -32,6 +32,7 @@
 #include "agg_rasterizer_outline.h"
 #include "agg_renderer_primitives.h"
 #include "agg_scanline_p.h"
+#include "agg_scanline_u.h"
 #include "agg_renderer_scanline.h"
 #include "agg_pixfmt_rgb.h"
 #include "agg_pixfmt_rgba.h"
@@ -42,6 +43,329 @@
 #include "agg_glyph_raster_bin.h"
 #include "agg_renderer_raster_text.h"
 #include "agg_embedded_raster_fonts.h"
+#include "agg_trans_affine.h"
+#include "agg_span_interpolator_linear.h"
+#include "agg_span_allocator.h"
+#include "agg_conv_transform.h"
+#include "agg_span_image_filter_rgba.h"
+
+typedef struct _FIA_Matrix 
+{
+  agg::trans_affine trans_affine;
+
+} FIA_Matrix;
+
+FIA_Matrix * DLL_CALLCONV
+FIA_MatrixNew()
+{
+    FIA_Matrix *matrix = (FIA_Matrix*) malloc(sizeof(FIA_Matrix));
+
+    matrix->trans_affine.reset();
+    
+    return matrix;
+}
+
+FIA_Matrix * DLL_CALLCONV
+FIA_MatrixNewWithValues(double v0, double v1, double v2, 
+                                        double v3, double v4, double v5)
+{
+    FIA_Matrix *matrix = (FIA_Matrix*) malloc(sizeof(FIA_Matrix));
+
+    matrix->trans_affine.reset();
+ 
+    FIA_MatrixSetValues(matrix, v0, v1, v2, v3, v4, v5);
+    
+    return matrix;
+}
+
+int DLL_CALLCONV
+FIA_MatrixDestroy(FIA_Matrix *matrix)
+{
+    free(matrix);
+      
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_MatrixSetValues(FIA_Matrix *matrix, double v0, double v1, double v2, 
+                                        double v3, double v4, double v5)
+{
+    double values[6];
+    
+    values[0] = v0;
+    values[1] = v1;
+    values[2] = v2;
+    values[3] = v3;
+    values[4] = v4;
+    values[5] = v5;   
+    
+    matrix->trans_affine.load_from(values);
+    
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_MatrixScale(FIA_Matrix *matrix, double x, double y, FIA_MatrixOrder order)
+{
+  if(order == FIA_MatrixOrderAppend) {
+  
+    matrix->trans_affine.scale(x, y);
+  }
+  else {
+  
+      agg::trans_affine t;
+      t.scale(x, y);
+      
+      matrix->trans_affine.premultiply(t);
+  }
+
+  return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_MatrixRotate(FIA_Matrix *matrix, double a, FIA_MatrixOrder order)
+{
+    if(order == FIA_MatrixOrderAppend) {
+  
+      matrix->trans_affine.rotate(a * agg::pi / 180.0);
+    }
+    else {
+  
+      agg::trans_affine t;
+      t.rotate(a * agg::pi / 180.0);
+      
+      matrix->trans_affine.premultiply(t);
+    }
+  
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_MatrixTranslate(FIA_Matrix *matrix, double x, double y, FIA_MatrixOrder order)
+{
+   if(order == FIA_MatrixOrderAppend) {
+   
+      matrix->trans_affine.translate(x, y);
+    }
+    else {
+    
+      agg::trans_affine t;
+      t.translate(x, y);
+      
+      matrix->trans_affine.premultiply(t);
+    }
+    
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_MatrixInvert(FIA_Matrix *matrix)
+{
+    matrix->trans_affine.invert();
+
+    return FIA_SUCCESS;
+}
+
+static int
+DrawTransformedImage (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx, RGBQUAD colour, int retain_background)
+{
+    typedef agg::pixfmt_bgra32                       src_pixfmt_type;
+    typedef agg::pixfmt_bgra32                       dst_pixfmt_type;
+    typedef agg::renderer_base < dst_pixfmt_type >   renbase_type;
+    	
+    int src_width = FreeImage_GetWidth (src);
+    int src_height = FreeImage_GetHeight (src);
+    
+    int dst_width = FreeImage_GetWidth (dst);
+    int dst_height = FreeImage_GetHeight (dst);
+
+    //Due to the nature of the algorithm you 
+    //have to use the inverse transformations. The algorithm takes the 
+    //coordinates of every destination pixel, applies the transformations and 
+    //obtains the coordinates of the pixel to pick it up from the source image. 
+    image_mtx.invert();
+
+    typedef agg::span_interpolator_linear<> interpolator_type;
+    interpolator_type interpolator(image_mtx);
+    agg::span_allocator<agg::rgba8> sa;
+    
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+
+    unsigned char *src_bits = FreeImage_GetBits (src);
+    
+    unsigned char *dst_bits = FreeImage_GetBits (dst);
+
+	int src_pitch = FreeImage_GetPitch (src);
+	int dst_pitch = FreeImage_GetPitch (dst);
+
+    // Create the src buffer
+    agg::rendering_buffer rbuf_src (src_bits, src_width, src_height, -src_pitch);
+    
+    // Create the dst buffer
+    agg::rendering_buffer rbuf_dst (dst_bits, dst_width, dst_height, -dst_pitch);
+       
+    dst_pixfmt_type pixf_dst(rbuf_dst);
+    renbase_type rbase(pixf_dst);
+    
+    src_pixfmt_type pixf_src(rbuf_src);
+
+    // "hardcoded" bilinear filter
+    typedef agg::span_image_filter_rgba_bilinear_clip<src_pixfmt_type, interpolator_type> span_gen_type;
+    span_gen_type sg(pixf_src, agg::rgba8(colour.rgbRed,colour.rgbGreen,colour.rgbBlue,
+		(retain_background ? 0 : 255)), interpolator);
+        
+    // The Rasterizer definition  
+    agg::rasterizer_scanline_aa<> ras;
+    agg::scanline_p8 scanline;
+
+    agg::path_storage ps;
+
+    //Clip to image boundary
+    ps.move_to(0.0, 0.0);
+    ps.line_to(dst_width, 0.0);
+    ps.line_to(dst_width, dst_height);
+    ps.line_to(0.0, dst_height);
+    ps.line_to(0.0, 0.0);
+    
+    ras.add_path(ps);
+        
+    agg::render_scanlines_aa(ras, scanline, rbase, sa, sg);
+
+    return FIA_SUCCESS;
+}
+
+
+FIBITMAP* DLL_CALLCONV
+FIA_AffineTransform(FIBITMAP *src, int image_dst_width, int image_dst_height,
+  FIA_Matrix *matrix, RGBQUAD colour, int retain_background)
+{
+    FIBITMAP *src32 = FreeImage_ConvertTo32Bits(src);
+   
+    FIBITMAP *dst = FreeImage_Allocate(image_dst_width, image_dst_height, 32, 0, 0, 0);
+
+    if(FreeImage_GetImageType(src) != FIT_BITMAP || FreeImage_GetBPP(src) != 32) {
+        src32 = FreeImage_ConvertTo32Bits(src);
+    }
+    else {
+        src32 = FreeImage_Clone(src);
+    }
+
+    DrawTransformedImage (src32, dst, matrix->trans_affine, colour, retain_background);
+        
+    FreeImage_Unload(src32);
+        
+    return dst;
+}
+
+
+int DLL_CALLCONV
+FIA_DrawImageFromSrcToDst(FIBITMAP *dst, FIBITMAP *src, FIA_Matrix *matrix,
+			  int dstLeft, int dstTop, int dstWidth, int dstHeight,
+			  int srcLeft, int srcTop, int srcWidth, int srcHeight, RGBQUAD colour, int retain_background)
+{
+    if (FreeImage_GetImageType (dst) != FIT_BITMAP)
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Destination image is not of type FIT_BITMAP");
+        return FIA_ERROR;
+    }
+    
+    if (FreeImage_GetBPP (dst) != 32)
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Destination image is not 32 bpp");
+        return FIA_ERROR;
+    }
+
+    FIBITMAP* src_region = FIA_Copy(src, srcLeft, srcTop,
+			srcLeft + srcWidth - 1, srcTop + srcHeight - 1);
+
+    if(src_region == NULL) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "Failed to extract region of given src rectangle");
+
+        return FIA_ERROR;
+    }
+    
+    FIBITMAP *src32 = NULL;
+   
+    if(FreeImage_GetImageType(src_region) != FIT_BITMAP || FreeImage_GetBPP(src_region) != 32) {
+        src32 = FreeImage_ConvertTo32Bits(src_region);
+    }
+    else {
+        src32 = FreeImage_Clone(src_region);
+    }
+
+	FIA_Matrix* dstMatrix = FIA_MatrixNew();
+	
+	double scalex = (double) dstWidth / srcWidth;
+	double scaley = (double) dstHeight / srcHeight;
+
+	FIA_MatrixTranslate(dstMatrix, dstLeft, dstTop, FIA_MatrixOrderPrepend);
+	FIA_MatrixScale(dstMatrix, scalex, scaley, FIA_MatrixOrderPrepend);
+
+	if(matrix != NULL) {
+		dstMatrix->trans_affine *= matrix->trans_affine;
+	}
+
+    DrawTransformedImage (src32, dst, dstMatrix->trans_affine, colour, retain_background);
+        
+	FIA_MatrixDestroy(dstMatrix);
+
+    FreeImage_Unload(src32);
+    FreeImage_Unload(src_region);
+        
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_DrawImageToDst(FIBITMAP *dst, FIBITMAP *src, FIA_Matrix *matrix,
+			  int dstLeft, int dstTop, int dstWidth, int dstHeight, RGBQUAD colour, int retain_background)
+{
+    if (FreeImage_GetImageType (dst) != FIT_BITMAP)
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Destination image is not of type FIT_BITMAP");
+        return FIA_ERROR;
+    }
+    
+    if (FreeImage_GetBPP (dst) != 32)
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Destination image is not 32 bpp");
+        return FIA_ERROR;
+    }
+
+    
+    FIBITMAP *src32 = NULL;
+   
+    if(FreeImage_GetImageType(src) != FIT_BITMAP || FreeImage_GetBPP(src) != 32) {
+        src32 = FreeImage_ConvertTo32Bits(src);
+    }
+    else {
+        src32 = FreeImage_Clone(src);
+    }
+
+	FIA_Matrix* dstMatrix = FIA_MatrixNew();
+	
+	double scalex = (double) dstWidth / FreeImage_GetWidth(src);
+	double scaley = (double) dstHeight / FreeImage_GetHeight(src);
+
+	FIA_MatrixTranslate(dstMatrix, dstLeft, dstTop, FIA_MatrixOrderPrepend);
+	FIA_MatrixScale(dstMatrix, scalex, scaley, FIA_MatrixOrderPrepend);
+
+	if(matrix != NULL) {
+		dstMatrix->trans_affine *= matrix->trans_affine;
+	}
+
+    DrawTransformedImage (src32, dst, dstMatrix->trans_affine, colour, retain_background);
+        
+	FIA_MatrixDestroy(dstMatrix);
+
+    FreeImage_Unload(src32);
+        
+    return FIA_SUCCESS;
+}
 
 template<class Rasterizer>
 static void
@@ -468,7 +792,7 @@ orthogonal_draw_line (FIBITMAP * src, int x1, int y1, int x2, int y2, ValueType 
 	    {
             	while (x1 <= x2)
             	{
-                	*bits = value;  
+                	*(ValueType*)bits = value;  
                     // jump to next pixel
 		            bits += bytespp;
                     x1++;
@@ -511,7 +835,7 @@ orthogonal_draw_line (FIBITMAP * src, int x1, int y1, int x2, int y2, ValueType 
 	    {
 		    while (y1 <= y2)
 		    {
-		        *bits = value;
+		        *(ValueType*)bits = value;
 
 		        bits += pitch;
 
