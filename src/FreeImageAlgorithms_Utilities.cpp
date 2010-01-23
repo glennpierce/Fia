@@ -1602,7 +1602,7 @@ FIA_InPlaceConvertTo32Bit (FIBITMAP ** src)
 }
 
 int DLL_CALLCONV
-FIA_InPlaceConvertTo242Bit (FIBITMAP ** src)
+FIA_InPlaceConvertTo24Bit (FIBITMAP ** src)
 {
     FIBITMAP *dst = FreeImage_ConvertTo24Bits (*src);
 
@@ -2432,7 +2432,7 @@ FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* 
 {
     FIARECT intersection_rect, src1_intersection_rect,  src2_intersection_rect;
 
-    FIBITMAP *alpha = NULL, *src1_24 = NULL, *blended = NULL, *src1_region = NULL;
+    FIBITMAP *alpha = NULL, *blended = NULL, *src1_region = NULL;
     FIBITMAP *src2_region = NULL, *map_region = NULL, *src1_cpy = NULL, *src1_mask_region = NULL;
 
     // Make sure the passed in rect 2 does not exceed the size of the corresponding image.
@@ -2440,6 +2440,12 @@ FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* 
     FIA_RectChangeWidthHeight (&rect2, FreeImage_GetWidth(src2), FreeImage_GetHeight(src2));
 
     map_region = FIA_GetGradientAlphaValuesForIntersection(rect1, rect2, &intersection_rect);
+
+// Debug
+        FIBITMAP *std_map_region = FreeImage_ConvertToStandardType(map_region);
+        FIA_SaveFIBToFile(std_map_region, "/home/glenn/map.bmp", BIT24);
+        FreeImage_Unload(std_map_region);
+
 
     if(map_region == NULL) {
 
@@ -2526,9 +2532,6 @@ FIA_GradientBlendedIntersectionImage (FIBITMAP * src1, FIARECT rect1, FIBITMAP* 
     if(alpha != NULL)
         FreeImage_Unload(alpha);
 
-    if(src1_24 != NULL)
-        FreeImage_Unload(src1_24);
-
     return blended;
 
 CLEANUP:
@@ -2545,18 +2548,16 @@ CLEANUP:
     if(alpha != NULL)
         FreeImage_Unload(alpha);
 
-    if(src1_24 != NULL)
-        FreeImage_Unload(src1_24);
-
     return NULL;
 }
+
 
 int DLL_CALLCONV
 FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2, FIBITMAP *mask)
 {
-	FIARECT intersect_image_rect;
+    FIARECT intersect_image_rect;
 
-	FIBITMAP* blended = FIA_GradientBlendedIntersectionImage (src1, rect1, src2, rect2, mask, &intersect_image_rect);
+    FIBITMAP* blended = FIA_GradientBlendedIntersectionImage (src1, rect1, src2, rect2, mask, &intersect_image_rect);
 
     FIA_PasteFromTopLeft(src1, blended,  intersect_image_rect.left, intersect_image_rect.top);
 
@@ -2566,8 +2567,126 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
     return FIA_SUCCESS;
 }
 
+
+/*
 int DLL_CALLCONV
-FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top, FIBITMAP *mask)
+FIA_GradientBlendRGBA (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2)
+{
+    FIARECT intersect_image_rect, src2_intersection_rect;
+    int intersec_width, intersec_height;
+
+    // Check image in RGBA
+    if(FreeImage_GetImageType(src1) != FIT_BITMAP || FreeImage_GetBPP(src1) != 32) {
+
+	FreeImage_OutputMessageProc (FIF_UNKNOWN, "Passed image in not a 32bit FIT_BITMAP");
+	return FIA_ERROR;
+    }
+
+    FIBITMAP* blended = FIA_GradientBlendedIntersectionImage (src1, rect1, src2, rect2, NULL, &intersect_image_rect);
+
+    // We have an intersection now. We must mask the alpha values out of this region as 255 ie fully opaque
+    
+    src2_intersection_rect = SetRectRelativeToPoint(intersection_rect, MakeFIAPoint(rect2.left, rect2.top));
+	
+    intersec_width = src2_intersection_rect.right - src2_intersection_rect.left + 1;
+    intersec_width = src2_intersection_rect.bottom - src2_intersection_rect.top + 1;
+
+    FIBITMAP *alpha_dib = FreeImage_Allocate(FreeImage_GetWidth(dib2), FreeImage_GetHeight(dib2), 8, 0, 0, 0);
+
+    // Make the default opaque foreground
+    FIA_DrawSolidGreyscaleRect (alpha_dib, MakeFIARect(0,0, FreeImage_GetWidth(alpha_dib) - 1, FreeImage_GetHeight(alpha_dib) - 1), 255);
+
+    // Make the intersection a 
+
+
+
+
+  FreeImage_SetTransparent(dib2, 1);
+
+  FIBITMAP *alpha_dib = FreeImage_Allocate(FreeImage_GetWidth(dib1), FreeImage_GetHeight(dib1), 8, 0, 0, 0);
+
+  FIA_DrawSolidGreyscaleRect (alpha_dib, MakeFIARect(0,0, FreeImage_GetWidth(alpha_dib) - 1, FreeImage_GetHeight(alpha_dib) - 1), 255);
+  FIA_DrawSolidGreyscaleRect (alpha_dib, MakeFIARect(50,50, 200, 200), 120);
+
+  if(FreeImage_SetChannel(dib2, alpha_dib, FICC_ALPHA) == 0) {
+        std::cout << "Error calling FreeImage_SetChannel" << std::endl;
+
+        return;
+  }
+
+  if(!FreeImage_IsTransparent(dib2)) {
+        std::cout << "Not transparent" << std::endl;
+    return;
+  }
+
+  FIA_DrawColourSolidRect(dst, MakeFIARect(0,0, FreeImage_GetWidth(dst) - 1,^M
+        FreeImage_GetHeight(dst) - 1), FIA_RGBQUAD(255,255,0));^M
+^M
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    FIA_PasteFromTopLeft(src1, blended,  intersect_image_rect.left, intersect_image_rect.top);
+
+    if(blended != NULL)
+        FreeImage_Unload(blended);
+
+    return FIA_SUCCESS;
+}
+*/
+
+int DLL_CALLCONV
+FIA_GradientBlendPasteFromTopLeft (FIBITMAP * background, FIBITMAP *src1, FIBITMAP* src2, int src1_left, int src1_top,
+									 		  int src2_left, int src2_top)
+{
+    int dst_width = FreeImage_GetWidth(background);
+    int dst_height = FreeImage_GetHeight(background);
+
+    int src1_width = FreeImage_GetWidth(src2);
+    int src1_height = FreeImage_GetHeight(src2);
+
+    int src2_width = FreeImage_GetWidth(src2);
+    int src2_height = FreeImage_GetHeight(src2);
+
+    FIARECT src1_rect = MakeFIARect(src1_left,src1_top, src1_left+ src1_width - 1, src1_top + src1_height - 1);
+    FIARECT src2_rect = MakeFIARect(src2_left,src2_top, src2_left + src2_width - 1, src2_top + src2_height - 1);
+
+    FIARECT intersect_image_rect;
+
+    FIBITMAP* intersection_image = FIA_GradientBlendedIntersectionImage (src1, src1_rect, src2, src2_rect, NULL, &intersect_image_rect);
+
+    // Paste first image onto background
+    // Then paste the second image
+    // The paste the gradient section
+    FIA_PasteFromTopLeft(background, src1, src1_left, src1_top);
+    FIA_PasteFromTopLeft(background, src2, src2_left, src2_top);
+    FIA_PasteFromTopLeft(background, intersection_image, src1_left + intersect_image_rect.left, src1_top + intersect_image_rect.top);
+
+    if(intersection_image != NULL)
+        FreeImage_Unload(intersection_image);
+
+     return FIA_SUCCESS;
+}
+
+/*
+int DLL_CALLCONV
+FIA_GradientBlendRGBAPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top)
 {
     int dst_width = FreeImage_GetWidth(dst);
     int dst_height = FreeImage_GetHeight(dst);
@@ -2578,5 +2697,7 @@ FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int 
     FIARECT dst_rect = MakeFIARect(0,0,dst_width-1,dst_height-1);
     FIARECT src_rect = MakeFIARect(left,top,left + src_width-1, top + src_height-1);
 
-    return FIA_GradientBlend (dst, dst_rect, src, src_rect, mask);
+    return FIA_GradientBlend (dst, dst_rect, src, src_rect, NULL);
 }
+
+*/

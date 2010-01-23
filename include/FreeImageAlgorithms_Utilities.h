@@ -687,8 +687,12 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
  *  \param src Image to blend.
  *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
 */
+//DLL_API int DLL_CALLCONV
+//FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top, FIBITMAP *mask);
+
 DLL_API int DLL_CALLCONV
-FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top, FIBITMAP *mask);
+FIA_GradientBlendPasteFromTopLeft (FIBITMAP * background, FIBITMAP *src1, FIBITMAP* src2, int src1_left, int src1_top,
+                                                                                          int src2_left, int src2_top);
 
 /** \brief Gradient blends one image into another
  *

@@ -6,12 +6,13 @@
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Testing.h"
 
+#include "current_function.hpp"
 #include <iostream>
-
 
 #ifndef WIN32
 #include <sys/stat.h>
 #endif
+
 
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsColourSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLinearScaleSuite(void);
@@ -40,6 +41,10 @@ void RunAllTests(void)
 	CuString *output = CuStringNew();
 	CuSuite* suite = CuSuiteNew();
 
+	current_function_helper();
+
+	std::cout << BOOST_CURRENT_FUNCTION << std::endl;
+
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
@@ -51,7 +56,7 @@ void RunAllTests(void)
     CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
-//    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

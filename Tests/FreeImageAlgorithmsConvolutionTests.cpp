@@ -1384,6 +1384,39 @@ TestFIA_GradientBlendPasteTest5(CuTest* tc)
     FreeImage_Unload(fib2);
 }
 
+*/
+
+static void
+TestFIA_GradientBlendPasteTest6(CuTest* tc)
+{
+    FIBITMAP *background = FreeImage_Allocate(2000,2000, 24, 0, 0, 0);
+    FIBITMAP *fib2 =  FIA_LoadFIBFromFile(TEST_DATA_DIR "HistologyRS1.png");
+    FIBITMAP *fib3 =  FIA_LoadFIBFromFile(TEST_DATA_DIR "HistologyRS2.png");
+
+    FIA_InPlaceConvertTo24Bit(&fib2);
+    FIA_InPlaceConvertTo24Bit(&fib3);
+
+    std::cout << FreeImage_GetBPP(fib2) << std::endl;
+
+    int width = FreeImage_GetWidth(fib2);
+
+    FIA_GradientBlendPasteFromTopLeft (background, fib2, fib3, 0, 0, width - 300, 0);
+    
+
+ 
+
+    //FIA_GradientBlendPasteFromTopLeft (fib1, fib2, 0, 0, NULL);
+    //FIA_GradientBlendPasteFromTopLeft (fib1, fib2, width - 100, 0, NULL);
+    //FIA_GradientBlendPasteFromTopLeft (fib1, fib2, 2 * width - 200, 0, NULL);
+
+    FIA_SaveFIBToFile(background, TEST_DATA_OUTPUT_DIR  "/Convolution/gradient_blended_paste6.png", BIT32);
+
+    FreeImage_Unload(background);
+    FreeImage_Unload(fib2);
+}
+
+/*
+
 static void
 TestFIA_GradientBlendFloatImagePasteTest(CuTest* tc)
 {
@@ -1425,6 +1458,8 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	//SUITE_ADD_TEST(suite, TestFIA_IntersectingRect);
 
     // Done
+
+	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest6);
 
 /*
     SUITE_ADD_TEST(suite, TestFIA_GradientBlend);

@@ -31,6 +31,7 @@
 #include "agg_rasterizer_scanline_aa.h"
 #include "agg_rasterizer_outline.h"
 #include "agg_renderer_primitives.h"
+#include "agg_alpha_mask_u8.h"
 #include "agg_scanline_p.h"
 #include "agg_scanline_u.h"
 #include "agg_renderer_scanline.h"
@@ -166,6 +167,71 @@ FIA_MatrixInvert(FIA_Matrix *matrix)
     return FIA_SUCCESS;
 }
 
+
+template<class Rasterizer>
+static int generate_alpha_mask(Rasterizer& rasterizer, agg::alpha_mask_gray8 &alpha_mask, FIBITMAP *mask)
+    {
+	if(mask == NULL) {
+
+		FreeImage_OutputMessageProc (FIF_UNKNOWN, "mask is NULL");
+		return FIA_ERROR;
+	}
+
+        if (FreeImage_GetImageType (mask) != FIT_BITMAP)
+        {
+        	FreeImage_OutputMessageProc (FIF_UNKNOWN, "mask is not a FIT_BITMAP image");
+                return FIA_ERROR;
+        }
+
+	if (FreeImage_GetBPP (mask) != 8)
+        {
+                FreeImage_OutputMessageProc (FIF_UNKNOWN, "mask is not 8 bpp");
+                return FIA_ERROR;
+        }
+
+
+	//agg::rendering_buffer g_alpha_mask_rbuf;
+
+	// Create the rendering buffer
+    	agg::rendering_buffer alpha_mask_rbuf (FreeImage_GetBits(mask),
+					       FreeImage_GetWidth(mask), FreeImage_GetHeight(mask), FreeImage_GetPitch (mask));
+	
+	agg::alpha_mask_gray8 g_alpha_mask(alpha_mask_rbuf);
+
+
+//        delete [] m_alpha_buf;
+        //unsigned char* m_alpha_buf = new unsigned char[cx * cy];
+        //g_alpha_mask_rbuf.attach(m_alpha_buf, cx, cy, cx);
+
+        typedef agg::renderer_base<agg::pixfmt_gray8> ren_base;
+        typedef agg::renderer_scanline_aa_solid<ren_base> renderer;
+
+        agg::pixfmt_gray8 pixf(alpha_mask_rbuf);
+        ren_base rb(pixf);
+        renderer r(rb);
+        agg::scanline_p8 sl;
+
+        rb.clear(agg::gray8(0));
+
+        agg::ellipse ell;
+
+        int i;
+        for(i = 0; i < 10; i++)
+        {
+            ell.init(rand() % FreeImage_GetWidth(mask),
+                     rand() % FreeImage_GetHeight(mask),
+                     rand() % 100 + 20,
+                     rand() % 100 + 20,
+                     100);
+
+            rasterizer.add_path(ell);
+            r.color(agg::gray8(rand() & 0xFF, rand() & 0xFF));
+            agg::render_scanlines(rasterizer, sl, r);
+        }
+
+	return FIA_SUCCESS;;
+    }
+
 static int
 DrawTransformedImage (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx, RGBQUAD colour, int retain_background)
 {
@@ -233,6 +299,48 @@ DrawTransformedImage (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx,
 
     return FIA_SUCCESS;
 }
+
+/*
+static int
+DrawTransformedImage2 (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx, RGBQUAD colour, int retain_background)
+{
+	typedef agg::scanline_u8_am<agg::alpha_mask_gray8> scanline_type;
+    typedef agg::pixfmt_bgra32                       src_pixfmt_type;
+    typedef agg::pixfmt_bgra32                       dst_pixfmt_type;
+    typedef agg::renderer_base < dst_pixfmt_type >   ren_base;
+    typedef agg::renderer_scanline_aa_solid<ren_base> renderer;
+    
+    int src_width = FreeImage_GetWidth (src);
+    int src_height = FreeImage_GetHeight (src);
+
+    int dst_width = FreeImage_GetWidth (dst);
+    int dst_height = FreeImage_GetHeight (dst);
+
+    //Due to the nature of the algorithm you 
+    //have to use the inverse transformations. The algorithm takes the 
+    //coordinates of every destination pixel, applies the transformations and 
+    //obtains the coordinates of the pixel to pick it up from the source image. 
+    image_mtx.invert();
+
+
+	agg::rasterizer_scanline_aa<> ras;
+
+
+//agg::alpha_mask_gray8 g_alpha_mask(g_alpha_mask_rbuf);
+//	generate_alpha_mask(ras, agg::alpha_mask_gray8 &alpha_mask, FIBITMAP *mask);
+
+        agg::pixfmt_bgr24 pixf(rbuf_window());
+        ren_base rb(pixf);
+        renderer r(rb);
+
+        scanline_type sl(g_alpha_mask);
+        rb.clear(agg::rgba8(255, 255, 255));
+
+        agg::conv_transform<agg::path_storage, agg::trans_affine> trans(g_path, image_mtx);
+
+        agg::render_all_paths(g_rasterizer, sl, r, trans, g_colors, g_path_idx, g_npaths);
+    }
+*/
 
 
 FIBITMAP* DLL_CALLCONV
