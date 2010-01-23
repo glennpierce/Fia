@@ -26,6 +26,7 @@ CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsMorphologySuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLogicSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsDrawingSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsParticleSuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsGradientBlendSuite(void);
 
 int MkDir(const char *path)
 {
@@ -43,20 +44,19 @@ void RunAllTests(void)
 
 	current_function_helper();
 
-	std::cout << BOOST_CURRENT_FUNCTION << std::endl;
-
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsMorphologySuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
-    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
-   // CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
-    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
+    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
+    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
+    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
-    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
+    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());
+    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsGradientBlendSuite());
 
 	CuSuiteRun(suite);
 	CuSuiteSummary(suite, output);

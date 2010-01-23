@@ -6,14 +6,15 @@ SET(FIA_TEST_SRCS AllTests.cpp
 	     	  FreeImageAlgorithms_DrawingTests.cpp
 	     	  FreeImageAlgorithms_IOTests.cpp
 	     	  FreeImageAlgorithms_LogicTests.cpp
-	     	  FreeImageAlgorithmsColourTests.cpp
-	     	  FreeImageAlgorithmsConvolutionTests.cpp
-	     	  FreeImageAlgorithmsFFTTests.cpp
-	    	  FreeImageAlgorithmsLinearScale.cpp
-	     	  FreeImageAlgorithmsMorphologyTests.cpp
-	     	  FreeImageAlgorithmsParticleTests.cpp
-	     	  FreeImageAlgorithmsStatisticTests.cpp
-	     	  FreeImageAlgorithmsUtilityTests.cpp
+	     	  FreeImageAlgorithms_ColourTests.cpp
+	     	  FreeImageAlgorithms_ConvolutionTests.cpp
+		  FreeImageAlgorithms_GradientBlend.cpp
+	     	  FreeImageAlgorithms_FFTTests.cpp
+	    	  FreeImageAlgorithms_LinearScale.cpp
+	     	  FreeImageAlgorithms_MorphologyTests.cpp
+	     	  FreeImageAlgorithms_ParticleTests.cpp
+	     	  FreeImageAlgorithms_StatisticTests.cpp
+	     	  FreeImageAlgorithms_UtilityTests.cpp
 )
 
 

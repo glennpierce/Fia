@@ -22,6 +22,7 @@ SET(FIA_SRCS 	FreeImageAlgorithms_Arithmetic.cpp
 	     	FreeImageAlgorithms_Threshold.cpp
 	     	FreeImageAlgorithms_Utilities.cpp
 	     	FreeImageAlgorithms_ConvexHull.cpp
+		FreeImageAlgorithms_GradientBlend.cpp
 	     	kiss_fft.c
 	     	kiss_fftnd.c
 	     	profile.c
