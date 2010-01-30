@@ -9,6 +9,7 @@
 #include "current_function.hpp"
 #include <iostream>
 
+#include "Constants.h"
 #ifndef WIN32
 #include <sys/stat.h>
 #endif
@@ -80,6 +81,10 @@ int __cdecl main(void)
 	MkDir(TEST_DATA_OUTPUT_DIR);
 
 	RunAllTests();
+
+	#if WIN32
+		while(1);
+	#endif
 
 	return 0;
 }

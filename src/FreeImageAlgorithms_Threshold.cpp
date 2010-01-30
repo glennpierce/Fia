@@ -98,10 +98,17 @@ FIA_Threshold (FIBITMAP * src, double min, double max, double new_value)
         {                       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
             if (FreeImage_GetBPP (src) == 8)
             {
-                err =
-                    thresholdUCharImage.Threshold (dst, (unsigned char) min, (unsigned char) max,
+                err = thresholdUCharImage.Threshold (dst, (unsigned char) min, (unsigned char) max,
                                                    (unsigned char) new_value);
             }
+            else {
+            
+                  FIA_InPlaceConvertTo8Bit(&dst);
+                  
+                  err = thresholdUCharImage.Threshold (dst, (unsigned char) min, (unsigned char) max,
+                                                   (unsigned char) new_value);        
+            }
+            
             break;
         }
         

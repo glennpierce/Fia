@@ -409,7 +409,7 @@ FIA_DrawImageFromSrcToDst(FIBITMAP *dst, FIBITMAP *src, FIA_Matrix *matrix,
 	double scalex = (double) dstWidth / srcWidth;
 	double scaley = (double) dstHeight / srcHeight;
 
-	FIA_MatrixTranslate(dstMatrix, dstLeft, dstTop, FIA_MatrixOrderPrepend);
+	FIA_MatrixTranslate(dstMatrix, dstLeft - 1, dstTop - 1, FIA_MatrixOrderPrepend);
 	FIA_MatrixScale(dstMatrix, scalex, scaley, FIA_MatrixOrderPrepend);
 
 	if(matrix != NULL) {
@@ -459,7 +459,7 @@ FIA_DrawImageToDst(FIBITMAP *dst, FIBITMAP *src, FIA_Matrix *matrix,
 	double scalex = (double) dstWidth / FreeImage_GetWidth(src);
 	double scaley = (double) dstHeight / FreeImage_GetHeight(src);
 
-	FIA_MatrixTranslate(dstMatrix, dstLeft, dstTop, FIA_MatrixOrderPrepend);
+	FIA_MatrixTranslate(dstMatrix, dstLeft - 1, dstTop - 1, FIA_MatrixOrderPrepend);
 	FIA_MatrixScale(dstMatrix, scalex, scaley, FIA_MatrixOrderPrepend);
 
 	if(matrix != NULL) {

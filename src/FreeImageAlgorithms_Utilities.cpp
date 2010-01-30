@@ -44,15 +44,16 @@ template < class Tsrc > class TemplateImageFunctionClass
 
 	// Composite function for all image types
 	FIBITMAP *Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask);
+	int Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask);
 };
 
-TemplateImageFunctionClass < unsigned char > UCharImage;
-TemplateImageFunctionClass < unsigned short > UShortImage;
-TemplateImageFunctionClass < short > ShortImage;
-TemplateImageFunctionClass < unsigned long > ULongImage;
-TemplateImageFunctionClass < long > LongImage;
-TemplateImageFunctionClass < float > FloatImage;
-TemplateImageFunctionClass < double > DoubleImage;
+static TemplateImageFunctionClass < unsigned char > UCharImage;
+static TemplateImageFunctionClass < unsigned short > UShortImage;
+static TemplateImageFunctionClass < short > ShortImage;
+static TemplateImageFunctionClass < unsigned long > ULongImage;
+static TemplateImageFunctionClass < long > LongImage;
+static TemplateImageFunctionClass < float > FloatImage;
+static TemplateImageFunctionClass < double > DoubleImage;
 
 #ifdef _MSC_VER
 
@@ -1591,6 +1592,17 @@ FIA_GetPixelValue (FIBITMAP * src, int x, int y, double *val)
 }
 
 int DLL_CALLCONV
+FIA_InPlaceConvertTo8Bit (FIBITMAP ** src)
+{
+    FIBITMAP *dst = FreeImage_ConvertTo8Bits (*src);
+
+    FreeImage_Unload (*src);
+    *src = dst;
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
 FIA_InPlaceConvertTo32Bit (FIBITMAP ** src)
 {
     FIBITMAP *dst = FreeImage_ConvertTo32Bits (*src);
@@ -2047,6 +2059,92 @@ template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
     return dst;
 }
 
+template < typename Tsrc > int TemplateImageFunctionClass
+  <Tsrc >::Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask)
+{
+	if (FreeImage_GetImageType (fg) != FreeImage_GetImageType (dst))
+    {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Foreground and background image are not of the same type");
+        return NULL;
+    }
+
+	if(mask != NULL) {
+		if (FreeImage_GetImageType (mask) != FIT_BITMAP)
+		{
+			FreeImage_OutputMessageProc (FIF_UNKNOWN,
+										 "mask is not a FIT_BITMAP image");
+			return NULL;
+		}
+	}
+
+	if(FIA_CheckSizesAreSame(fg, dst) == 0) {
+
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and background image are not the same size");
+
+        return NULL;
+    }
+
+	if(FIA_CheckSizesAreSame(fg, mask) == 0) {
+
+		FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and mask image are not the same size");
+
+		return NULL;
+	}
+
+    int fg_width = FreeImage_GetWidth (fg);
+    int fg_height = FreeImage_GetHeight (fg);
+
+    bool greyscale_image = true;
+    
+    if(FreeImage_GetImageType(fg) == FIT_BITMAP && FreeImage_GetBPP(fg) > 8) {
+	    greyscale_image = false;
+    }
+    
+    if(greyscale_image) {
+	    for(register int y = 0; y < fg_height; y++)
+	    {
+		    Tsrc *dst_ptr = (Tsrc *) FIA_GetScanLineFromTop (dst, y);
+		    Tsrc *fg_ptr = (Tsrc *) FIA_GetScanLineFromTop (fg, y);
+		    BYTE *mask_ptr = (BYTE *) FIA_GetScanLineFromTop (mask, y);
+
+		    for(register int x = 0; x < fg_width; x++)
+		    {
+			    if(mask_ptr[x] > 0)
+				    dst_ptr[x] = (Tsrc) fg_ptr[x];
+		    }
+	    }
+    }
+    else {
+    
+        int bytespp = FreeImage_GetLine (dst) / FreeImage_GetWidth (dst);
+        
+        for(register int y = 0; y < fg_height; y++)
+	    {
+		    BYTE *dst_ptr = (BYTE *) FIA_GetScanLineFromTop (dst, y);
+		    BYTE *fg_ptr = (BYTE *) FIA_GetScanLineFromTop (fg, y);
+		    BYTE *mask_ptr = (BYTE *) FIA_GetScanLineFromTop (mask, y);
+
+		    for(register int x = 0; x < fg_width; x++)
+		    {
+			    if(mask_ptr[x] > 0) {
+		
+			      dst_ptr[FI_RGBA_RED] = fg_ptr[FI_RGBA_RED];
+			      dst_ptr[FI_RGBA_GREEN] = fg_ptr[FI_RGBA_GREEN];
+			      dst_ptr[FI_RGBA_BLUE] = fg_ptr[FI_RGBA_BLUE];
+			    
+			      if (bytespp == 4)
+			          dst_ptr[FI_RGBA_ALPHA] = 0;   
+                }
+				  
+				dst_ptr += bytespp;
+				fg_ptr += bytespp;
+		    }
+	    }
+    }
+    
+    return FIA_SUCCESS;
+}
 FIBITMAP *DLL_CALLCONV
 FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask)
 {
@@ -2155,6 +2253,67 @@ FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, 
     }
 
     return dst;
+}
+
+int DLL_CALLCONV
+FIA_Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask)
+{
+    if (fg == NULL || dst == NULL)
+        return NULL;
+
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (fg);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:       // standard image: 1-, 4-, 8-, 16-, 24-, 32-bit
+        {
+            return UCharImage.Combine (dst, fg, mask);
+        }
+
+        case FIT_UINT16:       // array of unsigned short: unsigned 16-bit
+        {
+            return UShortImage.Combine (dst, fg, mask);
+        }
+
+        case FIT_INT16:        // array of short: signed 16-bit
+        {
+            return ShortImage.Combine (dst, fg, mask);
+        }
+
+        case FIT_UINT32:       // array of unsigned long: unsigned 32-bit
+        {
+            return ULongImage.Combine (dst, fg, mask);
+        }
+
+        case FIT_INT32:        // array of long: signed 32-bit
+        {
+            return LongImage.Combine (dst, fg, mask);
+        }
+
+        case FIT_FLOAT:        // array of float: 32-bit
+        {
+            return FloatImage.Combine (dst, fg, mask);
+        }
+
+        case FIT_DOUBLE:       // array of double: 64-bit
+        {
+            return DoubleImage.Combine (dst, fg, mask);
+        }
+
+        case FIT_COMPLEX:      // array of FICOMPLEX: 2 x 64-bit
+        {
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    FreeImage_OutputMessageProc (FIF_UNKNOWN, "FREE_IMAGE_TYPE: Unable to combine.");
+
+    return FIA_ERROR;
 }
 
 int DLL_CALLCONV

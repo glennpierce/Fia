@@ -379,9 +379,7 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak ** peaks_ref)
     // Store a number of brightest peaks from peakImage according to brightnessImage
     // if number<=0 then all the peaks are stored
     // the actual number of peaks in the centres list is returned
-    PARTICLEINFO *info;
-
-    FIA_ParticleInfo (this->peek_image, &info, 1);
+    PARTICLEINFO *info = NULL;
 
     if(FIA_ParticleInfo (this->peek_image, &info, 1) == FIA_ERROR)
         return FIA_ERROR;

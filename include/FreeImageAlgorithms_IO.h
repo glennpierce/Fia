@@ -59,7 +59,8 @@ FIA_SaveFIBToFile (FIBITMAP *dib, const char *filepath, FREEIMAGE_ALGORITHMS_SAV
  *  \param padded Is the data padded to 32 bit boundaries.
 */
 DLL_API void DLL_CALLCONV
-FIA_CopyBytesToFBitmap(FIBITMAP *src, BYTE *data, int padded);
+FIA_CopyBytesToFBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_flip,
+                        COLOUR_ORDER order);
 
 /** \brief Load a greyscale FIBITMAP from an array of bytes
  *	

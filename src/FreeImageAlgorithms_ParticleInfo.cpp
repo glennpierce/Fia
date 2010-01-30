@@ -313,6 +313,10 @@ FIA_ParticleInfo (FIBITMAP * src, PARTICLEINFO ** info, unsigned char white_on_b
                         tmp_run.blob->area = tmp_run.end_x - tmp_run.x + 1 + last_blob->area;
                         tmp_run.blob->sum_x = tmp_run.sum_x + last_blob->sum_x;
                         tmp_run.blob->sum_y += ((top_row - y) * (tmp_run.end_x - tmp_run.x + 1));
+						if(tmp_run.blob->sum_y < 0) {
+							tmp_run.blob->sum_y = tmp_run.blob->sum_y;
+						}
+
                     }
                     else if (tmp_run.blob != last_blob)
                     {

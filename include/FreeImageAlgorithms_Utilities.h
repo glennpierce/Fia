@@ -557,6 +557,8 @@ FIA_CloneImageType(FIBITMAP *src, int width, int height);
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
 
+DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertTo8Bit (FIBITMAP ** src);
 
 DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertToGreyscaleFloatType(FIBITMAP **src, FREE_IMAGE_TYPE type);
@@ -687,12 +689,6 @@ FIA_GradientBlend (FIBITMAP * src1, FIARECT rect1, FIBITMAP* src2, FIARECT rect2
  *  \param src Image to blend.
  *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
 */
-//DLL_API int DLL_CALLCONV
-//FIA_GradientBlendPasteFromTopLeft (FIBITMAP * dst, FIBITMAP* src, int left, int top, FIBITMAP *mask);
-
-DLL_API int DLL_CALLCONV
-FIA_GradientBlendPasteFromTopLeft (FIBITMAP * background, FIBITMAP *src1, FIBITMAP* src2, int src1_left, int src1_top,
-                                                                                          int src2_left, int src2_top);
 
 /** \brief Gradient blends one image into another
  *
@@ -720,6 +716,11 @@ FIA_CompositeRegion(FIBITMAP * fg, FIBITMAP * bg, FIARECT rect, FIBITMAP *mask);
 DLL_API FIBITMAP *DLL_CALLCONV
 FIA_Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask);
 
+DLL_API int DLL_CALLCONV
+FIA_Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask);
+
+DLL_API int DLL_CALLCONV
+FIA_GradientBlendMosaicPaste (FIBITMAP* dst, FIBITMAP* src, int x, int y);
 #ifdef __cplusplus
 }
 #endif

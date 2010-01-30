@@ -31,6 +31,7 @@ template < typename Tsrc > class LOGIC
     // I know these are logic functions but oh well no need for a new class
     // + its only private.
     int MaskImage (FIBITMAP * src, FIBITMAP * mask);
+    int InvertMaskImage (FIBITMAP * mask);
 };
 
 static int
@@ -70,18 +71,51 @@ template < typename Tsrc > int LOGIC < Tsrc >::MaskImage (FIBITMAP * src, FIBITM
     int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
 
-    for(register int y = 0; y < height; y++)
-    {
-        Tsrc *src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
-        unsigned char *mask_ptr = (unsigned char *) FreeImage_GetScanLine (mask, y);
+    bool greyscale_image = true;
 
-        for(register int x = 0; x < width; x++)
+    if(FreeImage_GetImageType(src) == FIT_BITMAP && FreeImage_GetBPP(src) > 8) {
+	    greyscale_image = false;
+    }
+    
+    if(greyscale_image) {
+        for(register int y = 0; y < height; y++)
         {
-            if (!mask_ptr[x])
-                src_ptr[x] = 0;
+            Tsrc *src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+            unsigned char *mask_ptr = (unsigned char *) FreeImage_GetScanLine (mask, y);
+
+            for(register int x = 0; x < width; x++)
+            {
+                if (!mask_ptr[x])
+                    src_ptr[x] = 0;
+            }
         }
     }
+    else {
+        
+        int bytespp = FreeImage_GetLine (src) / FreeImage_GetWidth (src);
+    
+        for(register int y = 0; y < height; y++)
+        {
+            BYTE *src_ptr = (BYTE *) FreeImage_GetScanLine (src, y);
+            BYTE *mask_ptr = (BYTE *) FreeImage_GetScanLine (mask, y);
 
+            for(register int x = 0; x < width; x++)
+            {
+                if (!mask_ptr[x]) {
+
+                    src_ptr[FI_RGBA_RED] = 0;
+		            src_ptr[FI_RGBA_GREEN] = 0;
+		            src_ptr[FI_RGBA_BLUE] = 0;
+
+		            if (bytespp == 4)
+			          src_ptr[FI_RGBA_ALPHA] = 0;   
+                }
+                
+                src_ptr += bytespp;
+            }
+        }
+    }
+    
     return FIA_SUCCESS;
 }
 
@@ -102,10 +136,7 @@ FIA_MaskImage (FIBITMAP * src, FIBITMAP * mask)
     {
         case FIT_BITMAP:
         {
-            if (FreeImage_GetBPP (src) == 8)
-            {
-                return logicUCharImage.MaskImage (src, mask);
-            }
+            return logicUCharImage.MaskImage (src, mask);
         }
         case FIT_UINT16:
         {
