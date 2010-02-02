@@ -8,8 +8,6 @@
 
 #include "FreeImageAlgorithms_Testing.h"
 
-#include <iostream>
-
 static void
 TestFIA_GreyscaleElipseTest(CuTest* tc)
 {
@@ -1002,6 +1000,122 @@ TestFIA_DrawImageTest12(CuTest* tc)
 }
 
 static void
+TestFIA_DrawImageTest13(CuTest* tc)
+{
+  const char *file = TEST_DATA_DIR "fly.bmp";
+
+  FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
+
+  CuAssertTrue(tc, dib1 != NULL);
+
+  FIBITMAP *dib2 = FreeImage_ConvertTo32Bits(dib1);
+  
+  CuAssertTrue(tc, dib2 != NULL);
+  
+  FIBITMAP *dst = FreeImage_Allocate(790,582, 32, 0, 0, 0);
+   
+  CuAssertTrue(tc, dst != NULL);
+   
+  FIA_Matrix *matrix = FIA_MatrixNew();
+
+  FIA_MatrixScale(matrix, 5.0, 1.0, FIA_MatrixOrderPrepend);
+  
+  int err = FIA_DrawImageToDst(dst, dib2, matrix, 0,0,350,270, FIA_RGBQUAD(0,255,0), 0);
+ 
+  CuAssertTrue(tc, err != FIA_ERROR);
+  
+  FIA_MatrixDestroy(matrix);
+  
+  CuAssertTrue(tc, dst != NULL);
+
+  FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_DrawImageTest13.bmp", BIT24);
+
+  FreeImage_Unload(dib1);
+  FreeImage_Unload(dib2);
+  FreeImage_Unload(dst);
+}
+
+static void
+TestFIA_DrawImageTest14(CuTest* tc)
+{
+  const char *file = TEST_DATA_DIR "fly.bmp";
+
+  FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
+
+  CuAssertTrue(tc, dib1 != NULL);
+
+  FIBITMAP *dib2 = FreeImage_ConvertTo32Bits(dib1);
+  
+  CuAssertTrue(tc, dib2 != NULL);
+  
+  FIBITMAP *dst = FreeImage_Allocate(790,582, 32, 0, 0, 0);
+   
+  CuAssertTrue(tc, dst != NULL);
+   
+  FIA_Matrix *matrix = FIA_MatrixNew();
+
+  FIA_MatrixScale(matrix, 5.0, 1.0, FIA_MatrixOrderPrepend);
+  
+  int err = FIA_DrawImageToDst(dst, dib2, matrix, 0,0,350,270, FIA_RGBQUAD(0,255,0), 1);
+ 
+  CuAssertTrue(tc, err != FIA_ERROR);
+  
+  err = FIA_DrawImageToDst(dst, dib2, matrix, 100,0,350,270, FIA_RGBQUAD(0,255,0), 1);
+ 
+  CuAssertTrue(tc, err != FIA_ERROR);
+
+  FIA_MatrixDestroy(matrix);
+  
+  CuAssertTrue(tc, dst != NULL);
+
+  FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_DrawImageTest14.bmp", BIT24);
+
+  FreeImage_Unload(dib1);
+  FreeImage_Unload(dib2);
+  FreeImage_Unload(dst);
+}
+
+static void
+TestFIA_DrawImageTest15(CuTest* tc)
+{
+  const char *file = TEST_DATA_DIR "fly.bmp";
+
+  FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
+
+  CuAssertTrue(tc, dib1 != NULL);
+
+  FIBITMAP *dib2 = FreeImage_ConvertTo32Bits(dib1);
+ 
+  CuAssertTrue(tc, dib2 != NULL);
+ 
+  FIBITMAP *dst = FreeImage_Allocate(790,582, 32, 0, 0, 0);
+  
+  CuAssertTrue(tc, dst != NULL);
+  
+  FIA_Matrix *matrix = FIA_MatrixNew();
+
+  FIA_MatrixScale(matrix, 1.0, 1.0, FIA_MatrixOrderPrepend);
+ 
+  int err = FIA_DrawImageToDst(dst, dib2, matrix, 0,0,350,270, FIA_RGBQUAD(0,255,0), 1);
+
+  CuAssertTrue(tc, err != FIA_ERROR);
+ 
+  err = FIA_DrawImageToDst(dst, dib2, matrix, 10,0,700,270, FIA_RGBQUAD(0,255,0), 1);
+
+  CuAssertTrue(tc, err != FIA_ERROR);
+
+  FIA_MatrixDestroy(matrix);
+ 
+  CuAssertTrue(tc, dst != NULL);
+
+  FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_DrawImageTest15.bmp", BIT24);
+
+  FreeImage_Unload(dib1);
+  FreeImage_Unload(dib2);
+  FreeImage_Unload(dst);
+}
+
+static void
 TestFIA_DrawImageDstRectTest1(CuTest* tc)
 {
   const char *file = TEST_DATA_DIR "fly.bmp";
@@ -1155,73 +1269,6 @@ TestFIA_DrawImageDstRectTest4(CuTest* tc)
   FreeImage_Unload(dst);
 }
 
-
-static void
-TestFIA_DrawImageDstRectTest5(CuTest* tc)
-{
-  const char *file = TEST_DATA_DIR "fly.bmp";
-    
-  FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
-
-  CuAssertTrue(tc, dib1 != NULL);
-
-  FIBITMAP *dib2 = FreeImage_ConvertTo32Bits(dib1);
-  
-  CuAssertTrue(tc, dib2 != NULL);
-  
-  FIBITMAP *dst = FreeImage_Allocate(790,582, 32, 0, 0, 0);
-   
-  // Set alpha values for src
-    
-  FreeImage_SetTransparent(dib2, 1);
-
-  FIBITMAP *alpha_dib = FreeImage_Allocate(FreeImage_GetWidth(dib1), FreeImage_GetHeight(dib1), 8, 0, 0, 0);
-
-  FIA_DrawSolidGreyscaleRect (alpha_dib, MakeFIARect(0,0, FreeImage_GetWidth(alpha_dib) - 1, FreeImage_GetHeight(alpha_dib) - 1), 255);
-  FIA_DrawSolidGreyscaleRect (alpha_dib, MakeFIARect(10,10, 200, 200), 120);
-
-  if(FreeImage_SetChannel(dib2, alpha_dib, FICC_ALPHA) == 0) {
-	std::cout << "Error calling FreeImage_SetChannel" << std::endl;
-
-        return;
-  }
-
-  if(!FreeImage_IsTransparent(dib2)) {
-	std::cout << "Not transparent" << std::endl;   
-    return;
-  }
-
-  FIA_DrawColourSolidRect(dst, MakeFIARect(0,0, FreeImage_GetWidth(dst) - 1,
-	FreeImage_GetHeight(dst) - 1), FIA_RGBQUAD(255,255,0));
-
-  CuAssertTrue(tc, dst != NULL);
-   
-  FIA_Matrix *matrix = FIA_MatrixNew();
-
-  FIA_MatrixScale(matrix, 2.0, 2.0, FIA_MatrixOrderPrepend);
-  
-  int err = FIA_DrawImageToDst(dst, dib2, matrix, 0,0,350/2,271/2, FIA_RGBQUAD(128,128,128), 1);
-
-  CuAssertTrue(tc, err != FIA_ERROR);
-
-  FIA_MatrixTranslate(matrix, 100, 100, FIA_MatrixOrderPrepend);
-  FIA_MatrixRotate(matrix, 45.0, FIA_MatrixOrderPrepend);
-
-  err = FIA_DrawImageToDst(dst, dib2, matrix, 0,0,350/2,271/2, FIA_RGBQUAD(128,128,128), 1);
-
-  CuAssertTrue(tc, err != FIA_ERROR);
-  
-  FIA_MatrixDestroy(matrix);
-  
-  CuAssertTrue(tc, dst != NULL);
-
-  FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_DrawImageDstRectTest5.bmp", BIT24);
-
-  FreeImage_Unload(dib1);
-  FreeImage_Unload(dib2);
-  FreeImage_Unload(dst);
-}
-
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsDrawingSuite(void)
 {
@@ -1264,11 +1311,13 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest10);
 	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest11);
 	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest12);
+	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest13);
+	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest14);
+	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest15);
 	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest1);
 	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest2);
 	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest3);
 	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest4);
-    SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest5);
 
 	return suite;
 }

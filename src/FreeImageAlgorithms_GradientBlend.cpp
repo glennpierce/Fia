@@ -154,9 +154,15 @@ FIA_GeneratePMap (FIBITMAP *mask)
 					else
 					{
 						// We have found an edge on this scan line
+						#ifdef WIN32
 						LT = min(*pLeftFM+1.0f, *pTopFM+1.0f);
 						BLTL = min(*pTopRightFM+ROOT2, *pTopLeftFM+ROOT2);
 						*pCentreFM = min(LT, BLTL);
+						#else
+						LT = std::min(*pLeftFM+1.0f, *pTopFM+1.0f);
+                                                BLTL = std::min(*pTopRightFM+ROOT2, *pTopLeftFM+ROOT2);
+                                                *pCentreFM = std::min(LT, BLTL);
+						#endif
 					}
 				}
 		
@@ -204,10 +210,17 @@ FIA_GeneratePMap (FIBITMAP *mask)
 					else
 					{
 						// We have found an edge on this scan line
+						#ifdef WIN32
 						RB = min(*pRightBM+1, *pBottomBM+1);
 						BRTR = min(*pBottomRightBM+ROOT2, *pBottomLeftBM+ROOT2 );
 						currMin = min(RB, BRTR);
 						*pCentreBM = min(currMin, *pCentreBM);
+						#else
+						RB = std::min(*pRightBM+1, *pBottomBM+1);
+                                                BRTR = std::min(*pBottomRightBM+ROOT2, *pBottomLeftBM+ROOT2 );
+                                                currMin = std::min(RB, BRTR);
+                                                *pCentreBM = std::min(currMin, *pCentreBM);
+						#endif
 					}
 				}
 			
