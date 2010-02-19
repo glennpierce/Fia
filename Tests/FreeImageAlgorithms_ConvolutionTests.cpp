@@ -1384,7 +1384,6 @@ TestFIA_GradientBlendPasteTest5(CuTest* tc)
     FreeImage_Unload(fib2);
 }
 
-*/
 
 static void
 TestFIA_GradientBlendPasteTest6(CuTest* tc)
@@ -1414,6 +1413,7 @@ TestFIA_GradientBlendPasteTest6(CuTest* tc)
     FreeImage_Unload(background);
     FreeImage_Unload(fib2);
 }
+ */
 
 /*
 
@@ -1444,12 +1444,245 @@ TestFIA_GradientBlendFloatImagePasteTest(CuTest* tc)
 }
 */
 
+
+static void
+TestFIA_CorrelateSpiceSection1(CuTest* tc)
+{
+    FIAPOINT pt;
+
+    FIBITMAP *spice_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice.jpg");
+    FIBITMAP *spice_section_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice-middle.jpg");
+
+    int spice_width = FreeImage_GetWidth(spice_fib);
+    int spice_height = FreeImage_GetHeight(spice_fib);
+    int section_width = FreeImage_GetWidth(spice_section_fib);
+    int section_height = FreeImage_GetHeight(spice_section_fib);
+
+    PROFILE_START("TestFIA_CorrelateSpiceSection1");
+
+    FIARECT region1 = MakeFIARect(20, 20, spice_width-1, spice_height-1);
+    FIARECT region2 = MakeFIARect(30, 50, 300, section_height - 200);
+
+    FIA_FFTCorrelateImages(spice_fib, spice_section_fib, FIA_EdgeDetect, &pt);
+
+    PROFILE_STOP("TestFIA_CorrelateSpiceSection1");
+
+    if(FIA_PasteFromTopLeft(spice_fib, spice_section_fib, pt.x, pt.y) == 0) {
+           printf("Paste failed for TestFIA_CorrelateSpiceSection1. Trying to paste at %d, %d\n",
+                   pt.x,pt.y);
+    }
+
+	FIA_DrawColourSolidRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+5, pt.y+5), FIA_RGBQUAD(255,0,0));
+
+    FIA_SaveFIBToFile(spice_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/TestFIA_CorrelateSpiceSection1.png", BIT24);
+
+    FreeImage_Unload(spice_fib);
+    FreeImage_Unload(spice_section_fib);
+
+    return;
+}
+
+
+static void
+TestFIA_CorrelateSpiceSection2(CuTest* tc)
+{
+    double max;
+    const char *colour_file = TEST_DATA_DIR "drone-bee.jpg";
+    const char *gs_file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+	const char *file = TEST_DATA_DIR "drone-bee-greyscale-section.jpg";
+
+    FIBITMAP *colour_src = FIA_LoadFIBFromFile(colour_file);
+    FIBITMAP *gs_src = FIA_LoadFIBFromFile(gs_file);
+	FIBITMAP *src = FIA_LoadFIBFromFile(file);
+    FIBITMAP *colour_section = FreeImage_ConvertTo24Bits(src);
+
+	CuAssertTrue(tc, src != NULL);
+	CuAssertTrue(tc, gs_src != NULL);
+	CuAssertTrue(tc, colour_src != NULL);
+
+	PROFILE_START("TestFIA_CorrelateSpiceSection2");
+
+	FIAPOINT pt;
+
+	FIARECT searchRect = MakeFIARect(150,100, 280, 250);
+
+	if(FIA_KernelCorrelateImages(gs_src, src, searchRect, NULL, NULL, &pt, &max) == FIA_ERROR) {
+	    PROFILE_STOP("TestFIA_CorrelateSpiceSection2");
+	    goto TEST_ERROR;
+	}
+
+	PROFILE_STOP("TestFIA_CorrelateSpiceSection2");
+
+	if(FreeImage_Paste(colour_src, colour_section, pt.x, pt.y, 255) == 0) {
+        printf("Paste failed for TestFIA_CorrelateSpiceSection2. Trying to paste at %d, %d\n",
+        		pt.x, pt.y);
+    }
+
+	FIA_SaveFIBToFile(colour_src, TEST_DATA_OUTPUT_DIR  "/Convolution/TestFIA_CorrelateSpiceSection2.png", BIT24);
+
+	TEST_ERROR:
+
+	FreeImage_Unload(src);
+	FreeImage_Unload(colour_src);
+	FreeImage_Unload(gs_src);
+    FreeImage_Unload(colour_section);
+}
+
+
+
+static void
+TestFIA_CorrelateSpiceSection3(CuTest* tc)
+{
+    FIAPOINT pt;
+	double max = 0.0;
+
+    FIBITMAP *spice_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice.jpg");
+    FIBITMAP *spice_section_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice-middle.jpg");
+
+    int spice_width = FreeImage_GetWidth(spice_fib);
+    int spice_height = FreeImage_GetHeight(spice_fib);
+    int section_width = FreeImage_GetWidth(spice_section_fib);
+    int section_height = FreeImage_GetHeight(spice_section_fib);
+
+    PROFILE_START("TestFIA_CorrelateSpiceSection3");
+
+    FIARECT region = MakeFIARect(600, 100, 900, 500);
+  
+	FIA_DrawColourSolidRect (spice_section_fib, MakeFIARect(section_width / 2, section_height / 2,
+		section_width / 2 + 5, section_height / 2 + 5), FIA_RGBQUAD(0,255,0));
+
+	FIA_KernelCorrelateImages(spice_fib, spice_section_fib, region, NULL, NULL, &pt, &max);
+
+    PROFILE_STOP("TestFIA_CorrelateSpiceSection3");
+
+    if(FIA_PasteFromTopLeft(spice_fib, spice_section_fib, pt.x, pt.y) == 0) {
+           printf("Paste failed for TestFIA_CorrelateSpiceSection3. Trying to paste at %d, %d\n",
+                   pt.x,pt.y);
+    }
+
+	FIA_DrawColourRect (spice_fib, region, FIA_RGBQUAD(0,0,255), 2.0);
+
+	FIA_DrawColourRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+section_width, pt.y+section_height), FIA_RGBQUAD(255,0,0), 2.0);
+
+	FIA_DrawColourSolidRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+5, pt.y+5), FIA_RGBQUAD(255,0,0));
+
+    FIA_SaveFIBToFile(spice_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/TestFIA_CorrelateSpiceSection3.png", BIT24);
+
+    FreeImage_Unload(spice_fib);
+    FreeImage_Unload(spice_section_fib);
+
+    return;
+}
+
+
+static void
+TestFIA_CorrelateSpiceSection4(CuTest* tc)
+{
+    FIAPOINT pt;
+	double max = 0.0;
+
+    FIBITMAP *spice_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice.jpg");
+    FIBITMAP *spice_section_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice-middle.jpg");
+
+    int spice_width = FreeImage_GetWidth(spice_fib);
+    int spice_height = FreeImage_GetHeight(spice_fib);
+    int section_width = FreeImage_GetWidth(spice_section_fib);
+    int section_height = FreeImage_GetHeight(spice_section_fib);
+
+    PROFILE_START("TestFIA_CorrelateSpiceSection4");
+
+	// Create Mask
+	FIARECT mask_region = MakeFIARect(600, 100, 900, 500);
+	FIBITMAP *mask = FreeImage_Allocate(spice_width, spice_height, 8, 0, 0, 0);
+	FIA_DrawSolidGreyscaleRect(mask, mask_region, 255);
+
+	FIA_SetGreyLevelPalette(mask);
+	FIA_SaveFIBToFile(mask, TEST_DATA_OUTPUT_DIR  "/Convolution/TestFIA_CorrelateSpiceSection4-Mask.png", BIT8);
+
+	// Mark centre of section image
+	FIA_DrawColourSolidRect (spice_section_fib, MakeFIARect(section_width / 2, section_height / 2,
+		section_width / 2 + 5, section_height / 2 + 5), FIA_RGBQUAD(0,255,0));
+
+	FIA_KernelCorrelateImages(spice_fib, spice_section_fib, FIA_EMPTY_RECT, mask, NULL, &pt, &max);
+
+    PROFILE_STOP("TestFIA_CorrelateSpiceSection4");
+
+    if(FIA_PasteFromTopLeft(spice_fib, spice_section_fib, pt.x, pt.y) == 0) {
+           printf("Paste failed for TestFIA_CorrelateSpiceSection4. Trying to paste at %d, %d\n",
+                   pt.x,pt.y);
+    }
+
+	FIA_DrawColourRect (spice_fib, mask_region, FIA_RGBQUAD(0,0,255), 2.0);
+
+	FIA_DrawColourRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+section_width, pt.y+section_height), FIA_RGBQUAD(255,0,0), 2.0);
+
+    FIA_SaveFIBToFile(spice_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/TestFIA_CorrelateSpiceSection4.png", BIT24);
+
+    FreeImage_Unload(spice_fib);
+    FreeImage_Unload(spice_section_fib);
+
+    return;
+}
+
+
+static void
+TestFIA_CorrelateSpiceSection5(CuTest* tc)
+{
+    FIAPOINT pt;
+	double max = 0.0;
+
+    FIBITMAP *spice_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice.jpg");
+    FIBITMAP *spice_section_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "CorrelationSections/spice-middle.jpg");
+
+    int spice_width = FreeImage_GetWidth(spice_fib);
+    int spice_height = FreeImage_GetHeight(spice_fib);
+    int section_width = FreeImage_GetWidth(spice_section_fib);
+    int section_height = FreeImage_GetHeight(spice_section_fib);
+
+    PROFILE_START("TestFIA_CorrelateSpiceSection5");
+
+	FIARECT region1 = MakeFIARect(400, 50, 900, 500);
+	FIARECT region2 = MakeFIARect(10, 10, section_width-10, section_height-10);
+    FIARECT search_region = MakeFIARect(600, 100, 900, 500);
+  
+	FIA_DrawColourSolidRect (spice_section_fib, MakeFIARect(section_width / 2, section_height / 2,
+		section_width / 2 + 5, section_height / 2 + 5), FIA_RGBQUAD(0,255,0));
+
+	FIA_KernelCorrelateImageRegions(spice_fib, region1, spice_section_fib, region2, search_region, NULL, NULL, &pt, &max);
+
+    PROFILE_STOP("TestFIA_CorrelateSpiceSection5");
+
+    if(FIA_PasteFromTopLeft(spice_fib, spice_section_fib, pt.x, pt.y) == 0) {
+           printf("Paste failed for TestFIA_CorrelateSpiceSection5. Trying to paste at %d, %d\n",
+                   pt.x,pt.y);
+    }
+
+	FIA_DrawColourRect (spice_fib, search_region, FIA_RGBQUAD(0,0,255), 2.0);
+
+	FIA_DrawColourRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+section_width, pt.y+section_height), FIA_RGBQUAD(255,0,0), 2.0);
+
+	FIA_DrawColourSolidRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+5, pt.y+5), FIA_RGBQUAD(255,0,0));
+
+    FIA_SaveFIBToFile(spice_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/TestFIA_CorrelateSpiceSection5.png", BIT24);
+
+    FreeImage_Unload(spice_fib);
+    FreeImage_Unload(spice_section_fib);
+
+    return;
+}
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/Convolution");
+
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection1);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection2);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection3);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection4);
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection5);
 
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImages);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesTwoImages);
@@ -1459,7 +1692,7 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 
     // Done
 
-	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest6);
+//	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest6);
 
 /*
     SUITE_ADD_TEST(suite, TestFIA_GradientBlend);

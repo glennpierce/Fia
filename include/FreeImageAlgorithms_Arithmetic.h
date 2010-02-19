@@ -156,14 +156,6 @@ DLL_API int DLL_CALLCONV
 FIA_GetMaxIntensityFromImages(FIBITMAP* dst, FIBITMAP* src);
 
 
-/** \brief Returns a value representing the difference between two images.
- *
- *  \param src1 FIBITMAP First image.
- *  \param src2 FIBITMAP Second image.
- *  \return double Value representing difference.
-*/
-DLL_API double DLL_CALLCONV
-FIA_DifferenceMeasure (FIBITMAP *src1, FIBITMAP *src2);
 
 #ifdef __cplusplus
 }

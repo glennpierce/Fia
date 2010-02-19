@@ -21,6 +21,9 @@
 #define __FREEIMAGE_ALGORITHMS_CONVOLUTION_PRIVATE__
 
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Utilities.h"
+
+#include "FreeImageAlgorithms_Utils.h"
 
 #define BLOCKSIZE 8
 
@@ -87,17 +90,44 @@ template < typename Tsrc > class Kernel
   public:
     Kernel (FIABITMAP * src, int x_radius, int y_radius, const Tsrc * values, double divider);
 
+	inline Tsrc* GetPtrToLine (int line)
+    {
+        return (const_cast < Tsrc * >(this->src_first_pixel_address_ptr) +
+			 ((line + this->y_amount_to_image) * this->src_pitch_in_pixels));
+    }
+
+	/*
+	inline Tsrc* GetPtrToLineFromTopLeft (int line)
+    {
+        return (const_cast < Tsrc * >(this->src_first_pixel_address_ptr) +
+			 (((this->src_image_height - 1 - line) + this->y_amount_to_image) * this->src_pitch_in_pixels));
+    }
+    */
+    
     inline void Move (int x, int y)
     {
-        this->current_src_ptr = (const_cast < Tsrc * >(this->src_first_pixel_address_ptr) + (y
-                                                                                             +
-                                                                                             this->
-                                                                                             y_amount_to_image)
-                                 * this->src_pitch_in_pixels + x_amount_to_image + x);
+		this->current_src_ptr = GetPtrToLine (y) + (x_amount_to_image + x);
 
-        this->current_src_center_ptr = this->current_src_ptr + (y_radius
-                                                                * this->src_pitch_in_pixels) -
-            x_radius;
+        this->current_src_center_ptr = this->current_src_ptr + (y_radius * this->src_pitch_in_pixels) - x_radius;
+    }
+
+	/*
+	inline void MoveFromTopLeft (int x, int y)
+    {
+        this->current_src_ptr = GetPtrToLineFromTopLeft (y) + (x_amount_to_image + x);
+
+        this->current_src_center_ptr = this->current_src_ptr + (y_radius * this->src_pitch_in_pixels) - x_radius;
+    }
+	*/
+	
+	inline void SetSearchArea (FIARECT search_area)
+    {
+        this->search_area = search_area;
+    }
+    
+    inline void SetMask (FIBITMAP *mask)
+    {
+        this->mask = mask;
     }
 
     inline void MoveUpRow ()
@@ -186,6 +216,8 @@ template < typename Tsrc > class Kernel
     inline void CorrelateKernelRow (KernelIterator < Tsrc > &iterator, double average);
 
     FIBITMAP *dib;
+    FIBITMAP *mask;
+    FIARECT search_area;
     const int xborder;
     const int yborder;
     const int x_radius;
@@ -240,6 +272,8 @@ values (values)
     if (xborder < x_radius || yborder < y_radius)
         return;
 
+	this->search_area = FIA_EMPTY_RECT;
+	this->mask = NULL;
     this->dib = src->fib;
 
     this->src_first_pixel_address_ptr = (Tsrc *) FreeImage_GetBits (this->dib);
@@ -808,24 +842,77 @@ template < typename Tsrc > FIBITMAP * Kernel < Tsrc >::Correlate ()
 
     for(int i = 0; i < kernel_size; i++)
     {
-        kernel_normalise_sum += ((this->values[i] - this->kernel_average) * (this->values[i]
-                                                                             -
-                                                                             this->kernel_average));
+        kernel_normalise_sum += ((this->values[i] - this->kernel_average) * 
+				(this->values[i] - this->kernel_average));
     }
 
-    for(register int y = 0; y < dst_height; y++)
+	register int search_bottom = 0;
+	int search_top = dst_height;
+	int search_left = 0;
+	int search_right = dst_width;
+	
+	FIARECT rect = FIAImageRect(dst);
+	
+	if(!FIARectIsEmpty(this->search_area))
+		rect = this->search_area;
+	
+	// Passed rectangle is relative to top left
+	// as that is what clients usually expect
+	rect = FIA_MakeFiaRectRelativeToImageBottomLeft (dst, rect);
+	
+	if(rect.top > dst_height)
+		rect.top = dst_height;
+			
+	if(rect.left < 0)
+		rect.left = 0;
+			
+	if(rect.right > dst_width)
+		rect.right = dst_width;
+			
+	if(rect.bottom < 0)
+		rect.bottom = 0;
+
+	if(this->mask != NULL)
+	{
+		BYTE *mask_ptr = NULL;
+	
+		for(register int y = rect.bottom; y < rect.top; y++)
+		{
+			this->Move (rect.left, y);
+			dst_ptr = (double *) FreeImage_GetScanLine (dst, y);
+			mask_ptr = (BYTE *) FreeImage_GetScanLine (this->mask, y);
+
+			for(register int x = rect.left; x < rect.right; x++)
+			{
+				if(mask_ptr[x] == 0) {
+					this->Increment ();
+					continue;
+				}
+				
+				this->CorrelateKernel ();
+				double dominator = sqrt (this->correlation_sum_squared * kernel_normalise_sum);
+
+				dst_ptr[x] = this->sum / dominator;
+				this->Increment ();
+			}
+		}
+    }
+    else
     {
-        this->Move (0, y);
-        dst_ptr = (dst_first_pixel_address_ptr + y * dst_pitch_in_pixels);
+		for(register int y = rect.bottom; y < rect.top; y++)
+		{
+			this->Move (rect.left, y);
+			dst_ptr = (double *) FreeImage_GetScanLine (dst, y);
 
-        for(register int x = 0; x < dst_width; x++)
-        {
-            this->CorrelateKernel ();
-            double dominator = sqrt (this->correlation_sum_squared * kernel_normalise_sum);
+			for(register int x = rect.left; x < rect.right; x++)
+			{
+				this->CorrelateKernel ();
+				double dominator = sqrt (this->correlation_sum_squared * kernel_normalise_sum);
 
-            *dst_ptr++ = this->sum / dominator;
-            this->Increment ();
-        }
+				dst_ptr[x] = this->sum / dominator;
+				this->Increment ();
+			}
+		}
     }
 
     return dst;

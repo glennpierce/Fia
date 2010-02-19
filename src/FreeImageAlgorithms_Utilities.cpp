@@ -200,6 +200,15 @@ MakeFIARect (int left, int top, int right, int bottom)
     return rect;
 }
 
+int DLL_CALLCONV
+FIARectIsEmpty (FIARECT rect)
+{
+    if(rect.left == 0 && rect.top == 0 && rect.right == 0 && rect.bottom == 0)
+		return 1;
+
+    return 0;
+}
+
 FIARECT DLL_CALLCONV
 FIAImageRect (FIBITMAP * src)
 {
@@ -416,10 +425,12 @@ FIA_FindMinMax (FIBITMAP * src, double *min, double *max)
 template < class Tsrc > void TemplateImageFunctionClass < Tsrc >::find_max_xy (FIBITMAP * src,
                                                                         double *max, FIAPOINT * pt)
 {
-    if (!src)
-    {
+	pt->x = 0;
+	pt->y = 0;
+	*max = 0.0;
+
+    if (src == NULL)
         return;
-    }
 
     int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
@@ -454,6 +465,9 @@ template < class Tsrc > void TemplateImageFunctionClass < Tsrc >::find_max_xy (F
 void DLL_CALLCONV
 FIA_FindMaxXY (FIBITMAP * src, double *max, FIAPOINT * pt)
 {
+	pt->x = 0;
+	pt->y = 0;
+	*max = 0.0;
     if (!src)
         return;
 
@@ -1281,6 +1295,16 @@ static FIARECT SetRectRelativeToPoint(FIARECT rect, FIAPOINT pt)
 	return r;
 }
 
+FIARECT DLL_CALLCONV
+FIA_MakeFiaRectRelativeToImageBottomLeft (FIBITMAP *src, FIARECT rt)
+{
+	FIARECT rect = rt;
+	int height =  FreeImage_GetHeight(src);
+	rect.top = height - 1 - rt.top;
+	rect.bottom = height - 1 - rt.bottom;
+
+	return rect;	
+}
 BYTE* DLL_CALLCONV
 FIA_GetScanLineFromTop (FIBITMAP *src, int line)
 {

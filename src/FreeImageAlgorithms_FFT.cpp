@@ -399,7 +399,7 @@ FIA_ConvertComplexImageToAbsoluteValued(FIBITMAP *src)
 	return ConvertComplexImageToAbsoluteValued(src, false);
 }
 
-FIBITMAP*
+FIBITMAP* DLL_CALLCONV
 FIA_ComplexImageToRealValued(FIBITMAP *src)
 {
 	FIBITMAP *dst = NULL;

@@ -68,11 +68,26 @@ DLL_API FIBITMAP* DLL_CALLCONV
 FIA_SeparableConvolve(FIABITMAP *src, FilterKernel horz_kernel, FilterKernel vert_kernel);
 
 DLL_API int DLL_CALLCONV
-FIA_KernelCorrelateImages(FIBITMAP *src1, FIBITMAP *src2, CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
+FIA_KernelCorrelateImages(FIBITMAP *src1, FIBITMAP *src2, FIARECT search_area, FIBITMAP *mask,
+						  CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
 
+/** \brief Correlate two regions from two two images
+ *
+ *  \param src1 FIBITMAP Background bitmap to perform the correlation on.
+ *  \param rect1 FIARECT The region of background bitmap to perform the correlation on.
+ *	\param src2 FIBITMAP Src bitmap to perform the correlation on.
+ *  \param rect2 FIARECT The region of src bitmap to perform the correlation on.
+ *  \param search_rect FIARECT The area the src image is shifted over the background image.
+		If we know where approx the image should be placed. The rectangle is relative to the background image.
+ *  \param mask FIBITMAP A mask of the area the src image is shifted over the background image.
+		If we know where approx the image should be placed. The rectangle is relative to the background image.
+ *  \param pt FIAPOINT The point where the src image should be place relative to the background image.
+ *  \param max double The correlation factor found. Close to 1.0 the better the correlation.
+ *  \return FIA_SUCCESS on success or FIA_ERROR on error.
+*/
 DLL_API int DLL_CALLCONV
 FIA_KernelCorrelateImageRegions(FIBITMAP *src1, FIARECT rect1, FIBITMAP *src2,  FIARECT rect2,
-        CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
+        FIARECT search_rect, FIBITMAP *mask, CORRELATION_PREFILTER filter, FIAPOINT *pt, double *max);
 
 DLL_API int DLL_CALLCONV
 FIA_FFTCorrelateImages(FIBITMAP *src1, FIBITMAP *src2,
@@ -92,8 +107,6 @@ FIA_FFTCorrelateImageWithPreCorrelationFFT(FIBITMAP * fft_fib, FIBITMAP *_src1, 
 DLL_API FIBITMAP* __cdecl
 FIA_EdgeDetect(FIBITMAP *src);
 
-DLL_API int DLL_CALLCONV
-FIA_CorrelationDifferenceMeasure(FIBITMAP * src1, FIBITMAP * src2, FIAPOINT pt, double *max);
 
 DLL_API int DLL_CALLCONV
 FIA_CorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, CorrelationType type,
@@ -103,13 +116,6 @@ DLL_API int DLL_CALLCONV
 FIA_CorrelateImageRegions(FIBITMAP * src1, FIARECT region1, FIBITMAP * src2, FIARECT region2,
         CorrelationType type, CORRELATION_PREFILTER filter, FIAPOINT *pt);
 
-DLL_API int DLL_CALLCONV
-FIA_CorrelateImagesAroundOverlap(FIBITMAP * src1, FIARECT region1, FIBITMAP * src2, FIARECT region2,
-        int strip_width, CorrelationType type, CORRELATION_PREFILTER filter, FIAPOINT *pt);
-
-DLL_API int DLL_CALLCONV
-FIA_CorrelateImageEdgesWithImage(FIBITMAP * src1, FIARECT region1, FIBITMAP * src2,
-        int edge_size, CorrelationType type, CORRELATION_PREFILTER filter, FIAPOINT *pt);
 
 #ifdef __cplusplus
 }

@@ -38,6 +38,7 @@ extern "C" {
 #define __cdecl
 #endif
 
+#define FIA_EMPTY_RECT (MakeFIARect (0, 0, 0, 0))
 /** Data structure for FIABITMAP type (FIBITMAP with a border)
 */
 typedef struct
