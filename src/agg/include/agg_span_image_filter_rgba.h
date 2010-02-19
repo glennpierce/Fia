@@ -422,6 +422,197 @@ namespace agg
     };
 
 
+//====================================span_image_filter_rgba_bilinear_clone
+   template<class Source, class Interpolator>
+   class span_image_filter_rgba_bilinear_clone :
+   public span_image_filter<Source, Interpolator>
+   {
+   public:
+       typedef Source source_type;
+       typedef typename source_type::color_type color_type;
+       typedef typename source_type::order_type order_type;
+       typedef Interpolator interpolator_type;
+       typedef span_image_filter<source_type, interpolator_type> base_type;
+       typedef typename color_type::value_type value_type;
+       typedef typename color_type::calc_type calc_type;
+       enum base_scale_e
+       {
+           base_shift = color_type::base_shift,
+           base_mask  = color_type::base_mask
+       };
+
+       //--------------------------------------------------------------------
+       span_image_filter_rgba_bilinear_clone() {}
+               span_image_filter_rgba_bilinear_clone(source_type& src,
+                                             interpolator_type& inter) :
+           base_type(src, inter, 0)
+       {}
+
+
+       //--------------------------------------------------------------------
+       void generate(color_type* span, int x, int y, unsigned len)
+       {
+           base_type::interpolator().begin(x + base_type::filter_dx_dbl(),
+                                           y +
+base_type::filter_dy_dbl(), len);
+
+           calc_type fg[4];
+
+           const value_type *fg_ptr;
+           int maxx = base_type::source().width() - 1;
+           int maxy = base_type::source().height() - 1;
+
+           do
+           {
+               int x_hr;
+               int y_hr;
+
+               base_type::interpolator().coordinates(&x_hr, &y_hr);
+
+               x_hr -= base_type::filter_dx_int();
+               y_hr -= base_type::filter_dy_int();
+
+               int x_lr = x_hr >> image_subpixel_shift;
+               int y_lr = y_hr >> image_subpixel_shift;
+
+               unsigned weight;
+
+               if(x_lr >= 0    && y_lr >= 0 &&
+                  x_lr <  maxx && y_lr <  maxy)
+               {
+                   fg[0] =
+                   fg[1] =
+                   fg[2] =
+                   fg[3] = image_subpixel_scale * image_subpixel_scale / 2;
+
+                   x_hr &= image_subpixel_mask;
+                   y_hr &= image_subpixel_mask;
+
+                   fg_ptr = (const value_type*)
+                       base_type::source().row_ptr(y_lr) + (x_lr << 2);
+
+                   weight = (image_subpixel_scale - x_hr) *
+                            (image_subpixel_scale - y_hr);
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   weight = x_hr * (image_subpixel_scale - y_hr);
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   ++y_lr;
+                   fg_ptr = (const value_type*)
+                       base_type::source().row_ptr(y_lr) + (x_lr << 2);
+
+                   weight = (image_subpixel_scale - x_hr) * y_hr;
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   weight = x_hr * y_hr;
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   fg[0] >>= image_subpixel_shift * 2;
+                   fg[1] >>= image_subpixel_shift * 2;
+                   fg[2] >>= image_subpixel_shift * 2;
+                   fg[3] >>= image_subpixel_shift * 2;
+               }
+               else
+               {
+                   fg[0] =
+                   fg[1] =
+                   fg[2] =
+                   fg[3] = image_subpixel_scale * image_subpixel_scale / 2;
+
+                   x_hr &= image_subpixel_mask;
+                   y_hr &= image_subpixel_mask;
+
+                   weight = (image_subpixel_scale - x_hr) *
+                            (image_subpixel_scale - y_hr);
+
+                   fg_ptr = (const value_type*)
+
+base_type::source().row_ptr(clamp(y_lr,0,maxy)) + (clamp(x_lr,0,maxx)
+<< 2);
+
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   x_lr++;
+
+                   weight = x_hr * (image_subpixel_scale - y_hr);
+
+                   fg_ptr = (const value_type*)
+
+base_type::source().row_ptr(clamp(y_lr,0,maxy)) + (clamp(x_lr,0,maxx)
+<< 2);
+
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   x_lr--;
+                   y_lr++;
+
+                   weight = (image_subpixel_scale - x_hr) * y_hr;
+
+                   fg_ptr = (const value_type*)
+
+base_type::source().row_ptr(clamp(y_lr,0,maxy)) + (clamp(x_lr,0,maxx)
+<< 2);
+
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   x_lr++;
+
+                   weight = x_hr * y_hr;
+
+                   fg_ptr = (const value_type*)
+
+base_type::source().row_ptr(clamp(y_lr,0,maxy)) + (clamp(x_lr,0,maxx)
+<< 2);
+
+                   fg[0] += weight * *fg_ptr++;
+                   fg[1] += weight * *fg_ptr++;
+                   fg[2] += weight * *fg_ptr++;
+                   fg[3] += weight * *fg_ptr++;
+
+                   fg[0] >>= image_subpixel_shift * 2;
+                   fg[1] >>= image_subpixel_shift * 2;
+                   fg[2] >>= image_subpixel_shift * 2;
+                   fg[3] >>= image_subpixel_shift * 2;
+               }
+
+               span->r = (value_type)fg[order_type::R];
+               span->g = (value_type)fg[order_type::G];
+               span->b = (value_type)fg[order_type::B];
+               span->a = (value_type)fg[order_type::A];
+               ++span;
+               ++base_type::interpolator();
+
+           } while(--len);
+       }
+   private:
+               int clamp(const int n, const int minimum, const int maximum) const {
+return n >= minimum ? (n <= maximum ? n : maximum) : minimum; }
+   };
+
+
+
     //==============================================span_image_filter_rgba_2x2
     template<class Source, class Interpolator> 
     class span_image_filter_rgba_2x2 : 

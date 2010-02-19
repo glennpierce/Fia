@@ -277,9 +277,13 @@ DrawTransformedImage (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx,
 
     // "hardcoded" bilinear filter
     typedef agg::span_image_filter_rgba_bilinear_clip<src_pixfmt_type, interpolator_type> span_gen_type;
+//    typedef agg::span_image_filter_rgba_bilinear_clone<src_pixfmt_type, interpolator_type> span_gen_type;
+
     span_gen_type sg(pixf_src, agg::rgba8(colour.rgbRed,colour.rgbGreen,colour.rgbBlue,
-		(retain_background ? 0 : 255)), interpolator);
-        
+    		(retain_background ? 0 : 255)), interpolator);
+       
+//    span_gen_type sg(pixf_src, interpolator);
+ 
     // The Rasterizer definition  
     agg::rasterizer_scanline_aa<> ras;
     agg::scanline_p8 scanline;
@@ -294,7 +298,7 @@ DrawTransformedImage (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx,
     ps.line_to(0.0, 0.0);
     
     ras.add_path(ps);
-        
+      
     agg::render_scanlines_aa(ras, scanline, rbase, sa, sg);
 
     return FIA_SUCCESS;
@@ -416,12 +420,12 @@ FIA_DrawImageFromSrcToDst(FIBITMAP *dst, FIBITMAP *src, FIA_Matrix *matrix,
 		dstMatrix->trans_affine *= matrix->trans_affine;
 	}
 
-    DrawTransformedImage (src32, dst, dstMatrix->trans_affine, colour, retain_background);
+        DrawTransformedImage (src32, dst, dstMatrix->trans_affine, colour, retain_background);
         
 	FIA_MatrixDestroy(dstMatrix);
 
-    FreeImage_Unload(src32);
-    FreeImage_Unload(src_region);
+        FreeImage_Unload(src32);
+        FreeImage_Unload(src_region);
         
     return FIA_SUCCESS;
 }
@@ -466,7 +470,7 @@ FIA_DrawImageToDst(FIBITMAP *dst, FIBITMAP *src, FIA_Matrix *matrix,
 		dstMatrix->trans_affine *= matrix->trans_affine;
 	}
 
-    DrawTransformedImage (src32, dst, dstMatrix->trans_affine, colour, retain_background);
+        DrawTransformedImage (src32, dst, dstMatrix->trans_affine, colour, retain_background);
         
 	FIA_MatrixDestroy(dstMatrix);
 
