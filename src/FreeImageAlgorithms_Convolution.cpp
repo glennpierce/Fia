@@ -442,6 +442,12 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
 
     pt->y = height - pt->y - 1;
 
+	if(src1 != NULL)
+		FreeImage_Unload(src1);
+
+	if(src2 != NULL)
+		FreeImage_Unload(src2);
+
 	if(filtered_src1 != NULL)
 		FreeImage_Unload(filtered_src1);
 
@@ -460,6 +466,12 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
     return FIA_SUCCESS;
 
 CLEANUP:
+
+	if(src1 != NULL)
+		FreeImage_Unload(src1);
+
+	if(src2 != NULL)
+		FreeImage_Unload(src2);
 
     if(filtered_src1 != NULL)
 		FreeImage_Unload(filtered_src1);
@@ -504,6 +516,8 @@ FIA_KernelCorrelateImageRegions(FIBITMAP * src1, FIARECT rect1,
 	// we need to make it relative to the src1 region
 	search_rect.left -= rect1.left;
 	search_rect.top -= rect1.top;
+	search_rect.right -= rect1.left;
+	search_rect.bottom -= rect1.top;
 
     int err = FIA_KernelCorrelateImages(src1_rgn, src2_rgn, search_rect, mask, filter, pt, max);
 

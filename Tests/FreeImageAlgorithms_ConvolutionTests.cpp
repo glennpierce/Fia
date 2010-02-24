@@ -1671,6 +1671,55 @@ TestFIA_CorrelateSpiceSection5(CuTest* tc)
     return;
 }
 
+
+static void
+TestFIA_CorrelateSpiceSection6(CuTest* tc)
+{
+    FIAPOINT pt;
+	double max = 0.0;
+
+    FIBITMAP *spice_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "todo//background.bmp");
+    FIBITMAP *spice_section_fib = FIA_LoadFIBFromFile(TEST_DATA_DIR "todo//fib.bmp");
+
+    int spice_width = FreeImage_GetWidth(spice_fib);
+    int spice_height = FreeImage_GetHeight(spice_fib);
+    int section_width = FreeImage_GetWidth(spice_section_fib);
+    int section_height = FreeImage_GetHeight(spice_section_fib);
+
+    PROFILE_START("TestFIA_CorrelateSpiceSection5");
+
+	FIARECT region1 = MakeFIARect(1024, 1946, 2047, 2047);
+	FIARECT region2 = MakeFIARect(10, 970, 1013, 975);
+    FIARECT search_region = MakeFIARect(1516, 1977, 1555, 2016);
+  
+	FIA_DrawColourSolidRect (spice_section_fib, MakeFIARect(section_width / 2, section_height / 2,
+		section_width / 2 + 5, section_height / 2 + 5), FIA_RGBQUAD(0,255,0));
+
+	for(int i=0; i < 1000; i++)
+		FIA_KernelCorrelateImageRegions(spice_fib, region1, spice_section_fib, region2, search_region, NULL, NULL, &pt, &max);
+
+    PROFILE_STOP("TestFIA_CorrelateSpiceSection5");
+
+    if(FIA_PasteFromTopLeft(spice_fib, spice_section_fib, pt.x, pt.y) == 0) {
+           printf("Paste failed for TestFIA_CorrelateSpiceSection5. Trying to paste at %d, %d\n",
+                   pt.x,pt.y);
+    }
+
+	FIA_DrawColourRect (spice_fib, search_region, FIA_RGBQUAD(0,0,255), 2.0);
+
+	FIA_DrawColourRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+section_width, pt.y+section_height), FIA_RGBQUAD(255,0,0), 2.0);
+
+	FIA_DrawColourSolidRect (spice_fib, MakeFIARect(pt.x, pt.y, pt.x+5, pt.y+5), FIA_RGBQUAD(255,0,0));
+
+    FIA_SaveFIBToFile(spice_fib, TEST_DATA_OUTPUT_DIR  "/Convolution/TestFIA_CorrelateSpiceSection5.png", BIT24);
+
+    FreeImage_Unload(spice_fib);
+    FreeImage_Unload(spice_section_fib);
+
+    return;
+}
+
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsConvolutionSuite(void)
 {
@@ -1682,7 +1731,8 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection2);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection3);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection4);
-	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection5);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection5);
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection6);
 
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImages);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesTwoImages);
