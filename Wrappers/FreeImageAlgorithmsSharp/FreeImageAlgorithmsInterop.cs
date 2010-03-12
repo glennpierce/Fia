@@ -168,13 +168,13 @@ namespace FreeImageAPI
         internal static extern int GetGreyScalePixelValuesAsDoublesForLine(FIBITMAP dib,
             FIAPOINT pt1, FIAPOINT pt2, out double[] values);    
 
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint="FIA_SimplePaste")]
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint="FIA_Paste")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SimplePaste(FIBITMAP dst, FIBITMAP src, int left, int bottom);
+        internal static extern bool Paste(FIBITMAP dst, FIBITMAP src, int left, int bottom);
 
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint="FIA_SimplePasteFromTopLeft")]
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint="FIA_PasteFromTopLeft")]
         [return: MarshalAs(UnmanagedType.Bool)]
-        internal static extern bool SimplePasteFromTopLeft(FIBITMAP dst, FIBITMAP src, int left, int top);
+        internal static extern bool PasteFromTopLeft(FIBITMAP dst, FIBITMAP src, int left, int top);
 
         [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_StretchImageToType")]
         internal static extern FIBITMAP StretchImageToType(FIBITMAP src, FREE_IMAGE_TYPE type, double max);

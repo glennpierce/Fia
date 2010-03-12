@@ -531,19 +531,19 @@ namespace FreeImageAPI
             return result;
         }
 
-        public bool SimplePaste(FreeImageBitmap src, Point location)
+        public bool Paste(FreeImageBitmap src, Point location)
         {
-            return FreeImage.SimplePaste(this.Dib, src.Dib, location.X, location.Y);
+            return FreeImage.Paste(this.Dib, src.Dib, location.X, location.Y);
         }
 
-        public bool SimplePasteFromTopLeft(FreeImageBitmap src, Point location)
+        public bool PasteFromTopLeft(FreeImageBitmap src, Point location)
         {
-            return FreeImage.SimplePasteFromTopLeft(this.Dib, src.Dib, location.X, location.Y);
+            return FreeImage.PasteFromTopLeft(this.Dib, src.Dib, location.X, location.Y);
         }
 
-        public bool SimplePasteFromTopLeft(FreeImageBitmap src, int left, int top)
+        public bool PasteFromTopLeft(FreeImageBitmap src, int left, int top)
         {
-            return FreeImage.SimplePasteFromTopLeft(this.Dib, src.Dib, left, top);
+            return FreeImage.PasteFromTopLeft(this.Dib, src.Dib, left, top);
         }
    
         public bool GradientBlendPasteFromTopLeft(FreeImageAlgorithmsBitmap src, Point pt)
@@ -564,7 +564,7 @@ namespace FreeImageAPI
                 ret = FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, left, top);
             }
             else {
-                ret = FreeImage.SimplePasteFromTopLeft(this.Dib, src.Dib, left, top);
+                ret = FreeImage.PasteFromTopLeft(this.Dib, src.Dib, left, top);
             }
 
             if (ret == false)
