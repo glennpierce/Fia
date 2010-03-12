@@ -21,7 +21,7 @@ TestFIA_GradientBlendPasteTest1(CuTest* tc)
     FIA_InPlaceConvertTo24Bit(&background);
     FIA_InPlaceConvertTo24Bit(&src);
 
-    FIA_GradientBlendMosaicPaste (background, src, 780, 620);
+	FIA_GradientBlendMosaicPaste (background, src, 780, 620);
     
     FIA_SaveFIBToFile(background, TEST_DATA_OUTPUT_DIR  "/GradientBlending/gradient_blended1.png", BIT24);
 
@@ -38,9 +38,8 @@ TestFIA_GradientBlendPasteTest2(CuTest* tc)
     FIA_InPlaceConvertTo24Bit(&background);
     FIA_InPlaceConvertTo24Bit(&src);
 
-    //for(int i=0; i<20; i++)
     FIA_GradientBlendMosaicPaste (background, src, 780, 525);
-    
+   
     FIA_SaveFIBToFile(background, TEST_DATA_OUTPUT_DIR  "/GradientBlending/gradient_blended2.png", BIT24);
 
     FreeImage_Unload(background);
@@ -132,20 +131,45 @@ TestFIA_GradientBlendPasteTest7(CuTest* tc)
     FreeImage_Unload(src);
 }
 
+
+static void
+TestFIA_GradientBlendPasteTest8(CuTest* tc)
+{
+    FIBITMAP *src1 =  FIA_LoadFIBFromFile(TEST_DATA_DIR "slide12bit1.png");
+    FIBITMAP *src2 =  FIA_LoadFIBFromFile(TEST_DATA_DIR "slide12bit2.png");
+
+	FREE_IMAGE_TYPE type = FreeImage_GetImageType(src1); 
+	int bpp = FreeImage_GetBPP(src1);
+	int width = FreeImage_GetWidth(src1);
+	int height = FreeImage_GetHeight(src1); 
+
+	FIBITMAP *background = FreeImage_AllocateT(type, width * 2, height, bpp, 0, 0, 0);
+
+	FIA_PasteFromTopLeft(background, src1, 0, 0);
+    FIA_GradientBlendMosaicPaste (background, src2, 922, 0);
+    
+    FIA_SaveFIBToFile(background, TEST_DATA_OUTPUT_DIR  "/GradientBlending/gradient_blended8.png", BIT16);
+
+    FreeImage_Unload(background);
+    FreeImage_Unload(src1);
+	FreeImage_Unload(src2);
+}
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsGradientBlendSuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/GradientBlending");
-    
-    SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest1);
+
+	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest1);
     SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest2);
     SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest3);
     SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest4);
     SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest5);
     SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest6);
     SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest7);
-    
+	SUITE_ADD_TEST(suite, TestFIA_GradientBlendPasteTest8);
+
 	return suite;
 }

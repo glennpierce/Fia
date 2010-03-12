@@ -1,5 +1,6 @@
 /*
- * Copyright 2007 Glenn Pierce
+ * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
  * This file is part of FreeImageAlgorithms.
  *
@@ -12,10 +13,10 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 #include "FreeImageAlgorithms_IO.h"
 #include "FreeImageAlgorithms_Utilities.h"
@@ -400,6 +401,7 @@ FIA_SaveFIBToFile (FIBITMAP * dib, const char *filepath,
 
     return FIA_SUCCESS;
 }
+
 int DLL_CALLCONV
 FIA_SimpleSaveFIBToFile (FIBITMAP * dib, const char *filepath)
 {

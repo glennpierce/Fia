@@ -1,5 +1,6 @@
 /*
- * Copyright 2007 Glenn Pierce
+ * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
  * This file is part of FreeImageAlgorithms.
  *
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
@@ -60,99 +61,99 @@ static inline int RoundRealToNearestInteger(float value)
 static inline FIBITMAP*
 FIA_DistanceMap (int width, int height)
 {
-    FIBITMAP *image = FreeImage_AllocateT(FIT_FLOAT, width, height, 32, 0, 0, 0);
+	FIBITMAP *image = FreeImage_AllocateT(FIT_FLOAT, width, height, 32, 0, 0, 0);
 
-    float *bits = NULL;
+	float *bits = NULL;
 
-    float center_x = (float)(width / 2.0f + 0.5f);
-    float center_y = (float)(height / 2.0f + 0.5f);
+	float center_x = (float)(width / 2.0f + 0.5f);
+	float center_y = (float)(height / 2.0f + 0.5f);
 
-    float current_min;
+	float current_min;
 
-    for(int y = 0; y < height; y++)
-    {
-        bits = (float *) FIA_GetScanLineFromTop(image, y);
+	for(int y = 0; y < height; y++)
+	{
+		bits = (float *) FIA_GetScanLineFromTop(image, y);
 
-        for(int x = 0; x < width; x++) {
+		for(int x = 0; x < width; x++) {
 
-            if (x <= center_x)
-                current_min = (float) x;
-            else
-                current_min = (float) (width - x);
+			if (x <= center_x)
+				current_min = (float) x;
+			else
+				current_min = (float) (width - x);
 
 #ifdef WIN32
-            if (y <= center_y)
-                bits[x] = min(current_min, (float) y);
-            else
-                bits[x] = min(current_min, (float) (height - y));
+			if (y <= center_y)
+				bits[x] = min(current_min, (float) y);
+			else
+				bits[x] = min(current_min, (float) (height - y));
 #else
-            if (y <= center_y)
-                bits[x] = std::min(current_min, (float) y);
-            else
-                bits[x] = std::min(current_min, (float) (height - y));
+			if (y <= center_y)
+				bits[x] = std::min(current_min, (float) y);
+			else
+				bits[x] = std::min(current_min, (float) (height - y));
 #endif
-        }
-    }
+		}
+	}
 
-    return image;
+	return image;
 }
 
 
 static inline float*
 FIA_GeneratePMap (FIBITMAP *mask)
 {
-  int width = FreeImage_GetWidth(mask);
-  int height = FreeImage_GetHeight(mask);
-  int size = width * height;
-  
-  // Set up the image where the 'alpha' values will be stored
-  float* pMatrix = (float*) malloc(sizeof(float)*height*width);
+	int width = FreeImage_GetWidth(mask);
+	int height = FreeImage_GetHeight(mask);
+	int size = width * height;
 
-  // Initialise with 'high' values
-  #ifdef WIN32
-  float max_val = (float) max((height+1),(width+1));
-  #else
-  float max_val = (float) std::max((height+1),(width+1));
-  #endif
+	// Set up the image where the 'alpha' values will be stored
+	float* pMatrix = (float*) malloc(sizeof(float)*height*width);
 
-  // Initialise with 'high' values
-  for (int i=0; i<size; i++)
-    pMatrix[i] = (float) max_val;
-		
-  
-  BYTE *pCentre=NULL, *pLeft=NULL, *pTop=NULL, *pTopLeft=NULL, *pTopRight=NULL;
-  BYTE *pRight=NULL, *pBottom=NULL, *pBottomLeft=NULL, *pBottomRight=NULL;
-  float *pCentreFM=NULL, *pLeftFM=NULL, *pTopFM=NULL, *pTopLeftFM=NULL, *pTopRightFM=NULL;
-  float *pCentreBM=NULL, *pRightBM=NULL, *pBottomBM=NULL, *pBottomLeftBM=NULL, *pBottomRightBM=NULL;
-  float LT, BLTL, RB, BRTR, currMin;
+	// Initialise with 'high' values
+#ifdef WIN32
+	float max_val = (float) max((height+1),(width+1));
+#else
+	float max_val = (float) std::max((height+1),(width+1));
+#endif
 
-  for (register int Y = 1; Y< height; Y++)
-   {			
+	// Initialise with 'high' values
+	for (int i=0; i<size; i++)
+		pMatrix[i] = (float) max_val;
+
+
+	BYTE *pCentre=NULL, *pLeft=NULL, *pTop=NULL, *pTopLeft=NULL, *pTopRight=NULL;
+	BYTE *pRight=NULL, *pBottom=NULL, *pBottomLeft=NULL, *pBottomRight=NULL;
+	float *pCentreFM=NULL, *pLeftFM=NULL, *pTopFM=NULL, *pTopLeftFM=NULL, *pTopRightFM=NULL;
+	float *pCentreBM=NULL, *pRightBM=NULL, *pBottomBM=NULL, *pBottomLeftBM=NULL, *pBottomRightBM=NULL;
+	float LT, BLTL, RB, BRTR, currMin;
+
+	for (register int Y = 1; Y< height; Y++)
+	{			
 		pCentre = FIA_GetScanLineFromTop(mask, Y) + 1;
-			
+
 		pLeft = 		pCentre -1;
 		pTop =          pCentre + FreeImage_GetPitch(mask);  // underlying FreeImage is upside down
-		
+
 		pTopLeft = 		pTop-1;
 		pTopRight =		pTop+1;
-		
+
 		pCentreFM =     &pMatrix[Y*width+1];		
 		pLeftFM = 		pCentreFM -1;
 		pTopFM = 		pCentreFM - width;
 		pTopLeftFM = 	pTopFM-1;
 		pTopRightFM =	pTopFM+1;
-		
+
 		for (register int X = 1; X< width-1; X++)
 		{
 			// Look left for an edge
-				if (*pCentre == 1)
+			if (*pCentre == 1)
+			{
+				if (*pLeft == 0 || *pTop == 0)
+					*pCentreFM = 1;
+				else if ( *pTopLeft == 0 || *pTopRight == 0)
+					*pCentreFM = ROOT2;
+				else
 				{
-					if (*pLeft == 0 || *pTop == 0)
-						*pCentreFM = 1;
-					else if ( *pTopLeft == 0 || *pTopRight == 0)
-						*pCentreFM = ROOT2;
-					else
-					{
 						// We have found an edge on this scan line
 						#ifdef WIN32
 						LT = min(*pLeftFM+1.0f, *pTopFM+1.0f);
@@ -163,52 +164,52 @@ FIA_GeneratePMap (FIBITMAP *mask)
                                                 BLTL = std::min(*pTopRightFM+ROOT2, *pTopLeftFM+ROOT2);
                                                 *pCentreFM = std::min(LT, BLTL);
 						#endif
-					}
 				}
-		
-		pCentre ++;		
-		pLeft ++; 		
-		pTop ++; 			
-		pTopLeft ++; 		
-		pTopRight ++;
-	
-		pCentreFM ++;		
-		pLeftFM ++; 		
-		pTopFM ++; 			
-		pTopLeftFM ++; 		
-		pTopRightFM ++;
-		
+			}
+
+			pCentre ++;		
+			pLeft ++; 		
+			pTop ++; 			
+			pTopLeft ++; 		
+			pTopRight ++;
+
+			pCentreFM ++;		
+			pLeftFM ++; 		
+			pTopFM ++; 			
+			pTopLeftFM ++; 		
+			pTopRightFM ++;
+
 		}  
 	}
-	
+
 	for (register int Y = height-2; Y >= 0; Y--)
 	{
 		//pCentre =       maskATinfo.firstPixelAddress.Pix8_Ptr+Y*maskATinfo.rawPixels+maskATimWidth-2;
 		pCentre = FIA_GetScanLineFromTop(mask, Y) + FreeImage_GetWidth(mask) - 2;
-				
+
 		pRight = 		pCentre +1;
 		//pBottom = 		pCentre+info.rawPixels;
 		pBottom = 		pCentre - FreeImage_GetPitch(mask);   // underlying FreeImage is upside down
 		pBottomRight =	pBottom+1;
 		pBottomLeft =	pBottom-1;
-		
+
 		pCentreBM =     &pMatrix[Y*width+width-2];		
 		pRightBM = 		pCentreBM +1;
 		pBottomBM = 	pCentreBM+width; 
 		pBottomRightBM= pBottomBM+1;
 		pBottomLeftBM =	pBottomBM-1;
-		
+
 		for (register int X = width-2; X > 0; X--)
 		{
-				// Look right for an edge
-				if (*pCentre == 1)
+			// Look right for an edge
+			if (*pCentre == 1)
+			{
+				if (*pRight == 0 || *pBottom == 0)
+					*pCentreBM = 1;
+				else if ((*pBottomLeft == 0 || *pBottomRight == 0) && *pCentreBM != 1)
+					*pCentreBM = ROOT2;
+				else
 				{
-					if (*pRight == 0 || *pBottom == 0)
-						*pCentreBM = 1;
-					else if ((*pBottomLeft == 0 || *pBottomRight == 0) && *pCentreBM != 1)
-						*pCentreBM = ROOT2;
-					else
-					{
 						// We have found an edge on this scan line
 						#ifdef WIN32
 						RB = min(*pRightBM+1, *pBottomBM+1);
@@ -221,25 +222,25 @@ FIA_GeneratePMap (FIBITMAP *mask)
                                                 currMin = std::min(RB, BRTR);
                                                 *pCentreBM = std::min(currMin, *pCentreBM);
 						#endif
-					}
 				}
-			
-		pCentre	--;	
-		pRight  --;
-		pBottom --;
-		pBottomRight --;
-		pBottomLeft --;
-		
-		pCentreBM --;		
-		pRightBM  --;
-		pBottomBM  --;
-		pBottomLeftBM --;
-		pBottomRightBM --;
-			
+			}
+
+			pCentre--;	
+			pRight--;
+			pBottom--;
+			pBottomRight--;
+			pBottomLeft--;
+
+			pCentreBM--;		
+			pRightBM--;
+			pBottomBM--;
+			pBottomLeftBM--;
+			pBottomRightBM--;
+
 		}				  
 	}
-  
-  return pMatrix;
+
+	return pMatrix;
 }
 
 static FIARECT SetRectRelativeToPoint(FIARECT rect, FIAPOINT pt)
@@ -263,6 +264,7 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 	BYTE *pCentre=NULL, *pLeft=NULL, *pTop=NULL, *pTopLeft=NULL, *pTopRight=NULL;
 	float *pCentreFM=NULL, *pLeftFM=NULL, *pTopFM=NULL, *pTopLeftFM=NULL, *pTopRightFM=NULL;
 	BYTE *pCentreF;
+	FIARECT dstRect, srcRect;
 
 	if(dst == NULL || src == NULL)
 	    goto CLEANUP;
@@ -277,8 +279,8 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 	
 	FIARECT src_intersection_rect, intersect_rect;
 
-	FIARECT dstRect = FIAImageRect(dst);
-	FIARECT srcRect = MakeFIARect(x, y, x + FreeImage_GetWidth(src) - 1, y + FreeImage_GetHeight(src) - 1);
+	dstRect = FIAImageRect(dst);
+	srcRect = MakeFIARect(x, y, x + FreeImage_GetWidth(src) - 1, y + FreeImage_GetHeight(src) - 1);
 
     if(FIA_IntersectingRect(dstRect, srcRect, &intersect_rect) == 0) {
         		
@@ -328,7 +330,11 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 	
 	blended_section = FIA_CloneImageType(srcRegion, intersect_width, intersect_height);	
 	
-	dstRegionMask = FIA_Threshold(dstRegion, 1.0, 255.0, 1.0);
+	double max_pssoble_value;
+
+	FIA_GetMaxPosibleValueForGreyScaleType (FreeImage_GetImageType(dst), &max_pssoble_value);
+
+	dstRegionMask = FIA_Threshold(dstRegion, 1.0, max_pssoble_value, 1.0);
 	FIA_InPlaceConvertToStandardType(&dstRegionMask, 0);	
 	FIA_InPlaceConvertTo8Bit(&dstRegionMask);
 		

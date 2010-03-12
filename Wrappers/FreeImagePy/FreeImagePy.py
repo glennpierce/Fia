@@ -50,6 +50,8 @@ from utils import *
 from buffer import *
 import library
 
+from funct_list import FUNCTION_LIST
+
 #FreeImage class list
 _freeImgLst = list()
 
@@ -64,15 +66,6 @@ class freeimage(object):
     @author: Michele Petrazzo
     @author: Lenard Lindstrom (handle functions)
     """
-    
-    #Enable the message output
-    if sys.platform == 'win32':
-        MessageOutput = C.WINFUNCTYPE(VOID, C.c_int, C.c_char_p)
-    else:
-        MessageOutput = C.CFUNCTYPE(VOID, C.c_int, C.c_char_p)
-    
-    def printErrors(self, imageFormat, message):
-        print 'Error returned. ', FIFTotype[imageFormat], message
     
     def __init__(self, libraryName=None):
         """
@@ -95,183 +88,6 @@ class freeimage(object):
         global _freeImgLst
         _freeImgLst.append(self.__lib)
 
-        
-        #Functions list that now acutally wrap. The third value are the return
-        #type, if it exists, or if I'm able to translate from C code :)
-        self.__lstFunction = ( 
-         
-            #General funtions
-            ('FreeImage_Initialise',            '@4'), 
-            ('FreeImage_DeInitialise',          '@0'),
-            ('FreeImage_GetVersion',            '@0', None, C.c_char_p), 
-            ('FreeImage_GetCopyrightMessage',   '@0', None, C.c_char_p), 
-            ('FreeImage_SetOutputMessage',      '@4'),
-            
-            #Bitmap management functions
-            ('FreeImage_Allocate',      '@24', COL_1TO32),
-            ('FreeImage_AllocateT',     '@28'),
-            ('FreeImage_Load',          '@12'),
-            ('FreeImage_LoadU',         '@12'),
-            ('FreeImage_LoadFromHandle','@16'),
-            ('FreeImage_Save',          '@16'),
-            ('FreeImage_SaveU',         '@16'),
-            ('FreeImage_SaveToHandle',  '@20'),
-            ('FreeImage_Clone',         '@4'),
-            ('FreeImage_Unload',        '@4'),
-            
-            #Bitmap information
-            ('FreeImage_GetImageType',          '@4'),
-            ('FreeImage_GetColorsUsed',         '@4', COL_1TO32 ),
-            ('FreeImage_GetBPP',                '@4'),
-            ('FreeImage_GetWidth',              '@4'),
-            ('FreeImage_GetHeight',             '@4'),
-            ('FreeImage_GetLine',               '@4'),
-            ('FreeImage_GetPitch',              '@4'),
-            ('FreeImage_GetDIBSize',            '@4'),
-            ('FreeImage_GetPalette',            '@4', COL_1TO32, 
-                C.POINTER(RGBQUAD) ),
-            ('FreeImage_GetDotsPerMeterX',      '@4'),
-            ('FreeImage_GetDotsPerMeterY',      '@4'),
-            ('FreeImage_SetDotsPerMeterX',      '@8'), 
-            ('FreeImage_SetDotsPerMeterY',      '@8'),
-            ('FreeImage_GetInfoHeader',         '@4', COL_1TO32,
-                C.POINTER(PBITMAPINFOHEADER)),
-            ('FreeImage_GetColorType',          '@4', COL_1TO32 ),
-            ('FreeImage_GetRedMask',            '@4', COL_1TO32 ),
-            ('FreeImage_GetGreenMask',          '@4', COL_1TO32 ),
-            ('FreeImage_GetBlueMask',           '@4', COL_1TO32 ),
-            ('FreeImage_GetTransparencyCount',  '@4', COL_1TO32 ),
-            ('FreeImage_GetTransparencyTable',  '@4', (COL_8,), C.POINTER(BYTE)),
-            ('FreeImage_SetTransparencyTable',  '@12', (COL_8,) ),
-            ('FreeImage_SetTransparent',        '@8', (COL_8, COL_32) ),
-            ('FreeImage_HasBackgroundColor',    '@4', (COL_8, COL_24, COL_32) ),
-            ('FreeImage_GetBackgroundColor',    '@8', (COL_8, COL_24, COL_32),
-                C.POINTER(RGBQUAD) ),
-            ('FreeImage_SetBackgroundColor',    '@8', (COL_8, COL_24, COL_32) ),
-            
-            #Filetype functions
-            ('FreeImage_GetFileType',           '@8'), 
-            ('FreeImage_GetFileTypeU',          '@8'),
-            ('FreeImage_GetFileTypeFromHandle', '@12'), 
-            
-            
-            #Pixel access
-            ('FreeImage_GetBits',       '@4',  None, C.POINTER(BYTE)),
-            ('FreeImage_GetScanLine',   '@8',  None, C.POINTER(BYTE)),
-            ('FreeImage_GetPixelIndex', '@16', COL_1TO8 ),
-            ('FreeImage_SetPixelIndex', '@16', COL_1TO8 ),
-            ('FreeImage_GetPixelColor', '@16', COL_16TO32 ),
-            ('FreeImage_SetPixelColor', '@16', COL_16TO32 ),
-
-            #Conversion / Trasformation
-            ('FreeImage_ConvertTo4Bits',        '@4', COL_1TO32),
-            ('FreeImage_ConvertTo8Bits',        '@4', COL_1TO32),
-            ('FreeImage_ConvertToGreyscale',    '@4', COL_1TO32),
-            ('FreeImage_ConvertTo16Bits555',    '@4', COL_1TO32),
-            ('FreeImage_ConvertTo16Bits565',    '@4', COL_1TO32),
-            ('FreeImage_ConvertTo24Bits',       '@4', COL_1TO48),
-            ('FreeImage_ConvertTo32Bits',       '@4', COL_1TO32),
-            ('FreeImage_ColorQuantize',         '@8', (COL_24,)),
-            ('FreeImage_ColorQuantizeEx',       '@20', (COL_24,)),
-            ('FreeImage_Threshold',             '@8', COL_1TO32),
-            ('FreeImage_Dither',                '@8', COL_1TO32),
-            ('FreeImage_ConvertFromRawBits',    '@36', COL_1TO32),
-            ('FreeImage_ConvertToRawBits',      '@32', COL_1TO32),
-            ('FreeImage_ConvertToStandardType', '@8'),
-            ('FreeImage_ConvertToType',         '@12'),
-            ('FreeImage_ConvertToRGBF',         '@4', (COL_24, COL_32,)),
-            
-            #Copy / Paste / Composite routines
-            ('FreeImage_Copy',      '@20'),
-            ('FreeImage_Paste',     '@20', COL_1TO32),
-            
-            #Plugin
-            ('FreeImage_GetFIFCount',               '@0'),
-            ('FreeImage_SetPluginEnabled',          '@8'),
-            ('FreeImage_FIFSupportsReading',        '@4'), 
-            ('FreeImage_GetFIFFromFilename',        '@4'),
-            ('FreeImage_GetFIFFromFilenameU',       '@4'),
-            ('FreeImage_FIFSupportsExportBPP',      '@8'),
-            ('FreeImage_FIFSupportsExportType',     '@8'),
-            ('FreeImage_FIFSupportsICCProfiles',    '@4'),
-            ('FreeImage_FIFSupportsWriting',        '@4'),
-            ('FreeImage_IsPluginEnabled',           '@4'),
-            ('FreeImage_RegisterLocalPlugin',       '@20'),           
-            ('FreeImage_GetFIFDescription',         '@4', None, C.c_char_p),
-            ('FreeImage_GetFIFExtensionList',       '@4', None, C.c_char_p),
-            ('FreeImage_GetFIFFromFormat',          '@4', None, C.c_char_p),
-            ('FreeImage_GetFIFFromMime',            '@4', None, C.c_char_p),
-            ('FreeImage_GetFIFMimeType',            '@4', None, C.c_char_p),
-            ('FreeImage_GetFIFRegExpr',             '@4', None, C.c_char_p),
-            ('FreeImage_GetFormatFromFIF',          '@4', None, C.c_char_p),
-            
-            #Upsampling / downsampling
-            ('FreeImage_Rescale',       '@16', COL_1TO32 ),
-            ('FreeImage_MakeThumbnail', '@12', (COL_8, COL_24, COL_32) ),
-            
-            #Rotation and flipping
-            ('FreeImage_RotateClassic', '@12', COL_1TO32),
-            ('FreeImage_RotateEx',      '@48', (COL_8, COL_24, COL_32), ),
-
-            
-            #Color manipulation
-            ('FreeImage_AdjustBrightness',  '@12', (COL_8, COL_24, COL_32), BOOL),
-            ('FreeImage_AdjustCurve',       '@12', (COL_8, COL_24, COL_32), BOOL),
-            ('FreeImage_AdjustGamma',       '@12', (COL_8, COL_24, COL_32), BOOL),
-            ('FreeImage_AdjustContrast',    '@12', (COL_8, COL_24, COL_32), BOOL),
-            ('FreeImage_GetHistogram',      '@12', (COL_8, COL_24, COL_32), BOOL),
-            ('FreeImage_Invert',            '@4',  COL_1TO32, BOOL), 
-            ('FreeImage_GetChannel',        '@8',  (COL_24, COL_32)),
-            ('FreeImage_SetChannel',        '@12', (COL_24, COL_32)),
-            ('FreeImage_GetComplexChannel', '@8'),
-            ('FreeImage_SetComplexChannel', '@12'),
-            
-            #Multipage
-            ('FreeImage_OpenMultiBitmap',       '@24'), 
-            ('FreeImage_AppendPage',            '@8'), 
-            ('FreeImage_CloseMultiBitmap',      '@8'), 
-            ('FreeImage_GetPageCount',          '@4'),
-            ('FreeImage_LockPage',              '@8'), 
-            ('FreeImage_UnlockPage',            '@12'),
-            ('FreeImage_InsertPage',            '@12'),
-            ('FreeImage_DeletePage',            '@8'),
-            ('FreeImage_MovePage',              '@12'),
-            ('FreeImage_GetLockedPageNumbers',  '@12'),
-            
-            #Tag
-            ('FreeImage_GetTagValue',       '@4'), 
-            ('FreeImage_GetTagDescription', '@4',  None, C.c_char_p), 
-            ('FreeImage_TagToString',       '@12', None, C.c_char_p),
-            ('FreeImage_GetTagCount',       '@4',  None, DWORD),
-            ('FreeImage_GetTagKey',         '@4',  None, C.c_char_p),
-            ('FreeImage_GetTagID',          '@4', None, C.c_char_p),
-            ('FreeImage_GetTagType',        '@4'),
-            
-            
-            #Metadata
-            ('FreeImage_GetMetadata',       '@16'), 
-            ('FreeImage_GetMetadataCount',  '@8', None, DWORD),
-            ('FreeImage_FindFirstMetadata', '@12', None, VOID),
-            ('FreeImage_FindNextMetadata',  '@8', None, VOID),
-            ('FreeImage_FindCloseMetadata', '@4'),
-            
-            ('FreeImage_IsLittleEndian',    '@0')
-            
-            # --------------- This functions don't work yet :(
-            
-            #All handle functions...
-            
-        )
-        
-        for function in self.__lstFunction:
-            try:
-                self.__lib.setBind(function)
-            except AttributeError, ex:
-                warn("Error on bind %s." % function[0], FunctionNotFound)
-
-        self.funct_printErrors = self.MessageOutput(self.printErrors)
-        self.__lib.SetOutputMessage(self.funct_printErrors)
-    
     # ------------------ #
     #  General funtions  #
     # ------------------ #
@@ -361,7 +177,6 @@ class freeimage(object):
     def Save(self, typ, bitmap, fileName, flags=False):
         """ This function saves a previously loaded FIBITMAP to a file.
         """
-        
         #Make unicode control
         if isinstance(fileName, unicode):
             if sys.platform == 'win32':
@@ -627,7 +442,10 @@ class freeimage(object):
         """ Retrieves the file background color of an image.
         """
         self.__ctrlColorUsed()
-        return self.__lib.GetBackgroundColor(bitmap)
+        bkcolor = RGBQUAD()
+        self.__lib.GetBackgroundColor(bitmap, C.pointer( bkcolor ))
+        color = dict( [("red", bkcolor.rgbRed), ("green", bkcolor.rgbGreen), ("blue", bkcolor.rgbBlue)] )
+        return color
 
 
     def GetFileType(self, fileName, size=False):
@@ -788,18 +606,30 @@ class freeimage(object):
         self.__ctrlColorUsed()
         return self.__lib.SetTransparencyTable(bitmap, table, count)
 
+    def IsTransparent(self, bitmap):
+        """ Returns TRUE when the transparency table is enabled
+        """
+        self.__ctrlColorUsed()
+        return self.__lib.IsTransparent(bitmap)
+
     def SetTransparent(self, bitmap, enabled):
         """ Tells FreeImage if it should make use of the transparency table 
         that may accompany a bitmap
         """
         self.__ctrlColorUsed()
         return self.__lib.SetTransparent(bitmap, enabled)
-
-    def SetBackgroundColor(self, bitmap, bkcolor):
+    
+    def SetBackgroundColor(self, bitmap, color):
         """ Set the file background color of an image.
         """
         self.__ctrlColorUsed()
-        return self.__lib.SetBackgroundColor(bitmap, bkcolor)
+        
+        bkcolor = RGBQUAD()
+        bkcolor.rgbRed = color["red"]
+        bkcolor.rgbGreen = color["green"]
+        bkcolor.rgbBlue = color["blue"]
+        
+        return self.__lib.SetBackgroundColor(bitmap, C.pointer( bkcolor) )
     
     def GetTransparencyCount(self, bitmap):
         """ Returns the number of transparent colors in a palletised bitmap
@@ -852,10 +682,9 @@ class freeimage(object):
         return self.__lib.GetPixelColor(bitmap, x, y, value), value
 
     def GetScanLine(self, bitmap, scanline):
-        """ Returns a pointer to the start of the given scanline in 
+        """ Returns a pointer to the start of the given scanline in
             the bitmap s data-bits.
         """
-        self.__ctrlColorUsed()
         return self.__lib.GetScanLine(bitmap, scanline)
 
     def SetPixelColor(self, bitmap, x, y, value=None):
@@ -1360,7 +1189,7 @@ class freeimage(object):
         """
 
         W, H = self.getDotDPI(bitmap)
-        X, Y = self.getSize(bitmap) 
+        X, Y = self.__getSize(bitmap) 
 
         #Control if the current file has the right resolution and size
         if not ( (W == 204 and H == 196) and (Y > X)):
@@ -1371,13 +1200,13 @@ class freeimage(object):
         bitmap = self.ConvertToStandardType(bitmap, close=1)
         
         #Convert to 4 bits
-        #self.Save(FIF_TIFF, bitmap, './aaaaa_bef1%s.tif'% self.__num)
+        #self.Save(FIF_TIFF, bitmap, '/tmp/aaaaa_bef1%s.tif'% self.__num)
         bitmap = self.setBppFromBpp(1, bitmap)
         
-        #self.Save(FIF_TIFF, bitmap, './aaaaa_aft%s.tif'% self.__num)
-        self.convertToMinIsWhite(bitmap)
+        #self.Save(FIF_TIFF, bitmap, '/tmp/aaaaa_aft%s.tif'% self.__num)
+        self.__convertToMinIsWhite(bitmap)
         
-        self.setDotDPI(bitmap, (204, 196))        
+        self.setDotDPI(bitmap, (204, 196))
         
         #self.Save(FIF_TIFF, bitmap, './aaaaa_aft_2_%s.tif'% self.__num)
         self.__num+=1
@@ -1394,7 +1223,7 @@ class freeimage(object):
         """
         self.__convertToMinIsWhite(bitmap, False)
         
-    def convertToSinglePages(self, multiPageName, outputFormat, outputExt, 
+    def convertToSinglePages(self, multiPageName, outputFormat, outputExt,
                         outputName=None, flags=None, bitmapType=-1, 
                         returnOpenBitmap=0, outputDir=None, outputDepth=-1):
         """ Return the multiPage splitted into single pages
@@ -1733,9 +1562,9 @@ class freeimage(object):
         """
         caller = "FreeImage_%s" % sys._getframe(1).f_code.co_name
         locals = sys._getframe(1).f_locals
-        if not 'bitmap' in locals.keys(): return
+        if not 'bitmap' in locals: return
         bitmap = locals['bitmap']
-        for funct in self.__lstFunction:
+        for funct in FUNCTION_LIST:
             functName = funct[0]
             
             #Colour depth Control 
@@ -1751,9 +1580,9 @@ class freeimage(object):
                     except: pass
                     
                     #Raise an exception
-                    raise FreeImagePy_ColorWrong, \
-                        'Wrong color %s in function: %s. I can use: %s' % \
-                        (bpp, functName, colorUsed)
+                    raise FreeImagePy_ColorWrong, (
+                        'Wrong color %s in function: %s. I can use: %s. Bitmap: %s' %
+                        (bpp, functName, colorUsed, bitmap) )
                 break
             
             #No control need, go out and save cpu time
@@ -1817,6 +1646,7 @@ class Image(freeimage):
         self.__format = None
         self.__fileName = ""
         self.__automaticColorChange = True
+        self.index = 1
         
         #MultiPage
         self.__bitmapMulti = None
@@ -1869,11 +1699,11 @@ class Image(freeimage):
         self.__bitmap = bitmap
         self.__setFormat()
     
-    def new(self, size, bpp=24, white=True, unloadPrev=True, 
-            multiBitmap=None, fileType=None):
+    def new(self, size=None, bpp=24, white=True, unloadPrev=True, 
+            multiBitmap=None, fileType=None, flags=0):
         """ Create a new image with the given FISize and with that BPP
             
-            @param size: The new bitmap size
+            @param size: The new bitmap size. Can be none if the bitmap are a multipage
             @type size: FISize (w,h) or two value tuple
             @param bpp: color depth
             @type bpp:  in (1 -> 32)
@@ -1884,6 +1714,12 @@ class Image(freeimage):
             @param fileType: FIF_*
         """
         if unloadPrev: self.__unload(0)
+        
+        if size == None:
+            if not multiBitmap:
+                raise ValueError, "You have to specify at least the size or a multiBitmap path"
+            size = (1,1)
+        
         w,h = size
         
         if multiBitmap:
@@ -1895,12 +1731,12 @@ class Image(freeimage):
             self.__fileName = multiBitmap
             
             self.__bitmapMulti = self.OpenMultiBitmap(fileType, 
-                        multiBitmap, True)
+                        multiBitmap, True, flags=flags)
             
             #Create the empty image
             i = Image()
             i.new(size, bpp, white)
-            
+
             #append it
             self.AppendPage(self.__bitmapMulti, i.bitmap)
             del i
@@ -1996,7 +1832,7 @@ class Image(freeimage):
                 self.__bitmap = self.setBppFromBpp(newBppifNeed, self.__bitmap)
         w, h = size
         new_bitmap = self.Rescale(self.__bitmap, w, h, filter, inplace)
-
+        
         #If I need to re-change the color
         if self.GetBPP(new_bitmap) != oldBpp:
             new_bitmap = self.setBppFromBpp(oldBpp, new_bitmap)
@@ -2005,11 +1841,15 @@ class Image(freeimage):
         if inplace: self.__bitmap = new_bitmap
     
     def thumbnail(self, max_pixel_size, convert=True, close=0):
+        """ Make an image thumbnail and return a new image
+            Pay attention to set close arg 0!
         """
-        """
-        self.__bitmap = self.MakeThumbnail(self.__bitmap, max_pixel_size, convert, 1)
-        self.__setFormat()
+        bmp = self.MakeThumbnail(self.__bitmap, max_pixel_size, convert, close)
         
+        img = Image()
+        img.loadFromBitmap(bmp)
+        return img
+    
     #
     #Help methods
     #
@@ -2087,7 +1927,7 @@ class Image(freeimage):
             @return: string file name
         """
         return self.__fileName
-        
+    
     #
     #Multipage
     #
@@ -2123,12 +1963,16 @@ class Image(freeimage):
         if not self.__isMultipage or \
             pageNum == self.__bitmapMultiCurrentNumber: return False
         
+        #Control for the end of bitmaps
         if pageNum > self.__numPages -1: raise EOFError, "No more pages"
         
+        #Close the page and open the new one
         self.UnlockPage(self.__bitmapMulti, self.__bitmap)
-        self.__bitmap = self.LockPage(self.__bitmapMulti, 
-                            pageNum)
+        self.__bitmap = self.LockPage(self.__bitmapMulti, pageNum)
         self.__bitmapMultiCurrentNumber = pageNum
+        
+        #Set the right index
+        self.index = pageNum +1
         
     def seek(self, page=0):
         """ Seek method.
@@ -2264,6 +2108,11 @@ class Image(freeimage):
         if unloadPrev: self.__unload(0)
         self.__bitmap = super(Image, self).loadFromBuffer(buff, fif, flag)
     
+    def GetScanLine(self, start=0):
+        sl = super(Image, self).GetScanLine(self.__bitmap, start)
+        return sl
+
+
     #
     #Copy / Clone / Paste
     #
@@ -2338,6 +2187,33 @@ class Image(freeimage):
             dHistogram[ch_name] = [int(x) for x in histo]
             
         return dHistogram
+
+    def GetBackgroundColor(self):
+        """ Return the background color, if any. Otherwise I'll return 0
+            @return: 0 (if no bg color) or (R,G,B)
+        """
+        if super(Image, self).HasBackgroundColor(self.__bitmap):
+            return super(Image, self).GetBackgroundColor(self.__bitmap)
+        else:
+            return 0
+        
+    def SetBackgroundColor(self, color):
+        """ Set background color.
+            @par color: dict with red, green, blue keys
+            @type color: dict
+        """
+        super(Image, self).SetBackgroundColor(self.__bitmap, color)
+    
+    def GetTransparent(self):
+        """
+        """
+        return super(Image, self).IsTransparent(self.__bitmap)
+        
+    def SetTransparent(self, value):
+        """
+        """
+        return super(Image, self).SetTransparent(self.__bitmap, value)
+        
     #
     #Rotation and flipping
     #
@@ -2349,7 +2225,8 @@ class Image(freeimage):
             @param inplace: Rotate the image inplace
             @type inplace: int
         """
-        
+        if self.getBPP() == 1 and angle not in ROTATE_ANGLE_1BIT:
+           raise FreeImagePy_RotateError("I can't rotate 1 bit image with an angle that aren't %s. See FreeImage doc" % str(ROTATE_ANGLE_1BIT))
         new_dib = self.RotateClassic(self.__bitmap, angle, inplace)
         if inplace:
             self.__unload()
@@ -2532,7 +2409,7 @@ class Image(freeimage):
         
         if self.__bitmap and (self.__unloadWhenDel and ctrlVal):
             if self.__isMultipage:
-                self.UnLockPage(self.__bitmapMulti, 
+                self.UnlockPage(self.__bitmapMulti, 
                     self.__bitmapMultiCurrentNumber, modified=True)
             else:
                 self.Unload(self.__bitmap)
@@ -2561,13 +2438,30 @@ class Image(freeimage):
     def __del__(self):
         """ Implicit unload the bitmap
         """
-        self.exit()
+        self.__unload(closing=False)
+        #self.exit()
     
     def __repr__(self):
         """
         """
         return "Library istance: %s.\nImage instance: %s" % \
             (self.getStatus(), self.ok() )
+    
+    def __iter__(self):
+        """ Iterate over a multipage dib
+        """
+        return self
+    
+    def next(self):
+        """
+        """
+        if self.index -1 == self.numPages:
+            raise StopIteration
+        
+        self.setCurrentPage(self.index -1)
+        self.index += 1
+        return self
+
     # --------------------- #
     #  Property definitions #
     # --------------------- #
@@ -2583,3 +2477,6 @@ class Image(freeimage):
     bpp = property(getBPP, setBPP)
     metadata = property(getMetadata)
     histogram = property(GetHistogram)
+    backgroundColor = property(GetBackgroundColor, SetBackgroundColor)
+    transparent = property(GetTransparent,SetTransparent)
+    scanline = property(GetScanLine)

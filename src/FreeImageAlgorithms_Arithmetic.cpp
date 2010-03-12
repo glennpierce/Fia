@@ -1,5 +1,6 @@
 /*
- * Copyright 2007 Glenn Pierce
+ * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
  * This file is part of FreeImageAlgorithms.
  *
@@ -12,10 +13,10 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 #include "FreeImageAlgorithms_Arithmetic.h"
 #include "FreeImageAlgorithms_Utilities.h"
@@ -145,7 +146,6 @@ template < class Tsrc > FIBITMAP * ARITHMATIC < Tsrc >::Transpose (FIBITMAP * sr
 
     return dst;
 }
-
 
 template < class Tsrc > double ARITHMATIC < Tsrc >::DifferenceMeasure (FIBITMAP * src1, FIBITMAP *src2)
 {
@@ -410,7 +410,6 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
 
         for(register int y = 0; y < height; y++)
         {
-
             dst_ptr = (double *) FreeImage_GetScanLine (dst, y);
             src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
 
@@ -424,7 +423,6 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
 
         for(register int y = 0; y < height; y++)
         {
-
             dst_ptr = (float *) FreeImage_GetScanLine (dst, y);
             src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
 
@@ -640,7 +638,6 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddGreyLevelImageConstant (FIBI
 
         for(register int y = 0; y < height; y++)
         {
-
             dst_ptr = (float *) FreeImage_GetScanLine (dst, y);
 
             for(register int x = 0; x < width; x++)

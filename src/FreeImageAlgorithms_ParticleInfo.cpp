@@ -1,5 +1,6 @@
 /*
- * Copyright 2007 Glenn Pierce
+ * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
  * This file is part of FreeImageAlgorithms.
  *
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_Utils.h"
@@ -313,6 +314,7 @@ FIA_ParticleInfo (FIBITMAP * src, PARTICLEINFO ** info, unsigned char white_on_b
                         tmp_run.blob->area = tmp_run.end_x - tmp_run.x + 1 + last_blob->area;
                         tmp_run.blob->sum_x = tmp_run.sum_x + last_blob->sum_x;
                         tmp_run.blob->sum_y += ((top_row - y) * (tmp_run.end_x - tmp_run.x + 1));
+
 						if(tmp_run.blob->sum_y < 0) {
 							tmp_run.blob->sum_y = tmp_run.blob->sum_y;
 						}

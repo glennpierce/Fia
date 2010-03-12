@@ -1,28 +1,29 @@
 /*
- * Copyright 2007 Glenn Pierce
+ * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
- * This file is part of FIA.
+ * This file is part of FreeImageAlgorithms.
  *
- * FIA is free software: you can redistribute it and/or modify
+ * FreeImageAlgorithms is free software: you can redistribute it and/or modify
  * it under the terms of the Lesser GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * FIA is distributed in the hope that it will be useful,
+ * FreeImageAlgorithms is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * Lesser GNU General Public License for more details.
  *
  * You should have received a copy of the Lesser GNU General Public License
- * along with FIA.  If not, see <http://www.gnu.org/licenses/>.
+ * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #ifndef __FREEIMAGE_ALGORITHMS_UTILITIES__
 #define __FREEIMAGE_ALGORITHMS_UTILITIES__
 
-/*! \file
+/*! \file 
 	Provides various utility methods.
-*/
+*/ 
 
 #include "FreeImageAlgorithms.h"
 
@@ -54,6 +55,7 @@ MakeFIARect(int left, int top, int right, int bottom);
 
 DLL_API int DLL_CALLCONV
 FIARectIsEmpty (FIARECT rect);
+
 /** \brief Make a FIARECT structure from an image.
  *
  *  \param data Array of char data.
@@ -410,6 +412,7 @@ FIA_IsGreyScale(FIBITMAP *src);
 DLL_API int DLL_CALLCONV
 FIA_GetGreyScalePixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, void *values);
 
+
 /** \brief Gets the pixels values along a line on an image where the 
  *         image consists of char data.
  *
@@ -521,6 +524,7 @@ FIA_RectHeight (FIARECT *rect);
 
 DLL_API BYTE* DLL_CALLCONV
 FIA_GetScanLineFromTop (FIBITMAP *src, int line);
+
 DLL_API FIARECT DLL_CALLCONV
 FIA_MakeFiaRectRelativeToImageBottomLeft (FIBITMAP *src, FIARECT rt);
 
@@ -719,6 +723,8 @@ FIA_Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask);
 
 DLL_API int DLL_CALLCONV
 FIA_GradientBlendMosaicPaste (FIBITMAP* dst, FIBITMAP* src, int x, int y);
+
+
 #ifdef __cplusplus
 }
 #endif

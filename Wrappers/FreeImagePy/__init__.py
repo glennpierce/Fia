@@ -31,6 +31,9 @@ from FreeImagePy import *
 
 __doc__ = "FreeImagePy, a freeimage python wrap"
 
-_FI = freeimage()
-__version__ = "FreeImagePy 1.3.0, FreeImage %s" % _FI.version
-del _FI
+try:
+    _FI = freeimage()
+    __version__ = "FreeImagePy 1.4.1, FreeImage %s" % _FI.version
+    del _FI
+except constants.FreeImagePy_LibraryNotFound:
+    __version__ = "FreeImagePy 1.4.1, FreeImage 3.9.2 (May be different)"

@@ -187,18 +187,19 @@ extToType = dict(
              jpegav     = (FIF_JPEG, JPEG_QUALITYAVERAGE,   '.jpg'),
              jpegba     = (FIF_JPEG, JPEG_QUALITYBAD,       '.jpg'),
              
-             png        = (FIF_PNG,  0,                     '.png'),
-             
-             bmp        = (FIF_BMP,  0,                     '.bmp'),
-             
+             png        = (FIF_PNG,  PNG_DEFAULT,           '.png'),
+
+             bmp        = (FIF_BMP,  BMP_DEFAULT,           '.bmp'),
+
              ico        = (FIF_ICO,  ICO_DEFAULT,           '.ico'),
-             
+
              gif        = (FIF_GIF,  GIF_DEFAULT,           '.gif'),
-             
-             pbm        = (FIF_PBM,  0,                     '.pbm'),
-             pnm        = (FIF_PPM,  0,                     '.pnm'),
-             ppm        = (FIF_PPM,  0,                     '.ppm'),
-            )
+
+             pbm        = (FIF_PBM,  PNM_DEFAULT,           '.pbm'),
+             pgm        = (FIF_PGM,  PNM_DEFAULT,           '.pgm'),
+             pnm        = (FIF_PPM,  PNM_DEFAULT,           '.pnm'),
+             ppm        = (FIF_PPM,  PNM_DEFAULT,           '.ppm'),
+        )
 
 
 #Internal C structures
@@ -206,11 +207,27 @@ class FITAG(C.Structure):
     _fields_ = [ ("data",   VOID)]
 
 
+#Are us little endian?
+#import library
+#_FI = library.internlLibrary()
+LITTLEENDIAN = 1
+#LITTLEENDIAN = _FI.IsLittleEndian()
+#del _FI
+
+
 class RGBQUAD(C.Structure):
-    _fields_ = [ ("rgbBlue",     BYTE),
-                 ("rgbGreen",    BYTE),
-                 ("rgbRed",      BYTE),
-                 ("rgbReserved", BYTE) ]
+    _fields_ = [] 
+    if LITTLEENDIAN:
+        _fields_ += [("rgbBlue",     BYTE),
+                     ("rgbGreen",    BYTE),
+                     ("rgbRed",      BYTE)]
+    else:
+        _fields_ += [("rgbRed",      BYTE),
+                     ("rgbGreen",    BYTE),
+                     ("rgbBlue",     BYTE)]
+        
+    _fields_ += [ ("rgbReserved", BYTE) ]
+    
 class FIBITMAP(C.Structure):
     _fields_ = [ ("data",   C.POINTER(VOID)) ]
 
@@ -240,6 +257,7 @@ Bayer ordered dispersed dot dithering (order 3 dithering matrix)
 Ordered clustered dot dithering (order 3 - 6x6 matrix)
 Ordered clustered dot dithering (order 4 - 8x8 matrix)
 Ordered clustered dot dithering (order 8 - 16x16 matrix)
+Bayer ordered dispersed dot dithering (order 4 dithering matrix)
 """
 FID_FS		 = 0
 FID_BAYER4x4	 = 1
@@ -247,6 +265,7 @@ FID_BAYER8x8	 = 2
 FID_CLUSTER6x6	 = 3
 FID_CLUSTER8x8	 = 4
 FID_CLUSTER16x16 = 5
+FID_BAYER16x16   = 6
 
 #Get_type
 FIC_MINISWHITE = 0
@@ -358,19 +377,32 @@ FIQ_WUQUANT = 0
 FIQ_NNQUANT = 1
 
 # Little Endian (x86 / MS Windows, Linux) : BGR(A) order
-FI_RGBA_RED		        = 2
-FI_RGBA_GREEN		    = 1
-FI_RGBA_BLUE		    = 0
-FI_RGBA_ALPHA		    = 3
-FI_RGBA_RED_MASK	    = 0x00FF0000
-FI_RGBA_GREEN_MASK	    = 0x0000FF00
-FI_RGBA_BLUE_MASK	    = 0x000000FF
-FI_RGBA_ALPHA_MASK	    = 0xFF000000L
-FI_RGBA_RED_SHIFT	    = 16
-FI_RGBA_GREEN_SHIFT	    = 8
-FI_RGBA_BLUE_SHIFT	    = 0
-FI_RGBA_ALPHA_SHIFT	    = 24
-
+if LITTLEENDIAN:
+    FI_RGBA_RED		        = 2
+    FI_RGBA_GREEN		    = 1
+    FI_RGBA_BLUE		    = 0
+    FI_RGBA_ALPHA		    = 3
+    FI_RGBA_RED_MASK	    = 0x00FF0000
+    FI_RGBA_GREEN_MASK	    = 0x0000FF00
+    FI_RGBA_BLUE_MASK	    = 0x000000FF
+    FI_RGBA_ALPHA_MASK	    = 0xFF000000L
+    FI_RGBA_RED_SHIFT	    = 16
+    FI_RGBA_GREEN_SHIFT	    = 8
+    FI_RGBA_BLUE_SHIFT	    = 0
+    FI_RGBA_ALPHA_SHIFT	    = 24
+else:
+    FI_RGBA_RED		        = 0
+    FI_RGBA_GREEN		    = 1
+    FI_RGBA_BLUE		    = 2
+    FI_RGBA_ALPHA		    = 3
+    FI_RGBA_RED_MASK	    = 0xFF000000
+    FI_RGBA_GREEN_MASK	    = 0x00FF0000
+    FI_RGBA_BLUE_MASK	    = 0x0000FF00
+    FI_RGBA_ALPHA_MASK	    = 0x000000FF
+    FI_RGBA_RED_SHIFT	    = 24
+    FI_RGBA_GREEN_SHIFT	    = 16
+    FI_RGBA_BLUE_SHIFT	    = 8
+    FI_RGBA_ALPHA_SHIFT	    = 0
 
 #My costatants
 
@@ -391,6 +423,9 @@ COL_1TO48 = COL_1TO32 + (COL_48, )
 
 #Pil correspondence values
 COL_To_PIL = {COL_1: "1", COL_8: "L", COL_24: "RGB", COL_32: "RGBA"}
+
+
+ROTATE_ANGLE_1BIT = (-90, 90, 180, 270)
 
 
 #Internal class structure
@@ -421,7 +456,7 @@ class FISize(object):
         """
         """
         return "FISize (%i, %i)" % (self.getWidth(), self.getHeight())
-    
+
     def __len__(self):
         """
         """
@@ -524,6 +559,11 @@ class FreeImagePy_ColorWrong(Exception):
         self.value = value
     def __str__(self):
         return repr(self.value)
+
+class FreeImagePy_RotateError(FreeImagePy_ColorWrong):
+    """
+       Rotate exeception because I can't rotate with this color depth
+    """
 
 class IOAttributeError(AttributeError):
     """

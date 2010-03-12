@@ -170,6 +170,14 @@ namespace FreeImageAPI
             }
         }
 
+        public static FIARECT Empty
+        {
+            get
+            {
+                return new FIARECT(0, 0, 0, 0);
+            }
+        }
+
         public Rectangle ToRectangle()
         {
             return new Rectangle(this.Left, this.Top, this.Width - 1, this.Height - 1);
@@ -284,6 +292,14 @@ namespace FreeImageAPI
             }
         }
 
+        public Rectangle Bounds
+        {
+            get
+            {
+                return new Rectangle(0, 0, this.Width, this.Height);
+            }
+        }
+
         /*
         protected virtual void Dispose( bool disposing )
         {
@@ -316,13 +332,13 @@ namespace FreeImageAPI
             }
         }
 
-        public void ConvertToStandardType()
+        public void ConvertToStandardType(bool scale)
         {
-            FIBITMAP tmp_dib = FreeImage.ConvertToStandardType(this.Dib, true);
+            FIBITMAP tmp_dib = FreeImage.ConvertToStandardType(this.Dib, scale);
 
             this.ReplaceDib(tmp_dib);
         }
- 
+
          public void ConvertToType(FREE_IMAGE_TYPE type)
          {
              FIBITMAP tmp_dib = FreeImage.ConvertToType(this.Dib, type, true);
@@ -437,6 +453,10 @@ namespace FreeImageAPI
             return FreeImage.GetGreyScalePixelValuesAsDoublesForLine(this.Dib, fi_pt1, fi_pt2, out values);
         }
 
+        public bool StatisticReport(out StatisticReport report)
+        {
+            return FreeImage.StatisticReport(this.Dib, out report);
+        }
 
         /*
         public bool GetGreyLevelHistogram(int number_of_bins, out ulong[] hist, out double range_per_bin)
@@ -521,17 +541,46 @@ namespace FreeImageAPI
             return FreeImage.SimplePasteFromTopLeft(this.Dib, src.Dib, location.X, location.Y);
         }
 
-        /*
-        public void EqualizeHistogram()
+        public bool SimplePasteFromTopLeft(FreeImageBitmap src, int left, int top)
         {
-            uint tmp_dib = FreeImage.FreeImage_HistEq(this.Dib);
-
-            FreeImage.Unload(this.Dib);
-
-            this.Dib = tmp_dib;
-            
+            return FreeImage.SimplePasteFromTopLeft(this.Dib, src.Dib, left, top);
         }
-        */
+   
+        public bool GradientBlendPasteFromTopLeft(FreeImageAlgorithmsBitmap src, Point pt)
+        {
+            return FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, pt.X, pt.Y);
+        }
+
+        public bool GradientBlendPasteFromTopLeft(FreeImageAlgorithmsBitmap src, int left, int top)
+        {
+            return FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, left, top);
+        }
+
+        public void PasteFromTopLeft(FreeImageAlgorithmsBitmap src, int left, int top, bool blending)
+        {
+            bool ret;
+
+            if(blending) {
+                ret = FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, left, top);
+            }
+            else {
+                ret = FreeImage.SimplePasteFromTopLeft(this.Dib, src.Dib, left, top);
+            }
+
+            if (ret == false)
+            {
+                string errorStr = String.Format(
+                        "Can not paste freeimage. Dst image bpp {0}, Src image bpp {1}",
+                        this.ColorDepth, src.ColorDepth);
+
+                    throw new FormatException(errorStr);
+            }
+        }
+
+        public void PasteFromTopLeft(FreeImageAlgorithmsBitmap src, Point location, bool blending)
+        {
+            this.PasteFromTopLeft(src, location.X, location.Y, blending);
+        }
 
         public bool Clear()
         {
@@ -594,77 +643,6 @@ namespace FreeImageAPI
             return FreeImage.DrawSolidRectangle(this.Dib, fiaRect, val);
         }
 
-        public static FreeImageAlgorithmsBitmap GetGradientBlendAlphaImage(FIARECT rect1, FIARECT rect2, FreeImageAlgorithmsBitmap fib, out FIARECT intersect_rect)
-        {
-            FIBITMAP dib = FreeImage.GetGradientBlendAlphaImage(fib.Dib, rect1, rect2, out intersect_rect);
-
-            return new FreeImageAlgorithmsBitmap(dib);
-        }
-
-        public static FreeImageAlgorithmsBitmap GetGradientBlendAlphaImage(Rectangle rect1, Rectangle rect2, FreeImageAlgorithmsBitmap fib, out FIARECT intersect_rect)
-        {
-            FIARECT fiaRect1 = new FIARECT(rect1.Left, rect1.Top, rect1.Right, rect1.Bottom);
-            FIARECT fiaRect2 = new FIARECT(rect2.Left, rect2.Top, rect2.Right, rect2.Bottom);
-
-            FIBITMAP dib = FreeImage.GetGradientBlendAlphaImage(fib.Dib, fiaRect1, fiaRect2, out intersect_rect);
-
-            return new FreeImageAlgorithmsBitmap(dib);
-        }
-
-        public static FreeImageAlgorithmsBitmap GetGradientBlendedIntersectionImage(FreeImageAlgorithmsBitmap fib1, 
-            FIARECT rect1, FreeImageAlgorithmsBitmap fib2, FIARECT rect2, FreeImageAlgorithmsBitmap mask, out FIARECT intersect_rect)
-        {
-            FIBITMAP dib = FIBITMAP.Zero;
-
-            if (mask == null)
-            {
-                dib = FreeImage.GradientBlendedIntersectionImage(fib1.Dib, rect1, fib2.Dib, rect2, FIBITMAP.Zero, out intersect_rect);
-            }
-            else
-            {
-                dib = FreeImage.GradientBlendedIntersectionImage(fib1.Dib, rect1, fib2.Dib, rect2, mask.Dib, out intersect_rect);
-            }
- 
-            return new FreeImageAlgorithmsBitmap(dib);
-        }
-
-        public static FreeImageAlgorithmsBitmap GetGradientBlendedIntersectionImage(FreeImageAlgorithmsBitmap fib1,
-            Rectangle rect1, FreeImageAlgorithmsBitmap fib2, Rectangle rect2, out Rectangle intersect_rect)
-        {
-            FIARECT fiaRect1 = new FIARECT(rect1);
-            FIARECT fiaRect2 = new FIARECT(rect2);
-            FIARECT rect;
-
-            FreeImageAlgorithmsBitmap dib = GetGradientBlendedIntersectionImage(fib1, 
-                    fiaRect1, fib2, fiaRect2, null, out rect);
-
-            intersect_rect = new Rectangle(rect.Location, rect.Size);
-
-            return dib;
-        }
-
-        public bool GradientBlendPasteFromTopLeft(FreeImageAlgorithmsBitmap src, Point pt, FreeImageAlgorithmsBitmap mask)
-        {
-            return FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, pt.X, pt.Y, mask.Dib);
-        }
-
-        public bool GradientBlendPasteFromTopLeft(FreeImageAlgorithmsBitmap src, Point pt)
-        {
-            return FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, pt.X, pt.Y, FIBITMAP.Zero);
-        }
-
-        public bool GradientBlendPasteFromTopLeft(FreeImageAlgorithmsBitmap src, int left, int top, FreeImageAlgorithmsBitmap mask)
-        {
-            if (mask == null)
-            {
-                return FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, left, top, FIBITMAP.Zero);
-            }
-            else
-            {
-                return FreeImage.GradientBlendPasteFromTopLeft(this.Dib, src.Dib, left, top, mask.Dib);
-            }
-        }
-
         public FreeImageAlgorithmsBitmap AffineTransform(int image_dst_width, int image_dst_height,
                                                          FreeImageAlgorithmsMatrix matrix, RGBQUAD colour, int retainBackground)
         {
@@ -723,34 +701,120 @@ namespace FreeImageAPI
                 dstPoint.X, dstPoint.Y, dstSize.Width, dstSize.Height, colour, 1);
         }
 
-        public FIAPOINT Correlate(FIARECT rect1, FreeImageBitmap src2, FIARECT rect2, out double max)
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, FIARECT rect1, FIARECT rect2,
+            FIARECT search_area, FIBITMAP mask,
+            CorrelationPrefilter prefilter, out FIAPOINT pt, out double max)
         {
-            FIAPOINT pt = new FIAPOINT();
-
-            FreeImage.CorrelateImageRegions(this.Dib, rect1,
-                src2.Dib, rect2, out pt, out max);
-
-            return pt;
+            return FreeImage.KernelCorrelateImageRegions(this.Dib, rect1, src2.Dib, rect2, search_area, mask, prefilter, out pt, out max);
         }
 
-        public FIAPOINT CorrelateImageAlongRightEdge(FreeImageBitmap src2, uint thickness, out double max)
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+            Rectangle search_area, FIBITMAP mask,
+            CorrelationPrefilter prefilter, out Point pt, out double max)
         {
-            FIAPOINT pt = new FIAPOINT();
+            FIARECT fiaRect1 = new FIARECT(rect1);
+            FIARECT fiaRect2 = new FIARECT(rect2);
+            FIARECT searchRect = new FIARECT(search_area);
+            FIAPOINT fiaPoint = new FIAPOINT();
 
-            FreeImage.CorrelateImagesAlongRightEdge(this.Dib,
-                src2.Dib, thickness, out pt, out max);
+            bool ret = FreeImage.KernelCorrelateImageRegions(this.Dib, fiaRect1, src2.Dib, fiaRect2, searchRect, mask, prefilter, out fiaPoint, out max);
 
-            return pt;
+            pt = new Point(fiaPoint.x, fiaPoint.y);
+
+            return ret;
         }
 
-        public FIAPOINT CorrelateImageAlongBottomEdge(FreeImageBitmap src2, uint thickness, out double max)
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, FIARECT rect1, FIARECT rect2,
+            FIARECT search_area, CorrelationPrefilter prefilter, out FIAPOINT pt, out double max)
         {
-            FIAPOINT pt = new FIAPOINT();
+            return FreeImage.KernelCorrelateImageRegions(this.Dib, rect1, src2.Dib, rect2, search_area, FIBITMAP.Zero, prefilter, out pt, out max);
+        }
 
-            FreeImage.CorrelateImagesAlongBottomEdge(this.Dib,
-                src2.Dib, thickness, out pt, out max);
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, FIARECT rect1, FIARECT rect2,
+            FIBITMAP mask,
+            CorrelationPrefilter prefilter, out FIAPOINT pt, out double max)
+        {
+            return FreeImage.KernelCorrelateImageRegions(this.Dib, rect1, src2.Dib, rect2, FIARECT.Empty, mask, prefilter, out pt, out max);
+        }
 
-            return pt;
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, FIARECT rect1, FIARECT rect2,
+            CorrelationPrefilter prefilter, out FIAPOINT pt, out double max)
+        {
+            return FreeImage.KernelCorrelateImageRegions(this.Dib, rect1, src2.Dib, rect2, FIARECT.Empty, FIBITMAP.Zero, prefilter, out pt, out max);
+        }
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, FIARECT rect1, FIARECT rect2,
+            out FIAPOINT pt, out double max)
+        {
+            return FreeImage.KernelCorrelateImageRegions(this.Dib, rect1, src2.Dib, rect2, FIARECT.Empty, FIBITMAP.Zero, null, out pt, out max);
+        } 
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+            FIARECT searchRect, FIBITMAP mask,
+            CorrelationPrefilter prefilter, out Point pt, out double max)
+        {
+            FIARECT fiaRect1 = new FIARECT(rect1);
+            FIARECT fiaRect2 = new FIARECT(rect2);
+            FIAPOINT fiaPoint = new FIAPOINT();
+
+            bool ret = FreeImage.KernelCorrelateImageRegions(this.Dib, fiaRect1, src2.Dib, fiaRect2, searchRect, mask, prefilter, out fiaPoint, out max);
+
+            pt = new Point(fiaPoint.x, fiaPoint.y);
+
+            return ret;
+        }
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+            FIARECT searchRect, out Point pt, out double max)
+        {
+            return this.KernelCorrelateImageRegions(src2, rect1, rect2, searchRect, FIBITMAP.Zero, null, out pt, out max);
+        }
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+           Rectangle search_area,
+           CorrelationPrefilter prefilter, out Point pt, out double max)
+        {
+            return this.KernelCorrelateImageRegions(src2, rect1, rect2, search_area, FIBITMAP.Zero, prefilter, out pt, out max);
+        }
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+           Rectangle search_area, out Point pt, out double max)
+        {
+            return this.KernelCorrelateImageRegions(src2, rect1, rect2, search_area, FIBITMAP.Zero, null, out pt, out max);
+        }
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+            FIBITMAP mask,
+            CorrelationPrefilter prefilter, out Point pt, out double max)
+        {
+            return this.KernelCorrelateImageRegions(src2, rect1, rect2, FIARECT.Empty, mask, prefilter, out pt, out max);
+        }
+     
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+            CorrelationPrefilter prefilter, out Point pt, out double max)
+        {
+            return this.KernelCorrelateImageRegions(src2, rect1, rect2, FIARECT.Empty, FIBITMAP.Zero, prefilter, out pt, out max);
+        }
+
+        public bool KernelCorrelateImageRegions(FreeImageAlgorithmsBitmap src2, Rectangle rect1, Rectangle rect2,
+            out Point pt, out double max)
+        {
+            return this.KernelCorrelateImageRegions(src2, rect1, rect2,
+                FIARECT.Empty, FIBITMAP.Zero, null, out pt, out max);
+        }
+
+        public static FIBITMAP EdgeDetect(FIBITMAP src)
+        {
+            return FreeImage.EdgeDetect(src);
+        }
+
+        public static CorrelationPrefilter EdgeDetectPrefilter
+        {
+            get
+            {
+                return new CorrelationPrefilter(FreeImageAlgorithmsBitmap.EdgeDetect);
+            }
         }
     }
 }

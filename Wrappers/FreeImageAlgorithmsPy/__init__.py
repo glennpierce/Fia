@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-#from FreeImageAlgorithmsPy import *
+from FreeImageAlgorithmsPy import *
 
 #__doc__ = "FreeImageAlgorithmsPy, a freeimagealgorithms python wrap"
 

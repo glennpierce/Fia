@@ -43,7 +43,28 @@ def LoadLibrary(libraryName):
             
     return lib
             
-            
+ 
+# A ctype void_p but I define a new type so I can compare on the type and take the approiate action as this is a out parameter
+class c_double_out(C.c_void_p):
+    pass
+ 
+class c_int_out(C.c_void_p):
+    pass
+    
+class c_long_out(C.c_void_p):
+    pass
+    
+FIA_FUNCTION_LIST = {
+    
+    # Name, Return Type, (Param1 type, Param1 type2) ....... etc
+    # Defaulr param of BITMAP gets translated to self.bitmap
+    'setRainBowPalette' : ('FIA_SetRainBowPalette', C.c_int, (C.c_void_p,)), 
+    'histEq' : ('FIA_HistEq', C.c_int, (C.c_void_p,)), 
+    'getGreyLevelAverage' : ('FIA_GetGreyLevelAverage', C.c_double, (C.c_void_p,)), 
+    'monoImageFindWhiteArea' : ('FIA_MonoImageFindWhiteArea', C.c_int, (C.c_void_p, c_int_out)), 
+    'getHistogram' : ('FIA_Histogram', C.c_int, (C.c_void_p, C.c_double, C.c_double, C.c_int, c_long_out)), 
+	}
+	       
 class FIAImage(FI.Image):
     
     """ 
@@ -55,17 +76,14 @@ class FIAImage(FI.Image):
     @author: Glenn Pierce
     """
     
+    __lib = LoadLibrary("freeimagealgorithms")
+    
     # Enable the message output
     if sys.platform == 'win32':
         MessageOutput = C.WINFUNCTYPE(VOID, C.c_char_p)
     else:
         MessageOutput = C.CFUNCTYPE(VOID, C.c_char_p)
-    
-    def printErrors(self, message):
-        print 'Error returned. ', message
-    
-    
-    
+
     def __init__(self, f=None):
         """
         Init method for the class
@@ -75,35 +93,68 @@ class FIAImage(FI.Image):
         @type libraryName: string
         """
         
-        super(FIAImage, self).__init__(f, None)
-        
+        super(FIAImage, self).__init__(f, None)      
         self.initCalled = 0
-        self.__lib = LoadLibrary("freeimagealgorithms")
-        self.funct_printErrors = self.MessageOutput(self.printErrors)
-        self.__lib.FIA_SetOutputMessage(self.funct_printErrors)
     
-#    def setRainBowPalette(self):
-#        """ Set a rainbow palette for the bitmap.
-#        """
-#        return self.__lib.SetRainBowPalette(self.getBitmap())
+    def wrappedFunction(self, name):
+    
+        func_props = FIA_FUNCTION_LIST.get(name)
+        
+        if func_props == None:
+            raise AttributeError, attr
+ 
+        function = getattr(FIAImage.__lib, func_props[0])    # Function name
+        function.restype = func_props[1]            # return type
+        function.argtypes = func_props[2]           # Argument types
+ 
+        return function
+    
 
+    def clone(self):
+        """ Clone the current bitmap
+            @return: new FIAImage instance
+        """ 
+        F = FIAImage()
+        F.loadFromBitmap(self.Clone(self.getBitmap()))
+        return F
 
+    def setRainBowPalette(self):
+        """ Set a rainbow palette for the bitmap."""
+        cFunction = self.wrappedFunction('setRainBowPalette')
+        return cFunction(self.getBitmap())
+       
+    def histEq(self):
+        """ Perform histogram equalisation and return a new FIAImage."""
+        F = FIAImage()  
+        cFunction = self.wrappedFunction('histEq')
+        bitmap = cFunction(self.getBitmap())
+        F.loadFromBitmap(bitmap)
+        return F
+       
+       
+    def monoImageFindWhiteArea(self):
+        cFunction = self.wrappedFunction('monoImageFindWhiteArea')
+        ret = C.c_int()
+        err = cFunction(self.getBitmap(), C.byref(ret))
+        return (err, ret.value)
+       
     def getHistogram(self, min, max, bins):
         "Get the histogram of a greylevel image"
         DW_array = DWORD * bins # type
         red_histo = DW_array()
         green_histo = DW_array()
         blue_histo = DW_array()
-                
+              
+        cFunction = self.wrappedFunction('getHistogram')
         bitmap = self.getBitmap()
-            
+                  
         if self.getBPP() >= 24 and self.GetImageType(bitmap) == FIT_BITMAP:
-            self.__lib.FIA_RGBHistogram(bitmap, C.c_byte(min),
+            cFunction(bitmap, C.c_byte(min),
                 C.c_byte(max), bins, C.byref(red_histo),  C.byref(green_histo),
                 C.byref(blue_histo))
             return ([int(x) for x in red_histo], [int(x) for x in green_histo], [int(x) for x in blue_histo])    
         else: 
-            self.__lib.FIA_Histogram(bitmap, C.c_double(min), C.c_double(max), bins, C.byref(red_histo))
+            cFunction(bitmap, C.c_double(min), C.c_double(max), bins, C.byref(red_histo))
             return ([int(x) for x in red_histo])
     
         return None

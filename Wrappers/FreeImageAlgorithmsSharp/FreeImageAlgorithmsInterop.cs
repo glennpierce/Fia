@@ -4,12 +4,27 @@ using System.Runtime.InteropServices;
 
 namespace FreeImageAPI
 {
+    [UnmanagedFunctionPointerAttribute(CallingConvention.Cdecl)]
+    public delegate FIBITMAP CorrelationPrefilter(FIBITMAP fib);
+    
     public enum FIA_BITDEPTH
     {
         BIT8,
         BIT16,
         BIT24,
         BIT32
+    }
+
+    [Serializable, StructLayout(LayoutKind.Sequential)]
+	public struct StatisticReport
+	{
+        public double  minValue;					// miminum pixel value found 
+        public double maxValue;					// maximum pixel value found 
+        public double mean;						// mean value				
+        public double stdDeviation;				// standard deviation		
+        public float percentage_overloaded;		// amount of overloaded pixels
+        public float percentage_underloaded;	    // amount of underloaded pixels
+        public int area;	
     }
 
     [Serializable, StructLayout(LayoutKind.Sequential)]
@@ -133,7 +148,10 @@ namespace FreeImageAPI
         [DllImport(FreeImageAlgorithmsLibrary, EntryPoint="FIA_GetMinPosibleValueForFib")]
         internal static extern void GetMinPosibleValueForFib(FIBITMAP dib, out double min);
 
-        [DllImport("FreeImageAlgorithms_d.dll", EntryPoint="FIA_Histogram")]
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint="FIA_StatisticReport")]
+        internal static extern bool StatisticReport(FIBITMAP dib, out StatisticReport report);
+
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint="FIA_Histogram")]
         [return: MarshalAs(UnmanagedType.Bool)]
         internal static extern bool Histogram(FIBITMAP dib, double min, double max, int number_of_bins,
             [In, Out] ulong[] values);
@@ -164,24 +182,9 @@ namespace FreeImageAPI
         [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_Is16BitReally12BitImage")]
         internal static extern bool Is16BitReally12BitImage(FIBITMAP src);
 
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_CorrelateImageRegions")]
-        internal static extern bool CorrelateImageRegions(FIBITMAP src1, FIARECT rect1, FIBITMAP src2, FIARECT rect2, out FIAPOINT pt, out double max);
-    
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_CorrelateImagesAlongRightEdge")]
-        internal static extern bool CorrelateImagesAlongRightEdge(FIBITMAP src1, FIBITMAP src2, uint thickness, out FIAPOINT pt, out double max);
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_GradientBlendMosaicPaste")]
+        internal static extern bool GradientBlendPasteFromTopLeft(FIBITMAP dst, FIBITMAP src, int left, int top);
 
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_CorrelateImagesAlongBottomEdge")]
-        internal static extern bool CorrelateImagesAlongBottomEdge(FIBITMAP src1, FIBITMAP src2, uint thickness, out FIAPOINT pt, out double max);
-
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_GetGradientBlendAlphaImage")]
-        internal static extern FIBITMAP GetGradientBlendAlphaImage(FIBITMAP src2, FIARECT rect1, FIARECT rect2, out FIARECT intersect_rect);
-    
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_GradientBlendPasteFromTopLeft")]
-        internal static extern bool GradientBlendPasteFromTopLeft(FIBITMAP dst, FIBITMAP src, int left, int top, FIBITMAP mask);
-
-        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_GradientBlendedIntersectionImage")]
-        internal static extern FIBITMAP GradientBlendedIntersectionImage(FIBITMAP src1, FIARECT rect1, FIBITMAP src2, FIARECT rect2, FIBITMAP mask, out FIARECT intersect_rect);
-   
         [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_DrawSolidGreyscaleRect")]
         internal static extern bool DrawSolidRectangle(FIBITMAP src, FIARECT rect, double value);
 
@@ -221,6 +224,22 @@ namespace FreeImageAPI
    
         [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_DrawImageToDst")]
         internal static extern bool DrawImageToDst(FIBITMAP dst, FIBITMAP src, FIA_Matrix matrix,
-            int dstLeft, int dstTop, int dstWidth, int dstHeight, RGBQUAD colour, int retain_background);            
+            int dstLeft, int dstTop, int dstWidth, int dstHeight, RGBQUAD colour, int retain_background);    
+        
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_KernelCorrelateImages")]
+        internal static extern bool KernelCorrelateImages(FIBITMAP src1, FIBITMAP src2, FIARECT search_area, FIBITMAP mask, CorrelationPrefilter prefilter,
+            out FIAPOINT pt2, out double max);
+
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_KernelCorrelateImageRegions")]
+        internal static extern bool KernelCorrelateImageRegions(
+            FIBITMAP src1, FIARECT rect1,
+            FIBITMAP src2, FIARECT rect2, 
+            FIARECT search_area, FIBITMAP mask,
+            CorrelationPrefilter prefilter,
+            out FIAPOINT pt2, out double max);
+
+
+        [DllImport(FreeImageAlgorithmsLibrary, EntryPoint = "FIA_EdgeDetect")]
+        internal static extern FIBITMAP EdgeDetect(FIBITMAP src);
     }
 }

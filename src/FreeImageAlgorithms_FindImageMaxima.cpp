@@ -1,5 +1,6 @@
 /*
- * Copyright 2007 Glenn Pierce
+ * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
  * This file is part of FreeImageAlgorithms.
  *
@@ -15,7 +16,7 @@
  *
  * You should have received a copy of the Lesser GNU General Public License
  * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
- */
+*/
 
 #include "FreeImageAlgorithms.h"
 #include "FreeImageAlgorithms_IO.h"
@@ -382,7 +383,7 @@ FindMaxima::StoreBrightestPeaks (int number, FIAPeak ** peaks_ref)
     PARTICLEINFO *info = NULL;
 
     if(FIA_ParticleInfo (this->peek_image, &info, 1) == FIA_ERROR)
-        return FIA_ERROR;
+		return FIA_ERROR;
 
     int total_blobs = info->number_of_blobs;
 
@@ -431,7 +432,7 @@ FIBITMAP *
 FindMaxima::FindImageMaxima (FIBITMAP * src, FIBITMAP * mask, unsigned char threshold,
                              int min_separation, FIAPeak ** peaks, int number, int *peaks_found)
 {
-    *peaks_found = 0;
+	*peaks_found = 0;
 
     this->regionGrowCount = 0;
     this->threshold = threshold;
@@ -442,12 +443,11 @@ FindMaxima::FindImageMaxima (FIBITMAP * src, FIBITMAP * mask, unsigned char thre
     this->width = FreeImage_GetWidth (this->original_image);
     this->height = FreeImage_GetHeight (this->original_image);
 
-    if(this->width == 0 || this->height == 0) {
-
-        FreeImage_OutputMessageProc (FIF_UNKNOWN,
-                                      "Error image size is %d x %d", width, height);
-        return NULL;
-    }
+	if(this->width == 0 || this->height == 0) {
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Error image size is %d x %d", width, height);	
+		return NULL;
+	}
 
     this->processing_image = FreeImage_Allocate (this->width, this->height, 8, 0, 0, 0);
 

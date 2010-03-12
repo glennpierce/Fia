@@ -46,9 +46,7 @@ TestFIA_FillholeTest(CuTest* tc)
 	FreeImage_Unload(result_dib);
 }
 
-
-static void
-TestFIA_ParticleInfoTest(CuTest* tc)
+static void TestFIA_ParticleInfoTest(CuTest* tc)
 {
 	const char *file = TEST_DATA_DIR "particle.bmp";
 
@@ -183,6 +181,7 @@ CuGetFreeImageAlgorithmsParticleSuite(void)
 
 	SUITE_ADD_TEST(suite, TestFIA_FillholeTest);
 	SUITE_ADD_TEST(suite, TestFIA_ParticleInfoTest);
+
 	//SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest);
     //SUITE_ADD_TEST(suite, TestFIA_FindImageMaximaTest2);
 

@@ -1695,8 +1695,7 @@ TestFIA_CorrelateSpiceSection6(CuTest* tc)
 	FIA_DrawColourSolidRect (spice_section_fib, MakeFIARect(section_width / 2, section_height / 2,
 		section_width / 2 + 5, section_height / 2 + 5), FIA_RGBQUAD(0,255,0));
 
-	for(int i=0; i < 1000; i++)
-		FIA_KernelCorrelateImageRegions(spice_fib, region1, spice_section_fib, region2, search_region, NULL, NULL, &pt, &max);
+	FIA_KernelCorrelateImageRegions(spice_fib, region1, spice_section_fib, region2, search_region, NULL, NULL, &pt, &max);
 
     PROFILE_STOP("TestFIA_CorrelateSpiceSection5");
 
@@ -1727,13 +1726,13 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/Convolution");
 
-	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection1);
-	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection2);
-	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection3);
-	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection4);
-	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection5);
-	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection6);
-
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection1);
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection2);
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection3);
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection4);
+	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection5);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection6);
+	
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImages);
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesTwoImages);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImagesWithNoKnowledge);

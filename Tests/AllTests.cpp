@@ -10,6 +10,7 @@
 #include <iostream>
 
 #include "Constants.h"
+
 #ifndef WIN32
 #include <sys/stat.h>
 #endif
@@ -53,7 +54,7 @@ void RunAllTests(void)
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLogicSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsParticleSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsLinearScaleSuite());
-//    CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
+    //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsDrawingSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsFFTSuite());
     //CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsArithmaticSuite());
     CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsConvolutionSuite());

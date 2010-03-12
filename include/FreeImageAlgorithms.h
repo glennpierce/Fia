@@ -1,5 +1,6 @@
 /*
- * Copyright 2007 Glenn Pierce
+ * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
  * This file is part of FreeImageAlgorithms.
  *
@@ -39,6 +40,7 @@ extern "C" {
 #endif
 
 #define FIA_EMPTY_RECT (MakeFIARect (0, 0, 0, 0))
+
 /** Data structure for FIABITMAP type (FIBITMAP with a border)
 */
 typedef struct
