@@ -30,7 +30,7 @@ static void BorderTest(CuTest* tc)
 	FIA_Unload(dst);
 }
 
-
+/*
 static void BorderTest2(CuTest* tc)
 {
 	int err;
@@ -55,6 +55,7 @@ static void BorderTest2(CuTest* tc)
 	FreeImage_Unload(src);
 	FreeImage_Unload(dst);
 }
+*/
 
 /*
 static void
@@ -169,6 +170,7 @@ TestFIA_DistanceTransformTest2(CuTest* tc)
 	FreeImage_Unload(dib3);
 }
 
+/*
 static void PasteTest(CuTest* tc)
 {
 	const char *file1 = TEST_DATA_DIR "drone-bee-greyscale.jpg";
@@ -183,6 +185,7 @@ static void PasteTest(CuTest* tc)
 	FreeImage_Unload(src);
 	FreeImage_Unload(dst);
 }
+*/
 
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsUtilitySuite(void)

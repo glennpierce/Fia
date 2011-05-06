@@ -263,12 +263,18 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 	float *pCentreFM=NULL, *pLeftFM=NULL, *pTopFM=NULL, *pTopLeftFM=NULL, *pTopRightFM=NULL;
 	BYTE *pCentreF;
 	FIARECT dstRect, srcRect;
+    bool greyscale_image = true;
+    double max_pssoble_value;
+    float *pMatrix;
+    int intersect_width, intersect_height;
+    int bytespp;
+    float* distMapEdgesBits = NULL;
+    FIBITMAP *distMapEdges;
+    FIBITMAP *srcRegion;
 
 	if(dst == NULL || src == NULL)
 	    goto CLEANUP;
 	    
-	bool greyscale_image = true;
-
     if(FreeImage_GetImageType(src) == FIT_BITMAP && FreeImage_GetBPP(src) > 8) {
 	    greyscale_image = false;
     }
@@ -294,13 +300,13 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 
     src_intersection_rect = SetRectRelativeToPoint(intersect_rect, MakeFIAPoint(x, y));
 
-    int intersect_width = intersect_rect.right - intersect_rect.left + 1;
-    int intersect_height = intersect_rect.bottom - intersect_rect.top + 1;
+    intersect_width = intersect_rect.right - intersect_rect.left + 1;
+    intersect_height = intersect_rect.bottom - intersect_rect.top + 1;
 	
     // Copy the part of dst out that corresponds to the placement of the src image. 
 	dstRegion = FIA_CopyLeftTopWidthHeight (dst, intersect_rect.left, intersect_rect.top, intersect_width, intersect_height);
 	
-	FIBITMAP *srcRegion = FIA_CopyLeftTopWidthHeight (src, src_intersection_rect.left, src_intersection_rect.top,
+	srcRegion = FIA_CopyLeftTopWidthHeight (src, src_intersection_rect.left, src_intersection_rect.top,
 	                                        intersect_width, intersect_height);
 	
 	// Check that the width & height is what was specified
@@ -327,8 +333,6 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 	}
 	
 	blended_section = FIA_CloneImageType(srcRegion, intersect_width, intersect_height);	
-	
-	double max_pssoble_value;
 
 	FIA_GetMaxPosibleValueForGreyScaleType (FreeImage_GetImageType(dst), &max_pssoble_value);
 
@@ -347,13 +351,13 @@ template < typename Tsrc > int TemplateImageFunctionClass <
         
 	PROFILE_START("FIA_GradientBlendMosaicPaste - DistanceMap");
 		
-	FIBITMAP *distMapEdges = FIA_DistanceMap (intersect_width, intersect_height);
+	distMapEdges = FIA_DistanceMap (intersect_width, intersect_height);
 
 	PROFILE_STOP("FIA_GradientBlendMosaicPaste - DistanceMap");
 		
 	PROFILE_START("FIA_GradientBlendMosaicPaste - PMap");
 		
-	float *pMatrix = FIA_GeneratePMap(dstRegionMask);
+	pMatrix = FIA_GeneratePMap(dstRegionMask);
 	
 	PROFILE_STOP("FIA_GradientBlendMosaicPaste - PMap");
 	
@@ -361,8 +365,8 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 	
 	PROFILE_START("FIA_GradientBlendMosaicPaste - Blend");
 	
-	int bytespp = FreeImage_GetLine (srcRegion) / FreeImage_GetWidth (srcRegion);
-    float* distMapEdgesBits = NULL;
+	bytespp = FreeImage_GetLine (srcRegion) / FreeImage_GetWidth (srcRegion);
+    distMapEdgesBits = NULL;
     	
     if(  greyscale_image) {
       
@@ -523,7 +527,7 @@ int DLL_CALLCONV
 FIA_GradientBlendMosaicPaste (FIBITMAP* dst, FIBITMAP* src, int x, int y)
 {
     if (dst == NULL && src == NULL)
-        return NULL;
+        return FIA_ERROR;
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src);
 

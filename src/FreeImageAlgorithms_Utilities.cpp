@@ -2092,7 +2092,7 @@ template < typename Tsrc > int TemplateImageFunctionClass
     {
 		FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                      "Foreground and background image are not of the same type");
-        return NULL;
+        return FIA_ERROR;
     }
 
 	if(mask != NULL) {
@@ -2100,7 +2100,7 @@ template < typename Tsrc > int TemplateImageFunctionClass
 		{
 			FreeImage_OutputMessageProc (FIF_UNKNOWN,
 										 "mask is not a FIT_BITMAP image");
-			return NULL;
+			return FIA_ERROR;
 		}
 	}
 
@@ -2108,14 +2108,14 @@ template < typename Tsrc > int TemplateImageFunctionClass
 
         FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and background image are not the same size");
 
-        return NULL;
+        return FIA_ERROR;
     }
 
 	if(FIA_CheckSizesAreSame(fg, mask) == 0) {
 
 		FreeImage_OutputMessageProc (FIF_UNKNOWN, "Foreground and mask image are not the same size");
 
-		return NULL;
+		return FIA_ERROR;
 	}
 
     int fg_width = FreeImage_GetWidth (fg);
@@ -2287,7 +2287,7 @@ int DLL_CALLCONV
 FIA_Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask)
 {
     if (fg == NULL || dst == NULL)
-        return NULL;
+        return FIA_ERROR;
 
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (fg);
 

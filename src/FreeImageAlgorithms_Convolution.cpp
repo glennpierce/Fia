@@ -1,19 +1,21 @@
-/* 
+/*
  * Copyright 2007-2010 Glenn Pierce, Paul Barber,
+ * Oxford University (Gray Institute for Radiation Oncology and Biology) 
  *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This file is part of FreeImageAlgorithms.
  *
- * This program is distributed in the hope that it will be useful,
+ * FreeImageAlgorithms is free software: you can redistribute it and/or modify
+ * it under the terms of the Lesser GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * FreeImageAlgorithms is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Lesser GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * You should have received a copy of the Lesser GNU General Public License
+ * along with FreeImageAlgorithms.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "FreeImageAlgorithms.h"
@@ -281,14 +283,27 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
 {
     FilterKernel kernel;
     FIABITMAP *tmp = NULL;
+    int height, bpp1, bpp2, filtered_src1_width, filtered_src1_height;
+    double found_max;
 
-	*max = 0.0;
+    FREE_IMAGE_TYPE src1_type, src2_type;
+
+    FIBITMAP *filtered_src1 = NULL;
+    FIBITMAP *filtered_src2 = NULL;
+
+    *max = 0.0;
 
     pt->x = 0;
     pt->y = 0;
 
     FIBITMAP *src1 = FreeImage_Clone(_src1);
     FIBITMAP *src2 = FreeImage_Clone(_src2);
+    FIBITMAP *dib = NULL;
+
+    unsigned int src1_width = FreeImage_GetWidth(src1);
+    unsigned int src1_height = FreeImage_GetHeight(src1);
+    unsigned int src2_width = FreeImage_GetWidth(src2);
+    unsigned int src2_height = FreeImage_GetHeight(src2);
 
     if (src1 == NULL || src2 == NULL)
     {
@@ -298,11 +313,6 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
 		goto CLEANUP;
     }
 
-    unsigned int src1_width = FreeImage_GetWidth(src1);
-    unsigned int src1_height = FreeImage_GetHeight(src1);
-    unsigned int src2_width = FreeImage_GetWidth(src2);
-    unsigned int src2_height = FreeImage_GetHeight(src2);
-
     if (src2_width > src1_width || src2_height > src1_height)
     {
         FreeImage_OutputMessageProc(FIF_UNKNOWN,
@@ -311,8 +321,8 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
 		goto CLEANUP;
     }
 
-    FREE_IMAGE_TYPE src1_type = FreeImage_GetImageType(src1);
-    FREE_IMAGE_TYPE src2_type = FreeImage_GetImageType(src2);
+    src1_type = FreeImage_GetImageType(src1);
+    src2_type = FreeImage_GetImageType(src2);
 
     if (src1_type != src2_type)
     {
@@ -330,8 +340,8 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
 		goto CLEANUP;
     }
 
-    int bpp1 = FreeImage_GetBPP(src1);
-    int bpp2 = FreeImage_GetBPP(src2);
+    bpp1 = FreeImage_GetBPP(src1);
+    bpp2 = FreeImage_GetBPP(src2);
 
     if (bpp1 != bpp2)
     {
@@ -350,9 +360,6 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
         src1 = FreeImage_ConvertToGreyscale(_src1);
         src2 = FreeImage_ConvertToGreyscale(_src2);
     }
-
-    FIBITMAP *filtered_src1 = NULL;
-    FIBITMAP *filtered_src2 = NULL;
 
     if (filter != NULL)
     {
@@ -378,8 +385,8 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
         filtered_src2 = FreeImage_Clone(src2);
     }
 
-    int filtered_src1_width = FreeImage_GetWidth(filtered_src1);
-    int filtered_src1_height = FreeImage_GetHeight(filtered_src1);
+    filtered_src1_width = FreeImage_GetWidth(filtered_src1);
+    filtered_src1_height = FreeImage_GetHeight(filtered_src1);
 
     if (filtered_src1_width != src1_width || filtered_src1_height
             != src1_height)
@@ -418,7 +425,7 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
 
     tmp = FIA_SetZeroBorder(filtered_src1, kernel.x_radius, kernel.y_radius);
 
-    FIBITMAP *dib = FIA_Correlate(tmp, kernel, search_area, mask);
+    dib = FIA_Correlate(tmp, kernel, search_area, mask);
 
 	if(dib == NULL)
 	{
@@ -427,7 +434,7 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
         goto CLEANUP;
     }
 
-    double found_max = 0.0;
+    found_max = 0.0;
 
     FIA_FindMaxXY(dib, &found_max, pt);
 
@@ -437,7 +444,7 @@ FIA_KernelCorrelateImages(FIBITMAP * _src1, FIBITMAP * _src2, FIARECT search_are
     pt->x -= kernel.x_radius;
     pt->y += kernel.y_radius;
 
-    int height = src1_height;
+    height = src1_height;
 
     pt->y = height - pt->y - 1;
 
