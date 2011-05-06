@@ -1,4 +1,24 @@
 
+SET(FIA_HEADERS
+
+    	 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Arithmetic.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Colour.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Convolution.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Drawing.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_FFT.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Filters.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_HBitmap.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_IO.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_LinearScale.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Logic.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Morphology.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Palettes.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Particle.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Statistics.h
+         ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Utilities.h
+)
+
 SET(FIA_SRCS 	FreeImageAlgorithms_Arithmetic.cpp
 	     	FreeImageAlgorithms_Border.cpp
 	     	FreeImageAlgorithms_Colour.cpp
@@ -22,28 +42,12 @@ SET(FIA_SRCS 	FreeImageAlgorithms_Arithmetic.cpp
 	     	FreeImageAlgorithms_Threshold.cpp
 	     	FreeImageAlgorithms_Utilities.cpp
 	     	FreeImageAlgorithms_ConvexHull.cpp
-		FreeImageAlgorithms_GradientBlend.cpp
+		    FreeImageAlgorithms_GradientBlend.cpp
 	     	kiss_fft.c
 	     	kiss_fftnd.c
 	     	profile.c
 		 
-		 # Make the headers appear in visual studio 
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Arithmetic.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Colour.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Convolution.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Drawing.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_FFT.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Filters.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_HBitmap.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_IO.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_LinearScale.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Logic.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Morphology.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Palettes.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Particle.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Statistics.h
-		 ${FreeImageAlgorithms_SOURCE_DIR}/include/FreeImageAlgorithms_Utilities.h
+		  ${FIA_HEADERS}
 )
 
 
@@ -216,6 +220,17 @@ ADD_LIBRARY (freeimagealgorithms SHARED ${FIA_SRCS} ${AGG_SRCS})
 
 IF (UNIX)
   INSTALL(TARGETS freeimagealgorithms RUNTIME DESTINATION bin LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+
+  SET(CMAKE_INSTALL_PREFIX /usr/local                                          CACHE PATH "Install prefix")
+  SET(BIN_INSTALL_DIR      ${CMAKE_INSTALL_PREFIX}/bin                         CACHE PATH "Binary install dir")
+  SET(LIB_INSTALL_DIR      ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX}            CACHE PATH "Library install dir")
+  SET(LIBEXEC_INSTALL_DIR  ${CMAKE_INSTALL_PREFIX}/libexec                     CACHE PATH "Private executable install dir")
+  SET(INCLUDE_INSTALL_DIR  ${CMAKE_INSTALL_PREFIX}/include/freeimagealgorithms CACHE PATH "Include install dir")
+  SET(SYSCONF_INSTALL_DIR  ${CMAKE_INSTALL_PREFIX}/etc                         CACHE PATH "Configuration install dir")
+  SET(SHARE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}/share                       CACHE PATH "Data install dir")
+
+  INSTALL (FILES ${FIA_HEADERS} DESTINATION ${INCLUDE_INSTALL_DIR})
+
 ENDIF (UNIX)
 
 # Link the executable to the FreeImage library.
