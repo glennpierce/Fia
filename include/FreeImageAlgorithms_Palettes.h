@@ -34,7 +34,7 @@ extern "C" {
  *  \param red Red colour.
  *  \param green Green colour.
  *  \param blue Blue colour.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API RGBQUAD DLL_CALLCONV FIA_RGBQUAD(unsigned char red, unsigned char green,
 										 unsigned char blue);
@@ -43,16 +43,25 @@ DLL_API RGBQUAD DLL_CALLCONV FIA_RGBQUAD(unsigned char red, unsigned char green,
  *
  *  \param src Image containing palette.
  *  \param palette  RGBQUAD Array to copy palette to.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_CopyPaletteToRGBQUAD(FIBITMAP *src, RGBQUAD *palette);
+
+/** \brief Imports the palette for an image from a colour table of ints (0xrrggbb)
+ *
+ *  \param dst Image
+ *  \param colTab Colour table of ints 
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_CopyPaletteFromColourTable (FIBITMAP * dst, int * colTab, int n);
 
 /** \brief Copies the palette from an array of RGBQUAD to a FIBITMAP.
  *
  *  \param dst Image to copy palette to.
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV		   
 FIA_CopyPaletteFromRGBQUAD(FIBITMAP *dst, RGBQUAD *palette);
@@ -61,7 +70,7 @@ FIA_CopyPaletteFromRGBQUAD(FIBITMAP *dst, RGBQUAD *palette);
  *
  *  \param src Image containing palette.
  *  \param dst Image to copy palette to.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV		   
 FIA_CopyPalette(FIBITMAP *src, FIBITMAP *dst);
@@ -69,7 +78,7 @@ FIA_CopyPalette(FIBITMAP *src, FIBITMAP *dst);
 /** \brief Reverses an array of RGBQUAD elements.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_ReversePaletteEntries(RGBQUAD *palette);
@@ -77,7 +86,7 @@ FIA_ReversePaletteEntries(RGBQUAD *palette);
 /** \brief Set the pallete of a FIBITMAP image to a greylevel palette.
  *
  *  \param src Image to set palette to greyscale.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetGreyLevelPalette(FIBITMAP *src);
@@ -85,7 +94,7 @@ FIA_SetGreyLevelPalette(FIBITMAP *src);
 /** \brief Set the pallete of a FIBITMAP image to a log palette.
  *
  *  \param src Image to set palette to log.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetLogColourPalette(FIBITMAP *src);
@@ -93,7 +102,7 @@ FIA_SetLogColourPalette(FIBITMAP *src);
 /** \brief Set the pallete of a FIBITMAP image to a rainbow palette.
  *
  *  \param src Image to set palette to rainbow.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetRainBowPalette(FIBITMAP *src);
@@ -101,7 +110,7 @@ FIA_SetRainBowPalette(FIBITMAP *src);
 /** \brief Set the pallete of a FIBITMAP image to a reverse rainbow palette.
  *
  *  \param src Image to set palette to rainbow.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetReverseRainBowPalette(FIBITMAP *src);
@@ -109,7 +118,7 @@ FIA_SetReverseRainBowPalette(FIBITMAP *src);
 /** \brief Set the pallete of a FIBITMAP image to a temperature palette.
  *
  *  \param src Image to set palette to temperature.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetTemperaturePalette(FIBITMAP *src);
@@ -117,7 +126,7 @@ FIA_SetTemperaturePalette(FIBITMAP *src);
 /** \brief Set the pallete of a FIBITMAP image to a pileup palette.
  *
  *  \param src Image to set palette to temperature.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetPileUpPalette(FIBITMAP *src, RGBQUAD colour1, RGBQUAD colour2,
@@ -127,15 +136,24 @@ FIA_SetPileUpPalette(FIBITMAP *src, RGBQUAD colour1, RGBQUAD colour2,
  *
  *  \param src Image to set palette to false colour.
  *  \param wavelength Wavelength of the false colour.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetFalseColourPalette(FIBITMAP *src, double wavelength);
 
+/** \brief Set the pallete of a FIBITMAP image to a false colour palette.
+ *
+ *  \param src Image to set palette to false colour.
+ *  \param colour RGBQUAD of the false colour.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_SetFalseColourPalette_ForColour (FIBITMAP * src, RGBQUAD colour);
+
 /** \brief Set the pallete of a FIBITMAP image to a greyscale overload palette.
  *
  *  \param src Image to set palette to greyscale overload.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetGreyLevelOverLoadPalette(FIBITMAP *src);
@@ -151,25 +169,53 @@ FIA_SetGreyLevelOverLoadPalette(FIBITMAP *src);
  *  \param colour1 RGBQUAD representing the first colour.
  *  \param pos2 int Position in palette for second colour.
  *  \param colour2 RGBQUAD representing the second colour.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
-FIA_SetTernaryPalettePalette(FIBITMAP *src, RGBQUAD background_colour,
+FIA_SetTernaryPalette(FIBITMAP *src, RGBQUAD background_colour,
 									  int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2);
 
 
 /** \brief Set the pallete of a FIBITMAP image to a seismic palette.
  *
  *  \param src Image to set palette to seismic.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_SetSeismicColourPalette(FIBITMAP *src);
 
+
+/** \brief Set the pallete of a FIBITMAP image to something suitable for binary image.
+ *
+ *  \param src Image to set palette to binary.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_SetBinaryPalette (FIBITMAP * src);
+
+/** \brief Set the alpha channel (transparency) for an image. alpha = 0 to 255.
+ *
+ *  \param src Image to set palette to binary.
+ *  \param  alpha alpha value 0 (transparent) - 255 (opaque).
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_SetPaletteAlpha (FIBITMAP * src, int alpha);
+
+/** \brief Set the transparency (alpha value) for the colour index 0 to 0.
+ *
+ *  \param  palette RGBQUAD* array.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_SetPaletteBackgroundTransparent (FIBITMAP * src);
+
+
+
 /** \brief Get a greyscale pallete into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetGreyLevelPalette(RGBQUAD *palette);
@@ -177,7 +223,7 @@ FIA_GetGreyLevelPalette(RGBQUAD *palette);
 /** \brief Get a greyscale overload pallete into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetGreyLevelOverLoadPalette(RGBQUAD *palette);
@@ -193,7 +239,7 @@ FIA_GetGreyLevelOverLoadPalette(RGBQUAD *palette);
  *  \param colour1 RGBQUAD representing the first colour.
  *  \param pos2 int Position in palette for second colour.
  *  \param colour2 RGBQUAD representing the second colour.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colour,
@@ -202,7 +248,7 @@ FIA_GetTernaryPalette(RGBQUAD *palette, RGBQUAD background_colour,
 /** \brief Get a rainbow pallete into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetRainBowPalette(RGBQUAD *palette);
@@ -210,7 +256,7 @@ FIA_GetRainBowPalette(RGBQUAD *palette);
 /** \brief Get a rainbow pallete in reverse into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetReverseRainBowPalette(RGBQUAD *palette);
@@ -218,7 +264,7 @@ FIA_GetReverseRainBowPalette(RGBQUAD *palette);
 /** \brief Get a log pallete into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetLogColourPalette(RGBQUAD *palette);
@@ -227,15 +273,25 @@ FIA_GetLogColourPalette(RGBQUAD *palette);
  *
  *  \param  palette RGBQUAD* array.
  *  \param wavelength of the false colour palette.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetFalseColourPalette(RGBQUAD *palette, double wavelength);
 
+/** \brief Creates a false colour palette for the given colour.
+ *
+ *  \param  palette RGBQUAD* array.
+ *  \param wavelength of the false colour palette.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_GetFalseColourPalette_ForColour (RGBQUAD *palette, RGBQUAD colour);
+
+
 /** \brief Get a temperature pallete into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetTemperaturePalette(RGBQUAD *palette);
@@ -243,15 +299,23 @@ FIA_GetTemperaturePalette(RGBQUAD *palette);
 /** \brief Get a seismic pallete into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetSeismicColourPalette(RGBQUAD *palette);
 
+/** \brief Get a pallete for binary images into a RGBQUAD array.
+ *
+ *  \param  palette RGBQUAD* array.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_GetBinaryPalette (RGBQUAD * palette);
+
 /** \brief Get a ileup palette into a RGBQUAD array.
  *
  *  \param  palette RGBQUAD* array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetPileUpPalette(RGBQUAD *palette,

@@ -185,7 +185,7 @@ TestFIA_MedianFilterTest(CuTest* tc)
 
 	CuAssertTrue(tc, dib2 != NULL);
 
-	FIBITMAP *dib3 = FreeImage_ConvertToType(dib2, FIT_FLOAT, 1);
+	FIBITMAP *dib3 = FIA_ConvertToGreyscaleFloatType(dib2, FIT_FLOAT);
 
 	CuAssertTrue(tc, dib3 != NULL);
 
@@ -1444,7 +1444,7 @@ TestFIA_GradientBlendFloatImagePasteTest(CuTest* tc)
 }
 */
 
-
+/*
 static void
 TestFIA_CorrelateSpiceSection1(CuTest* tc)
 {
@@ -1717,6 +1717,162 @@ TestFIA_CorrelateSpiceSection6(CuTest* tc)
 
     return;
 }
+*/
+
+/*
+static void
+TestFIA_SobelAdvancedTest(CuTest* tc)
+{
+	const char *file = TEST_DATA_DIR "test.tif";
+
+	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
+
+	CuAssertTrue(tc, dib1 != NULL);
+
+	PROFILE_START("FreeImageAlgorithms_SobelAdvanced");
+
+	FIBITMAP *vertical_dib = NULL, *horizontal_dib = NULL, *mag_dib = NULL;
+
+    int err = FIA_SobelAdvanced(dib1, &vertical_dib,
+        &horizontal_dib, NULL);
+
+    CuAssertTrue(tc, err == FIA_SUCCESS);
+
+	PROFILE_STOP("FreeImageAlgorithms_SobelAdvanced");
+
+    FIBITMAP* bit8_dib = FreeImage_ConvertToStandardType(horizontal_dib, 0);
+
+    if(vertical_dib != NULL)
+	    FIA_SaveFIBToFile(vertical_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/test_vertical.bmp", BIT8);
+
+    if(horizontal_dib != NULL)
+        FIA_SaveFIBToFile(bit8_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/test_sobel_horizontal_dib.bmp", BIT8);
+
+    if(mag_dib != NULL)
+        FIA_SaveFIBToFile(mag_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/test_sobel_magnitude_dib.bmp", BIT8);
+
+    if(vertical_dib != NULL)
+	    FreeImage_Unload(vertical_dib);
+
+    if(horizontal_dib != NULL)
+	    FreeImage_Unload(horizontal_dib);
+
+    if(mag_dib != NULL)
+        FreeImage_Unload(mag_dib);
+}
+*/
+
+
+static void
+TestFIA_BinningTest(CuTest* tc)
+{
+	const char *file = "c:\\lena.jpg";
+
+	FIBITMAP *dib1 = FIA_LoadFIBFromFile(file);
+	FIBITMAP *converted = NULL;
+
+	//FIA_InPlaceConvertToGreyscaleFloatTypeWithUntouchedRange(&dib1, FIT_FLOAT);
+
+
+	//FIBITMAP * dib2 = FreeImage_ConvertTo8Bits(dib1);
+
+	//BasicWin32Window("Float", 100, 100, 300, 300, dib1);
+
+	
+	//FIA_InPlaceConvertToGreyscaleFloatType(&dib1, FIT_FLOAT);
+
+	//FIBITMAP *dib4 = FIA_StretchImageToType(dib1, FreeImage_GetImageType(dib2), 0.0);
+
+
+	//BasicWin32Window("Float", 100, 100, 300, 300, dib1);
+
+	//BasicWin32Window("Float", 100, 100, 300, 300, dib4);
+
+
+	CuAssertTrue(tc, dib1 != NULL);
+
+	FIA_SimpleSaveFIBToFile(dib1,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_square_original.tif");
+
+    FIBITMAP* binned_dib = FIA_Binning (dib1, FIA_BINNING_SQUARE, 3);
+
+    if(binned_dib != NULL) {
+	    FIA_SimpleSaveFIBToFile(binned_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_square_3x3.tif");
+	}
+
+    FreeImage_Unload(binned_dib);
+
+	binned_dib = FIA_Binning (dib1, FIA_BINNING_SQUARE, 5);
+
+    if(binned_dib != NULL) {
+	    FIA_SimpleSaveFIBToFile(binned_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_square_5x5.tif");
+	}
+
+	FreeImage_Unload(binned_dib);
+
+	// Circular Binning
+
+	binned_dib = FIA_Binning (dib1, FIA_BINNING_CIRCULAR, 3);
+
+    if(binned_dib != NULL) {
+	    FIA_SimpleSaveFIBToFile(binned_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_circular_3x3.tif");
+	}
+
+	FreeImage_Unload(binned_dib);
+
+	binned_dib = FIA_Binning (dib1, FIA_BINNING_CIRCULAR, 5);
+
+    if(binned_dib != NULL) {
+	    FIA_SimpleSaveFIBToFile(binned_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_circular_5x5.tif");
+	}
+
+	FreeImage_Unload(binned_dib);
+
+	// Gaussian Binning
+
+	binned_dib = FIA_Binning (dib1, FIA_BINNING_GAUSSIAN, 3);
+
+    if(binned_dib != NULL) {
+	    FIA_SimpleSaveFIBToFile(binned_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_gaussian_3x3.tif");
+	}
+
+	converted = FreeImage_ConvertToType(binned_dib, FIT_UINT16, 0);
+
+	if(converted != NULL) {
+	    FIA_SimpleSaveFIBToFile(converted,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_gaussian_3x3_converted.tif");
+	}
+
+	FreeImage_Unload(binned_dib);
+
+	binned_dib = FIA_Binning (dib1, FIA_BINNING_GAUSSIAN, 5);
+
+    if(binned_dib != NULL) {
+	    FIA_SimpleSaveFIBToFile(binned_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_gaussian_5x5.tif");
+	}
+
+	FreeImage_Unload(binned_dib);
+
+	binned_dib = FIA_Binning (dib1, FIA_BINNING_GAUSSIAN, 11);
+
+    if(binned_dib != NULL) {
+	    FIA_SimpleSaveFIBToFile(binned_dib,
+            TEST_DATA_OUTPUT_DIR "/Convolution/binned_gaussian_21x21.tif");
+	}
+
+	FreeImage_Unload(binned_dib);
+
+	FreeImage_Unload(dib1);
+}
 
 
 CuSuite* DLL_CALLCONV
@@ -1726,11 +1882,18 @@ CuGetFreeImageAlgorithmsConvolutionSuite(void)
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/Convolution");
 
-	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection1);
-	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection2);
-	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection3);
-	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection4);
-	SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection5);
+	//SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
+	//SUITE_ADD_TEST(suite, TestFIA_BinningTest);
+	//SUITE_ADD_TEST(suite, TestFIA_SobelTest);
+	//SUITE_ADD_TEST(suite, TestFIA_SobelAdvancedTest);
+	//SUITE_ADD_TEST(suite, TestFIA_ConvolutionTest);
+	//SUITE_ADD_TEST(suite, TestFIA_MedianFilterTest);
+
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection1);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection2);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection3);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection4);
+	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection5);
 	//SUITE_ADD_TEST(suite, TestFIA_CorrelateSpiceSection6);
 	
     //SUITE_ADD_TEST(suite, TestFIA_CorrelateBloodTissueImages);

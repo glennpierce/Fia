@@ -51,6 +51,10 @@ TestFIA_DilationTest(CuTest* tc)
 
 	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\dilation_result.jpg", BIT24);
 
+	result_dib = FIA_BinaryOuterBorder(threshold_8bit_dib);
+
+	FIA_SimpleSaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "morphology/outer_border_result.bmp");
+
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
 	FreeImage_Unload(threshold_8bit_dib);
@@ -90,6 +94,10 @@ TestFIA_ErosionTest(CuTest* tc)
 
 	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\erosion_result.jpg", BIT24);
 
+	result_dib = FIA_BinaryInnerBorder(threshold_8bit_dib);
+
+	FIA_SimpleSaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "morphology/inner_border_result.bmp");
+
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
 	FreeImage_Unload(threshold_8bit_dib);
@@ -124,6 +132,11 @@ TestFIA_OpeningTest(CuTest* tc)
 	CuAssertTrue(tc, result_dib != NULL);
 
 	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\opening_result.jpg", BIT24);
+
+	// Test of convinience 3x3 function
+	result_dib = FIA_Binary3x3Opening(threshold_8bit_dib);
+
+	FIA_SimpleSaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "morphology/opening3x3_result.bmp");
 
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
@@ -160,6 +173,11 @@ TestFIA_ClosingTest(CuTest* tc)
 
 	FIA_SaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "\\closing_result.jpg", BIT24);
 
+	// Test of convinience 3x3 function
+	result_dib = FIA_Binary3x3Closing(threshold_8bit_dib);
+
+	FIA_SimpleSaveFIBToFile(result_dib, TEST_DATA_OUTPUT_DIR "morphology/closing3x3_result.bmp");
+
 	FreeImage_Unload(dib1);
 	FreeImage_Unload(threshold_dib);
 	FreeImage_Unload(threshold_8bit_dib);
@@ -173,6 +191,8 @@ CuGetFreeImageAlgorithmsMorphologySuite(void)
 {
 	CuSuite* suite = CuSuiteNew();
 
+    MkDir(TEST_DATA_OUTPUT_DIR "/Morphology");
+	
 	SUITE_ADD_TEST(suite, TestFIA_DilationTest);
 	SUITE_ADD_TEST(suite, TestFIA_ErosionTest);
 	SUITE_ADD_TEST(suite, TestFIA_OpeningTest);

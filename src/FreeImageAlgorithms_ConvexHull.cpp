@@ -19,6 +19,9 @@
 #include "FreeImageAlgorithms_Drawing.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
+#include "FreeImageAlgorithms_Particle.h"
+#include "FreeImageAlgorithms_Morphology.h"
+#include "FreeImageAlgorithms_Convolution.h"
 
 // Copyright 2001, softSurfer (www.softsurfer.com)
 // This code may be freely used and modified for any purpose
@@ -159,7 +162,7 @@ ChainHull_2D (FIAPOINT * P, int n, FIAPOINT * H)
 
     return top + 1;
 }
-
+/*
 static inline int __cdecl
 ComparePoints (const void *element1, const void *element2)
 {
@@ -189,13 +192,14 @@ ComparePoints (const void *element1, const void *element2)
 
     return 0;
 }
-
+*/
 FIBITMAP *DLL_CALLCONV
 FreeImage_ConvexHull (FIBITMAP * src)
 {
-    FIBITMAP *tmp = FIA_ConvertToGreyscaleFloatType (src, FIT_FLOAT);
-
-    int width = FreeImage_GetWidth (tmp);
+	FIBITMAP *tmp = FIA_BinaryInnerBorder(src);
+	FIA_InPlaceConvertToGreyscaleFloatType(&tmp, FIT_FLOAT);
+    
+	int width = FreeImage_GetWidth (tmp);
     int height = FreeImage_GetHeight (tmp);
 
     FIBITMAP *dst = FreeImage_Allocate (width, height, 8, 0, 0, 0);
@@ -228,13 +232,22 @@ FreeImage_ConvexHull (FIBITMAP * src)
 
     // sort the array by x and then y
     // Sort the peaks
-    qsort (sort_array, i, sizeof (FIAPOINT), ComparePoints);
+    // qsort (sort_array, i, sizeof (FIAPOINT), ComparePoints);
+	// Should be already sorted in creating the point set
 
     int number_of_points = ChainHull_2D (sort_array, i, hull_array);
 
     delete sort_array;
 
-    FIA_DrawSolidGreyscalePolygon (dst, hull_array, number_of_points, 255, 0);
+//	FIA_DrawSolidGreyscalePolygon (dst, hull_array, number_of_points, 255, 0);
+	
+	// replace the above command with this more predictable loop
+	for (int i=0; i<number_of_points-1; i++) {
+		FIA_DrawOnePixelIndexLineFromTopLeft (dst, hull_array[i], hull_array[i+1], 255);
+	}
+	FIA_DrawOnePixelIndexLineFromTopLeft (dst, hull_array[number_of_points-1], hull_array[0], 255);
+	dst = FIA_Fillholes(dst, 1);
+	FreeImage_FlipVertical(dst);   // FIA_Draw is not from top,left
 
     delete hull_array;
 

@@ -22,6 +22,9 @@
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
+#include "FreeImageAlgorithms_Logic.h"
+#include "FreeImageAlgorithms_Arithmetic.h"
+#include "FreeImageAlgorithms_Morphology.h"
 
 #include <iostream>
 #include <math.h>
@@ -37,14 +40,17 @@ template < class Tsrc > class TemplateImageFunctionClass
     void find (FIBITMAP * src, double *min, double *max);
     void find_max_xy (FIBITMAP * src, double *max, FIAPOINT * pt);
 
-	// FastSimpleResample
-	FIBITMAP * IntegerRescaleToHalf (FIBITMAP * src);
-    FIBITMAP *ColourRescaleToHalf (FIBITMAP * src);
-    FIBITMAP *FloatRescaleToHalf (FIBITMAP * src);
+    // FastSimpleResample
+    FIBITMAP* IntegerRescaleToHalf (FIBITMAP * src);
+    FIBITMAP* ColourRescaleToHalf (FIBITMAP * src);
+    FIBITMAP* FloatRescaleToHalf (FIBITMAP * src);
+	FIBITMAP* ConvertToGreyscaleFloatTypeWithUntouchedRange (FIBITMAP *src, FREE_IMAGE_TYPE type);
+	FIBITMAP* FIA_ConvertToImageType (FIABITMAP *src, FREE_IMAGE_TYPE type, BOOL scale_linear);
+	FIBITMAP* FIA_ConvertFloatTypeToImageType (FIBITMAP *src, FREE_IMAGE_TYPE float_type, FREE_IMAGE_TYPE type, BOOL scale_linear);
 
-	// Composite function for all image types
-	FIBITMAP *Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask);
-	int Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask);
+    // Composite function for all image types
+    FIBITMAP *Composite(FIBITMAP * fg, FIBITMAP * bg, FIBITMAP * normalised_alpha_values, FIBITMAP *mask);
+    int Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask);
 };
 
 static TemplateImageFunctionClass < unsigned char > UCharImage;
@@ -200,6 +206,19 @@ MakeFIARect (int left, int top, int right, int bottom)
     return rect;
 }
 
+FIARECT DLL_CALLCONV
+MakeFIARectAlt (int left, int top, int width, int height)
+{
+    FIARECT rect;
+
+    rect.left = left;
+    rect.top = top;
+    rect.right = left+width;
+    rect.bottom = top+height;
+
+    return rect;
+}
+
 int DLL_CALLCONV
 FIARectIsEmpty (FIARECT rect)
 {
@@ -220,6 +239,29 @@ FIAImageRect (FIBITMAP * src)
     rect.bottom = FreeImage_GetHeight (src) - 1;
 
     return rect;
+}
+
+int DLL_CALLCONV FIA_GetPitchInPixels(FIBITMAP *dib)
+{
+    int bpp = FreeImage_GetBPP(dib);
+    int bytes_per_pixel = bpp / 8;
+
+    return (FreeImage_GetPitch (dib) / bytes_per_pixel);
+}
+
+int DLL_CALLCONV 
+FIA_CheckDimensions (FIBITMAP * dst, FIBITMAP * src)
+{
+    // Check src is the same size as dst
+    int src_width = FreeImage_GetWidth (src);
+    int src_height = FreeImage_GetHeight (src);
+    int dst_width = FreeImage_GetWidth (dst);
+    int dst_height = FreeImage_GetHeight (dst);
+
+    if (src_width != dst_width || src_height != dst_height)
+        return FIA_ERROR;
+
+    return FIA_SUCCESS;
 }
 
 void DLL_CALLCONV
@@ -1001,7 +1043,7 @@ GetPixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, T * values)
     }
     else
     {
-
+        len = 1;
         d = dy - 2 * dx;
         incrN = 2 * -dx;        // N
         incrNE = 2 * (dy - dx); // NE
@@ -1401,6 +1443,51 @@ FIA_Copy ( FIBITMAP * src, int left, int top, int right, int bottom)
     return FreeImage_Copy(src, left, top, right, bottom);
 }
 
+
+// I have called this FastCopy for now for backwood compatibilty.
+// I will change this though
+FIBITMAP* DLL_CALLCONV
+FIA_FastCopy ( FIBITMAP * src, int left, int top, int right, int bottom)
+{
+    int max_right = FreeImage_GetWidth(src);
+    int max_bottom = FreeImage_GetHeight(src);
+
+    if(left < 0)
+        left = 0;
+
+    if(top < 0)
+        top = 0;
+
+    if(right > max_right)
+        right = max_right;
+
+    if(bottom > max_bottom)
+        bottom = max_bottom;
+
+	int width = right - left;
+	int height = bottom - top;
+
+	int bpp = FreeImage_GetBPP(src);
+	int bytes_per_pixel = bpp / 8;
+	int left_offset = bytes_per_pixel * left;
+	int width_in_bytes = width * bytes_per_pixel;
+
+	FIBITMAP *tmp = FIA_CloneImageType(src, width, height);
+
+	BYTE *dst_ptr;
+	BYTE *src_ptr;
+
+	for(register int y = 0; y < height; y++)
+	{
+		src_ptr = (BYTE*) FIA_GetScanLineFromTop (src, y + top);
+		dst_ptr = (BYTE*) FIA_GetScanLineFromTop (tmp, y);
+        
+		memcpy(dst_ptr, src_ptr + left_offset, width_in_bytes);
+	}
+
+	return tmp;
+}
+
 void DLL_CALLCONV
 FIA_RectChangeWidthHeight (FIARECT *rect, int width, int height)
 {
@@ -1504,8 +1591,106 @@ FIA_Unload (FIABITMAP * src)
     free (src);
 }
 
+template <class Tsrc> FIBITMAP*
+TemplateImageFunctionClass <Tsrc>::ConvertToGreyscaleFloatTypeWithUntouchedRange (FIBITMAP *src, FREE_IMAGE_TYPE type)
+{
+    if (src == NULL)
+        return NULL;
+
+	if (type != FIT_FLOAT && type != FIT_DOUBLE)
+    {
+        return NULL;
+    }
+
+	FIBITMAP *tmp = NULL;
+
+	if(!FIA_IsGreyScale(src))
+		tmp = FreeImage_ConvertTo8Bits(src);
+	else
+		tmp = FreeImage_Clone(src);
+
+    int width = FreeImage_GetWidth (tmp);
+    int height = FreeImage_GetHeight (tmp);
+
+	FIBITMAP *dst = NULL;
+    Tsrc *src_ptr;
+    
+	if(type == FIT_FLOAT)
+	{
+		float *dst_ptr;
+		dst = FreeImage_AllocateT(FIT_FLOAT, width, height, 32, 0, 0, 0);  
+
+		for(register int y = 0; y < height; y++)
+		{
+			src_ptr = (Tsrc*) FreeImage_GetScanLine (tmp, y);
+			dst_ptr = (float*) FreeImage_GetScanLine (dst, y);
+        
+			for(register int x = 0; x < width; x++)
+				dst_ptr[x] = (float) (src_ptr[x]);
+		}
+	}
+	else
+	{
+		double *dst_ptr;
+		dst = FreeImage_AllocateT(FIT_DOUBLE, width, height, 32, 0, 0, 0);  
+
+		for(register int y = 0; y < height; y++)
+		{
+			src_ptr = (Tsrc*) FreeImage_GetScanLine (tmp, y);
+			dst_ptr = (double*) FreeImage_GetScanLine (dst, y);
+        
+			for(register int x = 0; x < width; x++)
+				dst_ptr[x] = (double) (src_ptr[x]);
+		}
+	}
+
+	FreeImage_Unload(tmp);
+
+    return dst;
+}
+
+
 FIBITMAP *DLL_CALLCONV
-FIA_ConvertToGreyscaleFloatType (FIBITMAP * src, FREE_IMAGE_TYPE type)
+FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type)
+{
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+             return UCharImage.ConvertToGreyscaleFloatTypeWithUntouchedRange (src, type);
+        case FIT_UINT16:
+            return UShortImage.ConvertToGreyscaleFloatTypeWithUntouchedRange (src, type);
+        case FIT_INT16:
+            return ShortImage.ConvertToGreyscaleFloatTypeWithUntouchedRange (src, type);
+        case FIT_UINT32:
+            return ULongImage.ConvertToGreyscaleFloatTypeWithUntouchedRange (src, type);
+        case FIT_INT32:
+            return LongImage.ConvertToGreyscaleFloatTypeWithUntouchedRange (src, type);
+		case FIT_FLOAT:
+		case FIT_DOUBLE:
+			return FreeImage_ConvertToType(src, type, 0);    
+        default:
+            break;
+    }
+
+    return NULL;
+}
+
+int DLL_CALLCONV
+FIA_InPlaceConvertToGreyscaleFloatType(FIBITMAP **src, FREE_IMAGE_TYPE type)
+{
+	FIBITMAP *dst = FIA_ConvertToGreyscaleFloatType (*src, type);
+
+    FreeImage_Unload (*src);
+    *src = dst;
+
+    return FIA_SUCCESS;
+}
+
+
+FIBITMAP *DLL_CALLCONV
+FIA_ConvertToGreyscaleFloatTypeAndScaleToUnity (FIBITMAP * src, FREE_IMAGE_TYPE type)
 {
     if (src == NULL || (type != FIT_FLOAT && type != FIT_DOUBLE))
     {
@@ -1541,7 +1726,7 @@ FIA_ConvertToGreyscaleFloatType (FIBITMAP * src, FREE_IMAGE_TYPE type)
 
 
 int DLL_CALLCONV
-FIA_InPlaceConvertToGreyscaleFloatType (FIBITMAP ** src, FREE_IMAGE_TYPE type)
+FIA_InPlaceConvertToGreyscaleFloatTypeAndScaleToUnity (FIBITMAP ** src, FREE_IMAGE_TYPE type)
 {
     FIBITMAP *dst = FIA_ConvertToGreyscaleFloatType (*src, type);
 
@@ -1605,7 +1790,16 @@ FIA_GetPixelValue (FIBITMAP * src, int x, int y, double *val)
         {
             if (type == FIT_FLOAT)
                 *val = *((float *) line_ptr + x);
+			else if(type == FIT_INT32)
+				*val = *((int *) line_ptr + x);
+			else if(type == FIT_UINT32)
+				*val = *((unsigned int *) line_ptr + x);
 
+            return FIA_SUCCESS;
+        }
+
+        case 64:
+        {
             if (type == FIT_DOUBLE)
                 *val = *((double *) line_ptr + x);
 
@@ -1614,6 +1808,110 @@ FIA_GetPixelValue (FIBITMAP * src, int x, int y, double *val)
     }
 
     return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_SetPixelValue (FIBITMAP * src, int x, int y, double val)
+{
+	if (src==NULL || !FreeImage_HasPixels(src))
+		return FIA_ERROR;
+
+	if (x<0 || x>=FreeImage_GetWidth(src))
+		return FIA_ERROR;
+	if (y<0 || y>=FreeImage_GetHeight(src))
+		return FIA_ERROR;
+    
+	int bpp = FreeImage_GetBPP (src);
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+
+    BYTE *line_ptr = FreeImage_GetScanLine (src, y);
+
+    // bpp >> 3;   // Divide by 8
+    switch (bpp)
+    {
+        case 8:
+        {
+            *(line_ptr + x) = val;
+            return FIA_SUCCESS;
+        }
+
+        case 16:
+        {
+            if (type == FIT_INT16)
+                *((short *) line_ptr + x) = val;
+            else if (type == FIT_UINT16)
+                *((unsigned short *) line_ptr + x) = val;
+
+            return FIA_SUCCESS;
+        }
+
+        case 32:
+        {
+            if (type == FIT_FLOAT)
+                *((float *) line_ptr + x) = val;
+			else if(type == FIT_INT32)
+				*((int *) line_ptr + x) = val;
+			else if(type == FIT_UINT32)
+				*((unsigned int *) line_ptr + x) = val;
+
+            return FIA_SUCCESS;
+        }
+
+        case 64:
+        {
+            if (type == FIT_DOUBLE)
+                *((double *) line_ptr + x) = val;
+
+            return FIA_SUCCESS;
+        }
+    }
+
+    return FIA_ERROR;
+}
+
+
+int DLL_CALLCONV
+FIA_GetPixelValueFromTopLeft (FIBITMAP *src, int x, int y, double *val)
+{
+    y = FreeImage_GetHeight(src) - y - 1;
+
+    return FIA_GetPixelValue (src, x, y, val);
+}
+
+int DLL_CALLCONV
+FIA_SetPixelIndexFromTopLeft (FIBITMAP *src, int x, int y, BYTE val)
+{
+    y = FreeImage_GetHeight(src) - y - 1;
+
+	return FreeImage_SetPixelIndex(src, x, y, &val);
+}
+
+int DLL_CALLCONV
+FIA_GetPixelColour (FIBITMAP * src, int x, int y, RGBQUAD *val)
+{
+	return FreeImage_GetPixelColor(src, x, y, val);
+}
+
+int DLL_CALLCONV
+FIA_SetPixelColour (FIBITMAP *src, int x, int y, RGBQUAD val)
+{
+	return FreeImage_SetPixelColor(src, x, y, &val);
+}
+
+int DLL_CALLCONV
+FIA_SetPixelColourFromTopLeft (FIBITMAP *src, int x, int y, RGBQUAD val)
+{
+	y = FreeImage_GetHeight(src) - y - 1;
+
+	return FIA_SetPixelColour(src, x, y, val);
+}
+
+int DLL_CALLCONV
+FIA_GetPixelColourFromTopLeft (FIBITMAP *src, int x, int y, RGBQUAD *val)
+{
+	y = FreeImage_GetHeight(src) - y - 1;
+
+	return FreeImage_GetPixelColor(src, x, y, val);
 }
 
 int DLL_CALLCONV
@@ -1654,6 +1952,9 @@ FIA_InPlaceConvertToStandardType (FIBITMAP ** src, int scale)
 {
     FIBITMAP *dst = FreeImage_ConvertToStandardType (*src, scale);
 
+    if(FreeImage_GetBPP(*src) == 8)
+        FIA_CopyPalette(*src, dst);
+
     FreeImage_Unload (*src);
     *src = dst;
 
@@ -1665,6 +1966,17 @@ int DLL_CALLCONV
 FIA_InPlaceConvertToGreyscale (FIBITMAP ** src)
 {
     FIBITMAP *dst = FreeImage_ConvertToGreyscale (*src);
+
+    FreeImage_Unload (*src);
+    *src = dst;
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_InPlaceConvertToInt32Type (FIBITMAP ** src, int scale)
+{
+    FIBITMAP *dst = FreeImage_ConvertToType (*src, FIT_INT32, 0);
 
     FreeImage_Unload (*src);
     *src = dst;
@@ -1684,39 +1996,58 @@ FIA_ConvertFloatTo16Bit (FIBITMAP * src, int sign)
     if (type != FIT_FLOAT)
         return NULL;
 
+    type = FIT_UINT16;
+
+    if(sign)
+        type = FIT_INT16;
+
     int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
 
-    FIBITMAP *dst = NULL;
+    FIBITMAP *dst = FreeImage_AllocateT (type, width, height, 16, 0, 0, 0);
 
+    double factor = 1.0, min, max, min16 = 0.0, max16;
+    FIA_FindMinMax(src, &min, &max);
+    FIA_GetMinPosibleValueForFib(dst, &min16);
+    FIA_GetMaxPosibleValueForFib(dst, &max16);
+
+    factor = (max16 - min16) / (max - min);
+   
     if (sign)
-    {
-        dst = FreeImage_AllocateT (FIT_INT16, width, height, 16, 0, 0, 0);
-
+    {      
         for(register int y = 0; y < height; y++)
         {
             float *src_ptr = (float *) FreeImage_GetScanLine (src, y);
             short *dst_ptr = (short *) FreeImage_GetScanLine (dst, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] = (short) src_ptr[x];
+                dst_ptr[x] = (short) (src_ptr[x] * factor + min16);
         }
     }
     else
     {
-        dst = FreeImage_AllocateT (FIT_UINT16, width, height, 16, 0, 0, 0);
-
         for(register int y = 0; y < height; y++)
         {
             float *src_ptr = (float *) FreeImage_GetScanLine (src, y);
             unsigned short *dst_ptr = (unsigned short *) FreeImage_GetScanLine (dst, y);
 
             for(register int x = 0; x < width; x++)
-                dst_ptr[x] = (unsigned short) src_ptr[x];
+                dst_ptr[x] = (unsigned short) (src_ptr[x] * factor + min16);
         }
     }
 
     return dst;
+}
+
+int DLL_CALLCONV
+FIA_InPlaceConvertInt16ToUInt16 (FIBITMAP ** src)
+{
+    FIBITMAP *dst = FIA_ConvertInt16ToUInt16 (*src);
+
+    FreeImage_Unload (*src);
+    *src = dst;
+
+    return FIA_SUCCESS;
 }
 
 FIBITMAP *DLL_CALLCONV
@@ -1751,6 +2082,181 @@ FIA_ConvertInt16ToUInt16 (FIBITMAP * src)
     return dst;
 }
 
+
+FIBITMAP *DLL_CALLCONV
+FIA_Convert48BitOr64BitRGBTo24BitColour(FIBITMAP * src)
+{
+    if (src == NULL)
+        return NULL;
+
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
+
+    if (type != FIT_RGB16 && type != FIT_RGBA16)
+        return NULL;
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    FIBITMAP *dst = FreeImage_AllocateT (FIT_BITMAP, width, height, 24, 0, 0, 0);
+
+    int bytespp = FreeImage_GetLine (src) / FreeImage_GetWidth (src);
+    int channels = bytespp / 2;
+    double factor = 255.0 / 65535.0;
+
+    unsigned short *src_pixel_ptr = NULL;
+    BYTE *dst_pixel_ptr = NULL;
+
+    for(register int y = 0; y < height; y++)
+    {
+        unsigned short *src_ptr = (unsigned short *) FreeImage_GetScanLine (src, y);
+        BYTE *dst_ptr = (BYTE *) FreeImage_GetScanLine (dst, y);
+
+        for(register int x = 0; x < width; x++) {
+
+            src_pixel_ptr = &src_ptr[channels * x];
+            dst_pixel_ptr = &dst_ptr[3 * x];
+
+            dst_pixel_ptr[FI_RGBA_RED] = (BYTE) (src_pixel_ptr[FI_RGBA_BLUE] * factor);
+            dst_pixel_ptr[FI_RGBA_GREEN] = (BYTE) (src_pixel_ptr[FI_RGBA_GREEN] * factor);
+            dst_pixel_ptr[FI_RGBA_BLUE] = (BYTE) (src_pixel_ptr[FI_RGBA_RED] * factor);
+
+            if (channels == 4)
+                dst_pixel_ptr[FI_RGBA_ALPHA] = (BYTE) (src_pixel_ptr[FI_RGBA_ALPHA] * factor);
+        }
+    }
+
+    return dst;
+}
+
+template <class Tsrc> FIBITMAP*
+TemplateImageFunctionClass <Tsrc>::FIA_ConvertFloatTypeToImageType (FIBITMAP *src, FREE_IMAGE_TYPE float_type, FREE_IMAGE_TYPE type, BOOL scale_linear)
+{
+	if(float_type != FIT_FLOAT && float_type != FIT_DOUBLE) 
+		return NULL;
+
+    double src_min_found;
+    double src_max_found;
+	double min_possible_for_type;
+	double max_possible_for_type;
+
+	int width = FreeImage_GetWidth(src);
+	int height = FreeImage_GetHeight(src);
+
+	//unsigned int src_pitch_in_pixels = FIA_GetPitchInPixels(src);
+	//unsigned int dst_pitch_in_pixels = FIA_GetPitchInPixels(src);
+
+	FIA_GetMinPosibleValueForGreyScaleType (type, &min_possible_for_type);
+	FIA_GetMaxPosibleValueForGreyScaleType (type, &max_possible_for_type);
+
+	FIBITMAP *dst = FreeImage_AllocateT(type, width, height, 32, 0, 0, 0);  
+	Tsrc *dst_ptr = NULL;
+
+	if(float_type == FIT_FLOAT)
+	{
+		float *src_ptr = NULL;
+
+		if(scale_linear)
+		{
+			FIA_FindMinMax (src, &src_min_found, &src_max_found);
+			double src_range = src_max_found - src_min_found;
+			double dst_range = max_possible_for_type - min_possible_for_type;
+			double factor = dst_range / src_range;
+
+			for(register int y = 0; y < height; y++)
+			{
+				src_ptr = (float*) FreeImage_GetScanLine (src, y);
+				dst_ptr = (Tsrc*) FreeImage_GetScanLine (dst, y);
+        
+				for(register int x = 0; x < width; x++) {
+					 dst_ptr[x] = static_cast <Tsrc> ((src_ptr[x] - src_min_found) * factor + min_possible_for_type);
+				}
+			}
+		}
+		else
+		{
+			for(register int y = 0; y < height; y++)
+			{
+				src_ptr = (float*) FreeImage_GetScanLine (src, y);
+				dst_ptr = (Tsrc*) FreeImage_GetScanLine (dst, y);
+        
+				for(register int x = 0; x < width; x++) {
+					#ifdef WIN32
+					dst_ptr[x] = static_cast <Tsrc> (max(min(max_possible_for_type, src_ptr[x]), min_possible_for_type));
+					#else
+					dst_ptr[x] = static_cast <Tsrc> ( (Tsrc) std::max(std::min( (Tsrc) max_possible_for_type, (Tsrc) src_ptr[x]),
+                                                      (Tsrc) min_possible_for_type));
+					#endif
+				}
+			}
+		}
+	}
+	else if(float_type == FIT_DOUBLE)
+	{ 
+		double *src_ptr = NULL;
+
+		if(scale_linear)
+		{
+			FIA_FindMinMax (src, &src_min_found, &src_max_found);
+			double src_range = src_max_found - src_min_found;
+			double dst_range = max_possible_for_type - min_possible_for_type;
+			double factor = dst_range / src_range;
+
+			for(register int y = 0; y < height; y++)
+			{
+				src_ptr = (double*) FreeImage_GetScanLine (src, y);
+				dst_ptr = (Tsrc*) FreeImage_GetScanLine (dst, y);
+        
+				for(register int x = 0; x < width; x++) {
+					 dst_ptr[x] = static_cast <Tsrc> ((src_ptr[x] - src_min_found) * factor + min_possible_for_type);
+				}
+			}
+		}
+		else
+		{
+			for(register int y = 0; y < height; y++)
+			{
+				src_ptr = (double*) FreeImage_GetScanLine (src, y);
+				dst_ptr = (Tsrc*) FreeImage_GetScanLine (dst, y);
+        
+				for(register int x = 0; x < width; x++) {
+					#ifdef WIN32
+					dst_ptr[x] = static_cast <Tsrc> (max(min(max_possible_for_type, src_ptr[x]), min_possible_for_type));
+					#else
+					dst_ptr[x] = static_cast <Tsrc> (std::max(std::min(max_possible_for_type, src_ptr[x]), min_possible_for_type));
+					#endif
+				}
+			}
+		}
+	}
+
+    return dst;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_ConvertFloatTypeToType(FIBITMAP *src, FREE_IMAGE_TYPE type, BOOL scale_linear)
+{
+	FREE_IMAGE_TYPE src_type = FreeImage_GetImageType(src);
+	int bpp = FreeImage_GetBPP(src);
+
+    switch (type)
+    {
+        case FIT_BITMAP:
+			if(bpp = 8)
+				return UCharImage.FIA_ConvertFloatTypeToImageType (src, src_type, type, scale_linear);
+        case FIT_UINT16:
+            return UShortImage.FIA_ConvertFloatTypeToImageType (src, src_type, type, scale_linear);
+        case FIT_INT16:
+            return ShortImage.FIA_ConvertFloatTypeToImageType (src, src_type, type, scale_linear);
+        case FIT_UINT32:
+            return ULongImage.FIA_ConvertFloatTypeToImageType (src, src_type, type, scale_linear);
+        case FIT_INT32:
+            return LongImage.FIA_ConvertFloatTypeToImageType (src, src_type, type, scale_linear);
+        default:
+            break;
+    }
+
+    return NULL;
+}
 
 template < typename Tsrc > FIBITMAP * TemplateImageFunctionClass <
     Tsrc >::IntegerRescaleToHalf (FIBITMAP * src)
@@ -2382,3 +2888,272 @@ CleanUp:
 
 	return FIA_ERROR;
 }
+
+FIBITMAP *DLL_CALLCONV
+FIA_MakeHatchedImage (int width, int height, int hatchType, int spacing)
+{
+	FIBITMAP *out;
+	BYTE val=1;
+	int antialias_diagonals=0;  // antialias with a value of 1 prints nothing
+	int i, j;
+
+	out = FreeImage_Allocate(width, height, 8);
+
+	FIA_DrawSolidGreyscaleRect(out, MakeFIARect(0,0,width-1,height-1), 0.0);
+
+	switch (hatchType)
+		{
+		case 1: // horiz lines
+			for (j=0; j<height; j+=spacing)
+				//FIA_DrawOnePixelIndexLineFromTopLeft (out, MakeFIAPoint(0, j), MakeFIAPoint(width, j), 1.0);
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(0, j), MakeFIAPoint(width, j), (double)val, 1, 0);
+
+			break;
+		case 2: // vert lines
+			for (i=0; i<width; i+=spacing)
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(i, 0), MakeFIAPoint(i, height), (double)val, 1, 0);
+			
+			break;
+		case 3: // horiz and vert lines
+			for (j=0; j<height; j+=spacing)
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(0, j), MakeFIAPoint(width, j), (double)val, 1, 0);
+			for (i=0; i<width; i+=spacing)
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(i, 0), MakeFIAPoint(i, height), (double)val, 1, 0);
+			
+			break;
+		case 4:  // diag lines
+			for (j=0; (j<(height+width)); j+=spacing)
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(j, 0), MakeFIAPoint(0, j), (double)val, 1, antialias_diagonals);
+			
+			break;
+		case 5:  // other diag lines
+			for (j=0; j<(height+width); j+=spacing)
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(0, j-width), MakeFIAPoint(width, j), (double)val, 1, antialias_diagonals);
+			
+			break;
+		case 6:  // cross hatched
+			for (j=0; (j<(height+width)); j+=spacing)
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(j, 0), MakeFIAPoint(0, j), (double)val, 1, antialias_diagonals);
+			for (j=0; j<(height+width); j+=spacing)
+				FIA_DrawGreyscaleLine (out, MakeFIAPoint(0, j-width), MakeFIAPoint(width, j), (double)val, 1, antialias_diagonals);
+			
+			break;
+		case 7:   // dots
+			for (j=0; j<height; j+=spacing)
+				for (i=0; i<width; i+=spacing)
+					FreeImage_SetPixelIndex (out, i, j, &val);
+
+			break;
+		default:
+			
+			break;
+		}
+
+	return out;
+}
+
+
+FIBITMAP *DLL_CALLCONV
+FIA_BlendMaskWithImage(FIBITMAP *mask, FIBITMAP *src, RGBQUAD colour, int outline, int hatch, int opacity)
+{
+	// mask is expected to be a 8 bit image, vals 0 and 1 and is not changed by this function (except the border is set to 3)
+	// src can be greyscale, palettised or RGB, output will be 24 bit RGB
+	// colour is the required blend/overlay colour
+	// outline = 1 plots an outline around the mask, outline = 0 does not
+	// hatch is 10 (no hatch) to 7 (dots), see FIA_MakeHatchedImage
+	// opacity is 0 to 3
+	FIBITMAP *image=NULL, *maskedInner=NULL, *maskedOuter=NULL, *reversedMask=NULL, *r=NULL, *g=NULL, *b=NULL, *ri=NULL, *gi=NULL, *bi=NULL;
+
+	// Checks
+	if (!FreeImage_HasPixels(mask) || !FreeImage_HasPixels(src))
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "Mask or image do not have any pixels");
+        return NULL;
+    }
+
+    if (FreeImage_GetImageType (mask)!=FIT_BITMAP || FreeImage_GetBPP(mask)!=8)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "Mask is not a 8-bit FIT_BITMAP image");
+        return NULL;
+    }
+
+    if(FIA_CheckSizesAreSame(mask, src) == 0) {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN, "Mask and Image are not the same size");
+        return NULL;
+    }
+
+	if (FreeImage_GetImageType (src)!=FIT_BITMAP)	
+	{
+		FreeImage_OutputMessageProc (FIF_UNKNOWN, "Image is not a FIT_BITMAP image");
+		return NULL;
+	}
+
+	if (FreeImage_GetImageType (src)==FIT_BITMAP && FreeImage_GetBPP(src)>16)  // already RGB colour
+		image = FreeImage_Clone(src);
+	else
+		image = FreeImage_ConvertTo24Bits(src);
+
+	// colour planes of the RGB bits within the mask
+	maskedInner = FreeImage_Clone(image);
+	FIA_MaskImage (maskedInner, mask);
+	ri = FreeImage_GetChannel(maskedInner, FICC_RED);
+	gi = FreeImage_GetChannel(maskedInner, FICC_GREEN);
+	bi = FreeImage_GetChannel(maskedInner, FICC_BLUE);
+	FreeImage_Unload(maskedInner);
+
+	// average these colour planes to perform a blend, result goes into r g and b
+	if (opacity==0) // 
+	{
+		r = FreeImage_Clone (ri);
+		g = FreeImage_Clone (gi);
+		b = FreeImage_Clone (bi);
+	}
+	else			   // average once for high opacity
+	{
+
+		// calc the three colour planes of mask with the correct colour
+		r = FreeImage_Clone (mask);
+		g = FreeImage_Clone (mask);
+		b = FreeImage_Clone (mask);
+		FIA_MultiplyConst (r, colour.rgbRed);
+		FIA_MultiplyConst (g, colour.rgbGreen);
+		FIA_MultiplyConst (b, colour.rgbBlue);
+	
+		FIA_Average (r, ri);
+		FIA_Average (g, gi);
+		FIA_Average (b, bi);
+  		
+		if (opacity < 3)   // average again for med opacity
+		{
+			FIA_Average (r, ri);
+			FIA_Average (g, gi);
+			FIA_Average (b, bi);
+		}
+		if (opacity < 2)   // average again for low opacity
+		{
+			FIA_Average (r, ri);
+			FIA_Average (g, gi);
+			FIA_Average (b, bi);
+		}
+	}
+	FreeImage_Unload (ri);
+	FreeImage_Unload (gi);
+	FreeImage_Unload (bi);
+
+	// colour planes of the RGB bits _outside_ the mask
+	reversedMask = FreeImage_Clone (mask);
+	FIA_ReverseMaskImage (reversedMask, 1);
+	maskedOuter = FreeImage_Clone (image);
+	FIA_MaskImage (maskedOuter, reversedMask);
+	FreeImage_Unload (reversedMask);
+	ri = FreeImage_GetChannel(maskedOuter, FICC_RED);
+	gi = FreeImage_GetChannel(maskedOuter, FICC_GREEN);
+	bi = FreeImage_GetChannel(maskedOuter, FICC_BLUE);
+	FreeImage_Unload(maskedOuter);
+
+	// add these (containing data outside the mask) to the blend images (containing data inside the mask)
+	FIA_Add (r, ri);
+	FIA_Add (g, gi);
+	FIA_Add (b, bi);
+	FreeImage_Unload (ri);
+	FreeImage_Unload (gi);
+	FreeImage_Unload (bi);
+	
+	// make an RGB from these
+	maskedInner = FreeImage_Allocate(FreeImage_GetWidth(image), FreeImage_GetHeight(image), 24);
+
+	// r, g, b must not be palletised at this point (FREE_IMAGE_COLOR_TYPE FIC_PALETTE) as FreeImage_SetChannel will fail, must be FIC_MINISBLACK
+	// to be considered greyscale images in freeimage, it must have the greyscalwe palette
+	FIA_SetGreyLevelPalette (r);
+	FIA_SetGreyLevelPalette (g);
+	FIA_SetGreyLevelPalette (b);
+	FreeImage_SetChannel (maskedInner, r, FICC_RED);
+	FreeImage_SetChannel (maskedInner, g, FICC_GREEN);
+	FreeImage_SetChannel (maskedInner, b, FICC_BLUE);
+	FreeImage_Unload (r);
+	FreeImage_Unload (g);
+	FreeImage_Unload (b);
+
+	if (outline)  // do overlay of the outline in the required colour
+	{
+		// find the inside border to the mask
+		reversedMask = FIA_BinaryInnerBorder (mask);
+	
+		// calc the three colour planes of a new outline mask with the correct colour
+		r = FreeImage_Clone (reversedMask);
+		g = FreeImage_Clone (reversedMask);
+		b = FreeImage_Clone (reversedMask);
+		FIA_MultiplyConst (r, colour.rgbRed);
+		FIA_MultiplyConst (g, colour.rgbGreen);
+		FIA_MultiplyConst (b, colour.rgbBlue);
+
+		// reverse this outline mask and use it to get the image data from the blended image, extract these colour planes
+		FIA_ReverseMaskImage(reversedMask, 1);
+		FIA_MaskImage(maskedInner, reversedMask);
+		FreeImage_Unload (reversedMask);
+		ri = FreeImage_GetChannel(maskedInner, FICC_RED);
+		gi = FreeImage_GetChannel(maskedInner, FICC_GREEN);
+		bi = FreeImage_GetChannel(maskedInner, FICC_BLUE);
+
+		// add the new outline to the surrounding image data
+		FIA_Add (r, ri);
+		FIA_Add (g, gi);
+		FIA_Add (b, bi);
+		FreeImage_Unload (ri);
+		FreeImage_Unload (gi);
+		FreeImage_Unload (bi);
+
+		// make an RGB from these
+		FIA_SetGreyLevelPalette (r);
+		FIA_SetGreyLevelPalette (g);
+		FIA_SetGreyLevelPalette (b);
+		FreeImage_SetChannel (maskedInner, r, FICC_RED);
+		FreeImage_SetChannel (maskedInner, g, FICC_GREEN);
+		FreeImage_SetChannel (maskedInner, b, FICC_BLUE);
+		FreeImage_Unload (r);
+		FreeImage_Unload (g);
+		FreeImage_Unload (b);
+	}
+	
+	if (hatch)  // do overlay of the outline in the required colour
+	{
+		if (hatch==7) reversedMask = FIA_MakeHatchedImage(FreeImage_GetWidth(mask), FreeImage_GetHeight(mask), hatch, 3);   // dots
+		else reversedMask = reversedMask = FIA_MakeHatchedImage(FreeImage_GetWidth(mask), FreeImage_GetHeight(mask), hatch, 20);   // store in reversed mask temporarily 
+		FIA_MaskImage(reversedMask, mask);		// get just the bits of hatch inside the mask
+
+		// calc the three colour planes of a new outline mask with the correct colour
+		r = FreeImage_Clone (reversedMask);
+		g = FreeImage_Clone (reversedMask);
+		b = FreeImage_Clone (reversedMask);
+		FIA_MultiplyConst (r, colour.rgbRed);
+		FIA_MultiplyConst (g, colour.rgbGreen);
+		FIA_MultiplyConst (b, colour.rgbBlue);
+
+		// reverse this outline mask and use it to get the image data from the blended image, extract these colour planes
+		FIA_ReverseMaskImage(reversedMask, 1);
+		FIA_MaskImage(maskedInner, reversedMask);
+		FreeImage_Unload(reversedMask);
+		ri = FreeImage_GetChannel(maskedInner, FICC_RED);
+		gi = FreeImage_GetChannel(maskedInner, FICC_GREEN);
+		bi = FreeImage_GetChannel(maskedInner, FICC_BLUE);
+
+		// add the new outline to the surrounding image data
+		FIA_Add (r, ri);
+		FIA_Add (g, gi);
+		FIA_Add (b, bi);
+		FreeImage_Unload (ri);
+		FreeImage_Unload (gi);
+		FreeImage_Unload (bi);
+
+		// make an RGB from these
+		FreeImage_SetChannel (maskedInner, r, FICC_RED);
+		FreeImage_SetChannel (maskedInner, g, FICC_GREEN);
+		FreeImage_SetChannel (maskedInner, b, FICC_BLUE);
+		FreeImage_Unload (r);
+		FreeImage_Unload (g);
+		FreeImage_Unload (b);
+	}
+	
+	return (maskedInner);
+}
+

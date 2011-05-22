@@ -25,6 +25,14 @@
 extern "C" {
 #endif
 
+typedef enum
+{
+	FIA_BINNING_SQUARE,
+	FIA_BINNING_CIRCULAR,
+	FIA_BINNING_GAUSSIAN
+
+} FIA_BINNING_TYPE;
+
 /*! \file 
  *	Provides a median filter function.
  *
@@ -63,6 +71,9 @@ FIA_SobelAdvanced(FIBITMAP *src,
                                   FIBITMAP** vertical,
                                   FIBITMAP** horizontal,
                                   FIBITMAP** magnitude);
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_Binning (FIBITMAP * src, FIA_BINNING_TYPE, int radius);
 
 #ifdef __cplusplus
 }

@@ -126,3 +126,99 @@ FIA_SobelAdvanced (FIBITMAP * src,
 
     return FIA_SUCCESS;
 }
+
+static void DLL_CALLCONV
+FIA_MakeCircularKernel (int radius, double *kernel)
+{
+    double  dsq, maxdsq;
+	int x, y, width, abs_x, abs_y;
+	double *kernel_ptr = kernel;
+
+	width = 2*radius+1;
+	maxdsq = radius*radius;
+
+	for (x=0; x < width; x++) {
+
+		abs_x = abs(x-radius);
+
+		for (y=0; y < width; y++)
+		{
+			abs_y = abs(y-radius);
+
+			dsq = (abs_x * abs_x) + (abs_y * abs_y);
+
+			if (dsq<=maxdsq)
+				kernel_ptr[y*width+x]=1.0;
+			else 
+				kernel_ptr[y*width+x]=0.0;
+		}
+	}
+}
+
+static void DLL_CALLCONV
+FIA_MakeGaussianKernel (int radius, double *kernel)
+{
+	double  dsq, sigmasq;
+	int x, y, width, abs_x, abs_y;
+	double *kernel_ptr = kernel;
+
+	width = 2*radius+1;
+	sigmasq = pow(radius/2.0,2);
+
+	for (x=0; x < width; x++) {
+
+		abs_x = abs(x-radius);
+
+		for (y=0; y < width; y++)
+		{
+			abs_y = abs(y-radius);
+
+			dsq = (abs_x * abs_x) + (abs_y * abs_y);
+
+			kernel_ptr[y*width+x] = (double) exp(-(dsq/sigmasq));
+		}
+	}
+}
+
+static void DLL_CALLCONV
+FIA_MakeSquareKernel (int radius, double *kernel)
+{
+	int x, y, width;
+	double *kernel_ptr = kernel;
+
+	width = 2*radius+1;
+	
+	for (x=0; x < width; x++) {
+
+		for (y=0; y < width; y++)
+		{
+			kernel_ptr[y*width+x] = (double) 1.0;
+		}
+	}
+}
+
+FIBITMAP* DLL_CALLCONV
+FIA_Binning (FIBITMAP * src, FIA_BINNING_TYPE type, int radius)
+{
+	int size = radius * 2 + 1;
+	double *kernel = (double*) malloc ((size*size)*sizeof(double));
+	
+	if(type == FIA_BINNING_GAUSSIAN)
+		FIA_MakeGaussianKernel (radius, kernel);
+	else if(type == FIA_BINNING_CIRCULAR)
+		FIA_MakeCircularKernel (radius, kernel);
+	else 
+		FIA_MakeSquareKernel (radius, kernel);
+
+    FIABITMAP *src_bordered = FIA_SetBorder (src, radius, radius, BorderType_Copy, 0.0);
+
+    FilterKernel convolve_kernel = FIA_NewKernel (radius, radius, kernel, 1.0);
+
+    FIBITMAP* binned_fib = FIA_Convolve (src_bordered, convolve_kernel);
+
+    FIA_Unload (src_bordered);
+
+	free(kernel);
+
+    return binned_fib;
+}

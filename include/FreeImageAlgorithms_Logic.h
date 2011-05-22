@@ -45,10 +45,35 @@ FIA_MaskImage(FIBITMAP* src, FIBITMAP* mask);
  *
  *  \param mask FIBITMAP Mask bitmap to mask.
  *  \param foreground_val int new value for the foreground pixel.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV 
 FIA_ReverseMaskImage(FIBITMAP* mask, unsigned char foreground_val);
+
+/** \brief Logical Or or Union.
+ *
+ *  Calculate the logical Or (union) or Nor.
+ *
+ *  \param src1 FIBITMAP First source image.
+ *  \param src1 FIBITMAP Second source image.
+ *  \param Not int Set to 1 or TRUE to perform Nor instead of Or.
+ *  \return FIBITMAP* destination image.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_BinaryOr (FIBITMAP *src1, FIBITMAP *src2, int Not);
+
+/** \brief Logical And or Intersection
+ *
+ *  Calculate the logical And (intersection) or Nand.
+ *
+ *  \param src1 FIBITMAP First source image.
+ *  \param src1 FIBITMAP Second source image.
+ *  \param Not int Set to 1 or TRUE to perform Nand instead of And.
+ *  \return FIBITMAP* destination image.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_BinaryAnd (FIBITMAP *src1, FIBITMAP *src2, int Not);
+
 
 #ifdef __cplusplus
 }

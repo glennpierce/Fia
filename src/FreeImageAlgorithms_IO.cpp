@@ -62,8 +62,8 @@ CopyGreyScaleBytesToFIBitmap (FIBITMAP * src, BYTE * data, int padded, int verti
     }
 }
 
-static void
-CopyColourBytesToFIBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_flip,
+void DLL_CALLCONV
+FIA_CopyColourBytesToFIBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_flip,
                            COLOUR_ORDER order)
 {
     int data_line_length;
@@ -128,6 +128,101 @@ CopyColourBytesToFIBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical
 	}
 }
 
+int DLL_CALLCONV
+FIA_CopyColourBytesTo8BitFIBitmap (FIBITMAP * src, BYTE * data, int data_bpp, int channel, int padded, int vertical_flip)
+{
+    int data_line_length;
+    int height = FreeImage_GetHeight (src);
+    int width = FreeImage_GetWidth (src);
+
+	if(FreeImage_GetImageType(src) != FIT_BITMAP) {
+	
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+			                         "Destination image must be of type FIT_BITMAP");
+		return FIA_ERROR;
+	}
+
+	if(data_bpp != 24 && data_bpp != 32) {
+
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+			                         "Array data must be 24 or 32 bits");
+		return FIA_ERROR;
+	}
+
+	int bpp = FreeImage_GetBPP(src);
+
+	if(bpp != 8) {
+
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+			                         "Destination image must be 8 bits");
+		return FIA_ERROR;
+	}
+
+	 // Calculate the number of bytes per pixel (3 for 24-bit or 4 for 32-bit) 
+    int bytespp = data_bpp / 8; //FreeImage_GetLine (src) / width;
+
+	if(channel != FI_RGBA_RED && channel != FI_RGBA_GREEN &&
+		channel != FI_RGBA_BLUE) {
+
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+			                         "Invalid channel specified");
+
+		return FIA_ERROR;
+	}	
+
+    if (padded)
+    {
+        data_line_length = bytespp * width;
+    }
+    else
+    {
+        data_line_length = bytespp * width;
+    }
+
+    BYTE *bits, *data_row;
+
+    int line;
+	BYTE increment = bytespp;
+	register BYTE *ptr = NULL;
+
+	// Slightly faster taking the if out of the loop
+	if (vertical_flip) {
+
+		for(register int y = 0; y < height; y++)
+		{		
+			line = height - y - 1;
+
+			bits = (BYTE *) FreeImage_GetScanLine (src, line);
+
+			data_row = (BYTE *) data + line * data_line_length;
+
+			ptr = data_row + channel;
+
+			for(register int x = 0; x < width; ptr+=increment, x++) {
+
+				bits[x] = *ptr;
+			}
+		}
+	}
+	else {
+		for(register int y = 0; y < height; y++)
+		{		
+			bits = (BYTE *) FreeImage_GetScanLine (src, y);
+
+			data_row = (BYTE *) data + (height - y - 1) * data_line_length;
+
+			ptr = data_row + channel;
+
+			for(register int x = 0; x < width; ptr+=increment, x++) {
+
+				bits[x] = *ptr;
+			}
+		}
+	}
+
+	return FIA_SUCCESS;
+}
+
 void DLL_CALLCONV
 FIA_CopyBytesToFBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_flip,
                         COLOUR_ORDER order)
@@ -146,7 +241,7 @@ FIA_CopyBytesToFBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_fl
 
         case 24:
         {
-            CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, order);
+            FIA_CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, order);
             break;
         }
 
@@ -154,7 +249,7 @@ FIA_CopyBytesToFBitmap (FIBITMAP * src, BYTE * data, int padded, int vertical_fl
         {
             if (type == FIT_BITMAP)
             {
-                CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, order);
+                FIA_CopyColourBytesToFIBitmap (src, data, padded, vertical_flip, order);
             }
 
             if (type == FIT_FLOAT)
@@ -186,7 +281,18 @@ FIA_LoadFIBFromFile (const char *pathname)
     if ((fif != FIF_UNKNOWN) && FreeImage_FIFSupportsReading (fif))
     {
         // load the file
-        return FreeImage_Load (fif, pathname, 0);
+        FIBITMAP *dib = FreeImage_Load (fif, pathname, 0);
+
+		if(dib == NULL)
+			return NULL;
+
+		if(FreeImage_GetBPP(dib) < 8) {
+			
+			// FIA doesn't deal with images less than 8bit
+			FIA_InPlaceConvertTo8Bit(&dib);
+		}
+
+		return dib;
     }
 
     return NULL;
@@ -320,6 +426,69 @@ FIA_LoadColourFIBFromArrayData (BYTE * data, int bpp, int width, int height, int
 }
 
 int DLL_CALLCONV
+FIA_SimpleSaveFIBToFile (FIBITMAP * dib, const char *filepath)
+{
+	// Pass a filepath to be saved
+	// Determine the file type from the extension
+	// Try to save in the highest bpp possible for that plugin.
+
+    FIBITMAP *converted_dib;
+    FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
+	int bpp = FreeImage_GetBPP(dib);
+    FREE_IMAGE_TYPE type = FreeImage_GetImageType (dib);
+
+    if (dib == NULL)
+        return FIA_ERROR;
+
+    // Try to guess the file format from the file extension
+    fif = FreeImage_GetFIFFromFilename (filepath);
+
+	// Check that the plugin has writing capabilities ... 
+	if(FreeImage_FIFSupportsWriting(fif) == 0)
+	{
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Error Saving File! Image Plugin does not support writing.");
+		return FIA_ERROR;
+	}
+
+	int supportsBPPExport = FreeImage_FIFSupportsExportBPP(fif, bpp);
+
+	// Hack to fix bug in latest freeimage
+	if(fif == FIF_PNG && bpp == 16)
+		supportsBPPExport = 1;
+
+	int supportsTypeExport = FreeImage_FIFSupportsExportType(fif, type);
+		
+	int bCanSave = supportsBPPExport && supportsTypeExport;
+
+	if(bCanSave) {
+		
+		converted_dib = FreeImage_Clone (dib);
+	}
+	else {
+		// Error Saving File! Image type can not save with the desired bpp or type;
+		// Try converting to a standard type.
+		converted_dib = FreeImage_ConvertToStandardType (dib, 1);
+	}
+	
+	if(FreeImage_GetBPP(dib) == 8)
+		FIA_CopyPalette(dib, converted_dib);
+
+	if (!FreeImage_Save (fif, converted_dib, filepath, 0))
+    {
+		FreeImage_Unload (converted_dib);
+
+		FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Unknown Error Saving File! FreeImage_Save Failed");
+        return FIA_ERROR;
+    }
+
+	FreeImage_Unload (converted_dib);
+
+	return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
 FIA_SaveFIBToFile (FIBITMAP * dib, const char *filepath,
                    FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH bit_depth)
 {
@@ -400,65 +569,98 @@ FIA_SaveFIBToFile (FIBITMAP * dib, const char *filepath,
     return FIA_SUCCESS;
 }
 
-int DLL_CALLCONV
-FIA_SimpleSaveFIBToFile (FIBITMAP * dib, const char *filepath)
+template < class Tsrc > class IO_ARRAY
 {
-	// Pass a filepath to be saved
-	// Determine the file type from the extension
-	// Try to save in the highest bpp possible for that plugin.
+  public:
+    int GreyImageToFloatArray (FIBITMAP * src, float *out_array, int *array_x_size, int *array_y_size, int vertical_flip);
+};
 
-    FIBITMAP *converted_dib;
-    FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-	int bpp = FreeImage_GetBPP(dib);
-    FREE_IMAGE_TYPE type = FreeImage_GetImageType (dib);
-
-    if (dib == NULL)
-        return FIA_ERROR;
-
-    // Try to guess the file format from the file extension
-    fif = FreeImage_GetFIFFromFilename (filepath);
-
-	// Check that the plugin has writing capabilities ... 
-	if(FreeImage_FIFSupportsWriting(fif) == 0)
+template < typename Tsrc > int IO_ARRAY < Tsrc >::GreyImageToFloatArray (FIBITMAP * src, float *out_array, int *array_x_size, int *array_y_size, int vertical_flip)
+{
+	if (src == NULL || !FreeImage_HasPixels(src))
 	{
-		FreeImage_OutputMessageProc (FIF_UNKNOWN,
-                                     "Error Saving File! Image Plugin does not support writing.");
-		return FIA_ERROR;
+         FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                           "Image source invalid or has no pixels.");
+		 return FIA_ERROR;
 	}
 
-	int supportsBPPExport = FreeImage_FIFSupportsExportBPP(fif, bpp);
+	if (out_array==NULL)
+	{
+         FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                           "out_array must be allocated and big enough for all the image elements.");
+		 return FIA_ERROR;
+	}
 
-	// Hack to fix bug in latest freeimage
-	if(fif == FIF_PNG && bpp == 16)
-		supportsBPPExport = 1;
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
 
-	int supportsTypeExport = FreeImage_FIFSupportsExportType(fif, type);
-		
-	int bCanSave = supportsBPPExport && supportsTypeExport;
+	if (vertical_flip) {
+		for(register int y = 0; y < height; y++)
+		{
+			Tsrc *src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
 
-	if(bCanSave) {
-		
-		converted_dib = FreeImage_Clone (dib);
+			for(register int x = 0; x < width; x++)
+				out_array[(height-y-1)*width+x] = (float) src_ptr[x];
+		}
 	}
 	else {
-		// Error Saving File! Image type can not save with the desired bpp or type;
-		// Try converting to a standard type.
-		converted_dib = FreeImage_ConvertToStandardType (dib, 1);
+		for(register int y = 0; y < height; y++)
+		{
+			Tsrc *src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+
+			for(register int x = 0; x < width; x++)
+				out_array[y*width+x] = (float) src_ptr[x];
+		}
 	}
-	
-	if(FreeImage_GetBPP(dib) == 8)
-		FIA_CopyPalette(dib, converted_dib);
 
-	if (!FreeImage_Save (fif, converted_dib, filepath, 0))
+
+	if (array_x_size != NULL)
+		*array_x_size = width;
+
+	if (array_y_size != NULL)
+		*array_y_size = height;
+
+    return FIA_SUCCESS;
+}
+
+IO_ARRAY < unsigned char >io_arrayUCharImage;
+IO_ARRAY < unsigned short >io_arrayUShortImage;
+IO_ARRAY < short >io_arrayShortImage;
+IO_ARRAY < unsigned long >io_arrayULongImage;
+IO_ARRAY < long >io_arrayLongImage;
+IO_ARRAY < float >io_arrayFloatImage;
+IO_ARRAY < double >io_arrayDoubleImage;
+IO_ARRAY < FICOMPLEX > io_arrayComplexImage;
+
+int DLL_CALLCONV
+FIA_GreyImageToFloatArray (FIBITMAP * src, float *out_array, int *array_x_size, int *array_y_size, int vertical_flip)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src);
+
+    switch (src_type)
     {
-		FreeImage_Unload (converted_dib);
-
-		FreeImage_OutputMessageProc (FIF_UNKNOWN,
-                                     "Unknown Error Saving File! FreeImage_Save Failed");
-        return FIA_ERROR;
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (src) == 8)
+                return io_arrayUCharImage.GreyImageToFloatArray (src, out_array, array_x_size, array_y_size, vertical_flip);
+        case FIT_UINT16:
+            return io_arrayUShortImage.GreyImageToFloatArray (src, out_array, array_x_size, array_y_size, vertical_flip);
+        case FIT_INT16:
+            return io_arrayShortImage.GreyImageToFloatArray (src, out_array, array_x_size, array_y_size, vertical_flip);
+        case FIT_UINT32:
+            return io_arrayULongImage.GreyImageToFloatArray (src, out_array, array_x_size, array_y_size, vertical_flip);
+        case FIT_INT32:
+            return io_arrayLongImage.GreyImageToFloatArray (src, out_array, array_x_size, array_y_size, vertical_flip);
+        case FIT_FLOAT:
+            return io_arrayFloatImage.GreyImageToFloatArray (src, out_array, array_x_size, array_y_size, vertical_flip);
+        case FIT_DOUBLE:
+            return io_arrayDoubleImage.GreyImageToFloatArray (src, out_array, array_x_size, array_y_size, vertical_flip);
+        default:
+            break;
     }
 
-	FreeImage_Unload (converted_dib);
+    FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                           "Image source must be greyscale.");
 
-	return FIA_SUCCESS;
+    return FIA_ERROR;
 }
+

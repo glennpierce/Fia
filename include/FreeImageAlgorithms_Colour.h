@@ -37,7 +37,7 @@ extern "C" {
  *  \param hue Hue returned.
  *  \param satuation Satuation returned.
  *  \param value Value returned.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
@@ -51,7 +51,7 @@ FIA_RGBToHSV( unsigned char red, unsigned char green, unsigned char blue,
  *  \param red Red value returned.
  *  \param green Green value returned.
  *  \param blue Blue value returned.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_HSVToRGB( double hue, double satuation, double value,
@@ -65,7 +65,7 @@ FIA_HSVToRGB( double hue, double satuation, double value,
  *  \param hue Hue returned.
  *  \param satuation Satuation returned.
  *  \param luminosity Value returned.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
@@ -79,11 +79,35 @@ FIA_RGBToHSL( unsigned char red, unsigned char green, unsigned char blue,
  *  \param red Red value returned.
  *  \param green Green value returned.
  *  \param blue Blue value returned.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_HSLToRGB( double hue, double satuation, double luminosity,
 							unsigned char *red, unsigned char *green, unsigned char *blue);
+
+/** \brief Extract the colour plane from an image.
+ *
+ *  \param src The colour image
+ *  \param R returned pointer to the red FIBITMAP
+ *  \param G returned pointer to the green FIBITMAP
+ *  \param B returned pointer to the blue FIBITMAP
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_ExtractColourPlanes (FIBITMAP *src, FIBITMAP **R, FIBITMAP **G, FIBITMAP **B);
+
+/** \brief Replace the colour planes in an image.
+ *   Will allocate src if src is NULL. Otherwise it must be of the correct size and type.
+ *   WARNING: This function will replace any palette on R, G and B with a standard grey palette.
+ *
+ *  \param src The colour image
+ *  \param R returned pointer to the red FIBITMAP
+ *  \param G returned pointer to the green FIBITMAP
+ *  \param B returned pointer to the blue FIBITMAP
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_ReplaceColourPlanes (FIBITMAP **src, FIBITMAP *R, FIBITMAP *G, FIBITMAP *B);
 
 #ifdef __cplusplus
 }
