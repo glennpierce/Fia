@@ -29,6 +29,7 @@ CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsLogicSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsDrawingSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsParticleSuite(void);
 CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsGradientBlendSuite(void);
+CuSuite* DLL_CALLCONV CuGetFreeImageAlgorithmsPaletteSuite(void);
 
 int MkDir(const char *path)
 {
@@ -46,7 +47,8 @@ void RunAllTests(void)
 
 	current_function_helper();
 
-	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
+	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsPaletteSuite());
+	CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsColourSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsUtilitySuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsStatisticSuite());
 	//CuSuiteAddSuite(suite, CuGetFreeImageAlgorithmsIOSuite());
@@ -75,6 +77,9 @@ static void OnError(FREE_IMAGE_FORMAT fif, const char *msg)
 
 int __cdecl main(void)
 {
+    #ifdef WIN32
+	MSG			msg;
+    #endif
 
     FreeImage_SetOutputMessage(OnError);
 
@@ -84,7 +89,11 @@ int __cdecl main(void)
 	RunAllTests();
 
 	#if WIN32
-		while(1);
+		// message-loop
+		while(GetMessage(&msg, NULL, 0, 0) > 0)
+		{
+			DispatchMessage(&msg);
+		}
 	#endif
 
 	return 0;

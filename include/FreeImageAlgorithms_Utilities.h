@@ -31,7 +31,6 @@ extern "C" {
 
 /** \brief Make a FIAPOINT structure.
  *
- *  \param data Array of char data.
  *  \param x x point of point.
  *  \param y y point of point.
  *  \return FIAPOINT point.
@@ -40,8 +39,6 @@ DLL_API FIAPOINT DLL_CALLCONV
 MakeFIAPoint(int x, int y);
 
 /** \brief Make a FIARECT structure.
- *
- *  \param data Array of char data.
  *  \param left left point of rect.
  *  \param top top point of rect.
  *  \param right right point of rect.
@@ -50,6 +47,21 @@ MakeFIAPoint(int x, int y);
 */
 DLL_API FIARECT DLL_CALLCONV
 MakeFIARect(int left, int top, int right, int bottom);
+
+/** \brief Make a FIARECT structure.
+ *   Alternate version that uses width and height rather thatn right and bottom.
+ *
+ *  \param left left point of rect.
+ *  \param top top point of rect.
+ *  \param width width of rect.
+ *  \param height height point of rect.
+ *  \return FIARECT rectangle.
+*/
+DLL_API FIARECT DLL_CALLCONV
+MakeFIARectAlt(int left, int top, int width, int height);
+
+DLL_API int DLL_CALLCONV 
+FIA_CheckDimensions (FIBITMAP * dst, FIBITMAP * src);
 
 DLL_API int DLL_CALLCONV
 FIARectIsEmpty (FIARECT rect);
@@ -63,11 +75,11 @@ FIARectIsEmpty (FIARECT rect);
 DLL_API FIARECT DLL_CALLCONV
 FIAImageRect(FIBITMAP *src);
 
-/** \brief Checks the dimesions of two images are the same.
+/** \brief Checks the dimensions of two images are the same.
  *
- *  \param src1 First image to compare.
- *  \param src2 Second image to compare.
- *  \return FIARECT rectangle.
+ *  \param fib1 First image to compare.
+ *  \param fib2 Second image to compare.
+ *  \return int, 1 if equal, 0 if not
 */
 DLL_API int DLL_CALLCONV
 FIA_CheckSizesAreSame(FIBITMAP *fib1, FIBITMAP *fib2);
@@ -77,6 +89,9 @@ _os_support(int feature);
 
 DLL_API void DLL_CALLCONV
 FIA_SSEFindFloatMinMax(const float *data, long n, float *min, float *max);
+
+DLL_API int DLL_CALLCONV
+FIA_GetPitchInPixels(FIBITMAP *dib);
 
 /** \brief Find the mininum and maximum values in a char array.
  *
@@ -259,7 +274,7 @@ FIA_FindMinMaxForColourImage(FIBITMAP *src, double *min, double *max);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_CharArrayReverse(char *array, long size);
@@ -268,7 +283,7 @@ FIA_CharArrayReverse(char *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_UCharArrayReverse(unsigned char *array, long size);
@@ -277,7 +292,7 @@ FIA_UCharArrayReverse(unsigned char *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_ShortArrayReverse(short *array, long size);
@@ -286,7 +301,7 @@ FIA_ShortArrayReverse(short *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_UShortArrayReverse(unsigned short *array, long size);
@@ -295,7 +310,7 @@ FIA_UShortArrayReverse(unsigned short *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_IntArrayReverse(int *array, long size);
@@ -304,7 +319,7 @@ FIA_IntArrayReverse(int *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_UIntArrayReverse(unsigned int *array, long size);
@@ -313,7 +328,7 @@ FIA_UIntArrayReverse(unsigned int *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_LongArrayReverse(long *array, long size);
@@ -322,7 +337,7 @@ FIA_LongArrayReverse(long *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_ULongArrayReverse(unsigned long *array, long size);
@@ -331,7 +346,7 @@ FIA_ULongArrayReverse(unsigned long *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_FloatArrayReverse(float *array, long size);
@@ -340,7 +355,7 @@ FIA_FloatArrayReverse(float *array, long size);
  *
  *  \param array Array to reverse.
  *  \param size Size of the array.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_DoubleArrayReverse(double *array, long size);
@@ -405,7 +420,7 @@ FIA_IsGreyScale(FIBITMAP *src);
  *  \param p2  End point of line.
  *  \param type FREE_IMAGE_TYPE of the pixels required. Must match the image type. Assures user is using correct type.
  *  \param values Returned values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetGreyScalePixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, void *values);
@@ -418,7 +433,7 @@ FIA_GetGreyScalePixelValuesForLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, vo
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *values); 
@@ -430,7 +445,7 @@ FIA_GetCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, char *va
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned char *values);
@@ -442,7 +457,7 @@ FIA_GetUCharPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigne
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *values);
@@ -454,7 +469,7 @@ FIA_GetShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, short *
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsigned short *values);
@@ -466,7 +481,7 @@ FIA_GetUShortPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, unsign
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *values);
@@ -478,7 +493,7 @@ FIA_GetFloatPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, float *
  *  \param p1  Start point of line.
  *  \param p2  End point of line.
  *  \param values Returned values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double *values);
@@ -492,7 +507,7 @@ FIA_GetDoublePixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, double
  *  \param red_values Returned red values along line.
  *  \param green_values Returned green values along line.
  *  \param blue_values Returned blue values along line.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetRGBPixelValuesForLine (FIBITMAP *src, FIAPOINT p1, FIAPOINT p2, BYTE *red_values, BYTE *green_values, BYTE *blue_values);
@@ -510,6 +525,9 @@ FIA_PasteFromTopLeft (FIBITMAP *dst, FIBITMAP * src, int left, int top);
 
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_Copy (FIBITMAP * src, int left, int top, int right, int bottom);
+
+DLL_API FIBITMAP* DLL_CALLCONV
+FIA_FastCopy ( FIBITMAP * src, int left, int top, int right, int bottom);
 
 DLL_API void DLL_CALLCONV
 FIA_RectChangeWidthHeight (FIARECT *rect, int width, int height);
@@ -531,7 +549,7 @@ FIA_MakeFiaRectRelativeToImageBottomLeft (FIBITMAP *src, FIARECT rt);
  *
  *  \param dib1 first FIBITMAP bitmap.
  *  \param dib2 second FIBITMAP bitmap.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_BitwiseCompare(FIBITMAP *dib1, FIBITMAP *dib2);
@@ -555,16 +573,31 @@ FIA_CloneImageType(FIBITMAP *src, int width, int height);
  *  \return FIT_FLOAT image.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
-FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
+FIA_ConvertToGreyscaleFloatTypeAndScaleToUnity(FIBITMAP *src, FREE_IMAGE_TYPE type);
 
 DLL_API int DLL_CALLCONV
-FIA_InPlaceConvertTo8Bit (FIBITMAP ** src);
+FIA_InPlaceConvertToGreyscaleFloatTypeAndScaleToUnity(FIBITMAP **src, FREE_IMAGE_TYPE type);
+
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_ConvertToGreyscaleFloatType(FIBITMAP *src, FREE_IMAGE_TYPE type);
 
 DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertToGreyscaleFloatType(FIBITMAP **src, FREE_IMAGE_TYPE type);
 
 DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertTo8Bit (FIBITMAP ** src);
+
+DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertTo32Bit (FIBITMAP ** src);
+
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_ConvertToGreyscaleFloatTypeWithUntouchedRange(FIBITMAP *src, FREE_IMAGE_TYPE type);
+
+DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertToGreyscaleFloatTypeWithUntouchedRange(FIBITMAP **src, FREE_IMAGE_TYPE type);
+
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_ConvertFloatTypeToType(FIBITMAP *src, FREE_IMAGE_TYPE type, BOOL scale_linear);
 
 DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertTo24Bit (FIBITMAP ** src);
@@ -595,7 +628,7 @@ FIA_Threshold(FIBITMAP *src, double min, double max, double new_value);
  *  \param min double minimum value to threshold.
  *  \param max double maximum value to threshold.
  *  \param new_value double new value to use.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value);
@@ -604,7 +637,7 @@ FIA_InPlaceThreshold(FIBITMAP *src, double min, double max, double new_value);
 /** \brief Find if an image is 8bit.
  *
  *  \param src Image to check.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int 1 if image is 8 bit, 0 if not.
 */
 DLL_API int DLL_CALLCONV
 FIA_Is8Bit(FIBITMAP *src);
@@ -624,11 +657,42 @@ FIA_DistanceTransform(FIBITMAP *src);
  *  \param src Image to get pixel value from.
  *  \param x int The x position.
  *  \param y int The y position.
- *  \param val float* The returned value.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \param val double* The returned value.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_GetPixelValue(FIBITMAP *src, int x, int y, double* val);
+
+/** \brief Set the value of a particular pixel.
+ *
+ *	Does check the position is valid. Works with all greyscale types.
+ *
+ *  \param src Image to set pixel value in.
+ *  \param x int The x position.
+ *  \param y int The y position.
+ *  \param val double The value to use.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
+*/
+DLL_API int DLL_CALLCONV
+FIA_SetPixelValue (FIBITMAP * src, int x, int y, double val);
+
+DLL_API int DLL_CALLCONV
+FIA_GetPixelValueFromTopLeft(FIBITMAP *src, int x, int y, double* val);
+
+DLL_API int DLL_CALLCONV
+FIA_SetPixelIndexFromTopLeft (FIBITMAP *src, int x, int y, BYTE val);
+
+DLL_API int DLL_CALLCONV
+FIA_GetPixelColour (FIBITMAP * src, int x, int y, RGBQUAD *val);
+
+DLL_API int DLL_CALLCONV
+FIA_SetPixelColour (FIBITMAP * src, int x, int y, RGBQUAD val);
+
+DLL_API int DLL_CALLCONV
+FIA_SetPixelColourFromTopLeft (FIBITMAP * src, int x, int y, RGBQUAD val);
+
+DLL_API int DLL_CALLCONV
+FIA_GetPixelColourFromTopLeft (FIBITMAP * src, int x, int y, RGBQUAD *val);
 
 DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertToStandardType(FIBITMAP **src, int scale);
@@ -636,11 +700,23 @@ FIA_InPlaceConvertToStandardType(FIBITMAP **src, int scale);
 DLL_API int DLL_CALLCONV
 FIA_InPlaceConvertToGreyscale(FIBITMAP **src);
 
+DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertToInt32Type (FIBITMAP ** src, int scale);
+
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ConvertFloatTo16Bit(FIBITMAP *src, int sign);
 
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_ConvertInt16ToUInt16(FIBITMAP *src);
+
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_Convert48BitOr64BitRGBTo24BitColour(FIBITMAP * src);
+
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_ConvertGreyscaleFloatImageToTypeNoScale(FIBITMAP *src, FREE_IMAGE_TYPE type);
+
+DLL_API int DLL_CALLCONV
+FIA_InPlaceConvertInt16ToUInt16 (FIBITMAP ** src);
 
 /** \brief Rescales an image to half its size.
  *
@@ -722,6 +798,28 @@ FIA_Combine(FIBITMAP *dst, FIBITMAP *fg, FIBITMAP *mask);
 DLL_API int DLL_CALLCONV
 FIA_GradientBlendMosaicPaste (FIBITMAP* dst, FIBITMAP* src, int x, int y);
 
+/** \brief Create a hatched image
+ *
+ *	Creates a hatch image of various types
+ *		hatchType 1: // horiz lines
+ *		hatchType 2: // vert lines
+ *		hatchType 3: // horiz and vert lines
+ *		hatchType 4: // diag lines
+ *		hatchType 5: // other diag lines
+ *		hatchType 6: // cross hatched
+ *		hatchType 7:  // dots
+ *
+ *  \param width Width of new image
+ *  \param height Height of new image
+ *  \param hatchType The type of hatch
+ *  \param spacing Line spacing of the hatch in pixels
+ *  \return FIBITMAP* Returns FIBITMAP* on success or NULL on error.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_MakeHatchedImage (int width, int height, int hatchType, int spacing);
+
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_BlendMaskWithImage(FIBITMAP *mask, FIBITMAP *image, RGBQUAD colour, int outline, int hatch, int opacity);
 
 #ifdef __cplusplus
 }

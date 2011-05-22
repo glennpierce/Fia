@@ -87,6 +87,39 @@ FIA_CopyPaletteFromRGBQUAD (FIBITMAP * dst, RGBQUAD * palette)
 }
 
 int DLL_CALLCONV
+FIA_CopyPaletteFromColourTable (FIBITMAP * dst, int * colTab, int n)
+{  // a colour table will be an int array of hex values 0xRRGGBB
+    RGBQUAD *dst_palette;
+
+    if (dst == NULL || colTab == NULL || FreeImage_GetBPP (dst) > 8 || n < 1)
+    {
+        return FIA_ERROR;
+    }
+
+    if ((dst_palette = FreeImage_GetPalette (dst)) == NULL)
+    {
+        return FIA_ERROR;
+    }
+
+	int i;
+    for(i = 0; i < n; i++)
+    {
+        dst_palette[i].rgbRed   = (colTab[i] & 0xff0000) >> 16;
+        dst_palette[i].rgbGreen = (colTab[i] & 0x00ff00) >> 8;
+        dst_palette[i].rgbBlue  = (colTab[i] & 0x0000ff);
+    }
+
+	for(; i < 256; i++)
+    {
+        dst_palette[i].rgbRed   = 0;
+        dst_palette[i].rgbGreen = 0;
+        dst_palette[i].rgbBlue  = 0;
+    }
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
 FIA_CopyPalette (FIBITMAP * src, FIBITMAP * dst)
 {
     RGBQUAD *src_palette, *dst_palette;
@@ -168,7 +201,7 @@ FIA_SetGreyLevelOverLoadPalette (FIBITMAP * src)
 }
 
 int DLL_CALLCONV
-FIA_SetTernaryPalettePalette (FIBITMAP * src, RGBQUAD background_colour,
+FIA_SetTernaryPalette (FIBITMAP * src, RGBQUAD background_colour,
                               int pos1, RGBQUAD colour1, int pos2, RGBQUAD colour2)
 {
     RGBQUAD *palette;
@@ -209,6 +242,21 @@ FIA_SetFalseColourPalette (FIBITMAP * src, double wavelength)
     }
 
     FIA_GetFalseColourPalette (palette, wavelength);
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_SetFalseColourPalette_ForColour (FIBITMAP * src, RGBQUAD colour)
+{
+    RGBQUAD *palette;
+
+    if ((palette = FreeImage_GetPalette (src)) == NULL)
+    {
+        return FIA_ERROR;
+    }
+
+    FIA_GetFalseColourPalette_ForColour (palette, colour);
 
     return FIA_SUCCESS;
 }
@@ -285,6 +333,52 @@ FIA_SetSeismicColourPalette (FIBITMAP * src)
     }
 
     FIA_GetSeismicColourPalette (palette);
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_SetBinaryPalette (FIBITMAP * src)
+{
+    RGBQUAD *palette;
+
+    if ((palette = FreeImage_GetPalette (src)) == NULL)
+    {
+        return -1;
+    }
+
+    FIA_GetBinaryPalette (palette);
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_SetPaletteAlpha (FIBITMAP * src, int alpha)
+{  // alpha 0-255;
+    RGBQUAD *palette;
+
+    if ((palette = FreeImage_GetPalette (src)) == NULL)
+    {
+        return -1;
+    }
+
+	for (int i=0; i<256; i++)
+		palette[i].rgbReserved = alpha;
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_SetPaletteBackgroundTransparent (FIBITMAP * src)
+{  // alpha 0-255;
+    RGBQUAD *palette;
+
+    if ((palette = FreeImage_GetPalette (src)) == NULL)
+    {
+        return -1;
+    }
+
+	palette[0].rgbReserved = 0;
 
     return FIA_SUCCESS;
 }
@@ -586,6 +680,28 @@ FIA_GetFalseColourPalette (RGBQUAD * palette, double wavelength)
 }
 
 int DLL_CALLCONV
+FIA_GetFalseColourPalette_ForColour (RGBQUAD * palette, RGBQUAD colour)
+{
+    if (palette == NULL)
+    {
+        return FIA_ERROR;
+    }
+
+    double red_inre = (double) colour.rgbRed / 255.0;
+	double green_inre = (double) colour.rgbGreen / 255.0;
+	double blue_inre = (double) colour.rgbBlue / 255.0;
+
+    for(int i = 0; i < 256; i++)
+    {
+        palette[i].rgbRed = (BYTE) (red_inre * i);
+        palette[i].rgbGreen = (BYTE) (green_inre * i);
+        palette[i].rgbBlue = (BYTE) (blue_inre * i);
+    }
+
+    return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
 FIA_GetOpticalDensityPalette (RGBQUAD * palette, unsigned char red,
                               unsigned char green, unsigned char blue, int contrast, int entries)
 {
@@ -710,6 +826,51 @@ FIA_GetSeismicColourPalette (RGBQUAD * palette)
     palette[255].rgbRed = 255;
     palette[255].rgbGreen = 255;
     palette[255].rgbBlue = 255;
+
+    return 0;
+}
+
+int DLL_CALLCONV
+FIA_GetBinaryPalette (RGBQUAD * palette)
+{
+    if (palette == NULL)
+    {
+        return FIA_ERROR;
+    }
+
+	// start with usual grey scale
+	FIA_GetGreyLevelPalette(palette);
+
+	// add some custom entries low down
+	int i=1;
+	palette[i].rgbRed = 255;
+    palette[i].rgbGreen = 0;
+    palette[i].rgbBlue = 0;
+
+	i++;
+	palette[i].rgbRed = 0;
+    palette[i].rgbGreen = 255;
+    palette[i].rgbBlue = 0;
+
+	i++;
+	palette[i].rgbRed = 0;
+    palette[i].rgbGreen = 0;
+    palette[i].rgbBlue = 255;
+
+	i++;
+	palette[i].rgbRed = 255;
+    palette[i].rgbGreen = 255;
+    palette[i].rgbBlue = 0;
+
+	i++;
+	palette[i].rgbRed = 0;
+    palette[i].rgbGreen = 255;
+    palette[i].rgbBlue = 255;
+
+	i++;
+	palette[i].rgbRed = 255;
+    palette[i].rgbGreen = 0;
+    palette[i].rgbBlue = 255;
 
     return 0;
 }

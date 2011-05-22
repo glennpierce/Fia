@@ -76,10 +76,13 @@ FIA_GetGreyLevelAverage(FIBITMAP *src);
  *  \param max The maximum value where binning or histogram counting ends.
  *  \param number_of_bins How many bins you want between min and max.
  *  \param hist Long pointer to the histogram data.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_Histogram(FIBITMAP *src, double min, double max,
+							  int number_of_bins, unsigned long *hist);
+DLL_API int DLL_CALLCONV
+FIA_HistogramWithMask(FIBITMAP *src, FIBITMAP * mask, double min, double max,
 							  int number_of_bins, unsigned long *hist);
 
 /** \brief Return the histogram for a rgb image.
@@ -94,7 +97,7 @@ FIA_Histogram(FIBITMAP *src, double min, double max,
  *  \param rhist Long pointer to the red histogram data.
  *  \param ghist Long pointer to the green histogram data.
  *  \param bhist Long pointer to the blue histogram data.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_RGBHistogram(FIBITMAP *src,
@@ -115,7 +118,7 @@ FIA_MonoImageFindWhiteArea(FIBITMAP *src, unsigned int *white_area);
  *  \param src FIBITMAP bitmap to perform the histogram operation on.
  *  \param white_area double * Fraction of pixels above or equal to 1.
  *  \param black_area double * Fraction of pixels below 1.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
 FIA_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_area);
@@ -129,7 +132,7 @@ FIA_MonoImageFindWhiteFraction(FIBITMAP *src, double *white_area, double *black_
  *  \param tn int * (True Negative) A detail not in src is not in result ie two pixels that are 0.
  *  \param fp int * (False Positive) A detail not in src is in result.
  *  \param fn int * (False Negative) A detail in src is not in result.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
 FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
@@ -139,18 +142,20 @@ FIA_MonoTrueFalsePositiveComparison(FIBITMAP *src, FIBITMAP *result,
  *
  *  \param src FIBITMAP bitmap to perform the computation on.
  *  \param report StatisticReport * Report describing the statistics of the image.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
 FIA_StatisticReport(FIBITMAP *src, StatisticReport *report);
 
+DLL_API int DLL_CALLCONV
+FIA_StatisticReportWithMask (FIBITMAP * src, FIBITMAP * mask, StatisticReport * report);
 
 /** \brief This function determines the center of pixel energy of an image.
  *
  *  \param src FIBITMAP bitmap to perform the computation on.
  *  \param x_centroid float * X centre.
  *  \param y_centroid float * Y centre.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
  */
 DLL_API int DLL_CALLCONV
 FIA_Centroid(FIBITMAP *src, float *x_centroid, float *y_centroid);

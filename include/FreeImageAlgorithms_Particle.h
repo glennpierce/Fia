@@ -59,12 +59,16 @@ typedef struct
 } PARTICLEINFO;
 
 
+DLL_API void DLL_CALLCONV
+FIA_EnableOldBrokenCodeCompatibility(void);
+
+
 /** \brief Find information about particles or blobs in an image.
  *
  *  \param src FIBITMAP Image with blobs must be a binary 8bit image.
  *  \param info PARTICLEINFO** Address of pointer to hold particle information the pointer should be NULL.
  *  \param white_on_black unsigned char Determines the background intensity value.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API int DLL_CALLCONV
 FIA_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned char white_on_black);
@@ -73,7 +77,7 @@ FIA_ParticleInfo(FIBITMAP* src, PARTICLEINFO** info, unsigned char white_on_blac
 /** \brief Frees the data returned by FIA_ParticleInfo.
  *
  *  \param info PARTICLEINFO* pointer to particle information.
- *  \return int FREEIMAGE_ALGORITHMS_SUCCESS on success or FREEIMAGE_ALGORITHMS_ERROR on error.
+ *  \return int FIA_SUCCESS on success or FIA_ERROR on error.
 */
 DLL_API void DLL_CALLCONV
 FIA_FreeParticleInfo(PARTICLEINFO* info);
@@ -110,8 +114,9 @@ FIA_Fillholes(FIBITMAP* src,
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_FindImageMaxima(FIBITMAP* src, FIBITMAP *mask,
-                                    unsigned char threshold,
-						            int min_separation, FIAPeak **peaks,
+                                    double threshold,
+						            int min_separation, int oval_draw,
+									FIAPeak **peaks,
                                     int number, int *peaks_found);
 
 DLL_API void DLL_CALLCONV

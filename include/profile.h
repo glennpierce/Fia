@@ -21,6 +21,7 @@
 
 #ifdef DONT_PROFILE
 /* Profiling disabled: compiler won't generate machine instructions now. */
+#define PROFILE_SET_OUTPUT_STREAM(s)	(void*)0
 #define PROFILE_START(t)    (void*)0
 #define PROFILE_STOP(t)     (void*)0
 #define PROFILE_PRINT()     (void*)0
@@ -39,6 +40,7 @@ typedef struct {
 } entry_t ;
 
 /* Compiler calls functions now. */
+#define PROFILE_SET_OUTPUT_STREAM(s)	ProfileSetOutputStream (s)
 #define PROFILE_START(t)    ProfileStart (t)
 #define PROFILE_STOP(t)     ProfileStop (t)
 #define PROFILE_PRINT()     ProfilePrint ()
@@ -48,6 +50,8 @@ typedef struct {
 extern "C" {
 #endif /* __cplusplus */
 
+/* Reset the output stream */
+DLL_API	void DLL_CALLCONV ProfileSetOutputStream (FILE* stream) ;
 /* Start timer for given tag */
 DLL_API void DLL_CALLCONV ProfileStart (const char* str_tag) ;
 /* Stops timer for given tag and add time to total time for this tag */

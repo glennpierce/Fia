@@ -50,12 +50,19 @@ CopyImageCol (FIBITMAP * src, int src_col, int col_start, int count)
     int height = FreeImage_GetHeight (src);
     int pitch = FreeImage_GetPitch (src);
 
+	int bpp = FreeImage_GetBPP(src);
+	int bytes_per_pixel = bpp / 8;
+
     BYTE *bits = FreeImage_GetBits (src);
+
+	int src_start_ptr_count = src_col * bytes_per_pixel;
+	int dst_start_ptr_count = col_start * bytes_per_pixel;
+	int bytes_to_copy = (count * bytes_per_pixel);
+	int dst_end_ptr_count = dst_start_ptr_count + bytes_to_copy;
 
     for(int y = 0; y < height; y++)
     {
-        for(int x = col_start; x < (col_start + count); x++)
-            bits[x] = bits[src_col];
+		memcpy(bits + dst_start_ptr_count, bits + src_start_ptr_count, bytes_to_copy);
 
         bits += pitch;
     }

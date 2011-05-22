@@ -20,6 +20,7 @@
 #include "FreeImageAlgorithms_Utilities.h"
 #include "FreeImageAlgorithms_Utils.h"
 #include "FreeImageAlgorithms_Colour.h"
+#include "FreeImageAlgorithms_Palettes.h"
 
 #include <iostream>
 #include <math.h>
@@ -266,4 +267,45 @@ FIA_HSLToRGB (double hue, double satuation, double luminosity,
     }
 
     return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_ExtractColourPlanes (FIBITMAP *src, FIBITMAP **R, FIBITMAP **G, FIBITMAP **B)
+{
+	if (FIA_IsGreyScale(src))
+		return FIA_ERROR;
+	
+	*R = FreeImage_GetChannel(src, FICC_RED); 
+	*G = FreeImage_GetChannel(src, FICC_GREEN); 
+	*B = FreeImage_GetChannel(src, FICC_BLUE); 
+
+	return FIA_SUCCESS;
+}
+
+int DLL_CALLCONV
+FIA_ReplaceColourPlanes (FIBITMAP **src, FIBITMAP *R, FIBITMAP *G, FIBITMAP *B)
+{
+
+	if (FreeImage_HasPixels(R) && FIA_Is8Bit(R)) {
+		if (*src==NULL)
+			*src = FreeImage_Allocate (FreeImage_GetWidth(R), FreeImage_GetHeight(R), 24);
+		FIA_SetGreyLevelPalette (R);
+		FreeImage_SetChannel(*src, R, FICC_RED);
+	}
+	
+	if (FreeImage_HasPixels(G) && FIA_Is8Bit(G)) {
+		if (*src==NULL)
+			*src = FreeImage_Allocate (FreeImage_GetWidth(G), FreeImage_GetHeight(G), 24);
+		FIA_SetGreyLevelPalette (G);
+		FreeImage_SetChannel(*src, G, FICC_GREEN);
+	}
+	
+	if (FreeImage_HasPixels(B) && FIA_Is8Bit(B)) {
+		if (*src==NULL)
+			*src = FreeImage_Allocate (FreeImage_GetWidth(B), FreeImage_GetHeight(B), 24);
+		FIA_SetGreyLevelPalette (B);
+		FreeImage_SetChannel(*src, B, FICC_BLUE);
+	}
+		
+	return FIA_SUCCESS;
 }

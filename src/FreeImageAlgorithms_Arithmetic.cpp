@@ -18,6 +18,9 @@
 
 #include "FreeImageAlgorithms_Arithmetic.h"
 #include "FreeImageAlgorithms_Utilities.h"
+#include "FreeImageAlgorithms_Palettes.h"
+
+#include <iostream>
 #include <limits>
 #include <float.h>
 #include <math.h>
@@ -26,6 +29,13 @@ template < class Tsrc > class ARITHMATIC
 {
   public:
     int MaxOfTwoImages (FIBITMAP * dst, FIBITMAP * src);
+    int Add (FIBITMAP * dst, FIBITMAP * src);
+    int Subtract (FIBITMAP * dst, FIBITMAP * src);
+    int Multiply (FIBITMAP * dst, FIBITMAP * src);
+    int Average (FIBITMAP * dst, FIBITMAP * src);
+    int AddConst (FIBITMAP * dst, double constant);
+    int SubtractConst (FIBITMAP * dst, double constant);
+    int MultiplyConst (FIBITMAP * dst, double constant);
     int AddImages (FIBITMAP * dst, FIBITMAP * src);
     int SubtractImages (FIBITMAP * dst, FIBITMAP * src);
     int DivideImages (FIBITMAP * dst, FIBITMAP * src);
@@ -65,7 +75,7 @@ template < typename Tsrc > int ARITHMATIC < Tsrc >::SumOfAllPixels (FIBITMAP * s
     if (mask != NULL)
     {
         // Mask has to be the same size
-        if (CheckDimensions (src, mask) == FIA_ERROR)
+        if (FIA_CheckDimensions (src, mask) == FIA_ERROR)
         {
             FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                          "Image source and mask have different dimensions");
@@ -232,7 +242,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::MaxOfTwoImages (FIBITMAP * dst,
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
-    if (CheckDimensions (dst, src) == FIA_ERROR)
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                      "Image destination and source have different dimensions");
@@ -298,7 +308,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::MultiplyImages (FIBITMAP * dst,
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
-    if (CheckDimensions (dst, src) == FIA_ERROR)
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                      "Image destination and source have different dimensions");
@@ -334,7 +344,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::DivideImages (FIBITMAP * dst, F
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
-    if (CheckDimensions (dst, src) == FIA_ERROR)
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                      "Image destination and source have different dimensions");
@@ -378,7 +388,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
-    if (CheckDimensions (dst, src) == FIA_ERROR)
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                      "Image destination and source have different dimensions");
@@ -389,10 +399,10 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
     // the arithmetic.
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (dst);
 
-    if (type != FIT_DOUBLE && type != FIT_FLOAT)
+    if (type != FIT_DOUBLE && type != FIT_FLOAT && type != FIT_INT32)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
-                                     "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+                                     "Image destination was not a FIT_FLOAT, FIT_DOUBLE or FIT_INT32");
         return FIA_ERROR;
     }
 
@@ -415,7 +425,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
                 dst_ptr[x] = (double) (dst_ptr[x] + src_ptr[x]);
         }
     }
-    else
+    else if (type == FIT_FLOAT)
     {
         float *dst_ptr;
 
@@ -428,6 +438,20 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::AddImages (FIBITMAP * dst, FIBI
                 dst_ptr[x] = (float) (dst_ptr[x] + src_ptr[x]);
         }
     }
+	else if (type == FIT_INT32)
+    {
+        int *dst_ptr;
+
+        for(register int y = 0; y < height; y++)
+        {
+
+            dst_ptr = (int *) FreeImage_GetScanLine (dst, y);
+            src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+
+            for(register int x = 0; x < width; x++)
+                dst_ptr[x] = (int) (dst_ptr[x] - src_ptr[x]);
+        }
+    }
 
     return FIA_SUCCESS;
 }
@@ -437,7 +461,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractImages (FIBITMAP * dst,
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
-    if (CheckDimensions (dst, src) == FIA_ERROR)
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                      "Image destination and source have different dimensions");
@@ -448,10 +472,10 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractImages (FIBITMAP * dst,
     // the arithmetic.
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (dst);
 
-    if (type != FIT_DOUBLE && type != FIT_FLOAT)
+    if (type != FIT_DOUBLE && type != FIT_FLOAT && type != FIT_INT32)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
-                                     "Image destination was not a FIT_FLOAT or FIT_DOUBLE");
+                                     "Image destination was not a FIT_FLOAT, FIT_DOUBLE or FIT_INT32");
         return FIA_ERROR;
     }
 
@@ -474,7 +498,7 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractImages (FIBITMAP * dst,
                 dst_ptr[x] = (double) (dst_ptr[x] - src_ptr[x]);
         }
     }
-    else
+    else if (type == FIT_FLOAT)
     {
         float *dst_ptr;
 
@@ -488,7 +512,204 @@ template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractImages (FIBITMAP * dst,
                 dst_ptr[x] = (float) (dst_ptr[x] - src_ptr[x]);
         }
     }
+	else if (type == FIT_INT32)
+    {
+        int *dst_ptr;
 
+        for(register int y = 0; y < height; y++)
+        {
+
+            dst_ptr = (int *) FreeImage_GetScanLine (dst, y);
+            src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+
+            for(register int x = 0; x < width; x++)
+                dst_ptr[x] = (int) (dst_ptr[x] - src_ptr[x]);
+        }
+    }
+
+    return FIA_SUCCESS;
+}
+
+template < class Tsrc > int ARITHMATIC < Tsrc >::Add (FIBITMAP * dst, FIBITMAP * src)
+{
+    if (dst == NULL || src == NULL)
+        return FIA_ERROR;
+
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Image destination and source have different dimensions");
+        return FIA_ERROR;
+    }
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    Tsrc *src_ptr;
+    Tsrc *dst_ptr;
+
+    for(register int y = 0; y < height; y++)
+    {
+        dst_ptr = (Tsrc *) FreeImage_GetScanLine (dst, y);
+        src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+
+        for(register int x = 0; x < width; x++)
+            dst_ptr[x] = dst_ptr[x] + src_ptr[x];
+    }
+ 
+    return FIA_SUCCESS;
+}
+
+template < class Tsrc > int ARITHMATIC < Tsrc >::Subtract (FIBITMAP * dst, FIBITMAP * src)
+{
+    if (dst == NULL || src == NULL)
+        return FIA_ERROR;
+
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Image destination and source have different dimensions");
+        return FIA_ERROR;
+    }
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    Tsrc *src_ptr;
+    Tsrc *dst_ptr;
+
+    for(register int y = 0; y < height; y++)
+    {
+        dst_ptr = (Tsrc *) FreeImage_GetScanLine (dst, y);
+        src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+
+        for(register int x = 0; x < width; x++)
+            dst_ptr[x] = dst_ptr[x] - src_ptr[x];
+    }
+ 
+    return FIA_SUCCESS;
+}
+
+template < class Tsrc > int ARITHMATIC < Tsrc >::Multiply (FIBITMAP * dst, FIBITMAP * src)
+{
+    if (dst == NULL || src == NULL)
+        return FIA_ERROR;
+
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Image destination and source have different dimensions");
+        return FIA_ERROR;
+    }
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    Tsrc *src_ptr;
+    Tsrc *dst_ptr;
+
+    for(register int y = 0; y < height; y++)
+    {
+        dst_ptr = (Tsrc *) FreeImage_GetScanLine (dst, y);
+        src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+
+        for(register int x = 0; x < width; x++)
+            dst_ptr[x] = dst_ptr[x] * src_ptr[x];
+    }
+ 
+    return FIA_SUCCESS;
+}
+
+template < class Tsrc > int ARITHMATIC < Tsrc >::Average (FIBITMAP * dst, FIBITMAP * src)
+{
+    if (dst == NULL || src == NULL)
+        return FIA_ERROR;
+
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                     "Image destination and source have different dimensions");
+        return FIA_ERROR;
+    }
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+
+    Tsrc *src_ptr;
+    Tsrc *dst_ptr;
+
+    for(register int y = 0; y < height; y++)
+    {
+        dst_ptr = (Tsrc *) FreeImage_GetScanLine (dst, y);
+        src_ptr = (Tsrc *) FreeImage_GetScanLine (src, y);
+
+        for(register int x = 0; x < width; x++)
+            dst_ptr[x] = (Tsrc)((double)(dst_ptr[x] + src_ptr[x]) / 2.0);
+    }
+ 
+    return FIA_SUCCESS;
+}
+
+template < class Tsrc > int ARITHMATIC < Tsrc >::AddConst (FIBITMAP * dst, double constant)
+{
+    if (dst == NULL)
+        return FIA_ERROR;
+
+    int width = FreeImage_GetWidth (dst);
+    int height = FreeImage_GetHeight (dst);
+
+    Tsrc *dst_ptr;
+
+    for(register int y = 0; y < height; y++)
+    {
+        dst_ptr = (Tsrc *) FreeImage_GetScanLine (dst, y);
+
+        for(register int x = 0; x < width; x++)
+            dst_ptr[x] = dst_ptr[x] + constant;
+    }
+ 
+    return FIA_SUCCESS;
+}
+
+template < class Tsrc > int ARITHMATIC < Tsrc >::SubtractConst (FIBITMAP * dst, double constant)
+{
+    if (dst == NULL)
+        return FIA_ERROR;
+
+    int width = FreeImage_GetWidth (dst);
+    int height = FreeImage_GetHeight (dst);
+
+    Tsrc *dst_ptr;
+
+    for(register int y = 0; y < height; y++)
+    {
+        dst_ptr = (Tsrc *) FreeImage_GetScanLine (dst, y);
+
+        for(register int x = 0; x < width; x++)
+            dst_ptr[x] = dst_ptr[x] - constant;
+    }
+ 
+    return FIA_SUCCESS;
+}
+
+template < class Tsrc > int ARITHMATIC < Tsrc >::MultiplyConst (FIBITMAP * dst, double constant)
+{
+    if (dst == NULL)
+        return FIA_ERROR;
+
+    int width = FreeImage_GetWidth (dst);
+    int height = FreeImage_GetHeight (dst);
+
+    Tsrc *dst_ptr;
+
+    for(register int y = 0; y < height; y++)
+    {
+        dst_ptr = (Tsrc *) FreeImage_GetScanLine (dst, y);
+
+        for(register int x = 0; x < width; x++)
+            dst_ptr[x] = dst_ptr[x] * constant;
+    }
+ 
     return FIA_SUCCESS;
 }
 
@@ -1000,6 +1221,208 @@ FIA_SubtractGreyLevelImages (FIBITMAP * dst, FIBITMAP * src)
 }
 
 int DLL_CALLCONV
+FIA_Subtract (FIBITMAP * dst, FIBITMAP * src)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (src) == 8)
+                return arithmaticUCharImage.Subtract (dst, src);
+        case FIT_UINT16:
+            return arithmaticUShortImage.Subtract (dst, src);
+        case FIT_INT16:
+            return arithmaticShortImage.Subtract (dst, src);
+        case FIT_UINT32:
+            return arithmaticULongImage.Subtract (dst, src);
+        case FIT_INT32:
+            return arithmaticLongImage.Subtract (dst, src);
+        case FIT_FLOAT:
+            return arithmaticFloatImage.Subtract (dst, src);
+        case FIT_DOUBLE:
+            return arithmaticDoubleImage.Subtract (dst, src);
+        default:
+            break;
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_Add (FIBITMAP * dst, FIBITMAP * src)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (src) == 8)
+                return arithmaticUCharImage.Add (dst, src);
+        case FIT_UINT16:
+            return arithmaticUShortImage.Add (dst, src);
+        case FIT_INT16:
+            return arithmaticShortImage.Add (dst, src);
+        case FIT_UINT32:
+            return arithmaticULongImage.Add (dst, src);
+        case FIT_INT32:
+            return arithmaticLongImage.Add (dst, src);
+        case FIT_FLOAT:
+            return arithmaticFloatImage.Add (dst, src);
+        case FIT_DOUBLE:
+            return arithmaticDoubleImage.Add (dst, src);
+        default:
+            break;
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_Multiply (FIBITMAP * dst, FIBITMAP * src)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (src) == 8)
+                return arithmaticUCharImage.Multiply (dst, src);
+        case FIT_UINT16:
+            return arithmaticUShortImage.Multiply (dst, src);
+        case FIT_INT16:
+            return arithmaticShortImage.Multiply (dst, src);
+        case FIT_UINT32:
+            return arithmaticULongImage.Multiply (dst, src);
+        case FIT_INT32:
+            return arithmaticLongImage.Multiply (dst, src);
+        case FIT_FLOAT:
+            return arithmaticFloatImage.Multiply (dst, src);
+        case FIT_DOUBLE:
+            return arithmaticDoubleImage.Multiply (dst, src);
+        default:
+            break;
+    }
+
+    return FIA_ERROR;
+}
+int DLL_CALLCONV
+FIA_Average (FIBITMAP * dst, FIBITMAP * src)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (src);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (src) == 8)
+                return arithmaticUCharImage.Average (dst, src);
+        case FIT_UINT16:
+            return arithmaticUShortImage.Average (dst, src);
+        case FIT_INT16:
+            return arithmaticShortImage.Average (dst, src);
+        case FIT_UINT32:
+            return arithmaticULongImage.Average (dst, src);
+        case FIT_INT32:
+            return arithmaticLongImage.Average (dst, src);
+        case FIT_FLOAT:
+            return arithmaticFloatImage.Average (dst, src);
+        case FIT_DOUBLE:
+            return arithmaticDoubleImage.Average (dst, src);
+        default:
+            break;
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_AddConst (FIBITMAP * dst, double constant)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (dst);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (dst) == 8)
+                return arithmaticUCharImage.AddConst (dst, constant);
+        case FIT_UINT16:
+            return arithmaticUShortImage.AddConst (dst, constant);
+        case FIT_INT16:
+            return arithmaticShortImage.AddConst (dst, constant);
+        case FIT_UINT32:
+            return arithmaticULongImage.AddConst (dst, constant);
+        case FIT_INT32:
+            return arithmaticLongImage.AddConst (dst, constant);
+        case FIT_FLOAT:
+            return arithmaticFloatImage.AddConst (dst, constant);
+        case FIT_DOUBLE:
+            return arithmaticDoubleImage.AddConst (dst, constant);
+        default:
+            break;
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_SubtractConst (FIBITMAP * dst, double constant)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (dst);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (dst) == 8)
+                return arithmaticUCharImage.SubtractConst (dst, constant);
+        case FIT_UINT16:
+            return arithmaticUShortImage.SubtractConst (dst, constant);
+        case FIT_INT16:
+            return arithmaticShortImage.SubtractConst (dst, constant);
+        case FIT_UINT32:
+            return arithmaticULongImage.SubtractConst (dst, constant);
+        case FIT_INT32:
+            return arithmaticLongImage.SubtractConst (dst, constant);
+        case FIT_FLOAT:
+            return arithmaticFloatImage.SubtractConst (dst, constant);
+        case FIT_DOUBLE:
+            return arithmaticDoubleImage.SubtractConst (dst, constant);
+        default:
+            break;
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_MultiplyConst (FIBITMAP * dst, double constant)
+{
+    FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (dst);
+
+    switch (src_type)
+    {
+        case FIT_BITMAP:
+            if (FreeImage_GetBPP (dst) == 8)
+                return arithmaticUCharImage.MultiplyConst (dst, constant);
+        case FIT_UINT16:
+            return arithmaticUShortImage.MultiplyConst (dst, constant);
+        case FIT_INT16:
+            return arithmaticShortImage.MultiplyConst (dst, constant);
+        case FIT_UINT32:
+            return arithmaticULongImage.MultiplyConst (dst, constant);
+        case FIT_INT32:
+            return arithmaticLongImage.MultiplyConst (dst, constant);
+        case FIT_FLOAT:
+            return arithmaticFloatImage.MultiplyConst (dst, constant);
+        case FIT_DOUBLE:
+            return arithmaticDoubleImage.MultiplyConst (dst, constant);
+        default:
+            break;
+    }
+
+    return FIA_ERROR;
+}
+
+int DLL_CALLCONV
 FIA_MultiplyGreyLevelImageConstant (FIBITMAP * dst, double constant)
 {
     FREE_IMAGE_TYPE src_type = FreeImage_GetImageType (dst);
@@ -1152,7 +1575,7 @@ FIA_MultiplyComplexImages (FIBITMAP * dst, FIBITMAP * src)
     if (dst == NULL || src == NULL)
         return FIA_ERROR;
 
-    if (CheckDimensions (dst, src) == FIA_ERROR)
+    if (FIA_CheckDimensions (dst, src) == FIA_ERROR)
     {
         FreeImage_OutputMessageProc (FIF_UNKNOWN,
                                      "Image destination and source have different dimensions");
@@ -1226,4 +1649,238 @@ FIA_SumOfAllPixels (FIBITMAP * src, FIBITMAP * mask, double *sum)
     }
 
     return FIA_ERROR;
+}
+
+int DLL_CALLCONV
+FIA_Add8BitImageToColourImage (FIBITMAP *colour_dib, FIBITMAP *greyscale_dib, GREY_LEVEL_ADD_TO_COLOURTYPE type)
+{
+    RGBQUAD *palette;
+
+    // Has to be the same size
+    if (FIA_CheckDimensions (colour_dib, greyscale_dib) == FIA_ERROR)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                         "Colour source and greyscale image have different dimensions");
+        return FIA_ERROR;
+    }
+
+    int width = FreeImage_GetWidth(colour_dib);
+    int height = FreeImage_GetHeight(colour_dib);
+
+    int bytespp = FreeImage_GetLine (colour_dib) / FreeImage_GetWidth (colour_dib);
+
+    // Can be NULL. Just won't have palette weighted adds.
+    palette = FreeImage_GetPalette (greyscale_dib);
+
+    if(palette == NULL)
+        FIA_GetGreyLevelPalette(palette);
+
+    BYTE *colour_bits = NULL;
+    BYTE *gs_bits = NULL;
+    RGBQUAD palette_entry;
+    int new_value;
+
+    if(type == GREY_LEVEL_ADD_ADD) {
+
+        for(register int y = 0; y < height; y++)
+        {
+            colour_bits = (BYTE *) FreeImage_GetScanLine (colour_dib, y);
+            gs_bits = (BYTE *) FreeImage_GetScanLine (greyscale_dib, y);
+
+            for(register int x=0, cx=0; x < width; x++, cx+=bytespp) {
+
+                palette_entry = palette[gs_bits[x]];
+
+                new_value = (colour_bits[cx + FI_RGBA_RED] + palette_entry.rgbRed);
+                
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_RED] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_RED] = std::min(std::max(0, new_value), 255);
+                #endif
+            
+                new_value = (colour_bits[cx + FI_RGBA_GREEN] + palette_entry.rgbGreen);
+            
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_GREEN] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_GREEN] = std::min(std::max(0, new_value), 255);
+                #endif
+
+                new_value = (colour_bits[cx + FI_RGBA_BLUE] + palette_entry.rgbBlue);
+                
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_BLUE] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_BLUE] = std::min(std::max(0, new_value), 255);
+                #endif
+            }
+        }
+    }
+    else if(type == GREY_LEVEL_ADD_AVERAGE) {
+
+        for(register int y = 0; y < height; y++)
+        {
+            colour_bits = (BYTE *) FreeImage_GetScanLine (colour_dib, y);
+            gs_bits = (BYTE *) FreeImage_GetScanLine (greyscale_dib, y);
+
+            for(register int x=0, cx=0; x < width; x++, cx+=bytespp) {
+
+                palette_entry = palette[gs_bits[x]];
+
+                new_value = (colour_bits[cx + FI_RGBA_RED] + palette_entry.rgbRed) / 2;
+
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_RED] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_RED] = std::min(std::max(0, new_value), 255);
+                #endif
+            
+                new_value = (colour_bits[cx + FI_RGBA_GREEN] + palette_entry.rgbGreen) / 2;
+
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_GREEN] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_GREEN] = std::min(std::max(0, new_value), 255);
+                #endif
+
+                new_value = (colour_bits[cx + FI_RGBA_BLUE] + palette_entry.rgbBlue) / 2;
+
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_BLUE] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_BLUE] = std::min(std::max(0, new_value), 255);
+                #endif
+            }
+        }
+
+    }
+    else if(type == GREY_LEVEL_ADD_FILL_RANGE) {
+
+        for(register int y = 0; y < height; y++)
+        {
+            colour_bits = (BYTE *) FreeImage_GetScanLine (colour_dib, y);
+            gs_bits = (BYTE *) FreeImage_GetScanLine (greyscale_dib, y);
+
+            for(register int x=0, cx=0; x < width; x++, cx+=bytespp) {
+
+                palette_entry = palette[gs_bits[x]];
+        
+                new_value = colour_bits[cx + FI_RGBA_RED] + (palette_entry.rgbRed * (255 - colour_bits[cx + FI_RGBA_RED])/255);
+                
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_RED] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_RED] = std::min(std::max(0, new_value), 255);
+                #endif
+            
+                new_value = colour_bits[cx + FI_RGBA_GREEN] + (palette_entry.rgbGreen * (255 - colour_bits[cx + FI_RGBA_GREEN])/255);
+                
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_GREEN] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_GREEN] = std::min(std::max(0, new_value), 255);
+                #endif
+
+                new_value = colour_bits[cx + FI_RGBA_BLUE] + (palette_entry.rgbBlue * (255 - colour_bits[cx + FI_RGBA_BLUE])/255);
+            
+                #ifdef WIN32
+                    colour_bits[cx + FI_RGBA_BLUE] = min(max(0, new_value), 255);
+                #else
+                    colour_bits[cx + FI_RGBA_BLUE] = std::min(std::max(0, new_value), 255);
+                #endif
+            }
+        }
+    }
+
+    return FIA_SUCCESS;
+}
+
+
+int DLL_CALLCONV
+FIA_Overlay8BitImageOverColourImage (FIBITMAP *colour_dib, FIBITMAP *greyscale_dib, BYTE threshold)
+{
+    RGBQUAD *palette;
+
+    // Has to be the same size
+    if (FIA_CheckDimensions (colour_dib, greyscale_dib) == FIA_ERROR)
+    {
+        FreeImage_OutputMessageProc (FIF_UNKNOWN,
+                                         "Colour source and greyscale image have different dimensions");
+        return FIA_ERROR;
+    }
+
+    int width = FreeImage_GetWidth(colour_dib);
+    int height = FreeImage_GetHeight(colour_dib);
+
+    int bytespp = FreeImage_GetLine (colour_dib) / FreeImage_GetWidth (colour_dib);
+
+    // Can be NULL. Just won't have palette weighted adds.
+    palette = FreeImage_GetPalette (greyscale_dib);
+
+    if(palette == NULL)
+        FIA_GetGreyLevelPalette(palette);
+
+    BYTE *colour_bits = NULL;
+    BYTE *gs_bits = NULL;
+    RGBQUAD palette_entry;
+    int new_value;
+
+    for(register int y = 0; y < height; y++)
+    {
+        colour_bits = (BYTE *) FreeImage_GetScanLine (colour_dib, y);
+        gs_bits = (BYTE *) FreeImage_GetScanLine (greyscale_dib, y);
+
+        for(register int x=0, cx=0; x < width; x++, cx+=bytespp) {
+
+            palette_entry = palette[gs_bits[x]];
+
+            if(gs_bits[x] > threshold) {
+
+                new_value = palette_entry.rgbRed;
+            }
+            else {
+
+                new_value = colour_bits[cx + FI_RGBA_RED];
+            }
+
+            #ifdef WIN32
+                colour_bits[cx + FI_RGBA_RED] = min(max(0, new_value), 255);
+            #else
+                colour_bits[cx + FI_RGBA_RED] = std::min(std::max(0, new_value), 255);
+            #endif
+        
+            if(gs_bits[x] > threshold) {
+
+                new_value = palette_entry.rgbGreen;
+            }
+            else {
+
+                new_value = colour_bits[cx + FI_RGBA_GREEN];
+            }
+
+            #ifdef WIN32
+                colour_bits[cx + FI_RGBA_GREEN] = min(max(0, new_value), 255);
+            #else
+                colour_bits[cx + FI_RGBA_GREEN] = std::min(std::max(0, new_value), 255);
+            #endif
+
+            if(gs_bits[x] > threshold) {
+
+                new_value = palette_entry.rgbBlue;
+            }
+            else {
+
+                new_value = colour_bits[cx + FI_RGBA_BLUE];
+            }
+
+            #ifdef WIN32
+                colour_bits[cx + FI_RGBA_BLUE] = min(max(0, new_value), 255);
+            #else
+                colour_bits[cx + FI_RGBA_BLUE] = std::min(std::max(0, new_value), 255);
+            #endif
+        }
+    }
+  
+    return FIA_SUCCESS;
 }

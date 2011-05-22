@@ -29,7 +29,7 @@ extern "C" {
 /*! \file 
  *	Dilates the particles in an image.
  *
- *  \param src FIBITMAP bitmap to perform the dilation operation on.
+ *  \param src FIABITMAP bitmap to perform the dilation operation on.
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
@@ -38,7 +38,7 @@ FIA_BinaryDilation(FIABITMAP* src, FilterKernel kernel);
 /*! \file 
  *	Erodes the particles in an image.
  *
- *  \param src FIBITMAP bitmap to perform the erosion operation on.
+ *  \param src FIABITMAP bitmap to perform the erosion operation on.
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
@@ -47,7 +47,8 @@ FIA_BinaryErosion(FIABITMAP* src, FilterKernel kernel);
 /*! \file 
  *	Erodes and then performs dialation.
  *
- *  \param src FIBITMAP bitmap to perform the erosion operation on.
+ *  \param src FIABITMAP bitmap to perform the operation on.
+ *  \param kernel FilterKernel kernel to use (e.g. create with FIA_NewKernel)
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
@@ -56,11 +57,67 @@ FIA_BinaryOpening(FIABITMAP* src, FilterKernel kernel);
 /*! \file 
  *	Diates then performs an erosion.
  *
- *  \param src FIBITMAP bitmap to perform the erosion operation on.
+ *  \param src FIABITMAP bitmap to perform the operation on.
+ *  \param kernel FilterKernel kernel to use (e.g. create with FIA_NewKernel)
  *  \return FIBITMAP on success or NULL on error.
 */
 DLL_API FIBITMAP* DLL_CALLCONV
 FIA_BinaryClosing(FIABITMAP* src, FilterKernel kernel);
+
+/*! \file 
+ *	Convinience 3x3 Dilation on FIBITMAP.
+ *
+ *  \param src FIBITMAP bitmap to perform the operation on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Dilation (FIBITMAP * src);
+
+/*! \file 
+ *	Convinience 3x3 Erosion on FIBITMAP.
+ *
+ *  \param src FIBITMAP bitmap to perform the operation on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Erosion (FIBITMAP * src);
+
+/*! \file 
+ *	Convinience 3x3 Opening on FIBITMAP, Erodes then performs an dilation.
+ *
+ *  \param src FIBITMAP bitmap to perform the operation on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Opening (FIBITMAP * src);
+
+/*! \file 
+ *	Convinience 3x3 Closing on FIBITMAP, Dilates then performs an erosion.
+ *
+ *  \param src FIBITMAP bitmap to perform the operation on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Closing (FIBITMAP * src);
+
+/*! \file 
+ *	Find inner border of FIBITMAP, Subtract an eroded of the src.
+ *
+ *  \param src FIBITMAP bitmap to perform the operation on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_BinaryInnerBorder (FIBITMAP * src);
+
+/*! \file 
+ *	Find outer border of FIBITMAP, Subtract src from its dilation.
+ *
+ *  \param src FIBITMAP bitmap to perform the operation on.
+ *  \return FIBITMAP on success or NULL on error.
+*/
+DLL_API FIBITMAP *DLL_CALLCONV
+FIA_BinaryOuterBorder (FIBITMAP * src);
+
 
 #ifdef __cplusplus
 }

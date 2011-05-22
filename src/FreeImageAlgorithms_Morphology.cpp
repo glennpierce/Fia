@@ -17,6 +17,7 @@
 */
 
 #include "FreeImageAlgorithms.h"
+#include "FreeImageAlgorithms_Arithmetic.h"
 #include "FreeImageAlgorithms_Convolution.h"
 #include "FreeImageAlgorithms_Convolution.txx"
 #include "FreeImageAlgorithms_Morphology.h"
@@ -820,3 +821,94 @@ FIA_BinaryClosing (FIABITMAP * src, FilterKernel kernel)
 
     return tmp;
 };
+
+FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Dilation (FIBITMAP * src)
+{
+	const double vals[9]={1,1,1,1,1,1,1,1,1};
+	
+	FilterKernel kernel = FIA_NewKernel(1, 1, vals, 9.0);			
+	FIABITMAP *dst_FIA = FIA_SetBorder(src, 1, 1, BorderType_Constant, 0);
+	FIBITMAP *dst = FIA_BinaryDilation(dst_FIA, kernel);
+	FIA_Unload (dst_FIA);
+
+	return dst;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Erosion (FIBITMAP * src)
+{
+	const double vals[9]={1,1,1,1,1,1,1,1,1};
+	
+	FilterKernel kernel = FIA_NewKernel(1, 1, vals, 9.0);			
+	FIABITMAP *dst_FIA = FIA_SetBorder(src, 1, 1, BorderType_Constant, 0);
+	FIBITMAP *dst = FIA_BinaryErosion(dst_FIA, kernel);
+	FIA_Unload (dst_FIA);
+
+	return dst;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Opening (FIBITMAP * src)
+{
+	const double vals[9]={1,1,1,1,1,1,1,1,1};
+	
+	FilterKernel kernel = FIA_NewKernel(1, 1, vals, 9.0);			
+	FIABITMAP *dst_FIA = FIA_SetBorder(src, 1, 1, BorderType_Constant, 0);
+	FIBITMAP *dst = FIA_BinaryOpening(dst_FIA, kernel);
+	FIA_Unload (dst_FIA);
+
+	return dst;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_Binary3x3Closing (FIBITMAP * src)
+{
+	const double vals[9]={1,1,1,1,1,1,1,1,1};
+	
+	FilterKernel kernel = FIA_NewKernel(1, 1, vals, 9.0);			
+	FIABITMAP *dst_FIA = FIA_SetBorder(src, 1, 1, BorderType_Constant, 0);
+	FIBITMAP *dst = FIA_BinaryClosing(dst_FIA, kernel);
+	FIA_Unload (dst_FIA);
+
+	return dst;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_BinaryInnerBorder (FIBITMAP * src)
+{
+	const double vals[9]={1,1,1,1,1,1,1,1,1};
+	
+	FilterKernel kernel = FIA_NewKernel(1, 1, vals, 9.0);			
+	FIABITMAP *dst_FIA = FIA_SetBorder(src, 1, 1, BorderType_Constant, 0);
+	FIBITMAP *dst = FIA_BinaryErosion(dst_FIA, kernel);
+	FIA_Unload (dst_FIA);
+
+	FIBITMAP *dst2 = FreeImage_Clone(src);
+
+//	FIA_InPlaceConvertToInt32Type (&dst2, 0);
+//	FIA_SubtractGreyLevelImages(dst2, dst);
+//	FIA_InPlaceConvertToStandardType(&dst2, 0);
+	FIA_Subtract(dst2, dst);
+
+	return dst2;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_BinaryOuterBorder (FIBITMAP * src)
+{
+	const double vals[9]={1,1,1,1,1,1,1,1,1};
+	
+	FilterKernel kernel = FIA_NewKernel(1, 1, vals, 9.0);			
+	FIABITMAP *dst_FIA = FIA_SetBorder(src, 1, 1, BorderType_Constant, 0);
+	FIBITMAP *dst = FIA_BinaryDilation(dst_FIA, kernel);
+	FIA_Unload (dst_FIA);
+
+//	FIA_InPlaceConvertToInt32Type (&dst, 0);
+//	FIA_SubtractGreyLevelImages(dst, src);
+//	FIA_InPlaceConvertToStandardType(&dst, 0);
+	FIA_Subtract(dst, src);
+
+	return dst;
+}
+

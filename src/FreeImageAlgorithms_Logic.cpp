@@ -33,21 +33,6 @@ template < typename Tsrc > class LOGIC
     int InvertMaskImage (FIBITMAP * mask);
 };
 
-static int
-CheckDimensions (FIBITMAP * src, FIBITMAP * mask)
-{
-    // Check src is the same size as dst
-    int src_width = FreeImage_GetWidth (src);
-    int src_height = FreeImage_GetHeight (src);
-    int dst_width = FreeImage_GetWidth (mask);
-    int dst_height = FreeImage_GetHeight (mask);
-
-    if (src_width != dst_width || src_height != dst_height)
-        return FIA_ERROR;
-
-    return FIA_SUCCESS;
-}
-
 template < typename Tsrc > int LOGIC < Tsrc >::MaskImage (FIBITMAP * src, FIBITMAP * mask)
 {
     if (mask == NULL || src == NULL)
@@ -56,7 +41,7 @@ template < typename Tsrc > int LOGIC < Tsrc >::MaskImage (FIBITMAP * src, FIBITM
     }
 
     // Have to be the same size
-    if (CheckDimensions (src, mask) == FIA_ERROR)
+    if (FIA_CheckDimensions (src, mask) == FIA_ERROR)
     {
         return FIA_ERROR;
     }
@@ -205,4 +190,108 @@ FIA_ReverseMaskImage (FIBITMAP * mask, unsigned char foreground_val)
     }
 
     return FIA_SUCCESS;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_BinaryOr (FIBITMAP *src1, FIBITMAP *src2, int Not)
+{
+    if (src1 == NULL || src2 == NULL)
+        return NULL;
+
+    int width = FreeImage_GetWidth (src1);
+    int height = FreeImage_GetHeight (src1);
+
+	if (width != FreeImage_GetWidth (src2) || height != FreeImage_GetHeight (src2))
+		return NULL;
+
+    // src has to be 8 bit 
+    if (FreeImage_GetBPP (src1) != 8 || FreeImage_GetImageType (src1) != FIT_BITMAP)
+		return NULL;
+    if (FreeImage_GetBPP (src2) != 8 || FreeImage_GetImageType (src2) != FIT_BITMAP)
+		return NULL;
+
+    FIBITMAP *dst = FIA_CloneImageType (src1, width, height);
+
+	if (Not)
+	{
+		for(register int y = 0; y < height; y++)
+		{
+			unsigned char *src1_ptr = (unsigned char *) FreeImage_GetScanLine (src1, y);
+			unsigned char *src2_ptr = (unsigned char *) FreeImage_GetScanLine (src2, y);
+			unsigned char *dst_ptr  = (unsigned char *) FreeImage_GetScanLine (dst, y);
+
+			for(register int x = 0; x < width; x++)
+			{
+				dst_ptr[x] = !(src1_ptr[x] || src2_ptr[x]);
+			}
+		}
+	}
+	else 
+	{
+		for(register int y = 0; y < height; y++)
+		{
+			unsigned char *src1_ptr = (unsigned char *) FreeImage_GetScanLine (src1, y);
+			unsigned char *src2_ptr = (unsigned char *) FreeImage_GetScanLine (src2, y);
+			unsigned char *dst_ptr  = (unsigned char *) FreeImage_GetScanLine (dst, y);
+
+			for(register int x = 0; x < width; x++)
+			{
+				dst_ptr[x] = src1_ptr[x] || src2_ptr[x];
+			}
+		}
+	}
+
+    return dst;
+}
+
+FIBITMAP *DLL_CALLCONV
+FIA_BinaryAnd (FIBITMAP *src1, FIBITMAP *src2, int Not)
+{
+    if (src1 == NULL || src2 == NULL)
+        return NULL;
+
+    int width = FreeImage_GetWidth (src1);
+    int height = FreeImage_GetHeight (src1);
+
+	if (width != FreeImage_GetWidth (src2) || height != FreeImage_GetHeight (src2))
+		return NULL;
+
+    // src has to be 8 bit 
+    if (FreeImage_GetBPP (src1) != 8 || FreeImage_GetImageType (src1) != FIT_BITMAP)
+		return NULL;
+    if (FreeImage_GetBPP (src2) != 8 || FreeImage_GetImageType (src2) != FIT_BITMAP)
+		return NULL;
+
+    FIBITMAP *dst = FIA_CloneImageType (src1, width, height);
+
+	if (Not)
+	{
+		for(register int y = 0; y < height; y++)
+		{
+			unsigned char *src1_ptr = (unsigned char *) FreeImage_GetScanLine (src1, y);
+			unsigned char *src2_ptr = (unsigned char *) FreeImage_GetScanLine (src2, y);
+			unsigned char *dst_ptr  = (unsigned char *) FreeImage_GetScanLine (dst, y);
+
+			for(register int x = 0; x < width; x++)
+			{
+				dst_ptr[x] = !(src1_ptr[x] && src2_ptr[x]);
+			}
+		}
+	}
+	else 
+	{
+		for(register int y = 0; y < height; y++)
+		{
+			unsigned char *src1_ptr = (unsigned char *) FreeImage_GetScanLine (src1, y);
+			unsigned char *src2_ptr = (unsigned char *) FreeImage_GetScanLine (src2, y);
+			unsigned char *dst_ptr  = (unsigned char *) FreeImage_GetScanLine (dst, y);
+
+			for(register int x = 0; x < width; x++)
+			{
+				dst_ptr[x] = src1_ptr[x] && src2_ptr[x];
+			}
+		}
+	}
+
+    return dst;
 }

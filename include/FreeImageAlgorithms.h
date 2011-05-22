@@ -103,7 +103,7 @@ typedef enum _FIA_MatrixOrder {FIA_MatrixOrderPrepend = 0, FIA_MatrixOrderAppend
 #define _CPU_FEATURE_SSE2   0x0004
 #define _CPU_FEATURE_3DNOW  0x0008
 
-typedef enum {BIT8, BIT16, BIT24, BIT32} FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH;
+typedef enum {BIT_NONE=-1, BIT8, BIT16, BIT24, BIT32} FREEIMAGE_ALGORITHMS_SAVE_BITDEPTH;
 
 /** \brief Disposes of FIABITMAP's.
  *

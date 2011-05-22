@@ -256,21 +256,15 @@ static FIARECT SetRectRelativeToPoint(FIARECT rect, FIAPOINT pt)
 template < typename Tsrc > int TemplateImageFunctionClass <
     Tsrc >::GradientBlendMosaicPaste(FIBITMAP* dst, FIBITMAP* src, int x, int y)
 {
-	int xc=0, yc=0, x1=0, y1=0; 
-	FIBITMAP *dstRegion=NULL, *dstRegionMask=NULL, *dstRegionMaskInverted=NULL, *maskedSrc=NULL, *invertedMaskedSrc=NULL, *blended_section=NULL;
-	double val;
-	BYTE *pCentre=NULL, *pLeft=NULL, *pTop=NULL, *pTopLeft=NULL, *pTopRight=NULL;
-	float *pCentreFM=NULL, *pLeftFM=NULL, *pTopFM=NULL, *pTopLeftFM=NULL, *pTopRightFM=NULL;
-	BYTE *pCentreF;
+	int xc=0, yc=0, x1=0, y1=0, intersect_width, intersect_height, bytespp; 
+	FIBITMAP *dstRegion=NULL, *dstRegionMask=NULL, *dstRegionMaskInverted=NULL;
+    FIBITMAP *maskedSrc=NULL, *invertedMaskedSrc=NULL, *blended_section=NULL, *distMapEdges = NULL, *srcRegion = NULL;
+    float *pCentreFM=NULL, *pLeftFM=NULL, *pTopFM=NULL, *pTopLeftFM=NULL;
+    float **pTopRightFM=NULL,*distMapEdgesBits = NULL, *pMatrix = NULL;
+    double val, max_possoble_value; 
+	BYTE *pCentre=NULL, *pLeft=NULL, *pTop=NULL, *pTopLeft=NULL, *pTopRight=NULL, *pCentreF = NULL;
 	FIARECT dstRect, srcRect;
     bool greyscale_image = true;
-    double max_pssoble_value;
-    float *pMatrix;
-    int intersect_width, intersect_height;
-    int bytespp;
-    float* distMapEdgesBits = NULL;
-    FIBITMAP *distMapEdges;
-    FIBITMAP *srcRegion;
 
 	if(dst == NULL || src == NULL)
 	    goto CLEANUP;
@@ -333,10 +327,10 @@ template < typename Tsrc > int TemplateImageFunctionClass <
 	}
 	
 	blended_section = FIA_CloneImageType(srcRegion, intersect_width, intersect_height);	
+	
+	FIA_GetMaxPosibleValueForGreyScaleType (FreeImage_GetImageType(dst), &max_possoble_value);
 
-	FIA_GetMaxPosibleValueForGreyScaleType (FreeImage_GetImageType(dst), &max_pssoble_value);
-
-	dstRegionMask = FIA_Threshold(dstRegion, 1.0, max_pssoble_value, 1.0);
+	dstRegionMask = FIA_Threshold(dstRegion, 1.0, max_possoble_value, 1.0);
 	FIA_InPlaceConvertToStandardType(&dstRegionMask, 0);	
 	FIA_InPlaceConvertTo8Bit(&dstRegionMask);
 		

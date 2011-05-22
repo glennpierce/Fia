@@ -5,6 +5,9 @@
 #include "FreeImageAlgorithms_Drawing.h"
 #include "FreeImageAlgorithms_Palettes.h"
 #include "FreeImageAlgorithms_Utilities.h"
+#include "FreeImageAlgorithms_Arithmetic.h"
+#include "FreeImageAlgorithms_LinearScale.h"
+#include "FreeImageAlgorithms_Morphology.h"
 
 #include "FreeImageAlgorithms_Testing.h"
 
@@ -70,21 +73,29 @@ TestFIA_ColourElipseTest(CuTest* tc)
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 
-    FIARECT rect, rect2;
-	rect.left = 50;
-	rect.top = 100;
-	rect.bottom = 200;
-	rect.right = 200;
+    FIARECT rect, rect2, rect3;
+    rect.left = 50;
+    rect.top = 100;
+    rect.bottom = 200;
+    rect.right = 200;
 
     rect2.left = 200;
 	rect2.top = 100;
 	rect2.bottom = 200;
 	rect2.right = 300;
 
+	rect3.left = -50;
+    rect3.top = -50;
+    rect3.bottom = 50;
+    rect3.right = 50;
+
     FIA_DrawColourSolidEllipse (src, rect, FIA_RGBQUAD(0, 255, 0), 1);
     FIA_DrawColourSolidEllipse (src, rect2, FIA_RGBQUAD(0, 0, 255), 0);
+    FIA_DrawColourSolidEllipse (src, rect3, FIA_RGBQUAD(255, 0, 0), 0);
    
-	FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourElipseTest.bmp", BIT24);
+	FIA_DrawColourRect (src, rect3, FIA_RGBQUAD(255, 0, 0), 2);
+   
+    FIA_SaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourElipseTest.bmp", BIT24);
 
 	FreeImage_Unload(src);
 }
@@ -92,29 +103,43 @@ TestFIA_ColourElipseTest(CuTest* tc)
 static void
 TestFIA_ConvexHullTest(CuTest* tc)
 {
-	const char *file = TEST_DATA_DIR "particle.bmp";
+    const char *file = TEST_DATA_DIR "concave_shape.bmp";
 
-	FIBITMAP *src = FIA_LoadFIBFromFile(file);
-	CuAssertTrue(tc, src != NULL);
-	
-    FIBITMAP *hull_dib = FreeImage_ConvexHull (src);
+    FIBITMAP *src = FIA_LoadFIBFromFile(file);
+    CuAssertTrue(tc, src != NULL);
+    
+    FIBITMAP *hull_dib = FIA_ConvexHull (src);
 
     CuAssertTrue(tc, hull_dib != NULL);
 
-	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ConvexHullTest.bmp", BIT8);
+    FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ConvexHullTest.bmp", BIT8);
 
-	FreeImage_Unload(src);
+	FIA_InPlaceConvertToGreyscaleFloatType(&hull_dib, FIT_FLOAT); 
+	FIA_InPlaceConvertToGreyscaleFloatType(&src, FIT_FLOAT); 
+
+	FIA_SubtractGreyLevelImages(hull_dib, src);
+
+	FIA_LinearScaleToStandardType(hull_dib, 0, 0, NULL, NULL); 
+
+	// The following tests removing the single pixel artifacts from the convex hull routine
+	// around the edge of the shape that should not be effected. (comment the linear scale above)
+//	FIA_InPlaceConvertToStandardType(&hull_dib, 0);
+//	hull_dib = FIA_Binary3x3Opening(hull_dib);
+
+	FIA_SaveFIBToFile(hull_dib, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ConvexHullDifference.bmp", BIT8);
+
+    FreeImage_Unload(src);
     FreeImage_Unload(hull_dib);
 }
 
 static void
 TestFIA_ColourPolygonTest(CuTest* tc)
 {
-	const char *file = TEST_DATA_DIR "fly.bmp";
+    const char *file = TEST_DATA_DIR "fly.bmp";
 
-	FIBITMAP *src = FIA_LoadFIBFromFile(file);
-	CuAssertTrue(tc, src != NULL);
-	
+    FIBITMAP *src = FIA_LoadFIBFromFile(file);
+    CuAssertTrue(tc, src != NULL);
+    
     FIBITMAP *dst = FreeImage_ConvertTo24Bits(src);
 
     FIAPOINT poly_array[4];
@@ -132,20 +157,20 @@ TestFIA_ColourPolygonTest(CuTest* tc)
 
     CuAssertTrue(tc, dst != NULL);
 
-	FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourPolygonTest.bmp", BIT24);
+    FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourPolygonTest.bmp", BIT24);
 
-	FreeImage_Unload(src);
+    FreeImage_Unload(src);
     FreeImage_Unload(dst);
 }
 
 static void
 TestFIA_GreyscalePolygonTest(CuTest* tc)
 {
-	const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
+    const char *file = TEST_DATA_DIR "drone-bee-greyscale.jpg";
 
-	FIBITMAP *src = FIA_LoadFIBFromFile(file);
-	CuAssertTrue(tc, src != NULL);
-	
+    FIBITMAP *src = FIA_LoadFIBFromFile(file);
+    CuAssertTrue(tc, src != NULL);
+    
     FIAPOINT poly_array[4];
 
     poly_array[0].x = 10;
@@ -254,18 +279,24 @@ TestFIA_Rect24bitTest(CuTest* tc)
 
 	CuAssertTrue(tc, src != NULL);
 
-	FIARECT rect;
-	rect.left = 165;
-	rect.top = 118;
-	rect.bottom = 156;
-	rect.right = 200;
-	
-	FIA_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 1);
+    FIARECT rect, rect2;
+    rect.left = 165;
+    rect.top = 118;
+    rect.bottom = 156;
+    rect.right = 200;
+    
+	rect2.left = -50;
+    rect2.top = -50;
+    rect2.bottom = 50;
+    rect2.right = 50;
 
-	FIA_SaveFIBToFile(src24, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_Rect24bitTest.bmp", BIT24);
+    FIA_DrawColourRect (src24, rect, FIA_RGBQUAD(255,0,0), 1);
+	FIA_DrawColourRect (src24, rect2, FIA_RGBQUAD(255,255,0), 1);
 
-	FreeImage_Unload(src);
-	FreeImage_Unload(src24);
+    FIA_SaveFIBToFile(src24, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_Rect24bitTest.bmp", BIT24);
+
+    FreeImage_Unload(src);
+    FreeImage_Unload(src24);
 }
 
 static void
@@ -368,32 +399,66 @@ TestFIA_SolidGSRectTest(CuTest* tc)
 static void
 TestFIA_ColourTextTest(CuTest* tc)
 {
-	const char *file = TEST_DATA_DIR "fly.bmp";
+    const char *file = TEST_DATA_DIR "fly.bmp";
+	int bpp;
 
 	FIBITMAP *src = FIA_LoadFIBFromFile(file);
 	CuAssertTrue(tc, src != NULL);
 	
     FIBITMAP *dst = FreeImage_ConvertTo24Bits(src);
 
-    FIA_DrawHorizontalColourText (dst, 10, 10, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 0));
+    FIA_DrawHorizontalColourText (dst, 10, 10, FIA_AGG_FONT_VERDANA_12_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 0));
+    FIA_DrawHorizontalColourText (dst, 10, 40, FIA_AGG_FONT_VERDANA_16, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 0, 255));
+    FIA_DrawHorizontalColourText (dst, 10, 60, FIA_AGG_FONT_GSE_8x16_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 255));
+	FIA_DrawHorizontalColourText (dst, 1000, 600, FIA_AGG_FONT_GSE_8x16_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 255));
+	FIA_DrawHorizontalColourText (dst, -500, -600, FIA_AGG_FONT_GSE_8x16_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 255));
+	FIA_DrawHorizontalColourText (dst, 0, 200, FIA_AGG_FONT_GSE_8x16_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 255));
+	FIA_DrawHorizontalColourText (dst, 0, 300, FIA_AGG_FONT_GSE_8x16_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 255));
+
+	bpp = FreeImage_GetBPP(dst);
 
     CuAssertTrue(tc, dst != NULL);
 
-	FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourTextTest.bmp", BIT24);
+    FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourTextTest.bmp", BIT24);
 
-	FreeImage_Unload(src);
+    FreeImage_Unload(src);
     FreeImage_Unload(dst);
 }
+
+/*
+static void
+TestFIA_ColourTTFTextTest(CuTest* tc)
+{
+    const char *file = TEST_DATA_DIR "fly.bmp";
+
+    FIBITMAP *src = FIA_LoadFIBFromFile(file);
+    CuAssertTrue(tc, src != NULL);
+    
+    FIBITMAP *dst = FreeImage_ConvertTo24Bits(src);
+
+    FIA_DrawColourText (dst, 10, 10, "A quick brown fox jumps over the lazy dog 0123456789", FIA_RGBQUAD(0, 255, 0));
+
+    CuAssertTrue(tc, dst != NULL);
+
+    FIA_SaveFIBToFile(dst, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_ColourTextTest.bmp", BIT24);
+
+    FreeImage_Unload(src);
+    FreeImage_Unload(dst);
+}
+*/
 
 static void
 TestFIA_GreyscaleTextTest(CuTest* tc)
 {
 	const char *file = TEST_DATA_DIR "fly.bmp";
 
-	FIBITMAP *src = FIA_LoadFIBFromFile(file);
-	CuAssertTrue(tc, src != NULL);
-	
-    FIA_DrawHorizontalGreyscaleText (src, 10, 10, "A quick brown fox jumps over the lazy dog 0123456789", 0);
+    FIBITMAP *src = FIA_LoadFIBFromFile(file);
+    CuAssertTrue(tc, src != NULL);
+    
+    //FIA_DrawHorizontalGreyscaleText (src, 10, 10, "A quick brown fox jumps over the lazy dog 0123456789", 0);
+    FIA_DrawHorizontalGreyscaleText (src, 10, 10, FIA_AGG_FONT_VERDANA_12_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", 0);
+    FIA_DrawHorizontalGreyscaleText (src, 10, 40, FIA_AGG_FONT_VERDANA_16, "A quick brown fox jumps over the lazy dog 0123456789", 0);
+    FIA_DrawHorizontalGreyscaleText (src, 10, 60, FIA_AGG_FONT_GSE_8x16_BOLD, "A quick brown fox jumps over the lazy dog 0123456789", 0);
 
     CuAssertTrue(tc, src != NULL);
 
@@ -1229,6 +1294,27 @@ TestFIA_DrawImageDstRectTest4(CuTest* tc)
   FreeImage_Unload(dst);
 }
 
+static void
+TestFIA_Index1PixelLineTest(CuTest* tc)
+{
+        FIBITMAP *src = FreeImage_Allocate(500,500, 8, 0, 0, 0);
+
+        CuAssertTrue(tc, src != NULL);
+
+        FIAPOINT p1, p2, p3;
+
+        p1.x = 10;
+        p1.y = 10;
+        p2.x = 200;
+        p2.y = 300;
+
+		FIA_DrawOnePixelIndexLineFromTopLeft (src, p1, p2, 255);
+
+        FIA_SimpleSaveFIBToFile(src, TEST_DATA_OUTPUT_DIR "Drawing/TestFIA_Index1PixelLineTest.bmp");
+
+        FreeImage_Unload(src);
+}
+
 CuSuite* DLL_CALLCONV
 CuGetFreeImageAlgorithmsDrawingSuite(void)
 {
@@ -1236,15 +1322,23 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
 
 	MkDir(TEST_DATA_OUTPUT_DIR "/Drawing");
 
+	SUITE_ADD_TEST(suite, TestFIA_Index1PixelLineTest);
+
+    //SUITE_ADD_TEST(suite, TestFIA_ColourTextTest);
+    //SUITE_ADD_TEST(suite, TestFIA_GreyscaleTextTest);
+	//SUITE_ADD_TEST(suite, TestFIA_ColourElipseTest);
+	//SUITE_ADD_TEST(suite, TestFIA_Rect24bitTest);
+   // SUITE_ADD_TEST(suite, TestFIA_Rect32bitTest);
+    //SUITE_ADD_TEST(suite, TestFIA_GsRectTest);
+    //SUITE_ADD_TEST(suite, TestFIA_SolidGSRectTest);
+    //SUITE_ADD_TEST(suite, TestFIA_SolidRectTest);
+    //SUITE_ADD_TEST(suite, TestFIA_ConvexHullTest);
+
+    SUITE_ADD_TEST(suite, TestFIA_GSLineTest);
 /*
-	SUITE_ADD_TEST(suite, TestFIA_Colour24bitLineTest);
-	SUITE_ADD_TEST(suite, TestFIA_Colour32bitLineTest);
-	SUITE_ADD_TEST(suite, TestFIA_GSLineTest);
-	SUITE_ADD_TEST(suite, TestFIA_Rect24bitTest);
-	SUITE_ADD_TEST(suite, TestFIA_Rect32bitTest);
-	SUITE_ADD_TEST(suite, TestFIA_GsRectTest);
-    SUITE_ADD_TEST(suite, TestFIA_SolidGSRectTest);
-    SUITE_ADD_TEST(suite, TestFIA_SolidRectTest);
+    SUITE_ADD_TEST(suite, TestFIA_Colour24bitLineTest);
+    SUITE_ADD_TEST(suite, TestFIA_Colour32bitLineTest);
+    SUITE_ADD_TEST(suite, TestFIA_GSLineTest);
     SUITE_ADD_TEST(suite, TestFIA_GreyscaleU16bitElipseTest);
     SUITE_ADD_TEST(suite, TestFIA_GreyscaleElipseTest);
     SUITE_ADD_TEST(suite, TestFIA_ColourElipseTest);
@@ -1259,24 +1353,26 @@ CuGetFreeImageAlgorithmsDrawingSuite(void)
     SUITE_ADD_TEST(suite, TestFIA_AffineTransorm32bitScaleTest);
     */
     
+    /*
     SUITE_ADD_TEST(suite, TestFIA_DrawImageTest1);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest2);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest3);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest4);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest5);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest6);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest7);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest8);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest9);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest10);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest11);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest12);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest13);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageTest14);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest1);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest2);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest3);
-	SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest4);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest2);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest3);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest4);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest5);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest6);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest7);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest8);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest9);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest10);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest11);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest12);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest13);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageTest14);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest1);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest2);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest3);
+    SUITE_ADD_TEST(suite, TestFIA_DrawImageDstRectTest4);
+    */
 
 	return suite;
 }

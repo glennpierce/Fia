@@ -48,6 +48,16 @@
 #include "agg_span_allocator.h"
 #include "agg_conv_transform.h"
 #include "agg_span_image_filter_rgba.h"
+#include "agg_scanline_bin.h"
+#include "agg_conv_curve.h"
+#include "agg_conv_contour.h"
+#include "agg_gamma_lut.h"
+
+#ifdef WIN32
+#include "agg_font_win32_tt.h"
+#else
+//#include "agg_font_freetype.h"
+#endif
 
 typedef struct _FIA_Matrix 
 {
@@ -195,8 +205,8 @@ DrawTransformedImage (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx,
     
     unsigned char *dst_bits = FreeImage_GetBits (dst);
 
-	int src_pitch = FreeImage_GetPitch (src);
-	int dst_pitch = FreeImage_GetPitch (dst);
+    int src_pitch = FreeImage_GetPitch (src);
+    int dst_pitch = FreeImage_GetPitch (dst);
 
     // Create the src buffer
     agg::rendering_buffer rbuf_src (src_bits, src_width, src_height, -src_pitch);
@@ -214,7 +224,7 @@ DrawTransformedImage (FIBITMAP *src, FIBITMAP *dst, agg::trans_affine image_mtx,
 //    typedef agg::span_image_filter_rgba_bilinear_clone<src_pixfmt_type, interpolator_type> span_gen_type;
 
     span_gen_type sg(pixf_src, agg::rgba8(colour.rgbRed,colour.rgbGreen,colour.rgbBlue,
-    		(retain_background ? 0 : 255)), interpolator);
+            (retain_background ? 0 : 255)), interpolator);
        
 //    span_gen_type sg(pixf_src, interpolator);
  
@@ -418,27 +428,11 @@ DrawEllipse (RendererType& renderer, FIBITMAP * src, FIARECT rect, const ColorT&
     int width = FreeImage_GetWidth (src);
     int height = FreeImage_GetHeight (src);
 
-    if (rect.left < 0)
-    {
-        rect.left = 0;
-        rect.right += rect.left;
-    }
+	if(rect.left > rect.right)
+		SWAP(rect.left, rect.right);
 
-    if (rect.top < 0)
-    {
-        rect.top = 0;
-        rect.bottom += rect.top;
-    }
-
-    if (rect.right >= width)
-    {
-        rect.right = width - 1;
-    }
-
-    if (rect.bottom >= height)
-    {
-        rect.bottom = height - 1;
-    }
+	if(rect.top < rect.bottom)
+		SWAP(rect.top, rect.bottom);
 
     // Allocate the framebuffer
     FIARECT tmp_rect = rect;
@@ -455,13 +449,13 @@ DrawEllipse (RendererType& renderer, FIBITMAP * src, FIARECT rect, const ColorT&
 
     agg::ellipse ellipse;
 
-    int w = tmp_rect.right - tmp_rect.left;
-    int h = tmp_rect.bottom - tmp_rect.top;
+    int w = tmp_rect.right - tmp_rect.left + 1;
+    int h = tmp_rect.bottom - tmp_rect.top + 1;
 
-    double center_x = (int) (tmp_rect.left + w / 2.0);
-    double center_y = (int) (tmp_rect.top + h / 2.0);
+    double center_x = (double)(tmp_rect.left + ((double) w / 2.0));
+    double center_y = (double)(tmp_rect.top + ((double) h / 2.0));
 
-    ellipse.init(center_x, center_y, w / 2, h / 2, 360);
+    ellipse.init(center_x, center_y, w / 2.0 - 0.5, h / 2.0 - 0.5, 360, true);
     
     if(solid) {
         ras.add_path(ellipse, 0);
@@ -1155,6 +1149,120 @@ FIA_DrawGreyscaleLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, double value,
 }
 
 int DLL_CALLCONV
+FIA_DrawOnePixelIndexLine (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, BYTE value)
+{
+    int swapped = 0, dx, dy, abs_dy, incrN, incrE, incrNE, d, x, y, slope, tmp_y, len = 0;
+	BYTE *bits = NULL;
+
+	if (src==NULL)
+		return -1;
+		
+    // If necessary, switch the points so we're 
+    // always drawing from left to right. 
+    if (p2.x < p1.x)
+    {
+        swapped = 1;
+        SWAP (p1, p2);
+    }
+
+    dx = p2.x - p1.x;
+    dy = p2.y - p1.y;
+    abs_dy = abs(dy);
+
+    if (dy < 0)
+    {
+        slope = -1;
+        dy = -dy;
+    }
+    else
+    {
+        slope = 1;
+    }
+
+    x = p1.x;
+    y = p1.y;
+
+    if (abs_dy <= dx)
+    {
+        d = 2 * dy - dx;
+        incrE = 2 * dy;         // E
+        incrNE = 2 * (dy - dx); // NE
+
+        bits = (BYTE*) FreeImage_GetScanLine (src, y);
+
+        bits[x] = value;
+
+        while (x <= p2.x)
+        {
+            if (d <= 0)
+            {
+                d += incrE;     // Going to E
+                x++;
+            }
+            else
+            {
+                d += incrNE;    // Going to NE
+                x++;
+                y += slope;
+            }
+
+            bits = (BYTE*) FreeImage_GetScanLine (src, y);
+
+            bits[x] = value;
+            len++;
+        }
+    }
+    else
+    {
+        len = 1;
+        d = dy - 2 * dx;
+        incrN = 2 * -dx;        // N
+        incrNE = 2 * (dy - dx); // NE
+
+        tmp_y = 0;
+
+        bits = (BYTE*) FreeImage_GetScanLine (src, y);
+
+        bits[x] = value;
+
+        for(tmp_y = 0; tmp_y < abs_dy; tmp_y++)
+        {
+            if (d > 0)
+            {
+
+                d += incrN;     // Going to N
+                y += slope;
+            }
+            else
+            {
+                d += incrNE;    // Going to NE
+                y += slope;
+                x++;
+            }
+
+            bits = (BYTE*) FreeImage_GetScanLine (src, y);
+
+            bits[x] = value;
+
+            len++;
+        }
+    }
+
+    return len;
+}
+
+int DLL_CALLCONV
+FIA_DrawOnePixelIndexLineFromTopLeft (FIBITMAP * src, FIAPOINT p1, FIAPOINT p2, BYTE value)
+{
+	int height = FreeImage_GetHeight(src);
+
+	p1.y = height - p1.y - 1;
+	p2.y = height - p2.y - 1;
+
+	return FIA_DrawOnePixelIndexLine (src, p1, p2, value);
+}
+
+int DLL_CALLCONV
 FIA_DrawColourRect (FIBITMAP * src, FIARECT rect, RGBQUAD colour, int line_width)
 {
     int height = FreeImage_GetHeight (src);
@@ -1273,9 +1381,220 @@ FIA_DrawGreyScaleCheckerBoard (FIBITMAP * src, int square_size)
 	return FIA_SUCCESS;
 }
 
+/*
+
+
+ typedef agg::font_engine_win32_tt_int32 font_engine_type;
+    typedef agg::font_cache_manager<font_engine_type> font_manager_type;
+
+
+template<class Rasterizer, class Scanline, class RenSolid, class RenBin>
+static unsigned DrawTTF(Rasterizer& ras, Scanline& sl, RenSolid& ren_solid, RenBin& ren_bin, int height, const char *text)
+{
+	typedef agg::conv_curve<font_manager_type::path_adaptor_type> conv_curve_type;
+    typedef agg::conv_contour<conv_curve_type> conv_contour_type;
+
+	font_engine_type             m_feng;
+	font_manager_type            m_fman;
+
+    conv_curve_type m_curves;
+    conv_contour_type m_contour;
+
+    agg::glyph_rendering gren = agg::glyph_ren_native_mono;
+    unsigned num_glyphs = 0;
+	int width, weight;
+
+    if(height < 8)
+        height = 8;
+
+    if(height > 32)
+        height = 32;
+
+    width = height;
+    weight = 0.5;
+
+    m_contour.width(-weight * height * 0.05);
+
+    m_feng.hinting(1);
+    m_feng.height(height);
+
+    // Font width in Windows is strange. MSDN says, 
+    // "specifies the average width", but there's no clue what
+    // this "average width" means. It'd be logical to specify 
+    // the width with regard to the font height, like it's done in 
+    // FreeType. That is, width == height should mean the "natural", 
+    // not distorted glyphs. In Windows you have to specify
+    // the absolute width, which is very stupid and hard to use 
+    // in practice.
+    //-------------------------
+    m_feng.width((width == height) ? 0.0 : width / 2.4);
+    //m_feng.italic(true);
+    m_feng.flip_y(true);
+
+    agg::trans_affine mtx;
+    //mtx *= agg::trans_affine_skewing(-0.3, 0);
+    mtx *= agg::trans_affine_rotation(agg::deg2rad(-4.0));
+    m_feng.transform(mtx);
+
+    if(m_feng.create_font("Arial", gren))
+    {
+        m_fman.precache(' ', 127);
+
+        double x = 10.0;
+        double y0 = 10.0;
+        double y = y0;
+        const char* p = text;
+
+        while(*p)
+        {
+            const agg::glyph_cache* glyph = m_fman.glyph(*p);
+            if(glyph)
+            {
+               
+                    m_fman.add_kerning(&x, &y);
+                
+
+                if(x >= width - height)
+                {
+                    x = 10.0;
+                    y0 -= height;
+                    if(y0 <= 120) break;
+                    y = y0;
+                }
+
+                m_fman.init_embedded_adaptors(glyph, x, y);
+
+                switch(glyph->data_type)
+                {
+                case agg::glyph_data_mono:
+                    ren_bin.color(agg::rgba8(0, 0, 0));
+                    agg::render_scanlines(m_fman.mono_adaptor(), 
+                                            m_fman.mono_scanline(), 
+                                            ren_bin);
+                    break;
+
+                case agg::glyph_data_gray8:
+                    ren_solid.color(agg::rgba8(0, 0, 0));
+                    agg::render_scanlines(m_fman.gray8_adaptor(), 
+                                            m_fman.gray8_scanline(), 
+                                            ren_solid);
+                    break;
+
+                case agg::glyph_data_outline:
+                    ras.reset();
+                    if(((double)fabs(weight)) <= 0.01)
+                    {
+                        // For the sake of efficiency skip the
+                        // contour converter if the weight is about zero.
+                        //-----------------------
+                        ras.add_path(m_curves);
+                    }
+                    else
+                    {
+                        ras.add_path(m_contour);
+                    }
+                    ren_solid.color(agg::rgba8(0, 0, 0));
+                    agg::render_scanlines(ras, sl, ren_solid);
+                    break;
+                }
+
+                // increment pen position
+                x += glyph->advance_x;
+                y += glyph->advance_y;
+                ++num_glyphs;
+            }
+            ++p;
+        }
+    }
+    return num_glyphs;
+}
+
 
 int DLL_CALLCONV
-FIA_DrawHorizontalColourText (FIBITMAP *src, int left, int top, const char *text, RGBQUAD colour)
+FIA_DrawColourText (FIBITMAP *src, int left, int top, const char *text, RGBQUAD colour)
+{
+    typedef agg::gamma_lut<agg::int8u, agg::int16u, 8, 16> gamma_type;
+   // typedef agg::pixfmt_bgr24_gamma<gamma_type> pixfmt_type;
+	typedef agg::pixfmt_bgr24                        pixfmt_type;
+        typedef agg::renderer_base < pixfmt_type >       renbase_type;
+    //typedef agg::renderer_base<pixfmt_type> base_ren_type;
+    typedef agg::renderer_scanline_aa_solid<renbase_type> renderer_solid;
+    typedef agg::renderer_scanline_bin_solid<renbase_type> renderer_bin;
+   
+	
+
+
+    int width = FreeImage_GetWidth (src);
+    int height = FreeImage_GetHeight (src);
+    unsigned char *buf = FreeImage_GetBits (src);
+
+    //pixfmt_type pf(rbuf_window(), m_gamma_lut);
+    //base_ren_type ren_base(pf);
+
+    agg::rendering_buffer rbuf (buf, width, height, FreeImage_GetPitch (src));
+
+    pixfmt_type pixf(rbuf);
+    renbase_type rbase(pixf);
+
+    
+
+    renderer_solid ren_solid(rbase);
+    renderer_bin ren_bin(rbase);
+    rbase.clear(agg::rgba(1,1,1));
+
+    agg::scanline_u8 sl;
+    agg::rasterizer_scanline_aa<> ras;
+
+    DrawTTF(ras, sl, ren_solid, ren_bin, 12, text);
+    
+
+    ras.gamma(agg::gamma_power(1.0));
+
+    return FIA_SUCCESS;
+}
+*/
+
+static const agg::int8u* AggEmbeddedFonts[] =
+{
+	agg::gse4x6,
+    agg::gse4x8,
+    agg::gse5x7,
+    agg::gse5x9,
+    agg::gse6x12,
+    agg::gse6x9,
+    agg::gse7x11,
+    agg::gse7x11_bold,
+    agg::gse7x15,
+    agg::gse7x15_bold,
+    agg::gse8x16,
+    agg::gse8x16_bold,
+    agg::mcs11_prop,
+    agg::mcs11_prop_condensed,
+    agg::mcs12_prop,
+    agg::mcs13_prop,
+    agg::mcs5x10_mono,
+    agg::mcs5x11_mono,
+    agg::mcs6x10_mono,
+    agg::mcs6x11_mono,
+    agg::mcs7x12_mono_high,
+    agg::mcs7x12_mono_low,
+	agg::verdana12,
+    agg::verdana12_bold,
+    agg::verdana13,
+    agg::verdana13_bold,
+    agg::verdana14,
+    agg::verdana14_bold,
+    agg::verdana16,
+    agg::verdana16_bold,
+    agg::verdana17,
+    agg::verdana17_bold,
+    agg::verdana18,
+    agg::verdana18_bold
+};
+
+
+int DLL_CALLCONV
+FIA_DrawHorizontalColourText (FIBITMAP *src, int left, int top, FIA_AggEmbeddedFont font, const char *text, RGBQUAD colour)
 {
     typedef agg::pixfmt_bgr24 pixfmt;
     typedef agg::renderer_base<pixfmt> ren_base;
@@ -1296,7 +1615,7 @@ FIA_DrawHorizontalColourText (FIBITMAP *src, int left, int top, const char *text
   
     renderer.color(agg::rgba8(colour.rgbRed, colour.rgbGreen, colour.rgbBlue));
 
-    glyph.font(agg::verdana18_bold);
+    glyph.font(AggEmbeddedFonts[font]);
 
     renderer.render_text(left, top, text, false);
     
@@ -1304,7 +1623,7 @@ FIA_DrawHorizontalColourText (FIBITMAP *src, int left, int top, const char *text
 }
 
 int DLL_CALLCONV
-FIA_DrawHorizontalGreyscaleText (FIBITMAP * src, int left, int top, const char *text, unsigned char value)
+FIA_DrawHorizontalGreyscaleText (FIBITMAP * src, int left, int top, FIA_AggEmbeddedFont font, const char *text, unsigned char value)
 {
     FREE_IMAGE_TYPE type = FreeImage_GetImageType (src);
 
@@ -1333,7 +1652,9 @@ FIA_DrawHorizontalGreyscaleText (FIBITMAP * src, int left, int top, const char *
               
                 renderer.color(agg::rgba8(value, value,value));
 
-                glyph.font(agg::verdana18_bold);
+                glyph.font(AggEmbeddedFonts[font]);
+
+				top = height - top - 1;
 
                 renderer.render_text(left, top, text, false);
             }
